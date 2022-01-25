@@ -16,6 +16,12 @@ class AppRoute {
     if (settings.name == HomeScreen.routeName) {
       return MaterialPageRoute(builder: (context) => HomeScreen());
     }
+    if (settings.name == CreateProfileScreen.routeName) {
+      return MaterialPageRoute(builder: (context) => CreateProfileScreen());
+    }
+    if (settings.name == SearchScreen.routeName) {
+      return MaterialPageRoute(builder: (context) => SearchScreen());
+    }
     return MaterialPageRoute(builder: (context) => const FrontPage());
   }
 }

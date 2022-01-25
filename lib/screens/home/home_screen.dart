@@ -3,7 +3,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'dart:async';
 
-import 'package:passengerapp/widgets/whereto.dart';
+import 'package:passengerapp/widgets/widgets.dart';
 
 class HomeScreen extends StatefulWidget {
   static const routeName = '/home';
@@ -61,6 +61,8 @@ class _HomeScreenState extends State<HomeScreen> {
         desiredAccuracy: LocationAccuracy.high);
   }
 
+  GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
   @override
   Widget build(BuildContext context) {
     _determinePosition().then((value) {
@@ -70,6 +72,10 @@ class _HomeScreenState extends State<HomeScreen> {
       });
     });
     return Scaffold(
+      key: _scaffoldKey,
+      drawer: Drawer(
+        child: Container(),
+      ),
       body: Stack(
         children: [
           GoogleMap(
@@ -80,7 +86,26 @@ class _HomeScreenState extends State<HomeScreen> {
               _controller.complete(controller);
             },
           ),
-          WhereTo(currentLocation: "Meskel Flower")
+          Padding(
+            padding: const EdgeInsets.only(top: 40, left: 10),
+            child: SizedBox(
+              height: 30,
+              child: TextButton(
+                //padding: EdgeInsets.zero,
+                //color: Colors.white,
+                //shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
+                onPressed: () => _scaffoldKey.currentState!.openDrawer(),
+                child: const Icon(
+                  Icons.format_align_center,
+                  size: 20,
+                  color: Colors.black87,
+                ),
+              ),
+            ),
+          ),
+          //WhereTo(currentLocation: "Meskel Flower"),
+          //Service(),
+          Driver()
         ],
       ),
     );

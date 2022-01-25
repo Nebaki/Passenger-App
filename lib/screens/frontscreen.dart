@@ -27,25 +27,33 @@ class FrontPage extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  SizedBox(
-                    width: 350,
-                    child: ElevatedButton(
-                        onPressed: () {
-                          Navigator.pushNamed(context, SigninScreen.routeName);
-                        },
-                        child: const Text(
-                          "Sign In",
-                          style: TextStyle(color: Colors.white),
-                        )),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: SizedBox(
+                      width: MediaQuery.of(context).size.width,
+                      child: ElevatedButton(
+                          onPressed: () {
+                            Navigator.pushNamed(
+                                context, SigninScreen.routeName);
+                          },
+                          child: const Text(
+                            "Sign In",
+                            style: TextStyle(color: Colors.white),
+                          )),
+                    ),
                   ),
-                  SizedBox(
-                    width: 350,
-                    child: TextButton(
-                        onPressed: () {
-                          Navigator.pushNamed(context, SignupScreen.routeName);
-                        },
-                        child: const Text("Sign Up",
-                            style: TextStyle(color: Colors.white))),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: SizedBox(
+                      width: MediaQuery.of(context).size.width,
+                      child: ElevatedButton(
+                          onPressed: () {
+                            Navigator.pushNamed(
+                                context, SignupScreen.routeName);
+                          },
+                          child: const Text("Sign Up",
+                              style: TextStyle(color: Colors.white))),
+                    ),
                   ),
                 ],
               ))
