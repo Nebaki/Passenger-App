@@ -73,7 +73,7 @@ class _WhereToState extends State<WhereTo> {
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 20),
                     child: SizedBox(
-                      width: 220,
+                      width: 200,
                       child: const Divider(
                         color: Colors.white60,
                       ),

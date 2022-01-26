@@ -22,6 +22,21 @@ class AppRoute {
     if (settings.name == SearchScreen.routeName) {
       return MaterialPageRoute(builder: (context) => SearchScreen());
     }
+    if (settings.name == ProfileDetail.routeName) {
+      return MaterialPageRoute(builder: (context) => ProfileDetail());
+    }
+    if (settings.name == EditProfile.routeName) {
+      return MaterialPageRoute(builder: (context) => EditProfile());
+    }
+    if (settings.name == SavedAddress.routeName) {
+      return MaterialPageRoute(builder: (context) => SavedAddress());
+    }
+    if (settings.name == HistoryPage.routeName) {
+      return MaterialPageRoute(builder: (context) => HistoryPage());
+    }
+    if (settings.name == SettingScreen.routeName) {
+      return MaterialPageRoute(builder: (context) => SettingScreen());
+    }
     return MaterialPageRoute(builder: (context) => const FrontPage());
   }
 }
