@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:passengerapp/drawer/drawer.dart';
 import 'dart:async';
 
 import 'package:passengerapp/widgets/widgets.dart';
@@ -73,9 +74,7 @@ class _HomeScreenState extends State<HomeScreen> {
     });
     return Scaffold(
       key: _scaffoldKey,
-      drawer: Drawer(
-        child: Container(),
-      ),
+      drawer: NavDrawer(),
       body: Stack(
         children: [
           GoogleMap(
@@ -88,17 +87,20 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           Padding(
             padding: const EdgeInsets.only(top: 40, left: 10),
-            child: SizedBox(
-              height: 30,
-              child: TextButton(
-                //padding: EdgeInsets.zero,
-                //color: Colors.white,
-                //shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
-                onPressed: () => _scaffoldKey.currentState!.openDrawer(),
-                child: const Icon(
-                  Icons.format_align_center,
-                  size: 20,
-                  color: Colors.black87,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(100),
+              child: Container(
+                color: Colors.blueGrey.shade900.withOpacity(0.7),
+                child: IconButton(
+                  //padding: EdgeInsets.zero,
+                  //color: Colors.white,
+                  //shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
+                  onPressed: () => _scaffoldKey.currentState!.openDrawer(),
+                  icon: const Icon(
+                    Icons.format_align_center,
+                    size: 20,
+                    color: Colors.white,
+                  ),
                 ),
               ),
             ),

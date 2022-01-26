@@ -10,11 +10,14 @@ class _SearchScreenState extends State<SearchScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        children: [
-          TextField(),
-          TextField(),
-        ],
+      body: Padding(
+        padding: const EdgeInsets.only(top: 40),
+        child: Column(
+          children: [
+            TextField(),
+            TextField(),
+          ],
+        ),
       ),
     );
   }
