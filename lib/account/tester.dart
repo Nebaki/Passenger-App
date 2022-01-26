@@ -9,45 +9,68 @@ class Tester {
   void createUser() {
     var id = SecItem("id", "1000");
     var name = SecItem("name", "winux-jun");
-    var phone = SecItem("phone", "winux@jun");
-    var email = SecItem("email", "0922877115");
+    var phone = SecItem("phone", "0922877115");
+    var email = SecItem("email", "winux@jun");
     List<SecItem> user = [];
     user.add(id);
     user.add(name);
     user.add(phone);
     user.add(email);
     var createUser = userMan.createUser(user);
-    if (createUser.success) {
-      session.logSuccess("create-user", "success: " + createUser.message);
-    } else {
-      session.logSuccess("create-user", "failed: " + createUser.message);
-    }
+    createUser.then((value) => {
+    session.logSuccess("create-user", "success: " + value.message)
+    }).onError((error, stackTrace) => {
+    session.logError("create-user", "failed: " + error.toString())
+    });
   }
 
   void saveAndLoadToken() {
     var token = SecItem("token", "token-io");
     var saveToken = userMan.saveToken(token);
-    if (saveToken.success) {
-      session.logSuccess("save-token", "success: " + saveToken.message);
-    } else {
-      session.logSuccess("save-token", "failed: " + saveToken.message);
-    }
+    saveToken.then((value) => {
+    session.logSuccess("save-token", "success: " + value.message)
+    }).onError((error, stackTrace) => {
+    session.logError("save-token", "failed: " + error.toString())
+    });
 
     var loadToken = userMan.getToken(token);
-    if (loadToken.success) {
-      session.logSuccess("load-token", "success: " + loadToken.message);
-    } else {
-      session.logSuccess("load-token", "failed: " + loadToken.message);
-    }
+    loadToken.then((value) => {
+    session.logSuccess("load-token", "success: " + value.message)
+    }).onError((error, stackTrace) => {
+    session.logError("load-token", "failed: " + error.toString())
+    });
+  }
+  Future<bool> isTokenExist() async {
+    var exist = false;
+    var token = SecItem("token", "token-io");
+    await userMan.getToken(token).then((value) => {
+      exist = true,
+    }).onError((error, stackTrace) => {
+      exist = false,
+    });
+
+    /*
+    loadToken.then((value) => {
+      exist = true,
+      session.logSuccess("load-token", "success: " + value.message)
+    }).onError((error, stackTrace) => {
+      session.logError("load-token", "failed: " + error.toString())
+    });*/
+    return exist;
   }
 
   void loadUser() {
     var loadUser = userMan.loadUser();
+    loadUser.then((value) => {
     session.logSuccess("load-user",
-        "success: id" + loadUser.id+" name"+
-            loadUser.name+" phone"+
-            loadUser.phone+" email"+loadUser.email
-    );
+    "success: id " + value.id+" name "+
+        value.name+" phone "+
+        value.phone+" email "+value.email
+    )
+    }).onError((error, stackTrace) => {
+    session.logError("load-user", "failed: " + error.toString())
+    });
+
   }
 
   void updateUser() {
@@ -56,20 +79,20 @@ class Tester {
     List<SecItem> user = [];
     user.add(name);
     user.add(phone);
-    var updateUser = userMan.createUser(user);
-    if (updateUser.success) {
-      session.logSuccess("up-user", "success: " + updateUser.message);
-    } else {
-      session.logSuccess("up-user", "failed: " + updateUser.message);
-    }
+    var updateUser = userMan.updateUser(user);
+    updateUser.then((value) => {
+    session.logSuccess("up-user", "success: " + value.message)
+    }).onError((error, stackTrace) => {
+    session.logError("up-user", "failed: " + error.toString())
+    });
   }
 
   void removeUser() {
     var removeUser = userMan.removeUser();
-    if (removeUser.success) {
-      session.logSuccess("rm-user", "success: " + removeUser.message);
-    } else {
-      session.logSuccess("rm-user", "failed: " + removeUser.message);
-    }
+    removeUser.then((value) => {
+    session.logSuccess("rm-user", "success: " + value.message)
+    }).onError((error, stackTrace) => {
+    session.logError("rm-user", "failed: " + error.toString())
+    });
   }
 }

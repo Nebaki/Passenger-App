@@ -2,8 +2,10 @@ import 'dart:ffi';
 
 import 'package:passengerapp/account/storage.dart';
 import 'package:passengerapp/models/models.dart';
+import 'package:passengerapp/utils/session.dart';
 
 class UserManager {
+  var session = Session();
   var store = DataStorage();
   var sample = SecItem("phone", "0922877115");
 
@@ -12,19 +14,20 @@ class UserManager {
     store.performAction(ItemActions.containsKey, item);
   }
 
-  Result createUser(List<SecItem> items) {
+  Future<Result> createUser(List<SecItem> items) async {
     Result result = Result(false, "init");
     List<Result> created = [];
     List<Result> failed = [];
     for (SecItem item in items) {
-      store.performAction(ItemActions.edit, item)
+      await store.performAction(ItemActions.edit, item)
           .then((value) => {
         created.add(Result(false, "added "+item.key))
       }).onError((error, stackTrace) => {
+        session.logError("user-add", item.key),
         failed.add(Result(false, "Failed to add" +item.key))
       });
     }
-    if(!failed.isNotEmpty){
+    if(failed.isNotEmpty){
       var data = "--";
       for(Result result in failed){
         data+"," + result.message;
@@ -36,24 +39,24 @@ class UserManager {
     }
     return result;
   }
-  User loadUser() {
+  Future<User> loadUser() async {
     var id,name,phone,email;
-    store.loadItem(SecItem("id", "")).then((value) => {
+    await store.loadItem(SecItem("id", "")).then((value) => {
       id = value
     }).onError((error, stackTrace) => {
       id = "Unavailable"
     });
-    store.loadItem(SecItem("name", "")).then((value) => {
+    await store.loadItem(SecItem("name", "")).then((value) => {
       name = value
     }).onError((error, stackTrace) => {
       name = "Unavailable"
     });
-    store.loadItem(SecItem("phone", "")).then((value) => {
+    await store.loadItem(SecItem("phone", "")).then((value) => {
       phone = value
     }).onError((error, stackTrace) => {
       name = "Unavailable"
     });
-    store.loadItem(SecItem("email", "")).then((value) => {
+    await store.loadItem(SecItem("email", "")).then((value) => {
       email = value
     }).onError((error, stackTrace) => {
       name = "Unavailable"
@@ -61,39 +64,39 @@ class UserManager {
     User user = User(id, name, phone, email);
     return user;
   }
-  Result removeUser() {
+  Future<Result> removeUser() async {
     Result result = Result(false, "init");
-    var res = store.performAction(ItemActions.removeAccount, sample);
-    res.then((value) => {result = Result(true, "User Removed")}).onError(
+    await store.performAction(ItemActions.removeAccount, sample)
+    .then((value) => {result = Result(true, "User Removed")}).onError(
         (error, stackTrace) =>
             {result = Result(false, "Failed to remove " +error.toString())});
     return result;
   }
 
-  Result updateUser(List<SecItem> items) {
+  Future<Result> updateUser(List<SecItem> items) async {
     Result result = Result(false, "init");
-    var res = store.performAction(ItemActions.edit, sample);
-    res.then((value) => {
-      result = Result(true, "User Removed")
+    await store.performAction(ItemActions.edit, sample)
+        .then((value) => {
+      result = Result(true, "User Updated")
     }).onError((error, stackTrace) => {
-
+      result = Result(false, "User Updated Failed")
     });
     return result;
   }
-  Result saveToken(SecItem item) {
+  Future<Result> saveToken(SecItem item) async {
     Result result = Result(false, "init");
-    var res = store.performAction(ItemActions.edit, item);
-    res.then((value) => {
+    await store.performAction(ItemActions.edit, item)
+        .then((value) => {
       result = Result(true, "Token Saved")
     }).onError((error, stackTrace) => {
       result = Result(true, "Token not Saved")
     });
     return result;
   }
-  Result getToken(SecItem item) {
+  Future<Result> getToken(SecItem item) async {
     Result result = Result(false, "init");
-    var res = store.loadItem(item);
-    res.then((value) => {
+    await store.loadItem(item)
+        .then((value) => {
       result = Result(true, value)
     }).onError((error, stackTrace) => {
       result = Result(false, error.toString())

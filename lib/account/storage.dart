@@ -55,7 +55,6 @@ class DataStorage {
             key: item.key,
             iOptions: _getIOSOptions(),
             aOptions: _getAndroidOptions());
-
         break;
       case ItemActions.edit:
         await _storage.write(
