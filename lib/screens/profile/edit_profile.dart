@@ -78,13 +78,13 @@ class EditProfile extends StatelessWidget {
           ),
           SizedBox(
               height: 40,
-              width: Mediaquery.of(context).size.width * 0.6,
+              width: MediaQuery.of(context).size.width * 0.6,
               child: ElevatedButton(
                   onPressed: () {},
                   child: const Text("Save Changes",
                       style: TextStyle(color: Colors.white)))),
           SizedBox(
-            width: Mediaquery.of(context).size.width * 0.6,
+            width: MediaQuery.of(context).size.width * 0.6,
             child: TextButton(
                 style: ButtonStyle(
                     side: MaterialStateProperty.all<BorderSide>(
