@@ -15,6 +15,9 @@ class MyApp extends StatelessWidget {
           //F48221
           primaryColor: const Color.fromRGBO(254, 79, 5, 1),
           textTheme: TextTheme(
+              button: TextStyle(
+                color: const Color.fromRGBO(254, 79, 5, 1),
+              ),
               subtitle1: TextStyle(color: Colors.black38, fontSize: 14),
               headline5: TextStyle(fontWeight: FontWeight.bold),
               bodyText2: TextStyle(color: Colors.grey.shade700)),
@@ -32,14 +35,16 @@ class MyApp extends StatelessWidget {
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
                     fontSize: 20)),
-                backgroundColor: MaterialStateProperty.all<Color>(Colors.green),
+                backgroundColor: MaterialStateProperty.all<Color>(
+                    Color.fromRGBO(254, 79, 5, 1)),
                 shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                     RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(80),
                 ))),
           ),
-          colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.blue)
-              .copyWith(secondary: Colors.grey.shade600)),
+          colorScheme: ColorScheme.fromSwatch(
+            primarySwatch: Colors.orange,
+          ).copyWith(secondary: Colors.grey.shade600)),
       onGenerateRoute: AppRoute.generateRoute,
     );
   }

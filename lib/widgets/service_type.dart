@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:passengerapp/widgets/widgets.dart';
 
 class Service extends StatelessWidget {
+  Function? callback;
+  Service(this.callback);
+
   @override
   Widget build(BuildContext context) {
     return Positioned(
@@ -39,7 +43,9 @@ class Service extends StatelessWidget {
                             MaterialStateProperty.all<RoundedRectangleBorder>(
                                 RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(20)))),
-                    onPressed: () {},
+                    onPressed: () {
+                      callback!(NearbyTaxy(callback));
+                    },
                     child: const Text("Send Request"))),
           ),
           SizedBox(

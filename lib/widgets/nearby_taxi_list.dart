@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:passengerapp/widgets/widgets.dart';
 
 class NearbyTaxy extends StatefulWidget {
+  Function? callback;
+
+  NearbyTaxy(this.callback);
+
   @override
   _NearbyTaxyState createState() => _NearbyTaxyState();
 }
@@ -45,7 +49,9 @@ class _NearbyTaxyState extends State<NearbyTaxy> {
                             MaterialStateProperty.all<RoundedRectangleBorder>(
                                 RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(20)))),
-                    onPressed: () {},
+                    onPressed: () {
+                      this.widget.callback!(Driver(this.widget.callback));
+                    },
                     child: const Text("Confirm"))),
           ),
           SizedBox(

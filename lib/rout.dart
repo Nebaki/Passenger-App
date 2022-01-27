@@ -14,7 +14,11 @@ class AppRoute {
       return MaterialPageRoute(builder: (context) => PhoneVerification());
     }
     if (settings.name == HomeScreen.routeName) {
-      return MaterialPageRoute(builder: (context) => HomeScreen());
+      HomeScreenArgument argument = settings.arguments as HomeScreenArgument;
+      return MaterialPageRoute(
+          builder: (context) => HomeScreen(
+                args: argument,
+              ));
     }
     if (settings.name == CreateProfileScreen.routeName) {
       return MaterialPageRoute(builder: (context) => CreateProfileScreen());
@@ -37,6 +41,16 @@ class AppRoute {
     if (settings.name == SettingScreen.routeName) {
       return MaterialPageRoute(builder: (context) => SettingScreen());
     }
+    if (settings.name == ResetPassword.routeName) {
+      return MaterialPageRoute(builder: (context) => ResetPassword());
+    }
     return MaterialPageRoute(builder: (context) => const FrontPage());
   }
+}
+
+class HomeScreenArgument {
+  //String widgetName;
+  bool isSelected = false;
+
+  HomeScreenArgument({required this.isSelected});
 }

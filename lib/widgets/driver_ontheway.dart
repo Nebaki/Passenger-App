@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:passengerapp/widgets/canceltrip.dart';
 import 'package:passengerapp/widgets/widgets.dart';
 
 class DriverOnTheWay extends StatelessWidget {
+  Function? callback;
+  DriverOnTheWay(this.callback);
   @override
   Widget build(BuildContext context) {
     return Positioned(
@@ -11,7 +14,7 @@ class DriverOnTheWay extends StatelessWidget {
       child: Column(
         children: [
           Container(
-              height: 200,
+              height: 250,
               padding: EdgeInsets.only(top: 40, left: 20, right: 20, bottom: 0),
               decoration: BoxDecoration(
                   color: Colors.black.withOpacity(0.75),
@@ -56,7 +59,9 @@ class DriverOnTheWay extends StatelessWidget {
                             MaterialStateProperty.all<RoundedRectangleBorder>(
                                 RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(20)))),
-                    onPressed: () {},
+                    onPressed: () {
+                      callback!(CancelTrip(callback));
+                    },
                     child: const Text("Cancel"))),
           ),
           const SizedBox(

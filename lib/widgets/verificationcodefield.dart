@@ -145,7 +145,6 @@ class VerificationCodeField extends StatelessWidget {
                   'Verify',
                   style: TextStyle(fontSize: 17.0),
                 ),
-                style: ElevatedButton.styleFrom(primary: Colors.green[900]),
               )),
         ],
       ),

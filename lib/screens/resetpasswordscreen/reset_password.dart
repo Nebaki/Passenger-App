@@ -1,21 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:passengerapp/rout.dart';
-import 'package:passengerapp/screens/screens.dart';
-import 'package:passengerapp/widgets/widgets.dart';
 
-class SigninScreen extends StatefulWidget {
-  static const routeName = '/signin';
-  @override
-  _SigninScreenState createState() => _SigninScreenState();
-}
-
-class _SigninScreenState extends State<SigninScreen> {
+class ResetPassword extends StatelessWidget {
+  static const routeName = "/resetpassword";
   final _formkey = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        iconTheme: const IconThemeData(color: Colors.black),
+        title: const Text("Reset Password"),
+        centerTitle: true,
+      ),
       body: Stack(children: [
-        CustomeBackArrow(),
         Form(
           key: _formkey,
           child: Container(
@@ -34,7 +30,7 @@ class _SigninScreenState extends State<SigninScreen> {
                     padding: const EdgeInsets.all(10),
                     child: TextFormField(
                       decoration: const InputDecoration(
-                          hintText: "Phone Number",
+                          hintText: "New Password",
                           hintStyle: TextStyle(
                               fontWeight: FontWeight.bold,
                               color: Colors.black45),
@@ -59,7 +55,7 @@ class _SigninScreenState extends State<SigninScreen> {
                     padding: const EdgeInsets.all(10),
                     child: TextFormField(
                       decoration: const InputDecoration(
-                          hintText: "Password",
+                          hintText: "Confirm Password",
                           hintStyle: TextStyle(
                               fontWeight: FontWeight.bold,
                               color: Colors.black45),
@@ -86,32 +82,12 @@ class _SigninScreenState extends State<SigninScreen> {
                       height: 40,
                       width: MediaQuery.of(context).size.width,
                       child: ElevatedButton(
-                        onPressed: () {
-                          Navigator.pushNamed(context, HomeScreen.routeName,
-                              arguments: HomeScreenArgument(isSelected: false));
-                        },
+                        onPressed: () {},
                         child: const Text(
-                          "Sign In",
+                          "Reset",
                           style: TextStyle(color: Colors.white),
                         ),
                       ),
-                    ),
-                  )),
-                  Expanded(
-                      child: Padding(
-                    padding: const EdgeInsets.only(top: 30),
-                    child: Center(
-                      child: InkWell(
-                          onTap: () {
-                            Navigator.pushNamed(
-                                context, ResetPassword.routeName);
-                          },
-                          child: const Text(
-                            "Forgot Password",
-                            style: TextStyle(
-                                color: Color.fromRGBO(39, 49, 110, 1),
-                                fontWeight: FontWeight.bold),
-                          )),
                     ),
                   )),
                 ],

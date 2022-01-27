@@ -7,19 +7,27 @@ class FrontPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.transparent,
+      //backgroundColor: Colors.black,
       body: Stack(
+        alignment: Alignment.center,
         children: [
-          Image(
-            height: MediaQuery.of(context).size.height,
-            width: MediaQuery.of(context).size.width,
-            image: const AssetImage("assets/images/safeway.jpg"),
-            fit: BoxFit.cover,
-          ),
-          const Align(
-            alignment: Alignment.center,
+          Container(
+            //color: Colors.black,
             child: Image(
-              image: AssetImage("assetName"),
+              color: Colors.black.withOpacity(0.2),
+              colorBlendMode: BlendMode.darken,
+              height: MediaQuery.of(context).size.height,
+              width: MediaQuery.of(context).size.width,
+              image: const AssetImage("assets/images/safeway.jpg"),
+              fit: BoxFit.cover,
+            ),
+          ),
+          Positioned(
+            top: MediaQuery.of(context).size.height / 4.5,
+            //alignment: Alignment.center,
+            child: Image(
+              height: 250,
+              image: AssetImage("assets/icons/logo.png"),
             ),
           ),
           Align(
@@ -30,6 +38,7 @@ class FrontPage extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: SizedBox(
+                      height: 50,
                       width: MediaQuery.of(context).size.width,
                       child: ElevatedButton(
                           onPressed: () {
@@ -42,9 +51,13 @@ class FrontPage extends StatelessWidget {
                           )),
                     ),
                   ),
+                  SizedBox(
+                    height: 10,
+                  ),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: SizedBox(
+                      height: 50,
                       width: MediaQuery.of(context).size.width,
                       child: ElevatedButton(
                           onPressed: () {
