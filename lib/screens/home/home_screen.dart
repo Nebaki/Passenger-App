@@ -2,23 +2,29 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:passengerapp/drawer/drawer.dart';
+import 'package:passengerapp/rout.dart';
 import 'dart:async';
 
 import 'package:passengerapp/widgets/widgets.dart';
 
 class HomeScreen extends StatefulWidget {
   static const routeName = '/home';
+
+  HomeScreenArgument args;
+
+  HomeScreen({Key? key, required this.args}) : super(key: key);
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  late Widget _currentWidget;
   double currentLat = 3;
   late double currentLng = 4;
   Completer<GoogleMapController> _controller = Completer();
 
-  static final CameraPosition _kGooglePlex = CameraPosition(
-    target: LatLng(37.42796133580664, -122.085749655962),
+  static final CameraPosition _addissAbaba = CameraPosition(
+    target: LatLng(8.9806, 38.7578),
     zoom: 14.4746,
   );
 
@@ -65,13 +71,46 @@ class _HomeScreenState extends State<HomeScreen> {
   GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
+  // ignore: must_call_super
+  void initState() {
+    widget.args.isSelected
+        ? _currentWidget = Service(callback)
+        : _currentWidget =
+            WhereTo(currentLocation: "Meskel Flower,Addis Ababa");
+  }
+
+  void callback(Widget nextwidget) {
+    setState(() {
+      _currentWidget = nextwidget;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
+    // switch (currentwidget) {
+    //   case "servicetype":
+    //     _currentWidget = Service();
+    //     break;
+    //   case "nearbytaxy":
+    //     _currentWidget = NearbyTaxy(callback);
+    //     break;
+    //   case "driver":
+    //     _currentWidget = Driver();
+    //     break;
+    //   case "driverontheway":
+    //     _currentWidget = DriverOnTheWay();
+    //     break;
+    //   default:
+    //     _currentWidget = NearbyTaxy(callback);
+    // }
+
     _determinePosition().then((value) {
       setState(() {
         // _currentPosition = CameraPosition(
         //     target: LatLng(value.latitude, value.longitude), zoom: 14.4746);
       });
     });
+
     return Scaffold(
       key: _scaffoldKey,
       drawer: NavDrawer(),
@@ -80,7 +119,7 @@ class _HomeScreenState extends State<HomeScreen> {
           GoogleMap(
             mapType: MapType.normal,
             myLocationButtonEnabled: true,
-            initialCameraPosition: _kGooglePlex,
+            initialCameraPosition: _addissAbaba,
             onMapCreated: (GoogleMapController controller) {
               _controller.complete(controller);
             },
@@ -107,7 +146,9 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           //WhereTo(currentLocation: "Meskel Flower"),
           //Service(),
-          Driver()
+
+          _currentWidget,
+          // Driver()
         ],
       ),
     );

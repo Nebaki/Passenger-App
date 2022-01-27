@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:passengerapp/widgets/car_detail.dart';
 import 'package:passengerapp/widgets/driver_profile.dart';
+import 'package:passengerapp/widgets/widgets.dart';
 
 class Driver extends StatelessWidget {
+  Function? callback;
+  Driver(this.callback);
   @override
   Widget build(BuildContext context) {
     return Positioned(
@@ -55,7 +58,9 @@ class Driver extends StatelessWidget {
                             MaterialStateProperty.all<RoundedRectangleBorder>(
                                 RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(20)))),
-                    onPressed: () {},
+                    onPressed: () {
+                      this.callback!(DriverOnTheWay(this.callback));
+                    },
                     child: const Text("Confirm"))),
           ),
           const SizedBox(

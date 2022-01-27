@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:passengerapp/rout.dart';
 import 'package:passengerapp/screens/screens.dart';
 
 class NavDrawer extends StatelessWidget {
@@ -128,12 +129,12 @@ class NavDrawer extends StatelessWidget {
           leading: Icon(icon, color: color.shade700),
           title: Text(text, style: Theme.of(context).textTheme.bodyText2),
           hoverColor: hoverColor,
-          onLongPress: () {
-            print("!@#\$%^&*()(*&^%\$#@!@#\$%^&*()(*&^%\$#@!@#\$%^&*()");
-          },
+          onLongPress: () {},
           onTap: () {
-            print("!@#\$%^&*()(*&^%\$#@!@#\$%^&*()(*&^%\$#@!@#\$%^&*()");
-            Navigator.pushNamed(context, routename);
+            routename == HomeScreen.routeName
+                ? Navigator.pushNamed(context, routename,
+                    arguments: HomeScreenArgument(isSelected: false))
+                : Navigator.pushNamed(context, routename);
           },
         ),
         divider

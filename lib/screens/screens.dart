@@ -10,3 +10,5 @@ export 'profile/edit_profile.dart';
 export 'history/history.dart';
 export 'settings/settings.dart';
 export 'savedadress/saved_address.dart';
+export 'cancel_reason.dart';
+export 'resetpasswordscreen/reset_password.dart';

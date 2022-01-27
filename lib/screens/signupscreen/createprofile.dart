@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
+import 'package:passengerapp/rout.dart';
 import 'package:passengerapp/screens/screens.dart';
 import 'package:passengerapp/widgets/widgets.dart';
 
@@ -213,16 +214,19 @@ class CreateProfileScreen extends StatelessWidget {
                                             actions: [
                                               TextButton(
                                                   onPressed: () {
-                                                    Navigator
-                                                        .pushReplacementNamed(
-                                                            context,
-                                                            HomeScreen
-                                                                .routeName);
+                                                    Navigator.pushReplacementNamed(
+                                                        context,
+                                                        HomeScreen.routeName,
+                                                        arguments:
+                                                            HomeScreenArgument(
+                                                                isSelected:
+                                                                    false));
                                                   },
                                                   child: const Text("Okay")),
                                             ],
                                           )),
-                                  child: const Text("Register")),
+                                  child: const Text("Register",
+                                      style: TextStyle(color: Colors.white))),
                             ),
                           ),
                         ),
