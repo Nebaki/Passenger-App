@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:passengerapp/account/user_manager.dart';
 import 'package:passengerapp/models/models.dart';
 import 'package:passengerapp/utils/session.dart';
@@ -7,16 +9,14 @@ class Tester {
   var session = Session();
 
   void createUser() {
-    var id = SecItem("id", "1000");
-    var name = SecItem("name", "winux-jun");
-    var phone = SecItem("phone", "0922877115");
-    var email = SecItem("email", "winux@jun");
-    List<SecItem> user = [];
-    user.add(id);
-    user.add(name);
-    user.add(phone);
-    user.add(email);
+    Map<String, dynamic> tempUser =
+    {'id':'1000','name':'tn','phone':'0922877115',
+      'email':'pass@123','userPicture':'tester.in','referral':'123456'};
+    var user = SecItem("user", jsonEncode(tempUser));
+
     var createUser = userMan.createUser(user);
+
+
     createUser.then((value) => {
     session.logSuccess("create-user", "success: " + value.message)
     }).onError((error, stackTrace) => {
@@ -24,7 +24,7 @@ class Tester {
     });
   }
 
-  void saveAndLoadToken() {
+  void saveToken() {
     var token = SecItem("token", "token-io");
     var saveToken = userMan.saveToken(token);
     saveToken.then((value) => {
@@ -33,12 +33,19 @@ class Tester {
     session.logError("save-token", "failed: " + error.toString())
     });
 
-    var loadToken = userMan.getToken(token);
+  }
+  String getSavedToken(){
+    var tokens = SecItem("token", "token-io");
+    String token = "error";
+    var loadToken = userMan.getToken(tokens);
     loadToken.then((value) => {
-    session.logSuccess("load-token", "success: " + value.message)
+      session.logSuccess("load-token", "success: " + value.message),
+      token = value.message
     }).onError((error, stackTrace) => {
-    session.logError("load-token", "failed: " + error.toString())
+      session.logError("load-token", "failed: " + error.toString()),
+      token = "error"
     });
+    return token;
   }
   Future<bool> isTokenExist() async {
     var exist = false;
@@ -48,14 +55,6 @@ class Tester {
     }).onError((error, stackTrace) => {
       exist = false,
     });
-
-    /*
-    loadToken.then((value) => {
-      exist = true,
-      session.logSuccess("load-token", "success: " + value.message)
-    }).onError((error, stackTrace) => {
-      session.logError("load-token", "failed: " + error.toString())
-    });*/
     return exist;
   }
 
@@ -65,7 +64,9 @@ class Tester {
     session.logSuccess("load-user",
     "success: id " + value.id+" name "+
         value.name+" phone "+
-        value.phone+" email "+value.email
+        value.phone+" email "+value.email+
+        " userPicture "+value.userPicture+
+        " referral "+value.referral
     )
     }).onError((error, stackTrace) => {
     session.logError("load-user", "failed: " + error.toString())
@@ -73,17 +74,32 @@ class Tester {
 
   }
 
-  void updateUser() {
-    var name = SecItem("name", "winux-pro");
-    var phone = SecItem("phone", "winux@pro");
-    List<SecItem> user = [];
-    user.add(name);
-    user.add(phone);
-    var updateUser = userMan.updateUser(user);
-    updateUser.then((value) => {
-    session.logSuccess("up-user", "success: " + value.message)
+  void flushUser(SecItem user){
+    userMan.updateUser(user)
+    .then((value) => {
+      loadUser(),
+      session.logSuccess("up-user", "success: " + value.message)
     }).onError((error, stackTrace) => {
-    session.logError("up-user", "failed: " + error.toString())
+      session.logError("up-user", "failed: " + error.toString())
+    });
+  }
+  void updateUser() {
+    var isData = false;
+    var name = "new name";
+    var email = "new email";
+    var picture = "picture";
+    Map<String, dynamic> tempUser =
+    {};
+    userMan.loadUser()
+    .then((value) => {
+      tempUser = {
+        'id':value.id,'name':name,'phone':value.phone,
+        'email':email,'userPicture':picture,'referral':'123456'
+      },
+        flushUser(SecItem("user", jsonEncode(tempUser)))
+    })
+    .onError((error, stackTrace) => {
+
     });
   }
 

@@ -10,9 +10,12 @@ class Result {
   final String message;
 }
 class User{
-  User(this.id,this.name,this.phone,this.email);
+  User(this.id,this.name,this.phone,this.email,this.userPicture,this.referral);
   final String id;
   final String name;
   final String phone;
   final String email;
+  final String userPicture;
+  final String referral;
+
 }

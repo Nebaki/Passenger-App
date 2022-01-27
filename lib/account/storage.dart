@@ -91,6 +91,6 @@ class DataStorage {
   }
 
   String _getAccountName() {
-    return "ios";
+    return "ios-sc-store";
   }
 }

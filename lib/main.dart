@@ -12,10 +12,11 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var test = Tester();
-    //test.createUser();
-    //test.saveAndLoadToken();
-    //test.loadUser();
-    //test.updateUser();
+    test.createUser();
+    test.saveToken();
+    test.getSavedToken();
+    test.loadUser();
+    test.updateUser();
     return MaterialApp(
       title: 'SafeWay',
       theme: ThemeData(
