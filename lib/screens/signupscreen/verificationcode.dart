@@ -160,7 +160,7 @@ class PhoneVerification extends StatelessWidget {
                         },
                         child: const Text(
                           'Verify',
-                          style: TextStyle(fontSize: 17.0),
+                          style: TextStyle(fontSize: 17.0, color: Colors.white),
                         ),
                       )),
                 ),

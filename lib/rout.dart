@@ -44,6 +44,9 @@ class AppRoute {
     if (settings.name == ResetPassword.routeName) {
       return MaterialPageRoute(builder: (context) => ResetPassword());
     }
+    if (settings.name == CancelReason.routeName) {
+      return MaterialPageRoute(builder: (context) => CancelReason());
+    }
     return MaterialPageRoute(builder: (context) => const FrontPage());
   }
 }

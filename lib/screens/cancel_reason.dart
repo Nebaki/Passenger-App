@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 
 class CancelReason extends StatelessWidget {
+  static const routeName = "cacelreason";
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        elevation: 0.3,
+        backgroundColor: Colors.white,
         leading: IconButton(
             onPressed: () {
               Navigator.pop(context);
@@ -17,7 +20,7 @@ class CancelReason extends StatelessWidget {
         centerTitle: true,
       ),
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
+        padding: const EdgeInsets.only(top: 20, bottom: 20),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -31,23 +34,27 @@ class CancelReason extends StatelessWidget {
                 _builReasonItem(context: context, text: "Don't charge rider"),
               ],
             ),
-            SizedBox(
-                height: 60,
-                width: MediaQuery.of(context).size.width,
-                child: ElevatedButton(
-                    style: ButtonStyle(
-                      backgroundColor:
-                          MaterialStateProperty.all<Color>(Colors.green),
-                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                          RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20),
-                      )),
-                    ),
-                    onPressed: () {},
-                    child: const Text(
-                      "Confirm",
-                      style: TextStyle(color: Colors.white),
-                    )))
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 30),
+              child: SizedBox(
+                  height: 60,
+                  width: MediaQuery.of(context).size.width,
+                  child: ElevatedButton(
+                      style: ButtonStyle(
+                        backgroundColor:
+                            MaterialStateProperty.all<Color>(Colors.green),
+                        shape:
+                            MaterialStateProperty.all<RoundedRectangleBorder>(
+                                RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        )),
+                      ),
+                      onPressed: () {},
+                      child: const Text(
+                        "Confirm",
+                        style: TextStyle(color: Colors.white),
+                      ))),
+            )
           ],
         ),
       ),

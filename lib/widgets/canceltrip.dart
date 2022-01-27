@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:passengerapp/screens/screens.dart';
 import 'package:passengerapp/widgets/widgets.dart';
 
 class CancelTrip extends StatelessWidget {
@@ -35,7 +36,7 @@ class CancelTrip extends StatelessWidget {
                     )),
                   ),
                   onPressed: () {
-                    callback!(WhereTo(currentLocation: "currentLocation"));
+                    Navigator.pushNamed(context, CancelReason.routeName);
                   },
                   child: const Text(
                     "Yes, Cancel",

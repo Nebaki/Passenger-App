@@ -7,6 +7,8 @@ class ResetPassword extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        elevation: 0.3,
+        backgroundColor: Colors.white,
         iconTheme: const IconThemeData(color: Colors.black),
         title: const Text("Reset Password"),
         centerTitle: true,
@@ -17,16 +19,10 @@ class ResetPassword extends StatelessWidget {
           child: Container(
             height: 600,
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(20, 60, 20, 20),
+              padding: const EdgeInsets.fromLTRB(20, 40, 20, 20),
               child: ListView(
                 children: [
-                  const Expanded(
-                      child: Text(
-                    "Sign In",
-                    style: TextStyle(fontSize: 25),
-                  )),
-                  Expanded(
-                      child: Padding(
+                  Padding(
                     padding: const EdgeInsets.all(10),
                     child: TextFormField(
                       decoration: const InputDecoration(
@@ -35,7 +31,7 @@ class ResetPassword extends StatelessWidget {
                               fontWeight: FontWeight.bold,
                               color: Colors.black45),
                           prefixIcon: Icon(
-                            Icons.phone,
+                            Icons.vpn_key,
                             size: 19,
                           ),
                           fillColor: Colors.white,
@@ -49,9 +45,8 @@ class ResetPassword extends StatelessWidget {
                         return null;
                       },
                     ),
-                  )),
-                  Expanded(
-                      child: Padding(
+                  ),
+                  Padding(
                     padding: const EdgeInsets.all(10),
                     child: TextFormField(
                       decoration: const InputDecoration(
@@ -74,9 +69,8 @@ class ResetPassword extends StatelessWidget {
                         return null;
                       },
                     ),
-                  )),
-                  Expanded(
-                      child: Padding(
+                  ),
+                  Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: SizedBox(
                       height: 40,
@@ -89,7 +83,7 @@ class ResetPassword extends StatelessWidget {
                         ),
                       ),
                     ),
-                  )),
+                  ),
                 ],
               ),
             ),

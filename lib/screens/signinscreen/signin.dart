@@ -24,13 +24,11 @@ class _SigninScreenState extends State<SigninScreen> {
               padding: const EdgeInsets.fromLTRB(20, 60, 20, 20),
               child: ListView(
                 children: [
-                  const Expanded(
-                      child: Text(
+                  const Text(
                     "Sign In",
                     style: TextStyle(fontSize: 25),
-                  )),
-                  Expanded(
-                      child: Padding(
+                  ),
+                  Padding(
                     padding: const EdgeInsets.all(10),
                     child: TextFormField(
                       decoration: const InputDecoration(
@@ -53,9 +51,8 @@ class _SigninScreenState extends State<SigninScreen> {
                         return null;
                       },
                     ),
-                  )),
-                  Expanded(
-                      child: Padding(
+                  ),
+                  Padding(
                     padding: const EdgeInsets.all(10),
                     child: TextFormField(
                       decoration: const InputDecoration(
@@ -78,9 +75,8 @@ class _SigninScreenState extends State<SigninScreen> {
                         return null;
                       },
                     ),
-                  )),
-                  Expanded(
-                      child: Padding(
+                  ),
+                  Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: SizedBox(
                       height: 40,
@@ -96,9 +92,8 @@ class _SigninScreenState extends State<SigninScreen> {
                         ),
                       ),
                     ),
-                  )),
-                  Expanded(
-                      child: Padding(
+                  ),
+                  Padding(
                     padding: const EdgeInsets.only(top: 30),
                     child: Center(
                       child: InkWell(
@@ -113,7 +108,7 @@ class _SigninScreenState extends State<SigninScreen> {
                                 fontWeight: FontWeight.bold),
                           )),
                     ),
-                  )),
+                  ),
                 ],
               ),
             ),

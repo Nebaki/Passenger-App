@@ -104,7 +104,8 @@ class _SignupScreenState extends State<SignupScreen> {
                                             child: const Text("Cancel")),
                                       ],
                                     )),
-                            child: const Text("Continue")),
+                            child: const Text("Continue",
+                                style: TextStyle(color: Colors.white))),
                       ),
                     ),
                   )
