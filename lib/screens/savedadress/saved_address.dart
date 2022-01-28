@@ -5,6 +5,7 @@ class SavedAddress extends StatelessWidget {
   static const routeName = "/savedadresses";
   @override
   Widget build(BuildContext context) {
+    final items = List<String>.generate(10, (i) => 'Item ${i + 1}');
     return Scaffold(
       body: Container(
         padding: EdgeInsets.only(top: 60),
@@ -15,17 +16,38 @@ class SavedAddress extends StatelessWidget {
               child: WhereTo(currentLocation: "currentLocation"),
             ),
             Container(
-              padding: EdgeInsets.symmetric(horizontal: 20),
-              height: MediaQuery.of(context).size.height - 280,
-              child: ListView(
-                children: List.generate(
-                    5,
-                    (index) => _historyItem(
-                        context: context,
-                        text: "Arat Killo",
-                        routename: "routename")),
-              ),
-            )
+                padding: EdgeInsets.symmetric(horizontal: 20),
+                height: MediaQuery.of(context).size.height - 280,
+                child: ListView.builder(
+                    itemCount: items.length,
+                    itemBuilder: (context, index) {
+                      final item = items[index];
+                      return Dismissible(
+                        direction: DismissDirection.endToStart,
+                        background: Container(
+                          padding: EdgeInsets.symmetric(horizontal: 20),
+                          decoration: BoxDecoration(
+                            color: Color(0xFFFFE6E6),
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                          child: Row(
+                            children: [
+                              Spacer(),
+                              Icon(
+                                Icons.delete_outlined,
+                                color: Colors.redAccent,
+                              )
+                              //SvgPicture.asset("assets/icons/Trash.svg"),
+                            ],
+                          ),
+                        ),
+                        key: Key("item."),
+                        child: _historyItem(
+                            context: context,
+                            text: "Arat Killo",
+                            routename: "routename"),
+                      );
+                    }))
           ],
         ),
       ),

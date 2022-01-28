@@ -11,7 +11,10 @@ class AppRoute {
       return MaterialPageRoute(builder: (context) => SignupScreen());
     }
     if (settings.name == PhoneVerification.routeName) {
-      return MaterialPageRoute(builder: (context) => PhoneVerification());
+      VerificationArgument arguments =
+          settings.arguments as VerificationArgument;
+      return MaterialPageRoute(
+          builder: (context) => PhoneVerification(args: arguments));
     }
     if (settings.name == HomeScreen.routeName) {
       HomeScreenArgument argument = settings.arguments as HomeScreenArgument;
@@ -56,4 +59,9 @@ class HomeScreenArgument {
   bool isSelected = false;
 
   HomeScreenArgument({required this.isSelected});
+}
+
+class VerificationArgument {
+  String verificationId;
+  VerificationArgument({required this.verificationId});
 }

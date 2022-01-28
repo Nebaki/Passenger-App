@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:passengerapp/widgets/widgets.dart';
+import 'package:carousel_slider/carousel_slider.dart';
 
 class NearbyTaxy extends StatefulWidget {
   Function? callback;
@@ -20,20 +21,26 @@ class _NearbyTaxyState extends State<NearbyTaxy> {
       child: Column(
         children: [
           Container(
-              height: 200,
-              padding: EdgeInsets.only(top: 40, left: 10, right: 20, bottom: 0),
+              height: 310,
+              padding: EdgeInsets.only(left: 10, right: 20, bottom: 0),
               decoration: BoxDecoration(
                   color: Colors.black.withOpacity(0.75),
                   borderRadius: BorderRadius.circular(20)),
-              child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Container(
-                  child: Row(
-                    children: List.generate(20, (index) {
-                      return nearbyTaxies();
-                    }),
-                  ),
-                ),
+              child: Column(
+                children: [
+                  CarouselSlider(
+                      items: List.generate(10, (index) => nearbyTaxies()),
+                      options: CarouselOptions(
+                        viewportFraction: 0.6,
+                        aspectRatio: 2.0,
+                        autoPlay: true,
+                        enlargeCenterPage: true,
+                      )),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(20, 0, 20, 10),
+                    child: CarDetail(),
+                  )
+                ],
               )),
           SizedBox(
             height: 15,
@@ -63,9 +70,28 @@ class _NearbyTaxyState extends State<NearbyTaxy> {
   }
 
   Widget nearbyTaxies() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [Text("Car Logo"), CarDetail()],
-    );
+    return Center(
+        child: Container(
+      height: 150,
+      width: 200,
+      color: Colors.orange,
+      child: Center(
+        child: Text(
+          "Car Logo",
+        ),
+      ),
+    ));
   }
 }
+
+
+// SingleChildScrollView(
+//                 scrollDirection: Axis.horizontal,
+//                 child: Container(
+//                   child: Row(
+//                     children: List.generate(20, (index) {
+//                       return nearbyTaxies();
+//                     }),
+//                   ),
+//                 ),
+//               )

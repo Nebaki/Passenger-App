@@ -10,96 +10,98 @@ class EditProfile extends StatelessWidget {
     return Scaffold(
         body: Padding(
       padding: const EdgeInsets.only(top: 180),
-      child: Column(
-        children: [
-          const CircleAvatar(
-            radius: 40,
-            backgroundImage: AssetImage("assetName"),
-          ),
-          Padding(
-            padding: const EdgeInsets.only(top: 20),
-            child: Container(
-              height: 350,
-              child: ListView(scrollDirection: Axis.vertical, children: [
-                _buildProfileItems(context: context, text: "Name"),
-                _buildProfileItems(context: context, text: "Location"),
-
-                _buildProfileItems(context: context, text: "Email"),
-
-                _buildProfileItems(context: context, text: "Phone"),
-                _buildProfileItems(context: context, text: "Password"),
-
-                // Container(
-                //   height: 350,
-                //   child: Row(
-                //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                //     children: [
-                //       Column(
-                //         crossAxisAlignment: CrossAxisAlignment.start,
-                //         children: [
-                //           Text(
-                //             "Name",
-                //             style: _textStyle,
-                //           ),
-                //           Text("Location", style: _textStyle),
-                //           Text("E-mail", style: _textStyle),
-                //           Text("Phone", style: _textStyle),
-                //           Text("Password", style: _textStyle),
-                //         ],
-                //       ),
-                //       Container(
-                //         width: 160,
-                //         child: Column(
-                //           children: [
-                //             TextFormField(),
-                //             TextFormField(),
-                //             TextFormField(),
-                //             TextFormField(),
-                //             TextFormField(),
-                //           ],
-                //         ),
-                //       ),
-                //       // Container(
-                //       //   child: Column(
-                //       //     children: [
-                //       //       //TextFormField(),
-                //       //       // TextFormField(),
-                //       //       // TextFormField(),
-                //       //       // TextFormField(),
-                //       //       // TextFormField(),
-                //       //     ],
-                //       //   ),
-                //       // )
-                //     ],
-                //   ),
-                // ),
-              ]),
+      child: Container(
+        height: MediaQuery.of(context).size.height,
+        child: Stack(
+          children: [
+            SingleChildScrollView(
+              child: Column(
+                children: [
+                  const CircleAvatar(
+                    radius: 60,
+                    backgroundColor: Colors.black54,
+                    //backgroundImage: AssetImage("assetName"),
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  _buildProfileItems(
+                      context: context,
+                      text: "Name",
+                      textfieldtext: "Eyob Tilahun"),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  _buildProfileItems(
+                      context: context,
+                      text: "Location",
+                      textfieldtext: "Addis Ababa, Ethiopi"),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  _buildProfileItems(
+                      context: context,
+                      text: "Email",
+                      textfieldtext: "Email@gmail.com"),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  _buildProfileItems(
+                      context: context,
+                      text: "Phone",
+                      textfieldtext: "+251934540217"),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  _buildProfileItems(
+                      context: context,
+                      text: "Password",
+                      textfieldtext: "Password"),
+                ],
+              ),
             ),
-          ),
-          SizedBox(
-              height: 40,
-              width: MediaQuery.of(context).size.width * 0.6,
-              child: ElevatedButton(
-                  onPressed: () {},
-                  child: const Text("Save Changes",
-                      style: TextStyle(color: Colors.white)))),
-          SizedBox(
-            width: MediaQuery.of(context).size.width * 0.6,
-            child: TextButton(
-                style: ButtonStyle(
-                    side: MaterialStateProperty.all<BorderSide>(
-                        BorderSide(color: Colors.red.shade900))),
-                onPressed: () {},
-                child: Text("Delete Account",
-                    style: TextStyle(color: Colors.red.shade900))),
-          )
-        ],
+            Positioned(
+              bottom: 0,
+              left: MediaQuery.of(context).size.width * 0.25,
+              child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    SizedBox(
+                        height: 40,
+                        width: MediaQuery.of(context).size.width * 0.6,
+                        child: ElevatedButton(
+                            onPressed: () {},
+                            child: const Text("Save Changes",
+                                style: TextStyle(color: Colors.white)))),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width * 0.6,
+                      child: TextButton(
+                          style: ButtonStyle(
+                              shape: MaterialStateProperty.all<
+                                      RoundedRectangleBorder>(
+                                  RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(30))),
+                              side: MaterialStateProperty.all<BorderSide>(
+                                  BorderSide(color: Colors.red.shade900))),
+                          onPressed: () {},
+                          child: Text("Delete Account",
+                              style: TextStyle(color: Colors.red.shade900))),
+                    )
+                  ]),
+            )
+          ],
+        ),
       ),
     ));
   }
 
   Widget _buildProfileItems(
-      {required BuildContext context, required String text}) {
+      {required BuildContext context,
+      required String text,
+      required String textfieldtext}) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Row(
@@ -111,7 +113,28 @@ class EditProfile extends StatelessWidget {
           ),
           Container(
               width: MediaQuery.of(context).size.width * 0.7,
-              child: TextFormField())
+              child: TextFormField(
+                decoration: const InputDecoration(
+                  hintText: "Full Name",
+                  hintStyle: TextStyle(
+                      fontWeight: FontWeight.w300, color: Colors.black45),
+                  // prefixIcon: Icon(
+                  //   Icons.vpn_key,
+                  //   size: 19,
+                  // ),
+                  fillColor: Colors.white,
+
+                  //filled: true,
+                  // border:
+                  //     OutlineInputBorder(borderSide: BorderSide.none)
+                ),
+                validator: (value) {
+                  if (value!.isEmpty) {
+                    return 'Please enter Your Name';
+                  }
+                  return null;
+                },
+              ))
         ],
       ),
     );

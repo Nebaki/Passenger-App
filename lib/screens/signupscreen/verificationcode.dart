@@ -1,10 +1,19 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:passengerapp/rout.dart';
 import 'package:passengerapp/screens/screens.dart';
 import 'package:passengerapp/widgets/widgets.dart';
 
 class PhoneVerification extends StatelessWidget {
   static const routeName = '/phoneverification';
   final otpController = TextEditingController();
+
+  VerificationArgument args;
+
+  PhoneVerification({Key? key, required this.args}) : super(key: key);
+
+  final _codeController = TextEditingController();
+  FirebaseAuth _auth = FirebaseAuth.instance;
 
   // void moveToNextScreen(context) {
   //   Navigator.push(context, MaterialPageRoute(builder: (context) => Cards()));
@@ -155,8 +164,14 @@ class PhoneVerification extends StatelessWidget {
                       height: 40.0,
                       child: ElevatedButton(
                         onPressed: () {
-                          Navigator.pushNamed(
-                              context, CreateProfileScreen.routeName);
+                          PhoneAuthCredential credential =
+                              PhoneAuthProvider.credential(
+                                  verificationId: this.args.verificationId,
+                                  smsCode: "smsCode");
+                          _auth.signInWithCredential(credential).then((value) {
+                            Navigator.pushNamed(
+                                context, CreateProfileScreen.routeName);
+                          });
                         },
                         child: const Text(
                           'Verify',
