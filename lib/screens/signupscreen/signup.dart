@@ -55,6 +55,7 @@ class _SignupScreenState extends State<SignupScreen> {
           setState(() {
             showLoading = false;
           });
+
           signInWithPhoneAuthCredential(phoneAuthCredential);
         },
         verificationFailed: (verificationFailed) async {
@@ -171,11 +172,11 @@ class _SignupScreenState extends State<SignupScreen> {
                                                   print(phoneController);
 
                                                   sendVerificationCode();
-                                                  Navigator
-                                                      .pushReplacementNamed(
-                                                          context,
-                                                          PhoneVerification
-                                                              .routeName);
+                                                  // Navigator
+                                                  //     .pushReplacementNamed(
+                                                  //         context,
+                                                  //         PhoneVerification
+                                                  //             .routeName);
                                                 },
                                                 child: const Text("Send Code")),
                                             TextButton(
@@ -191,7 +192,28 @@ class _SignupScreenState extends State<SignupScreen> {
                                 style: TextStyle(color: Colors.white))),
                       ),
                     ),
-                  )
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 20),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text("already have an account? ",
+                            style:
+                                TextStyle(fontSize: 16, color: Colors.black54)),
+                        InkWell(
+                            onTap: () {
+                              Navigator.pop(context);
+                            },
+                            child: Text(
+                              "SIGN IN",
+                              style: TextStyle(
+                                  color: Color.fromRGBO(39, 49, 110, 1),
+                                  fontWeight: FontWeight.bold),
+                            ))
+                      ],
+                    ),
+                  ),
                 ],
               ),
             ),

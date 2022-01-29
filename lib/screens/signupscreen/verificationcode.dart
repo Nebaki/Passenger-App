@@ -6,7 +6,12 @@ import 'package:passengerapp/widgets/widgets.dart';
 
 class PhoneVerification extends StatelessWidget {
   static const routeName = '/phoneverification';
-  final otpController = TextEditingController();
+  final otp1Controller = TextEditingController();
+  final otp2Controller = TextEditingController();
+  final otp3Controller = TextEditingController();
+  final otp4Controller = TextEditingController();
+  final otp5Controller = TextEditingController();
+  final otp6Controller = TextEditingController();
 
   VerificationArgument args;
 
@@ -50,7 +55,7 @@ class PhoneVerification extends StatelessWidget {
                     SizedBox(
                         width: 50.0,
                         child: TextFormField(
-                          controller: otpController,
+                          controller: otp1Controller,
                           textAlign: TextAlign.center,
                           style: const TextStyle(fontSize: 26.0),
                           onChanged: (value) {
@@ -66,6 +71,7 @@ class PhoneVerification extends StatelessWidget {
                     SizedBox(
                         width: 50.0,
                         child: TextFormField(
+                          controller: otp2Controller,
                           textAlign: TextAlign.center,
                           style: const TextStyle(fontSize: 26.0),
                           onChanged: (value) {
@@ -81,6 +87,7 @@ class PhoneVerification extends StatelessWidget {
                     SizedBox(
                         width: 50.0,
                         child: TextFormField(
+                          controller: otp3Controller,
                           textAlign: TextAlign.center,
                           style: const TextStyle(fontSize: 26.0),
                           onChanged: (value) {
@@ -96,6 +103,7 @@ class PhoneVerification extends StatelessWidget {
                     SizedBox(
                         width: 50.0,
                         child: TextFormField(
+                          controller: otp4Controller,
                           textAlign: TextAlign.center,
                           style: const TextStyle(fontSize: 26.0),
                           onChanged: (value) {
@@ -111,6 +119,7 @@ class PhoneVerification extends StatelessWidget {
                     SizedBox(
                         width: 50.0,
                         child: TextFormField(
+                          controller: otp5Controller,
                           textAlign: TextAlign.center,
                           style: const TextStyle(fontSize: 26.0),
                           onChanged: (value) {
@@ -126,6 +135,7 @@ class PhoneVerification extends StatelessWidget {
                     SizedBox(
                         width: 50.0,
                         child: TextFormField(
+                          controller: otp6Controller,
                           textAlign: TextAlign.center,
                           style: const TextStyle(fontSize: 26.0),
                           onChanged: (value) {
@@ -164,10 +174,19 @@ class PhoneVerification extends StatelessWidget {
                       height: 40.0,
                       child: ElevatedButton(
                         onPressed: () {
+                          String code = otp1Controller.text +
+                              otp2Controller.text +
+                              otp3Controller.text +
+                              otp4Controller.text +
+                              otp5Controller.text +
+                              otp6Controller.text;
+                          print(code);
+                          print(
+                              "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
                           PhoneAuthCredential credential =
                               PhoneAuthProvider.credential(
                                   verificationId: this.args.verificationId,
-                                  smsCode: "smsCode");
+                                  smsCode: code);
                           _auth.signInWithCredential(credential).then((value) {
                             Navigator.pushNamed(
                                 context, CreateProfileScreen.routeName);

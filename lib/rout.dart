@@ -50,7 +50,7 @@ class AppRoute {
     if (settings.name == CancelReason.routeName) {
       return MaterialPageRoute(builder: (context) => CancelReason());
     }
-    return MaterialPageRoute(builder: (context) => const FrontPage());
+    return MaterialPageRoute(builder: (context) => SigninScreen());
   }
 }
 

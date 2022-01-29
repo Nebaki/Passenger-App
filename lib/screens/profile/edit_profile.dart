@@ -8,93 +8,87 @@ class EditProfile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: Padding(
-      padding: const EdgeInsets.only(top: 180),
-      child: Container(
-        height: MediaQuery.of(context).size.height,
-        child: Stack(
-          children: [
-            SingleChildScrollView(
-              child: Column(
-                children: [
-                  const CircleAvatar(
-                    radius: 60,
-                    backgroundColor: Colors.black54,
-                    //backgroundImage: AssetImage("assetName"),
-                  ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  _buildProfileItems(
-                      context: context,
-                      text: "Name",
-                      textfieldtext: "Eyob Tilahun"),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  _buildProfileItems(
-                      context: context,
-                      text: "Location",
-                      textfieldtext: "Addis Ababa, Ethiopi"),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  _buildProfileItems(
-                      context: context,
-                      text: "Email",
-                      textfieldtext: "Email@gmail.com"),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  _buildProfileItems(
-                      context: context,
-                      text: "Phone",
-                      textfieldtext: "+251934540217"),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  _buildProfileItems(
-                      context: context,
-                      text: "Password",
-                      textfieldtext: "Password"),
-                ],
-              ),
-            ),
-            Positioned(
-              bottom: 0,
-              left: MediaQuery.of(context).size.width * 0.25,
-              child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    SizedBox(
-                        height: 40,
-                        width: MediaQuery.of(context).size.width * 0.6,
-                        child: ElevatedButton(
-                            onPressed: () {},
-                            child: const Text("Save Changes",
-                                style: TextStyle(color: Colors.white)))),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    SizedBox(
-                      width: MediaQuery.of(context).size.width * 0.6,
-                      child: TextButton(
-                          style: ButtonStyle(
-                              shape: MaterialStateProperty.all<
-                                      RoundedRectangleBorder>(
+        body: Stack(
+      children: [
+        CustomeBackArrow(),
+        Container(
+          height: MediaQuery.of(context).size.height,
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.only(top: 180),
+            child: Column(
+              children: [
+                const CircleAvatar(
+                  radius: 60,
+                  backgroundColor: Colors.black54,
+                  //backgroundImage: AssetImage("assetName"),
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                _buildProfileItems(
+                    context: context,
+                    text: "Name",
+                    textfieldtext: "Eyob Tilahun"),
+                SizedBox(
+                  height: 10,
+                ),
+                _buildProfileItems(
+                    context: context,
+                    text: "Location",
+                    textfieldtext: "Addis Ababa, Ethiopi"),
+                SizedBox(
+                  height: 10,
+                ),
+                _buildProfileItems(
+                    context: context,
+                    text: "Email",
+                    textfieldtext: "Email@gmail.com"),
+                SizedBox(
+                  height: 10,
+                ),
+                _buildProfileItems(
+                    context: context,
+                    text: "Phone",
+                    textfieldtext: "+251934540217"),
+                SizedBox(
+                  height: 10,
+                ),
+                _buildProfileItems(
+                    context: context,
+                    text: "Password",
+                    textfieldtext: "Password"),
+                SizedBox(
+                  height: 40,
+                ),
+                SizedBox(
+                    height: 40,
+                    width: MediaQuery.of(context).size.width * 0.6,
+                    child: ElevatedButton(
+                        onPressed: () {},
+                        child: const Text("Save Changes",
+                            style: TextStyle(color: Colors.white)))),
+                SizedBox(
+                  height: 10,
+                ),
+                SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.6,
+                  child: TextButton(
+                      style: ButtonStyle(
+                          shape:
+                              MaterialStateProperty.all<RoundedRectangleBorder>(
                                   RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(30))),
-                              side: MaterialStateProperty.all<BorderSide>(
-                                  BorderSide(color: Colors.red.shade900))),
-                          onPressed: () {},
-                          child: Text("Delete Account",
-                              style: TextStyle(color: Colors.red.shade900))),
-                    )
-                  ]),
-            )
-          ],
+                          side: MaterialStateProperty.all<BorderSide>(
+                              BorderSide(color: Colors.red.shade900))),
+                      onPressed: () {},
+                      child: Text("Delete Account",
+                          style: TextStyle(color: Colors.red.shade900))),
+                )
+              ],
+            ),
+          ),
         ),
-      ),
+      ],
     ));
   }
 

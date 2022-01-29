@@ -25,41 +25,46 @@ class CreateProfileScreen extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // Expanded(
-                        //     child: ClipOval(
-                        //   child: Material(
-                        //     //color: Colors.transparent,
-                        //     child: Stack(children: [
-                        //       // Ink.image(
-                        //       //   image: const AssetImage("assetName"),
-                        //       //   child: InkWell(
-                        //       //     onTap: () {},
-                        //       //   ),
-                        //       // ),
-                        //       ClipOval(
-                        //         child: Container(
-                        //           color: Colors.blue,
-                        //           padding: const EdgeInsets.all(3),
-                        //           child: Positioned(
-                        //             bottom: 0,
-                        //             right: 4,
-                        //             child: IconButton(
-                        //               onPressed: () {},
-                        //               icon: const Icon(Icons.edit),
-                        //               color: Colors.white,
-                        //             ),
-                        //           ),
-                        //         ),
-                        //       )
-                        //     ]),
-                        //   ),
-                        // )),
                         const Padding(
                           padding: EdgeInsets.only(bottom: 10),
                           child: Text(
                             "Create Profle",
                             style: TextStyle(
                                 fontWeight: FontWeight.bold, fontSize: 24.0),
+                          ),
+                        ),
+                        Center(
+                          child: ClipOval(
+                            child: Material(
+                              color: Colors.black,
+                              child: Stack(children: [
+                                ClipOval(
+                                  child: Container(
+                                    color: Colors.blue,
+                                    padding: const EdgeInsets.all(30),
+                                    child: Positioned(
+                                      bottom: 0,
+                                      right: 0,
+                                      child: IconButton(
+                                        onPressed: () {},
+                                        icon: const Icon(Icons.edit),
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                CircleAvatar(
+                                  radius: 40,
+                                  backgroundColor: Colors.transparent,
+                                ),
+                                // Ink.image(
+                                //   image: const AssetImage("assetName"),
+                                //   child: InkWell(
+                                //     onTap: () {},
+                                //   ),
+                                // ),
+                              ]),
+                            ),
                           ),
                         ),
 

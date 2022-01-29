@@ -15,7 +15,7 @@ class _SigninScreenState extends State<SigninScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Stack(children: [
-        CustomeBackArrow(),
+        // CustomeBackArrow(),
         Form(
           key: _formkey,
           child: Container(
@@ -94,7 +94,7 @@ class _SigninScreenState extends State<SigninScreen> {
                     ),
                   ),
                   Padding(
-                    padding: const EdgeInsets.only(top: 30),
+                    padding: const EdgeInsets.only(top: 20),
                     child: Center(
                       child: InkWell(
                           onTap: () {
@@ -109,6 +109,28 @@ class _SigninScreenState extends State<SigninScreen> {
                           )),
                     ),
                   ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 20),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text("don't have an account? ",
+                            style:
+                                TextStyle(fontSize: 16, color: Colors.black54)),
+                        InkWell(
+                            onTap: () {
+                              Navigator.pushNamed(
+                                  context, SignupScreen.routeName);
+                            },
+                            child: Text(
+                              "SIGN UP",
+                              style: TextStyle(
+                                  color: Color.fromRGBO(39, 49, 110, 1),
+                                  fontWeight: FontWeight.bold),
+                            ))
+                      ],
+                    ),
+                  )
                 ],
               ),
             ),
