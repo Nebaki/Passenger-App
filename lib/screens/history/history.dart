@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:passengerapp/screens/screens.dart';
 import 'package:passengerapp/widgets/widgets.dart';
 
 class HistoryPage extends StatelessWidget {
@@ -47,7 +48,7 @@ class HistoryPage extends StatelessWidget {
           hoverColor: hoverColor,
           onLongPress: () {},
           onTap: () {
-            //Navigator.pushNamed(context, routename);
+            Navigator.pushNamed(context, DetailHistoryScreen.routeName);
           },
         ),
         Padding(

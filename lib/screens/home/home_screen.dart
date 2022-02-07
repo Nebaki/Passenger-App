@@ -4,6 +4,9 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:passengerapp/drawer/drawer.dart';
 import 'package:passengerapp/rout.dart';
 import 'dart:async';
+import 'package:location/location.dart';
+import 'package:geolocator_platform_interface/src/enums/location_accuracy.dart'
+    as La;
 
 import 'package:passengerapp/widgets/widgets.dart';
 
@@ -18,6 +21,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  Location location = new Location();
   late Widget _currentWidget;
   double currentLat = 3;
   late double currentLng = 4;
@@ -35,6 +39,10 @@ class _HomeScreenState extends State<HomeScreen> {
     // Test if location services are enabled.
     serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
+      serviceEnabled = await location.requestService();
+      if (!serviceEnabled) {
+        return Future.error("NoLocation Enabled");
+      }
       // Location services are not enabled don't continue
       // accessing the position and request users of the
       // App to enable the location services.
@@ -62,10 +70,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
     // When we reach here, permissions are granted and we can
     // continue accessing the position of the device.
-    Position currentPosition = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high);
+
     return await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high);
+        desiredAccuracy: La.LocationAccuracy.high);
   }
 
   GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
@@ -87,30 +94,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // switch (currentwidget) {
-    //   case "servicetype":
-    //     _currentWidget = Service();
-    //     break;
-    //   case "nearbytaxy":
-    //     _currentWidget = NearbyTaxy(callback);
-    //     break;
-    //   case "driver":
-    //     _currentWidget = Driver();
-    //     break;
-    //   case "driverontheway":
-    //     _currentWidget = DriverOnTheWay();
-    //     break;
-    //   default:
-    //     _currentWidget = NearbyTaxy(callback);
-    // }
-
-    _determinePosition().then((value) {
-      setState(() {
-        // _currentPosition = CameraPosition(
-        //     target: LatLng(value.latitude, value.longitude), zoom: 14.4746);
-      });
-    });
-
     return Scaffold(
       key: _scaffoldKey,
       drawer: NavDrawer(),
@@ -120,8 +103,16 @@ class _HomeScreenState extends State<HomeScreen> {
             mapType: MapType.normal,
             myLocationButtonEnabled: true,
             initialCameraPosition: _addissAbaba,
+            myLocationEnabled: true,
             onMapCreated: (GoogleMapController controller) {
               _controller.complete(controller);
+
+              _determinePosition().then((value) {
+                controller.animateCamera(CameraUpdate.newCameraPosition(
+                    CameraPosition(
+                        zoom: 14.4746,
+                        target: LatLng(value.latitude, value.longitude))));
+              });
             },
           ),
           Padding(
@@ -131,9 +122,6 @@ class _HomeScreenState extends State<HomeScreen> {
               child: Container(
                 color: Colors.blueGrey.shade900.withOpacity(0.7),
                 child: IconButton(
-                  //padding: EdgeInsets.zero,
-                  //color: Colors.white,
-                  //shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
                   onPressed: () => _scaffoldKey.currentState!.openDrawer(),
                   icon: const Icon(
                     Icons.format_align_center,
@@ -144,11 +132,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
           ),
-          //WhereTo(currentLocation: "Meskel Flower"),
-          //Service(),
-
           _currentWidget,
-          // Driver()
         ],
       ),
     );

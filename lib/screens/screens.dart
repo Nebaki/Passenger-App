@@ -12,3 +12,8 @@ export 'settings/settings.dart';
 export 'savedadress/saved_address.dart';
 export 'cancel_reason.dart';
 export 'resetpasswordscreen/reset_password.dart';
+export 'splash/splashscreen.dart';
+export 'resetpasswordscreen/phoneverificationcode.dart';
+export 'resetpasswordscreen/changepassword.dart';
+export 'history/history_detail.dart';
+export 'contactus/contact_us.dart';

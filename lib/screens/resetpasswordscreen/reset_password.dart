@@ -3,8 +3,12 @@ import 'package:flutter/material.dart';
 class ResetPassword extends StatelessWidget {
   static const routeName = "/resetpassword";
   final _formkey = GlobalKey<FormState>();
+  final newPassword = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
+    late String _newPassword;
+    String _confirmedPassword;
     return Scaffold(
       appBar: AppBar(
         elevation: 0.3,
@@ -25,6 +29,7 @@ class ResetPassword extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.all(10),
                     child: TextFormField(
+                      controller: newPassword,
                       decoration: const InputDecoration(
                           hintText: "New Password",
                           hintStyle: TextStyle(
@@ -40,9 +45,16 @@ class ResetPassword extends StatelessWidget {
                               OutlineInputBorder(borderSide: BorderSide.none)),
                       validator: (value) {
                         if (value!.isEmpty) {
-                          return 'Please enter Your phone number';
+                          return 'Please enter Your Password';
+                        } else if (value.length < 4) {
+                          return 'Password length must not be less than 4';
+                        } else if (value.length > 25) {
+                          return 'Password length must not be greater than 25';
                         }
                         return null;
+                      },
+                      onSaved: (value) {
+                        _newPassword = value!;
                       },
                     ),
                   ),
@@ -63,11 +75,12 @@ class ResetPassword extends StatelessWidget {
                           border:
                               OutlineInputBorder(borderSide: BorderSide.none)),
                       validator: (value) {
-                        if (value!.isEmpty) {
-                          return 'Please enter Your Password';
+                        if (value != newPassword.text) {
+                          return 'Password must match';
                         }
                         return null;
                       },
+                      //onSaved: ,
                     ),
                   ),
                   Padding(
@@ -76,7 +89,12 @@ class ResetPassword extends StatelessWidget {
                       height: 40,
                       width: MediaQuery.of(context).size.width,
                       child: ElevatedButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          final form = _formkey.currentState;
+                          if (form!.validate()) {
+                            form.save();
+                          }
+                        },
                         child: const Text(
                           "Reset",
                           style: TextStyle(color: Colors.white),

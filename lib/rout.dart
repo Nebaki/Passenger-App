@@ -50,7 +50,22 @@ class AppRoute {
     if (settings.name == CancelReason.routeName) {
       return MaterialPageRoute(builder: (context) => CancelReason());
     }
-    return MaterialPageRoute(builder: (context) => SigninScreen());
+    if (settings.name == SigninScreen.routeName) {
+      return MaterialPageRoute(builder: (context) => SigninScreen());
+    }
+    if (settings.name == MobileVerification.routeName) {
+      return MaterialPageRoute(builder: (context) => MobileVerification());
+    }
+    if (settings.name == ChangePassword.routeName) {
+      return MaterialPageRoute(builder: (context) => ChangePassword());
+    }
+    if (settings.name == DetailHistoryScreen.routeName) {
+      return MaterialPageRoute(builder: (context) => DetailHistoryScreen());
+    }
+    if (settings.name == ContactUsScreen.routeName) {
+      return MaterialPageRoute(builder: (context) => ContactUsScreen());
+    }
+    return MaterialPageRoute(builder: (context) => CustomSplashScreen());
   }
 }
 

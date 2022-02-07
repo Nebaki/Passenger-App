@@ -18,17 +18,18 @@ class MyApp extends StatelessWidget {
           //F48221
           primaryColor: const Color.fromRGBO(254, 79, 5, 1),
           textTheme: TextTheme(
-              button: TextStyle(
-                color: const Color.fromRGBO(254, 79, 5, 1),
+              button: const TextStyle(
+                color: Color.fromRGBO(254, 79, 5, 1),
               ),
-              subtitle1: TextStyle(color: Colors.black38, fontSize: 14),
-              headline5: TextStyle(fontWeight: FontWeight.bold),
+              subtitle1: const TextStyle(color: Colors.black38, fontSize: 14),
+              headline5: const TextStyle(fontWeight: FontWeight.bold),
               bodyText2: TextStyle(color: Colors.grey.shade700)),
           iconTheme: const IconThemeData(
             color: Colors.white,
           ),
           textButtonTheme: TextButtonThemeData(
               style: ButtonStyle(
+            foregroundColor: MaterialStateProperty.all<Color>(Colors.red),
             textStyle: MaterialStateProperty.all<TextStyle>(
                 const TextStyle(color: Colors.black)),
           )),
@@ -39,7 +40,7 @@ class MyApp extends StatelessWidget {
                     fontWeight: FontWeight.bold,
                     fontSize: 20)),
                 backgroundColor: MaterialStateProperty.all<Color>(
-                    Color.fromRGBO(254, 79, 5, 1)),
+                    const Color.fromRGBO(254, 79, 5, 1)),
                 shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                     RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(80),

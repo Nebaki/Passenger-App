@@ -59,13 +59,31 @@ class NavDrawer extends StatelessWidget {
                     icon: Icons.home,
                     routename: HomeScreen.routeName,
                     text: "Home"),
+                _menuItem(
+                    divider: true,
+                    context: context,
+                    icon: Icons.favorite,
+                    routename: SavedAddress.routeName,
+                    text: "Saved Addreses"),
+                _menuItem(
+                    divider: true,
+                    context: context,
+                    icon: Icons.history,
+                    routename: HistoryPage.routeName,
+                    text: "History"),
                 //const Divider(color: Colors.grey),
                 _menuItem(
                     divider: true,
                     context: context,
                     icon: Icons.person,
                     routename: ProfileDetail.routeName,
-                    text: "Profile"),
+                    text: "Award"),
+                _menuItem(
+                    divider: true,
+                    context: context,
+                    icon: Icons.person,
+                    routename: ProfileDetail.routeName,
+                    text: "Contact us"),
                 //const Divider(color: Colors.grey),
                 _menuItem(
                     divider: true,
@@ -74,18 +92,6 @@ class NavDrawer extends StatelessWidget {
                     routename: SettingScreen.routeName,
                     text: "Settings"),
                 //const Divider(color: Colors.grey),
-                _menuItem(
-                    divider: true,
-                    context: context,
-                    icon: Icons.history,
-                    routename: HistoryPage.routeName,
-                    text: "History"),
-                _menuItem(
-                    divider: true,
-                    context: context,
-                    icon: Icons.favorite,
-                    routename: SavedAddress.routeName,
-                    text: "Saved Addreses"),
 
                 const SizedBox(height: 20),
                 //Divider(color: Colors.grey.shade500),

@@ -107,6 +107,8 @@ class _SignupScreenState extends State<SignupScreen> {
                           phoneController = number.phoneNumber!;
                         });
                       },
+                      initialValue: PhoneNumber(isoCode: "ET"),
+
                       onInputValidated: (bool value) {
                         print(value);
                         value
@@ -122,7 +124,7 @@ class _SignupScreenState extends State<SignupScreen> {
                       ),
                       ignoreBlank: false,
 
-                      autoValidateMode: AutovalidateMode.always,
+                      autoValidateMode: AutovalidateMode.onUserInteraction,
                       selectorTextStyle: const TextStyle(color: Colors.black),
                       //initialValue: number,
                       //textFieldController: phoneController,
@@ -203,7 +205,9 @@ class _SignupScreenState extends State<SignupScreen> {
                                 TextStyle(fontSize: 16, color: Colors.black54)),
                         InkWell(
                             onTap: () {
-                              Navigator.pop(context);
+                              Navigator.pushNamed(
+                                  context, CreateProfileScreen.routeName);
+                              //Navigator.pop(context);
                             },
                             child: Text(
                               "SIGN IN",
