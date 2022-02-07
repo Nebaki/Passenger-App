@@ -1,9 +1,10 @@
 import 'dart:convert';
 
 import 'package:passengerapp/account/user_manager.dart';
-import 'package:passengerapp/models/local_models/models.dart';
+import 'package:passengerapp/models/models.dart';
 import 'package:passengerapp/utils/session.dart';
-class UserTest {
+
+class Tester {
   var userMan = UserManager();
   var session = Session();
 
@@ -12,7 +13,9 @@ class UserTest {
     {'id':'1000','name':'tn','phone':'0922877115',
       'email':'pass@123','userPicture':'tester.in','referral':'123456'};
     var user = SecItem("user", jsonEncode(tempUser));
+
     var createUser = userMan.createUser(user);
+
 
     createUser.then((value) => {
     session.logSuccess("create-user", "success: " + value.message)
@@ -61,9 +64,9 @@ class UserTest {
     session.logSuccess("load-user",
     "success: id " + value.id+" name "+
         value.name+" phone "+
-        value.phone+" email "+value.email!+
-        " userPicture "+value.userPicture!+
-        " referral "+value.referral!
+        value.phone+" email "+value.email+
+        " userPicture "+value.userPicture+
+        " referral "+value.referral
     )
     }).onError((error, stackTrace) => {
     session.logError("load-user", "failed: " + error.toString())

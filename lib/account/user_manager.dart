@@ -1,7 +1,6 @@
 import 'dart:convert';
-import 'package:passengerapp/models/local_models/user.dart';
-import 'package:passengerapp/utils/storage.dart';
-import 'package:passengerapp/models/local_models/models.dart';
+import 'package:passengerapp/account/storage.dart';
+import 'package:passengerapp/models/models.dart';
 import 'package:passengerapp/utils/session.dart';
 
 class UserManager {
@@ -30,9 +29,18 @@ class UserManager {
     }).onError((error, stackTrace) => {
       data = {}
     });
-    return User.fromJson(data);
+    return _userFromJson(data);
   }
-
+  User _userFromJson(Map<String,dynamic> data){
+    User user;
+    if(data.isNotEmpty){
+      user =  User(data['id'], data['name'], data['phone'],
+      data['email'], data['userPicture'], data['referral']);
+    }else{
+      user =  User('0', 'loading', 'loading','loading', 'loading', 'loading');
+    }
+    return user;
+  }
   Future<Result> removeUser() async {
     Result result = Result(false, "init");
     await store.performAction(ItemActions.removeAccount, sample)

@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:passengerapp/main.dart';
 import 'package:passengerapp/screens/screens.dart';
 
-import 'account/user_test.dart';
+import 'account/tester.dart';
 
 class AppRoute {
   static Route generateRoute(RouteSettings settings) {
+    var test = Tester();
     if (settings.name == SigninScreen.routeName) {
       return MaterialPageRoute(builder: (context) => SigninScreen());
     }
