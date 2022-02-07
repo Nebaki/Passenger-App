@@ -1,7 +1,9 @@
+
 import 'package:flutter/material.dart';
+import 'package:passengerapp/account/trip_test.dart';
 import 'package:passengerapp/rout.dart';
 
-import 'account/tester.dart';
+import 'account/user_test.dart';
 
 void main() {
   runApp(const MyApp());
@@ -11,12 +13,15 @@ class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
-    var test = Tester();
-    test.createUser();
-    test.saveToken();
-    test.getSavedToken();
-    test.loadUser();
-    test.updateUser();
+    var test = UserTest();
+    //test.createUser();
+    //test.saveToken();
+    //test.getSavedToken();
+    //test.loadUser();
+    //test.updateUser();
+    var tripTest = TripTest();
+    tripTest.saveTrips();
+    tripTest.updateTrips();
     return MaterialApp(
       title: 'SafeWay',
       theme: ThemeData(
