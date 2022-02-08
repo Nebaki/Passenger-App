@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:passengerapp/bloc/reverselocation/location_bloc.dart';
+import 'package:passengerapp/bloc/reverselocation/location_state.dart';
 import 'package:passengerapp/screens/screens.dart';
 
 class WhereTo extends StatefulWidget {
-  final String currentLocation;
-  const WhereTo({Key? key, required this.currentLocation}) : super(key: key);
+  const WhereTo({Key? key}) : super(key: key);
 
   @override
   _WhereToState createState() => _WhereToState();
@@ -18,7 +20,8 @@ class _WhereToState extends State<WhereTo> {
       right: 2.0,
       child: Container(
         height: 220,
-        padding: EdgeInsets.only(top: 40, left: 50, right: 50, bottom: 20),
+        padding:
+            const EdgeInsets.only(top: 40, left: 50, right: 50, bottom: 20),
         decoration: BoxDecoration(
             color: Colors.black.withOpacity(0.8),
             borderRadius: BorderRadius.circular(30)),
@@ -30,14 +33,14 @@ class _WhereToState extends State<WhereTo> {
                   Icons.location_on,
                   color: Colors.blue.shade600,
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 70,
                   child: VerticalDivider(
                     width: 10,
                     color: Colors.white60,
                   ),
                 ),
-                Icon(
+                const Icon(
                   Icons.location_on,
                   color: Colors.green,
                 ),
@@ -52,7 +55,7 @@ class _WhereToState extends State<WhereTo> {
                     "PICK UP",
                     style: TextStyle(color: Colors.white54, fontSize: 16.0),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 5,
                   ),
                   //Text(widget.currentLocation),
@@ -60,21 +63,33 @@ class _WhereToState extends State<WhereTo> {
                     padding: const EdgeInsets.only(left: 0),
                     child: InkWell(
                       onTap: () {},
-                      child: const Text(
-                        "Meskel Flower,Addis Ababa",
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16),
-                      ),
+                      child: BlocBuilder<LocationBloc, ReverseLocationState>(
+                          builder: (context, state) {
+                        if (state is ReverseLocationLoadSuccess) {
+                          List addresses = state.location.address1.split(",");
+                          return Text(addresses[1]);
+                        }
+                        if (state is ReverseLocationOperationFailure) {
+                          return const Text(
+                              "Unable To get Your current location");
+                        }
+                        return const Text("Loading");
+                      }),
+                      // const Text(
+                      //   "Meskel Flower,Addis Ababa",
+                      //   style: TextStyle(
+                      //       color: Colors.white,
+                      //       fontWeight: FontWeight.bold,
+                      //       fontSize: 16),
+                      // ),
                     ),
                   ),
 
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 20),
+                  const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 20),
                     child: SizedBox(
                       width: 200,
-                      child: const Divider(
+                      child: Divider(
                         color: Colors.white60,
                       ),
                     ),
@@ -83,7 +98,7 @@ class _WhereToState extends State<WhereTo> {
                     "DROP OFF",
                     style: TextStyle(color: Colors.white54, fontSize: 16.0),
                   ),
-                  SizedBox(height: 5),
+                  const SizedBox(height: 5),
                   //Text(widget.currentLocation),
                   Padding(
                     padding: const EdgeInsets.only(left: 0),

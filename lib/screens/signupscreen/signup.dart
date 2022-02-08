@@ -70,11 +70,18 @@ class _SignupScreenState extends State<SignupScreen> {
             currentState = MobileVerficationState.SHOW_OTP_FORM_STATE;
             this.verificationId = verificationId;
           });
+          setState(() {
+            _isLoading = false;
+          });
           Navigator.pushNamed(context, PhoneVerification.routeName,
-              arguments: VerificationArgument(verificationId: verificationId));
+              arguments: VerificationArgument(
+                  resendingToken: resendingToken,
+                  verificationId: verificationId));
         },
         codeAutoRetrievalTimeout: (verificationId) async {});
   }
+
+  bool _isLoading = false;
 
   final _formkey = GlobalKey<FormState>();
   @override
@@ -83,6 +90,10 @@ class _SignupScreenState extends State<SignupScreen> {
       body: Stack(
         children: [
           CustomeBackArrow(),
+          Align(
+            alignment: Alignment.center,
+            child: _isLoading ? const CircularProgressIndicator() : Container(),
+          ),
           Form(
             key: _formkey,
             child: Padding(
@@ -172,6 +183,9 @@ class _SignupScreenState extends State<SignupScreen> {
                                             TextButton(
                                                 onPressed: () async {
                                                   print(phoneController);
+                                                  setState(() {
+                                                    _isLoading = true;
+                                                  });
 
                                                   sendVerificationCode();
                                                   // Navigator

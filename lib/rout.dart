@@ -78,5 +78,7 @@ class HomeScreenArgument {
 
 class VerificationArgument {
   String verificationId;
-  VerificationArgument({required this.verificationId});
+  int? resendingToken;
+  VerificationArgument(
+      {required this.verificationId, required this.resendingToken});
 }

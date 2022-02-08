@@ -13,7 +13,7 @@ class SavedAddress extends StatelessWidget {
           children: [
             Padding(
               padding: const EdgeInsets.only(left: 5, right: 5),
-              child: WhereTo(currentLocation: "currentLocation"),
+              child: WhereTo(),
             ),
             Container(
                 padding: EdgeInsets.symmetric(horizontal: 20),

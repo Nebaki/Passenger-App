@@ -82,7 +82,7 @@ class NavDrawer extends StatelessWidget {
                     divider: true,
                     context: context,
                     icon: Icons.person,
-                    routename: ProfileDetail.routeName,
+                    routename: ContactUsScreen.routeName,
                     text: "Contact us"),
                 //const Divider(color: Colors.grey),
                 _menuItem(

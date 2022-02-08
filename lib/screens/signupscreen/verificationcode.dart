@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:firebase_auth/firebase_auth.dart';
+
 import 'package:flutter/material.dart';
 import 'package:passengerapp/rout.dart';
 import 'package:passengerapp/screens/screens.dart';
@@ -30,10 +31,10 @@ class _PhoneVerificationState extends State<PhoneVerification> {
   final otp6Controller = TextEditingController();
 
   late Timer _timer;
+  FirebaseAuth _auth = FirebaseAuth.instance;
 
   final _codeController = TextEditingController();
 
-  FirebaseAuth _auth = FirebaseAuth.instance;
   int _start = 60;
 
   void startTimer() {
@@ -70,6 +71,45 @@ class _PhoneVerificationState extends State<PhoneVerification> {
     _timer.cancel();
     super.dispose();
   }
+
+  void resendVerificationCode(String phoneNumber, int token) {
+    _auth.verifyPhoneNumber(
+        phoneNumber: "phoneController",
+        verificationCompleted: (phoneAuthCredential) async {
+          setState(() {
+            //showLoading = false;
+          });
+
+          //signInWithPhoneAuthCredential(phoneAuthCredential);
+        },
+        verificationFailed: (verificationFailed) async {
+          setState(() {
+            //showLoading = false;
+          });
+          print(verificationFailed.message);
+        },
+        codeSent: (verificationId, resendingToken) async {
+          setState(() {
+            //showLoading = false;
+            //currentState = MobileVerficationState.SHOW_OTP_FORM_STATE;
+            //this.verificationId = verificationId;
+          });
+          setState(() {
+            //_isLoading = false;
+          });
+          // Navigator.pushNamed(context, PhoneVerification.routeName,
+          //     arguments: VerificationArgument(resendingToken: resendingToken, verificationId: verificationId));
+        },
+        forceResendingToken: token,
+        codeAutoRetrievalTimeout: (verificationId) async {});
+    // resending with token got at previous call's `callbacks` method `onCodeSent`
+    // [END start_phone_auth]
+  }
+
+  final _errorCodeSnackBar = const SnackBar(
+    content: Text("Incorrect Code"),
+    backgroundColor: Colors.red,
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -293,6 +333,7 @@ class _PhoneVerificationState extends State<PhoneVerification> {
                               _auth
                                   .signInWithCredential(credential)
                                   .then((value) {
+                                print(value);
                                 Navigator.pushNamed(
                                     context, CreateProfileScreen.routeName);
                               });

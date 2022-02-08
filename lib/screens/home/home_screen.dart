@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:passengerapp/drawer/drawer.dart';
 import 'package:passengerapp/rout.dart';
 import 'dart:async';
-import 'package:location/location.dart';
+// import 'package:location/location.dart';
 import 'package:geolocator_platform_interface/src/enums/location_accuracy.dart'
     as La;
 
@@ -21,7 +22,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  Location location = new Location();
+  //Location location = new Location();
   late Widget _currentWidget;
   double currentLat = 3;
   late double currentLng = 4;
@@ -39,7 +40,7 @@ class _HomeScreenState extends State<HomeScreen> {
     // Test if location services are enabled.
     serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
-      serviceEnabled = await location.requestService();
+      //serviceEnabled = await location.requestService();
       if (!serviceEnabled) {
         return Future.error("NoLocation Enabled");
       }
@@ -82,8 +83,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     widget.args.isSelected
         ? _currentWidget = Service(callback)
-        : _currentWidget =
-            WhereTo(currentLocation: "Meskel Flower,Addis Ababa");
+        : _currentWidget = WhereTo();
   }
 
   void callback(Widget nextwidget) {
