@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:passengerapp/main.dart';
 import 'package:passengerapp/screens/screens.dart';
 
@@ -72,8 +73,9 @@ class AppRoute {
 class HomeScreenArgument {
   //String widgetName;
   bool isSelected = false;
+  LatLng? destinationlatlang;
 
-  HomeScreenArgument({required this.isSelected});
+  HomeScreenArgument({required this.isSelected, this.destinationlatlang});
 }
 
 class VerificationArgument {

@@ -20,9 +20,17 @@ void main() {
       LocationPredictionRepository(
           dataProvider:
               LocationPredictionDataProvider(httpClient: http.Client()));
+
+  final PlaceDetailRepository placeDetailRepository = PlaceDetailRepository(
+      dataProvider: PlaceDetailDataProvider(httpClient: http.Client()));
+
+  final DirectionRepository directionRepository = DirectionRepository(
+      dataProvider: DirectionDataProvider(httpClient: http.Client()));
   runApp(MyApp(
     reverseLocationRepository: reverseLocationRepository,
     locationPredictionRepository: locationPredictionRepository,
+    placeDetailRepository: placeDetailRepository,
+    directionRepository: directionRepository,
   ));
 }
 
@@ -59,10 +67,15 @@ class MyApp extends StatelessWidget {
 
   final ReverseLocationRepository reverseLocationRepository;
   final LocationPredictionRepository locationPredictionRepository;
+  final PlaceDetailRepository placeDetailRepository;
+  final DirectionRepository directionRepository;
+
   const MyApp(
       {Key? key,
       required this.reverseLocationRepository,
-      required this.locationPredictionRepository})
+      required this.locationPredictionRepository,
+      required this.placeDetailRepository,
+      required this.directionRepository})
       : super(key: key);
   @override
   Widget build(BuildContext context) {
@@ -71,7 +84,9 @@ class MyApp extends StatelessWidget {
     return MultiRepositoryProvider(
         providers: [
           RepositoryProvider.value(value: reverseLocationRepository),
-          RepositoryProvider.value(value: locationPredictionRepository)
+          RepositoryProvider.value(value: locationPredictionRepository),
+          RepositoryProvider.value(value: placeDetailRepository),
+          RepositoryProvider.value(value: directionRepository)
         ],
         child: MultiBlocProvider(
             providers: [
@@ -82,7 +97,13 @@ class MyApp extends StatelessWidget {
               BlocProvider(
                   create: (context) => LocationPredictionBloc(
                       locationPredictionRepository:
-                          locationPredictionRepository))
+                          locationPredictionRepository)),
+              BlocProvider(
+                  create: (context) => PlaceDetailBloc(
+                      placeDetailRepository: placeDetailRepository)),
+              BlocProvider(
+                  create: (context) =>
+                      DirectionBloc(directionRepository: directionRepository)),
             ],
             child: MaterialApp(
               title: 'SafeWay',

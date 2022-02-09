@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
+// ignore: import_of_legacy_library_into_null_safe
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:passengerapp/bloc/bloc.dart';
 import 'package:passengerapp/drawer/drawer.dart';
 import 'package:passengerapp/rout.dart';
 import 'dart:async';
+import 'package:flutter_polyline_points/flutter_polyline_points.dart';
+
 // import 'package:location/location.dart';
 import 'package:geolocator_platform_interface/src/enums/location_accuracy.dart'
     as La;
@@ -28,7 +32,11 @@ class _HomeScreenState extends State<HomeScreen> {
   late double currentLng = 4;
   Completer<GoogleMapController> _controller = Completer();
 
-  static final CameraPosition _addissAbaba = CameraPosition(
+  List<LatLng> polylineCoordinates = [];
+  PolylinePoints polylinePoints = PolylinePoints();
+  Map<PolylineId, Polyline> polylines = {};
+
+  static const CameraPosition _addissAbaba = CameraPosition(
     target: LatLng(8.9806, 38.7578),
     zoom: 14.4746,
   );
@@ -37,16 +45,13 @@ class _HomeScreenState extends State<HomeScreen> {
     bool serviceEnabled;
     LocationPermission permission;
 
-    // Test if location services are enabled.
     serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
       //serviceEnabled = await location.requestService();
       if (!serviceEnabled) {
         return Future.error("NoLocation Enabled");
       }
-      // Location services are not enabled don't continue
-      // accessing the position and request users of the
-      // App to enable the location services.
+
       return Future.error('Location services are disabled.');
     }
 
@@ -54,36 +59,26 @@ class _HomeScreenState extends State<HomeScreen> {
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
       if (permission == LocationPermission.denied) {
-        // Permissions are denied, next time you could try
-        // requesting permissions again (this is also where
-        // Android's shouldShowRequestPermissionRationale
-        // returned true. According to Android guidelines
-        // your App should show an explanatory UI now.
         return Future.error('Location permissions are denied');
       }
     }
 
     if (permission == LocationPermission.deniedForever) {
-      // Permissions are denied forever, handle appropriately.
       return Future.error(
           'Location permissions are permanently denied, we cannot request permissions.');
     }
-
-    // When we reach here, permissions are granted and we can
-    // continue accessing the position of the device.
 
     return await Geolocator.getCurrentPosition(
         desiredAccuracy: La.LocationAccuracy.high);
   }
 
   GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-
   @override
   // ignore: must_call_super
   void initState() {
     widget.args.isSelected
         ? _currentWidget = Service(callback)
-        : _currentWidget = WhereTo();
+        : _currentWidget = const WhereTo();
   }
 
   void callback(Widget nextwidget) {
@@ -92,6 +87,8 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  String y = "";
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -99,22 +96,129 @@ class _HomeScreenState extends State<HomeScreen> {
       drawer: NavDrawer(),
       body: Stack(
         children: [
-          GoogleMap(
-            mapType: MapType.normal,
-            myLocationButtonEnabled: true,
-            initialCameraPosition: _addissAbaba,
-            myLocationEnabled: true,
-            onMapCreated: (GoogleMapController controller) {
-              _controller.complete(controller);
+          widget.args.isSelected
+              ? BlocBuilder<DirectionBloc, DirectionState>(
+                  builder: (context, state) {
+                  print("succcesssss");
 
-              _determinePosition().then((value) {
-                controller.animateCamera(CameraUpdate.newCameraPosition(
-                    CameraPosition(
-                        zoom: 14.4746,
-                        target: LatLng(value.latitude, value.longitude))));
-              });
-            },
-          ),
+                  if (state is DirectionLoadSuccess) {
+                    _getPolyline(state.direction.encodedPoints);
+                    return GoogleMap(
+                      mapType: MapType.normal,
+                      myLocationButtonEnabled: true,
+                      initialCameraPosition: _addissAbaba,
+                      myLocationEnabled: true,
+                      polylines: Set<Polyline>.of(polylines.values),
+                      onMapCreated: (GoogleMapController controller) {
+                        _controller.complete(controller);
+
+                        _determinePosition().then((value) {
+                          // final pickupLatLng =
+                          //     LatLng(value.latitude, value.longitude);
+                          // LatLng destinationLatLng;
+
+                          // BlocListener<PlaceDetailBloc, PlaceDetailState>(
+                          //     listener: (context, state) {
+                          //   if (state is PlaceDetailLoadSuccess) {
+                          //     destinationLatLng = LatLng(
+                          //         state.placeDetail.lat, state.placeDetail.lng);
+                          //     LatLngBounds latLngBounds;
+                          //     if (pickupLatLng.latitude >
+                          //             destinationLatLng.latitude &&
+                          //         pickupLatLng.longitude >
+                          //             destinationLatLng.longitude) {
+                          //       latLngBounds = LatLngBounds(
+                          //           southwest: destinationLatLng,
+                          //           northeast: pickupLatLng);
+                          //     } else if (pickupLatLng.longitude >
+                          //         destinationLatLng.longitude) {
+                          //       latLngBounds = LatLngBounds(
+                          //           southwest: LatLng(pickupLatLng.latitude,
+                          //               destinationLatLng.longitude),
+                          //           northeast: LatLng(
+                          //               destinationLatLng.latitude,
+                          //               pickupLatLng.longitude));
+                          //     } else if (pickupLatLng.latitude >
+                          //         destinationLatLng.latitude) {
+                          //       latLngBounds = LatLngBounds(
+                          //           southwest: LatLng(
+                          //               destinationLatLng.latitude,
+                          //               pickupLatLng.longitude),
+                          //           northeast: LatLng(pickupLatLng.latitude,
+                          //               destinationLatLng.longitude));
+                          //     } else {
+                          //       latLngBounds = LatLngBounds(
+                          //           southwest: pickupLatLng,
+                          //           northeast: destinationLatLng);
+                          //     }
+
+                          //     controller.animateCamera(
+                          //         CameraUpdate.newLatLngBounds(
+                          //             latLngBounds, 70));
+                          //   }
+                          // });
+
+                          //final destinationLatlng =
+                          //if()
+                          controller.animateCamera(
+                              CameraUpdate.newCameraPosition(CameraPosition(
+                                  zoom: 14.4746,
+                                  target: LatLng(
+                                      value.latitude, value.longitude))));
+                        });
+                      },
+                    );
+                    //_getPolyline(state.direction.encodedPoints);
+                  }
+                  if (state is DirectionOperationFailure) {
+                    print("Failurrrrrrrrrrrrrrrrrrrr");
+
+                    return GoogleMap(
+                      mapType: MapType.normal,
+                      myLocationButtonEnabled: true,
+                      initialCameraPosition: _addissAbaba,
+                      myLocationEnabled: true,
+                      onMapCreated: (GoogleMapController controller) {
+                        _controller.complete(controller);
+
+                        _determinePosition().then((value) {
+                          controller.animateCamera(
+                              CameraUpdate.newCameraPosition(CameraPosition(
+                                  zoom: 14.4746,
+                                  target: LatLng(
+                                      value.latitude, value.longitude))));
+                        });
+                      },
+                    );
+                  }
+                  return Text("Loading");
+
+                  //  AlertDialog(
+                  //   content: Row(
+                  //     children: const [
+                  //       CircularProgressIndicator(),
+                  //       Text("finding direction")
+                  //     ],
+                  //   ),
+                  // );
+                })
+              : GoogleMap(
+                  mapType: MapType.normal,
+                  myLocationButtonEnabled: true,
+                  initialCameraPosition: _addissAbaba,
+                  myLocationEnabled: true,
+                  onMapCreated: (GoogleMapController controller) {
+                    _controller.complete(controller);
+
+                    _determinePosition().then((value) {
+                      controller.animateCamera(CameraUpdate.newCameraPosition(
+                          CameraPosition(
+                              zoom: 14.4746,
+                              target:
+                                  LatLng(value.latitude, value.longitude))));
+                    });
+                  },
+                ),
           Padding(
             padding: const EdgeInsets.only(top: 40, left: 10),
             child: ClipRRect(
@@ -136,5 +240,35 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
     );
+  }
+
+  _getPolyline(String encodedString) {
+    polylineCoordinates.clear();
+    List<PointLatLng> result = polylinePoints.decodePolyline(encodedString);
+
+    if (result.isNotEmpty) {
+      result.forEach((PointLatLng point) {
+        polylineCoordinates.add(LatLng(point.latitude, point.longitude));
+      });
+    }
+    _addPolyLine();
+  }
+
+  _addPolyLine() {
+    polylines.clear();
+    PolylineId id = PolylineId("poly");
+    Polyline polyline = Polyline(
+        width: 2,
+        polylineId: id,
+        jointType: JointType.round,
+        startCap: Cap.roundCap,
+        endCap: Cap.roundCap,
+        color: Colors.indigo,
+        geodesic: true,
+        points: polylineCoordinates);
+
+    polylines[id] = polyline;
+
+    //Future.delayed(Duration(seconds: 1), () {});
   }
 }

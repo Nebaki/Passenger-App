@@ -15,17 +15,12 @@ class LocationPredictionDataProvider {
   LocationPredictionDataProvider({required this.httpClient});
 
   Future<List<LocationPrediction>> predictLocation(String location) async {
-    print(
-        "Loadinggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg");
     final _baseUrl =
-        "https://maps.googleapis.com/maps/api/place/autocomplete/json?input=$location&types=geocode&key=AIzaSyB8z8UeyROt2-ay24jiHrrcMXaEAlPUvdQ";
+        "https://maps.googleapis.com/maps/api/place/autocomplete/json?input=$location&location=8.9806%2C38.7578&radius=500&types=geocode&key=AIzaSyB8z8UeyROt2-ay24jiHrrcMXaEAlPUvdQ";
 
     final response = await httpClient.get(Uri.parse(_baseUrl));
 
     if (response.statusCode == 200) {
-      print(
-          "Pridictionnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn");
-
       final data = jsonDecode(response.body);
       print(data);
 
