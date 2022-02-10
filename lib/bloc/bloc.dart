@@ -1,4 +1,4 @@
-export 'reverselocation/bloc.dart';
-export 'prediction/bloc.dart';
-export 'placedetail/bloc.dart';
-export 'direction/bloc.dart';
+export 'map/reverselocation/bloc.dart';
+export 'map/prediction/bloc.dart';
+export 'map/placedetail/bloc.dart';
+export 'map/direction/bloc.dart';

@@ -1,5 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:passengerapp/bloc/reverselocation/bloc.dart';
+import 'package:passengerapp/bloc/map/reverselocation/bloc.dart';
 import 'package:passengerapp/repository/repositories.dart';
 
 class LocationBloc extends Bloc<ReverseLocationEvent, ReverseLocationState> {

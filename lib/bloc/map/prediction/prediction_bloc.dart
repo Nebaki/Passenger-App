@@ -1,6 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:passengerapp/bloc/prediction/bloc.dart';
-import 'package:passengerapp/bloc/reverselocation/bloc.dart';
+import 'package:passengerapp/bloc/map/prediction/bloc.dart';
 import 'package:passengerapp/repository/repositories.dart';
 
 class LocationPredictionBloc

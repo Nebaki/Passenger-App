@@ -1,4 +1,4 @@
-export 'location.dart';
-export 'location_prediction.dart';
-export 'place_detail.dart';
-export 'direction.dart';
+export 'map/location.dart';
+export 'map/location_prediction.dart';
+export 'map/place_detail.dart';
+export 'map/direction.dart';

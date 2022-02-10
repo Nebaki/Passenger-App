@@ -1,5 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:passengerapp/bloc/direction/bloc.dart';
+import 'package:passengerapp/bloc/map/direction/bloc.dart';
 import 'package:passengerapp/repository/repositories.dart';
 
 class DirectionBloc extends Bloc<DirectionEvent, DirectionState> {

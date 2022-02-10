@@ -1,4 +1,4 @@
-export 'prediction_dataprovider.dart';
-export 'reverse_geocoding.dart';
-export 'place_detail.dart';
-export 'direction.dart';
+export 'map/prediction_dataprovider.dart';
+export 'map/reverse_geocoding.dart';
+export 'map/place_detail.dart';
+export 'map/direction.dart';

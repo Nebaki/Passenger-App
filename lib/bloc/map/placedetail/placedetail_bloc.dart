@@ -1,5 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:passengerapp/bloc/placedetail/bloc.dart';
+import 'package:passengerapp/bloc/map/placedetail/bloc.dart';
 import 'package:passengerapp/repository/repositories.dart';
 
 class PlaceDetailBloc extends Bloc<PlaceDetailEvent, PlaceDetailState> {
