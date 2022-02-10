@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:passengerapp/bloc/reverselocation/location_bloc.dart';
 import 'package:passengerapp/bloc/reverselocation/location_state.dart';
+import 'package:passengerapp/rout.dart';
 import 'package:passengerapp/screens/screens.dart';
 
 class WhereTo extends StatefulWidget {
@@ -12,6 +13,7 @@ class WhereTo extends StatefulWidget {
 }
 
 class _WhereToState extends State<WhereTo> {
+  late String currentLocation;
   @override
   Widget build(BuildContext context) {
     return Positioned(
@@ -67,7 +69,8 @@ class _WhereToState extends State<WhereTo> {
                           builder: (context, state) {
                         if (state is ReverseLocationLoadSuccess) {
                           List addresses = state.location.address1.split(",");
-                          return Text(addresses[1]);
+                          currentLocation = addresses[1];
+                          return Text(addresses[0]);
                         }
                         if (state is ReverseLocationOperationFailure) {
                           return const Text(
@@ -104,14 +107,20 @@ class _WhereToState extends State<WhereTo> {
                     padding: const EdgeInsets.only(left: 0),
                     child: InkWell(
                       onTap: () {
-                        Navigator.pushNamed(context, SearchScreen.routeName);
+                        Navigator.pushNamed(context, SearchScreen.routeName,
+                            arguments: SearchScreenArgument(
+                                currentLocation: currentLocation));
                       },
-                      child: const Text(
-                        "Where To?",
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16),
+                      child: const SizedBox(
+                        height: 35,
+                        width: 150,
+                        child: Text(
+                          "Where To?",
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w300,
+                              fontSize: 20),
+                        ),
                       ),
                     ),
                   ),

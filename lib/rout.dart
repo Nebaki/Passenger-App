@@ -28,7 +28,12 @@ class AppRoute {
       return MaterialPageRoute(builder: (context) => CreateProfileScreen());
     }
     if (settings.name == SearchScreen.routeName) {
-      return MaterialPageRoute(builder: (context) => SearchScreen());
+      SearchScreenArgument argument =
+          settings.arguments as SearchScreenArgument;
+      return MaterialPageRoute(
+          builder: (context) => SearchScreen(
+                args: argument,
+              ));
     }
     if (settings.name == ProfileDetail.routeName) {
       return MaterialPageRoute(builder: (context) => ProfileDetail());
@@ -83,4 +88,10 @@ class VerificationArgument {
   int? resendingToken;
   VerificationArgument(
       {required this.verificationId, required this.resendingToken});
+}
+
+class SearchScreenArgument {
+  String currentLocation;
+
+  SearchScreenArgument({required this.currentLocation});
 }

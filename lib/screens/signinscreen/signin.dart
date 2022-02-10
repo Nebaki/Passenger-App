@@ -191,13 +191,17 @@ class _SigninScreenState extends State<SigninScreen> {
                               final form = _formkey.currentState;
                               // print(_attemptCounter);
                               // print(_waitingDuration);
-                              if (form!.validate()) {
-                                form.save();
-                                Navigator.pushNamed(
-                                    context, HomeScreen.routeName,
-                                    arguments:
-                                        HomeScreenArgument(isSelected: false));
-                              }
+                              // if (form!.validate()) {
+                              //   form.save();
+                              //   Navigator.pushNamed(
+                              //       context, HomeScreen.routeName,
+                              //       arguments:
+                              //           HomeScreenArgument(isSelected: false));
+                              // }
+
+                              Navigator.pushNamed(context, HomeScreen.routeName,
+                                  arguments:
+                                      HomeScreenArgument(isSelected: false));
 
                               // print("Hereeeeeeeeeeeeeeeeeee");
                               // if (_attemptCounter == 3) {

@@ -19,7 +19,8 @@ class LocationPrediction extends Equatable {
     return LocationPrediction(
         placeId: json["place_id"],
         mainText: json["structured_formatting"]["main_text"],
-        secondaryText: json["structured_formatting"]["secondary_text"]);
+        secondaryText:
+            json["structured_formatting"]["secondary_text"] ?? "Uknown");
   }
 
   @override

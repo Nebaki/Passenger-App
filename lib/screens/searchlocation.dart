@@ -8,6 +8,10 @@ import 'package:passengerapp/screens/screens.dart';
 
 class SearchScreen extends StatefulWidget {
   static const routeName = "/searchlocation";
+
+  final SearchScreenArgument args;
+
+  SearchScreen({Key? key, required this.args}) : super(key: key);
   @override
   _SearchScreenState createState() => _SearchScreenState();
 }
@@ -15,23 +19,39 @@ class SearchScreen extends StatefulWidget {
 class _SearchScreenState extends State<SearchScreen> {
   final _whereToController = TextEditingController();
   final _pickupLocationController = TextEditingController();
+  late LatLng destinationLtlng;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.only(top: 40, left: 20, right: 20),
-        child: SingleChildScrollView(
-          child: SizedBox(
-            height: MediaQuery.of(context).size.height,
-            child: Column(
-              children: [
-                Card(
-                  color: Colors.white,
-                  child: Form(
+      body: SingleChildScrollView(
+        child: SizedBox(
+          height: MediaQuery.of(context).size.height,
+          child: Column(
+            children: [
+              Card(
+                margin: const EdgeInsets.fromLTRB(10, 40, 10, 20),
+                color: Colors.white,
+                child: Form(
+                  child: Container(
+                    height: 200,
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 20, vertical: 15),
                     child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        Text(
+                          "Search Location",
+                          style: TextStyle(
+                              fontSize: 25,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.red.shade900),
+                        ),
+                        SizedBox(
+                          height: 20,
+                        ),
                         TextFormField(
+                          initialValue: widget.args.currentLocation,
                           decoration: const InputDecoration(
                               alignLabelWithHint: true,
                               floatingLabelBehavior:
@@ -49,7 +69,7 @@ class _SearchScreenState extends State<SearchScreen> {
                               prefixIcon: Icon(
                                 Icons.location_on_outlined,
                                 color: Colors.blue,
-                                size: 19,
+                                size: 25,
                               ),
                               fillColor: Colors.white,
                               filled: true,
@@ -57,17 +77,6 @@ class _SearchScreenState extends State<SearchScreen> {
                                   //borderRadius: BorderRadius.all(Radius.circular(10)),
                                   borderSide: BorderSide(
                                       color: Colors.grey, width: 0.4))),
-                          validator: (value) {
-                            if (value!.isEmpty) {
-                              return 'This field can\'t be empity';
-                            } else if (value.length < 4) {
-                              return 'Name length must not be less than 4';
-                            } else if (value.length > 25) {
-                              return 'Nameength must not be Longer than 25';
-                            }
-                            return null;
-                          },
-                          onSaved: (value) {},
                         ),
                         const SizedBox(
                           height: 10,
@@ -90,8 +99,8 @@ class _SearchScreenState extends State<SearchScreen> {
                                   color: Colors.black45),
                               prefixIcon: Icon(
                                 Icons.location_on_outlined,
-                                color: Colors.blue,
-                                size: 19,
+                                color: Colors.green,
+                                size: 25,
                               ),
                               fillColor: Colors.white,
                               filled: true,
@@ -99,17 +108,6 @@ class _SearchScreenState extends State<SearchScreen> {
                                   //borderRadius: BorderRadius.all(Radius.circular(10)),
                                   borderSide: BorderSide(
                                       color: Colors.grey, width: 0.4))),
-                          validator: (value) {
-                            if (value!.isEmpty) {
-                              return 'This field can\'t be empity';
-                            } else if (value.length < 4) {
-                              return 'Name length must not be less than 4';
-                            } else if (value.length > 25) {
-                              return 'Nameength must not be Longer than 25';
-                            }
-                            return null;
-                          },
-                          onSaved: (value) {},
                           onChanged: (value) {
                             findPlace(value);
                           },
@@ -117,49 +115,45 @@ class _SearchScreenState extends State<SearchScreen> {
                         const SizedBox(
                           height: 10,
                         ),
-                        ElevatedButton(
-                            onPressed: () {
-                              Navigator.pushNamed(context, HomeScreen.routeName,
-                                  arguments:
-                                      HomeScreenArgument(isSelected: true));
-                            },
-                            child: const Text("Continue"))
                       ],
                     ),
                   ),
                 ),
-                BlocBuilder<LocationPredictionBloc, LocationPredictionState>(
-                    builder: (context, state) {
-                  if (state is LocationPredictionLoading) {
-                    // return const Center(
-                    //   child: Text("dfdfsfsfsfgdfgdsfgd"),
-                    // );
-                  }
-                  if (state is LocationPredictionLoadSuccess) {
-                    print("Successssssssssssssssssssssssss");
-                    print(state.placeList);
-                    return SizedBox(
-                      height: 400,
+              ),
+              BlocBuilder<LocationPredictionBloc, LocationPredictionState>(
+                  builder: (context, state) {
+                if (state is LocationPredictionLoading) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+                if (state is LocationPredictionLoadSuccess) {
+                  print("Successssssssssssssssssssssssss");
+                  print(state.placeList);
+                  return SizedBox(
+                    height: MediaQuery.of(context).size.height - 260,
+                    child: Container(
+                      color: Colors.white,
                       child: ListView.separated(
                           physics: const ClampingScrollPhysics(),
                           shrinkWrap: true,
                           itemBuilder: (context, index) {
                             return _buildPredictedItem(state.placeList[index]);
                           },
-                          separatorBuilder: (context, index) => const Divider(),
+                          separatorBuilder: (context, index) => const Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 40),
+                                child: Divider(color: Colors.black38),
+                              ),
                           itemCount: state.placeList.length),
-                    );
-                  }
-
-                  if (state is LocationPredictionOperationFailure) {}
-
-                  print(state);
-                  return const Center(
-                    child: CircularProgressIndicator(),
+                    ),
                   );
-                })
-              ],
-            ),
+                }
+
+                if (state is LocationPredictionOperationFailure) {}
+
+                return const Center(
+                  child: Text("Enter The location"),
+                );
+              })
+            ],
           ),
         ),
       ),
@@ -167,14 +161,21 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 
   Widget _buildPredictedItem(LocationPrediction prediction) {
-    return ListTile(
-      onTap: () {
-        getPlaceDetail(prediction.placeId);
-        settingDropOffDialog();
-      },
-      title: Text(prediction.mainText),
-      subtitle: Text(prediction.secondaryText),
-      leading: const Icon(Icons.location_off_outlined),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: ListTile(
+        horizontalTitleGap: 0,
+        onTap: () {
+          getPlaceDetail(prediction.placeId);
+          settingDropOffDialog();
+        },
+        title: Text(prediction.mainText),
+        subtitle: Text(prediction.secondaryText),
+        leading: const Icon(
+          Icons.location_on_outlined,
+          color: Colors.red,
+        ),
+      ),
     );
   }
 
@@ -200,15 +201,23 @@ class _SearchScreenState extends State<SearchScreen> {
               builder: (conext, state) {
             if (state is PlaceDetailLoadSuccess) {
               print("successss");
-              Navigator.pop(context);
 
               DirectionEvent event = DirectionLoad(
                   destination:
                       LatLng(state.placeDetail.lat, state.placeDetail.lng));
               BlocProvider.of<DirectionBloc>(context).add(event);
 
-              // Navigator.pushNamed(context, HomeScreen.routeName,
-              //     arguments: HomeScreenArgument(isSelected: true));
+              destinationLtlng =
+                  LatLng(state.placeDetail.lat, state.placeDetail.lng);
+
+              Future.delayed(Duration(seconds: 1), () {
+                Navigator.pop(context);
+
+                return Navigator.pushNamed(context, HomeScreen.routeName,
+                    arguments: HomeScreenArgument(
+                        isSelected: true,
+                        destinationlatlang: destinationLtlng));
+              });
             }
 
             if (state is PlaceDetailOperationFailure) {

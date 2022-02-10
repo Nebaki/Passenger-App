@@ -35,6 +35,7 @@ class _HomeScreenState extends State<HomeScreen> {
   List<LatLng> polylineCoordinates = [];
   PolylinePoints polylinePoints = PolylinePoints();
   Map<PolylineId, Polyline> polylines = {};
+  Map<MarkerId, Marker> markers = {};
 
   static const CameraPosition _addissAbaba = CameraPosition(
     target: LatLng(8.9806, 38.7578),
@@ -99,80 +100,81 @@ class _HomeScreenState extends State<HomeScreen> {
           widget.args.isSelected
               ? BlocBuilder<DirectionBloc, DirectionState>(
                   builder: (context, state) {
-                  print("succcesssss");
+                  bool isDialog = true;
 
                   if (state is DirectionLoadSuccess) {
+                    isDialog = false;
+
                     _getPolyline(state.direction.encodedPoints);
+                    _addMarker(
+                        widget.args.destinationlatlang!,
+                        "destination",
+                        BitmapDescriptor.defaultMarkerWithHue(
+                            BitmapDescriptor.hueGreen));
+
                     return GoogleMap(
                       mapType: MapType.normal,
                       myLocationButtonEnabled: true,
                       initialCameraPosition: _addissAbaba,
                       myLocationEnabled: true,
                       polylines: Set<Polyline>.of(polylines.values),
+                      markers: Set<Marker>.of(markers.values),
                       onMapCreated: (GoogleMapController controller) {
                         _controller.complete(controller);
 
                         _determinePosition().then((value) {
-                          // final pickupLatLng =
-                          //     LatLng(value.latitude, value.longitude);
-                          // LatLng destinationLatLng;
+                          setState(() {
+                            _addMarker(
+                                LatLng(value.latitude, value.longitude),
+                                "pickup",
+                                BitmapDescriptor.defaultMarkerWithHue(
+                                    BitmapDescriptor.hueRed));
+                          });
 
-                          // BlocListener<PlaceDetailBloc, PlaceDetailState>(
-                          //     listener: (context, state) {
-                          //   if (state is PlaceDetailLoadSuccess) {
-                          //     destinationLatLng = LatLng(
-                          //         state.placeDetail.lat, state.placeDetail.lng);
-                          //     LatLngBounds latLngBounds;
-                          //     if (pickupLatLng.latitude >
-                          //             destinationLatLng.latitude &&
-                          //         pickupLatLng.longitude >
-                          //             destinationLatLng.longitude) {
-                          //       latLngBounds = LatLngBounds(
-                          //           southwest: destinationLatLng,
-                          //           northeast: pickupLatLng);
-                          //     } else if (pickupLatLng.longitude >
-                          //         destinationLatLng.longitude) {
-                          //       latLngBounds = LatLngBounds(
-                          //           southwest: LatLng(pickupLatLng.latitude,
-                          //               destinationLatLng.longitude),
-                          //           northeast: LatLng(
-                          //               destinationLatLng.latitude,
-                          //               pickupLatLng.longitude));
-                          //     } else if (pickupLatLng.latitude >
-                          //         destinationLatLng.latitude) {
-                          //       latLngBounds = LatLngBounds(
-                          //           southwest: LatLng(
-                          //               destinationLatLng.latitude,
-                          //               pickupLatLng.longitude),
-                          //           northeast: LatLng(pickupLatLng.latitude,
-                          //               destinationLatLng.longitude));
-                          //     } else {
-                          //       latLngBounds = LatLngBounds(
-                          //           southwest: pickupLatLng,
-                          //           northeast: destinationLatLng);
-                          //     }
+                          LatLngBounds latLngBounds;
 
-                          //     controller.animateCamera(
-                          //         CameraUpdate.newLatLngBounds(
-                          //             latLngBounds, 70));
-                          //   }
-                          // });
+                          final destinationLatLng =
+                              widget.args.destinationlatlang;
+                          final pickupLatLng =
+                              LatLng(value.latitude, value.longitude);
+                          if (pickupLatLng.latitude >
+                                  destinationLatLng!.latitude &&
+                              pickupLatLng.longitude >
+                                  destinationLatLng.longitude) {
+                            latLngBounds = LatLngBounds(
+                                southwest: destinationLatLng,
+                                northeast: pickupLatLng);
+                          } else if (pickupLatLng.longitude >
+                              destinationLatLng.longitude) {
+                            latLngBounds = LatLngBounds(
+                                southwest: LatLng(pickupLatLng.latitude,
+                                    destinationLatLng.longitude),
+                                northeast: LatLng(destinationLatLng.latitude,
+                                    pickupLatLng.longitude));
+                          } else if (pickupLatLng.latitude >
+                              destinationLatLng.latitude) {
+                            latLngBounds = LatLngBounds(
+                                southwest: LatLng(destinationLatLng.latitude,
+                                    pickupLatLng.longitude),
+                                northeast: LatLng(pickupLatLng.latitude,
+                                    destinationLatLng.longitude));
+                          } else {
+                            latLngBounds = LatLngBounds(
+                                southwest: pickupLatLng,
+                                northeast: destinationLatLng);
+                          }
 
-                          //final destinationLatlng =
-                          //if()
                           controller.animateCamera(
-                              CameraUpdate.newCameraPosition(CameraPosition(
-                                  zoom: 14.4746,
-                                  target: LatLng(
-                                      value.latitude, value.longitude))));
+                              CameraUpdate.newLatLngBounds(latLngBounds, 70));
                         });
                       },
                     );
-                    //_getPolyline(state.direction.encodedPoints);
                   }
                   if (state is DirectionOperationFailure) {
-                    print("Failurrrrrrrrrrrrrrrrrrrr");
-
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                      content: const Text("Unable to find direction"),
+                      backgroundColor: Colors.red.shade900,
+                    ));
                     return GoogleMap(
                       mapType: MapType.normal,
                       myLocationButtonEnabled: true,
@@ -191,16 +193,16 @@ class _HomeScreenState extends State<HomeScreen> {
                       },
                     );
                   }
-                  return Text("Loading");
-
-                  //  AlertDialog(
-                  //   content: Row(
-                  //     children: const [
-                  //       CircularProgressIndicator(),
-                  //       Text("finding direction")
-                  //     ],
-                  //   ),
-                  // );
+                  return isDialog
+                      ? AlertDialog(
+                          content: Row(
+                            children: const [
+                              CircularProgressIndicator(),
+                              Text("finding direction")
+                            ],
+                          ),
+                        )
+                      : Container();
                 })
               : GoogleMap(
                   mapType: MapType.normal,
@@ -240,6 +242,13 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
     );
+  }
+
+  _addMarker(LatLng position, String id, BitmapDescriptor descriptor) {
+    MarkerId markerId = MarkerId(id);
+    Marker marker =
+        Marker(markerId: markerId, icon: descriptor, position: position);
+    markers[markerId] = marker;
   }
 
   _getPolyline(String encodedString) {

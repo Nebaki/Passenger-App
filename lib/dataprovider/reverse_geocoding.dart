@@ -14,7 +14,7 @@ String reverseGeocoding =
 class ReverseGocoding {
   Future<Position> _determinePosition() async {
     return await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high);
+        desiredAccuracy: LocationAccuracy.medium);
   }
 
   final http.Client httpClient;
@@ -23,6 +23,11 @@ class ReverseGocoding {
 
   Future<ReverseLocation> getLocationByLtlng() async {
     Position p = await _determinePosition();
+
+    print(p.latitude);
+    print(p.longitude);
+    print(
+        "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
     final _baseUrl =
         "https://maps.googleapis.com/maps/api/geocode/json?latlng=${p.latitude},${p.longitude}&key=AIzaSyB8z8UeyROt2-ay24jiHrrcMXaEAlPUvdQ";
 
