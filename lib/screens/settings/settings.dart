@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:passengerapp/bloc/bloc.dart';
+import 'package:passengerapp/models/models.dart';
+import 'package:passengerapp/rout.dart';
 import 'package:passengerapp/screens/screens.dart';
 
 class SettingScreen extends StatelessWidget {
@@ -29,66 +33,87 @@ class SettingScreen extends StatelessWidget {
       body: ListView(
         padding: const EdgeInsets.only(top: 20, left: 5, right: 5),
         children: [
-          Card(
-            elevation: 3,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(top: 8, left: 5),
-                  child: Text(
-                    "Profile",
-                    style: _textStyle,
-                  ),
-                ),
-                const Divider(
-                  color: Colors.red,
-                  thickness: 1.5,
-                ),
-                const Center(
-                  child: CircleAvatar(
-                    radius: 50,
-                  ),
-                ),
-                const Center(child: Text("Abebe Kebede")),
-                const SizedBox(
-                  height: 20,
-                ),
-                Container(
-                  padding: const EdgeInsets.only(left: 10),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "+251934540217",
+          BlocBuilder<AuthBloc, AuthState>(builder: (_, state) {
+            String name;
+            String phoneNumber;
+            if (state is AuthDataLoadSuccess) {
+              print("RRRRRRRRRRRRRRRRRRRRRRRRRRRRRR");
+              name = state.auth.name!;
+              phoneNumber = state.auth.phoneNumber;
+              return Card(
+                elevation: 3,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(top: 8, left: 5),
+                      child: Text(
+                        "Profile",
                         style: _textStyle,
                       ),
-                      Text(
-                        "abebe@gmail.com",
-                        style: _textStyle,
+                    ),
+                    const Divider(
+                      color: Colors.red,
+                      thickness: 1.5,
+                    ),
+                    const Center(
+                      child: CircleAvatar(
+                        radius: 50,
                       ),
-                      Text(
-                        "+251934540217",
-                        style: _textStyle,
+                    ),
+                    Center(child: Text(state.auth.name!)),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    Container(
+                      padding: const EdgeInsets.only(left: 10),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            state.auth.phoneNumber,
+                            style: _textStyle,
+                          ),
+                          Text(
+                            state.auth.email!,
+                            style: _textStyle,
+                          ),
+                          Text(
+                            state.auth.emergencyContact!,
+                            style: _textStyle,
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
+                    ),
+                    Row(mainAxisAlignment: MainAxisAlignment.end, children: [
+                      TextButton(
+                          onPressed: () {
+                            Navigator.pushNamed(context, EditProfile.routeName,
+                                arguments: EditProfileArgument(
+                                    auth: Auth(
+                                        phoneNumber: state.auth.phoneNumber,
+                                        id: state.auth.id,
+                                        name: state.auth.name,
+                                        email: state.auth.email,
+                                        emergencyContact:
+                                            state.auth.emergencyContact)));
+                          },
+                          child: const Text("Edit Profile")),
+                      TextButton(
+                          onPressed: () {
+                            Navigator.pushNamed(
+                                context, ChangePassword.routeName);
+                          },
+                          child: const Text("Change Password")),
+                    ])
+                  ],
                 ),
-                Row(mainAxisAlignment: MainAxisAlignment.end, children: [
-                  TextButton(
-                      onPressed: () {
-                        Navigator.pushNamed(context, EditProfile.routeName);
-                      },
-                      child: const Text("Edit Profile")),
-                  TextButton(
-                      onPressed: () {
-                        Navigator.pushNamed(context, ChangePassword.routeName);
-                      },
-                      child: const Text("Change Password")),
-                ])
-              ],
-            ),
-          ),
+              );
+            }
+
+            if (state is AuthDataLoading) {}
+            return Container();
+          }),
 
           Card(
             elevation: 3,
@@ -180,7 +205,11 @@ class SettingScreen extends StatelessWidget {
                 Align(
                   alignment: Alignment.centerRight,
                   child: TextButton(
-                      onPressed: () {}, child: const Text("Edit Preference")),
+                      onPressed: () {
+                        Navigator.pushNamed(
+                            context, PreferenceScreen.routeNAme);
+                      },
+                      child: const Text("Edit Preference")),
                 )
               ],
             ),

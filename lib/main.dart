@@ -26,7 +26,15 @@ void main() {
 
   final DirectionRepository directionRepository = DirectionRepository(
       dataProvider: DirectionDataProvider(httpClient: http.Client()));
+
+  final UserRepository userRepository =
+      UserRepository(dataProvider: UserDataProvider(httpClient: http.Client()));
+
+  final AuthRepository authRepository =
+      AuthRepository(dataProvider: AuthDataProvider(httpClient: http.Client()));
   runApp(MyApp(
+    authRepository: authRepository,
+    userRepository: userRepository,
     reverseLocationRepository: reverseLocationRepository,
     locationPredictionRepository: locationPredictionRepository,
     placeDetailRepository: placeDetailRepository,
@@ -69,9 +77,13 @@ class MyApp extends StatelessWidget {
   final LocationPredictionRepository locationPredictionRepository;
   final PlaceDetailRepository placeDetailRepository;
   final DirectionRepository directionRepository;
+  final UserRepository userRepository;
+  final AuthRepository authRepository;
 
   const MyApp(
       {Key? key,
+      required this.userRepository,
+      required this.authRepository,
       required this.reverseLocationRepository,
       required this.locationPredictionRepository,
       required this.placeDetailRepository,
@@ -86,7 +98,9 @@ class MyApp extends StatelessWidget {
           RepositoryProvider.value(value: reverseLocationRepository),
           RepositoryProvider.value(value: locationPredictionRepository),
           RepositoryProvider.value(value: placeDetailRepository),
-          RepositoryProvider.value(value: directionRepository)
+          RepositoryProvider.value(value: directionRepository),
+          RepositoryProvider.value(value: userRepository),
+          RepositoryProvider.value(value: authRepository),
         ],
         child: MultiBlocProvider(
             providers: [
@@ -104,6 +118,12 @@ class MyApp extends StatelessWidget {
               BlocProvider(
                   create: (context) =>
                       DirectionBloc(directionRepository: directionRepository)),
+              BlocProvider(
+                  create: (context) =>
+                      UserBloc(userRepository: userRepository)),
+              BlocProvider(
+                  create: (context) => AuthBloc(authRepository: authRepository)
+                    ..add(AuthDataLoad())),
             ],
             child: MaterialApp(
               title: 'SafeWay',

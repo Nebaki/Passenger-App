@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:passengerapp/bloc/bloc.dart';
 import 'package:passengerapp/rout.dart';
 import 'package:passengerapp/screens/screens.dart';
 import 'package:passengerapp/widgets/widgets.dart';
@@ -36,6 +38,7 @@ class _PhoneVerificationState extends State<PhoneVerification> {
   final _codeController = TextEditingController();
 
   int _start = 60;
+  bool _isLoading = false;
 
   void startTimer() {
     const oneSec = Duration(seconds: 1);
@@ -74,7 +77,7 @@ class _PhoneVerificationState extends State<PhoneVerification> {
 
   void resendVerificationCode(String phoneNumber, int token) {
     _auth.verifyPhoneNumber(
-        phoneNumber: "phoneController",
+        phoneNumber: widget.args.phoneNumber,
         verificationCompleted: (phoneAuthCredential) async {
           setState(() {
             //showLoading = false;
@@ -97,8 +100,11 @@ class _PhoneVerificationState extends State<PhoneVerification> {
           setState(() {
             //_isLoading = false;
           });
-          // Navigator.pushNamed(context, PhoneVerification.routeName,
-          //     arguments: VerificationArgument(resendingToken: resendingToken, verificationId: verificationId));
+          Navigator.pushReplacementNamed(context, PhoneVerification.routeName,
+              arguments: VerificationArgument(
+                  resendingToken: resendingToken,
+                  verificationId: verificationId,
+                  phoneNumber: widget.args.phoneNumber));
         },
         forceResendingToken: token,
         codeAutoRetrievalTimeout: (verificationId) async {});
@@ -289,7 +295,9 @@ class _PhoneVerificationState extends State<PhoneVerification> {
                       child: Row(
                         children: [
                           Text(
-                            "${_start != 0 ? _start : 'Didn\'t receive the code? '}",
+                            _start != 0
+                                ? 'Didn\'t receive the code?  $_start'
+                                : 'Didn\'t receive the code? ',
                             style: const TextStyle(fontSize: 17.0),
                           ),
                           TextButton(
@@ -302,7 +310,13 @@ class _PhoneVerificationState extends State<PhoneVerification> {
                                                 ? Colors.grey
                                                 : null),
                               ),
-                              onPressed: _start == 0 ? () {} : null,
+                              onPressed: _start == 0
+                                  ? () {
+                                      resendVerificationCode(
+                                          widget.args.phoneNumber,
+                                          widget.args.resendingToken!);
+                                    }
+                                  : null,
                               child: const Text(
                                 ' RESEND',
                               )),
@@ -314,35 +328,68 @@ class _PhoneVerificationState extends State<PhoneVerification> {
                         width: 200.0,
                         height: 40.0,
                         child: ElevatedButton(
-                          onPressed: () {
-                            final form = _formKey.currentState;
-                            if (form!.validate()) {
-                              form.save();
-                              String code = otp1Controller.text +
-                                  otp2Controller.text +
-                                  otp3Controller.text +
-                                  otp4Controller.text +
-                                  otp5Controller.text +
-                                  otp6Controller.text;
+                          onPressed: _isLoading
+                              ? null
+                              : () {
+                                  final form = _formKey.currentState;
+                                  if (form!.validate()) {
+                                    form.save();
+                                    String code = otp1Controller.text +
+                                        otp2Controller.text +
+                                        otp3Controller.text +
+                                        otp4Controller.text +
+                                        otp5Controller.text +
+                                        otp6Controller.text;
+                                    setState(() {
+                                      _isLoading = true;
+                                    });
 
-                              PhoneAuthCredential credential =
-                                  PhoneAuthProvider.credential(
-                                      verificationId:
-                                          this.widget.args.verificationId,
-                                      smsCode: code);
-                              _auth
-                                  .signInWithCredential(credential)
-                                  .then((value) {
-                                print(value);
-                                Navigator.pushNamed(
-                                    context, CreateProfileScreen.routeName);
-                              });
-                            }
-                          },
-                          child: const Text(
-                            'Verify',
-                            style:
-                                TextStyle(fontSize: 17.0, color: Colors.white),
+                                    PhoneAuthCredential credential =
+                                        PhoneAuthProvider.credential(
+                                            verificationId:
+                                                this.widget.args.verificationId,
+                                            smsCode: code);
+                                    _auth
+                                        .signInWithCredential(credential)
+                                        .then((value) {
+                                      Navigator.pushReplacementNamed(context,
+                                          CreateProfileScreen.routeName,
+                                          arguments:
+                                              CreateProfileScreenArgument(
+                                                  phoneNumber:
+                                                      widget.args.phoneNumber));
+                                    }).onError((error, stackTrace) {
+                                      setState(() {
+                                        _isLoading = false;
+                                      });
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(SnackBar(
+                                              backgroundColor:
+                                                  Colors.red.shade900,
+                                              content: Text(error.toString())));
+                                    });
+                                  }
+                                },
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Spacer(),
+                              const Text("Verify",
+                                  style: TextStyle(color: Colors.white)),
+                              const Spacer(),
+                              Align(
+                                alignment: Alignment.centerRight,
+                                child: _isLoading
+                                    ? const SizedBox(
+                                        height: 20,
+                                        width: 20,
+                                        child: CircularProgressIndicator(
+                                          color: Colors.white,
+                                        ),
+                                      )
+                                    : Container(),
+                              )
+                            ],
                           ),
                         )),
                   ),

@@ -5,6 +5,10 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:passengerapp/bloc/bloc.dart';
+import 'package:passengerapp/rout.dart';
 import 'package:passengerapp/screens/screens.dart';
 
 class CustomSplashScreen extends StatefulWidget {
@@ -62,6 +66,16 @@ class _CustomSplashScreenState extends State<CustomSplashScreen> {
     });
   }
 
+  void requestLocationPermission() async {
+    LocationPermission permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        return Future.error('Location permissions are denied');
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final _snackBar = SnackBar(
@@ -89,23 +103,63 @@ class _CustomSplashScreenState extends State<CustomSplashScreen> {
     //   }
     // });
 
-    Future.delayed(Duration(seconds: 3), () {
-      if (_connectionStatus == ConnectivityResult.none) {
-        print("false");
-        ScaffoldMessenger.of(context).showSnackBar(_snackBar);
+    // Future.delayed(Duration(seconds: 3), () {
+    //   if (_connectionStatus == ConnectivityResult.none) {
+    //     print("false");
+    //     ScaffoldMessenger.of(context).showSnackBar(_snackBar);
 
-        //initConnectivity();
-      } else if (_connectionStatus == ConnectivityResult.wifi ||
-          _connectionStatus == ConnectivityResult.mobile) {
-        Navigator.pushReplacementNamed(context, SigninScreen.routeName);
-      }
-    });
+    //     //initConnectivity();
+    //   } else if (_connectionStatus == ConnectivityResult.wifi ||
+    //       _connectionStatus == ConnectivityResult.mobile) {
+    //     Navigator.pushReplacementNamed(context, SigninScreen.routeName);
+    //   }
+    // });
 
-    return const Scaffold(
-      backgroundColor: Colors.red,
-      body: Center(
-          child:
-              Image(height: 150, image: AssetImage("assets/icons/logo.png"))),
-    );
+    return Scaffold(
+        backgroundColor: Colors.red,
+        body: BlocConsumer<AuthBloc, AuthState>(builder: (_, state) {
+          // if (state is AuthDataLoading) {
+          //   print("Loadloadloadloadloadload");
+          //   return const Align(
+          //     alignment: Alignment.bottomCenter,
+          //     child: LinearProgressIndicator(),
+          //   );
+          // }
+          return const Center(
+            child: Image(
+              height: 150,
+              image: AssetImage("assets/icons/logo.png"),
+            ),
+          );
+        }, listener: (_, state) {
+          if (state is AuthDataLoading) {
+            print("Loadloadloadloadloadload");
+            const Align(
+              alignment: Alignment.bottomCenter,
+              child: LinearProgressIndicator(),
+            );
+          }
+          if (state is AuthDataLoadSuccess) {
+            if (_connectionStatus == ConnectivityResult.none) {
+              ScaffoldMessenger.of(context).showSnackBar(_snackBar);
+            } else if (_connectionStatus == ConnectivityResult.wifi ||
+                _connectionStatus == ConnectivityResult.mobile) {
+              requestLocationPermission();
+
+              print("teststst");
+              print(state.auth.token);
+
+              state.auth.token != null
+                  ? Navigator.pushReplacementNamed(
+                      context, HomeScreen.routeName,
+                      arguments: HomeScreenArgument(isSelected: false))
+                  : Navigator.pushReplacementNamed(
+                      context, SigninScreen.routeName);
+
+              //0967543215
+            }
+          }
+          if (state is AuthOperationFailure) {}
+        }));
   }
 }

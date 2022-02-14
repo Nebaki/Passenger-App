@@ -46,6 +46,8 @@ dependencies:
   http: ^0.13.4
   flutter_bloc: ^6.1.2
   flutter_polyline_points: ^1.0.0
+  email_validator: '^1.0.6'
+  flutter_secure_storage: ^5.0.2
   
 
 

@@ -72,6 +72,7 @@ class _MobileVerificationState extends State<MobileVerification> {
           });
           Navigator.pushNamed(context, PhoneVerification.routeName,
               arguments: VerificationArgument(
+                  phoneNumber: phoneController,
                   resendingToken: resendingToken,
                   verificationId: verificationId));
         },

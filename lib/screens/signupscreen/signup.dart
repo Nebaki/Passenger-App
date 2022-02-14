@@ -9,7 +9,6 @@ enum MobileVerficationState { SHOW_MOBILE_FORM_STATE, SHOW_OTP_FORM_STATE }
 
 class SignupScreen extends StatefulWidget {
   static const routeName = '/signup';
-
   @override
   _SignupScreenState createState() => _SignupScreenState();
 }
@@ -60,8 +59,12 @@ class _SignupScreenState extends State<SignupScreen> {
         },
         verificationFailed: (verificationFailed) async {
           setState(() {
-            showLoading = false;
+            _isLoading = false;
           });
+
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              backgroundColor: Colors.red.shade900,
+              content: Text(verificationFailed.message.toString())));
           print(verificationFailed.message);
         },
         codeSent: (verificationId, resendingToken) async {
@@ -75,6 +78,7 @@ class _SignupScreenState extends State<SignupScreen> {
           });
           Navigator.pushNamed(context, PhoneVerification.routeName,
               arguments: VerificationArgument(
+                  phoneNumber: phoneController,
                   resendingToken: resendingToken,
                   verificationId: verificationId));
         },
@@ -90,10 +94,6 @@ class _SignupScreenState extends State<SignupScreen> {
       body: Stack(
         children: [
           CustomeBackArrow(),
-          Align(
-            alignment: Alignment.center,
-            child: _isLoading ? const CircularProgressIndicator() : Container(),
-          ),
           Form(
             key: _formkey,
             child: Padding(
@@ -167,8 +167,9 @@ class _SignupScreenState extends State<SignupScreen> {
                       child: SizedBox(
                         width: MediaQuery.of(context).size.width,
                         child: ElevatedButton(
-                            onPressed: isCorrect
-                                ? () => showDialog(
+                            onPressed: _isLoading
+                                ? null
+                                : () => showDialog(
                                     context: context,
                                     builder: (BuildContext context) =>
                                         AlertDialog(
@@ -187,6 +188,12 @@ class _SignupScreenState extends State<SignupScreen> {
                                                     _isLoading = true;
                                                   });
 
+                                                  // Navigator.pushNamed(
+                                                  //     context,
+                                                  //     CreateProfileScreen
+                                                  //         .routeName);
+                                                  Navigator.pop(context);
+
                                                   sendVerificationCode();
                                                   // Navigator
                                                   //     .pushReplacementNamed(
@@ -202,10 +209,28 @@ class _SignupScreenState extends State<SignupScreen> {
                                                 },
                                                 child: const Text("Cancel")),
                                           ],
-                                        ))
-                                : null,
-                            child: const Text("Continue",
-                                style: TextStyle(color: Colors.white))),
+                                        )),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                const Spacer(),
+                                const Text("Sign Up",
+                                    style: TextStyle(color: Colors.white)),
+                                const Spacer(),
+                                Align(
+                                  alignment: Alignment.centerRight,
+                                  child: _isLoading
+                                      ? const SizedBox(
+                                          height: 20,
+                                          width: 20,
+                                          child: CircularProgressIndicator(
+                                            color: Colors.white,
+                                          ),
+                                        )
+                                      : Container(),
+                                )
+                              ],
+                            )),
                       ),
                     ),
                   ),

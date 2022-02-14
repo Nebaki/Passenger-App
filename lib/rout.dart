@@ -3,6 +3,8 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:passengerapp/main.dart';
 import 'package:passengerapp/screens/screens.dart';
 
+import 'models/models.dart';
+
 class AppRoute {
   static Route generateRoute(RouteSettings settings) {
     if (settings.name == SigninScreen.routeName) {
@@ -25,7 +27,12 @@ class AppRoute {
               ));
     }
     if (settings.name == CreateProfileScreen.routeName) {
-      return MaterialPageRoute(builder: (context) => CreateProfileScreen());
+      CreateProfileScreenArgument argument =
+          settings.arguments as CreateProfileScreenArgument;
+      return MaterialPageRoute(
+          builder: (context) => CreateProfileScreen(
+                args: argument,
+              ));
     }
     if (settings.name == SearchScreen.routeName) {
       SearchScreenArgument argument =
@@ -39,7 +46,11 @@ class AppRoute {
       return MaterialPageRoute(builder: (context) => ProfileDetail());
     }
     if (settings.name == EditProfile.routeName) {
-      return MaterialPageRoute(builder: (context) => EditProfile());
+      EditProfileArgument argumnet = settings.arguments as EditProfileArgument;
+      return MaterialPageRoute(
+          builder: (context) => EditProfile(
+                args: argumnet,
+              ));
     }
     if (settings.name == SavedAddress.routeName) {
       return MaterialPageRoute(builder: (context) => SavedAddress());
@@ -71,6 +82,9 @@ class AppRoute {
     if (settings.name == ContactUsScreen.routeName) {
       return MaterialPageRoute(builder: (context) => ContactUsScreen());
     }
+    if (settings.name == PreferenceScreen.routeNAme) {
+      return MaterialPageRoute(builder: (context) => PreferenceScreen());
+    }
     return MaterialPageRoute(builder: (context) => CustomSplashScreen());
   }
 }
@@ -86,12 +100,25 @@ class HomeScreenArgument {
 class VerificationArgument {
   String verificationId;
   int? resendingToken;
+  String phoneNumber;
   VerificationArgument(
-      {required this.verificationId, required this.resendingToken});
+      {required this.verificationId,
+      required this.resendingToken,
+      required this.phoneNumber});
 }
 
 class SearchScreenArgument {
   String currentLocation;
 
   SearchScreenArgument({required this.currentLocation});
+}
+
+class CreateProfileScreenArgument {
+  String phoneNumber;
+  CreateProfileScreenArgument({required this.phoneNumber});
+}
+
+class EditProfileArgument {
+  Auth auth;
+  EditProfileArgument({required this.auth});
 }
