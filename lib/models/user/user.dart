@@ -4,24 +4,26 @@ import 'package:equatable/equatable.dart';
 @immutable
 class User extends Equatable {
   String? id;
-  String firstName;
-  String lastName;
+  String? firstName;
+  String? lastName;
   String? password;
   String? email;
-  String phoneNumber;
-  String gender;
+  String? phoneNumber;
+  String? gender;
   String? emergencyContact;
   String? profileImage;
+  Map<String, dynamic>? preference;
 
   User(
       {this.id,
-      required this.firstName,
-      required this.lastName,
+      this.firstName,
+      this.lastName,
       this.email,
       this.password,
-      required this.phoneNumber,
-      required this.gender,
+      this.phoneNumber,
+      this.gender,
       this.emergencyContact,
+      this.preference,
       this.profileImage});
 
   @override
@@ -34,14 +36,13 @@ class User extends Equatable {
         phoneNumber,
         gender,
         emergencyContact,
-        profileImage
+        profileImage,
       ];
 
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
       id: json["user"]["id"],
-      firstName: json["user"]["first_name"],
-      lastName: json["user"]["last_name"],
+      firstName: json["user"]["name"],
       email: json["user"]["email"],
       gender: json["user"]["gender"],
       phoneNumber: json["user"]["phone_number"],

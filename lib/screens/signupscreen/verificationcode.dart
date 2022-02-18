@@ -89,7 +89,6 @@ class _PhoneVerificationState extends State<PhoneVerification> {
           setState(() {
             //showLoading = false;
           });
-          print(verificationFailed.message);
         },
         codeSent: (verificationId, resendingToken) async {
           setState(() {

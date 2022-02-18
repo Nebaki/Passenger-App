@@ -77,16 +77,10 @@ class _SigninScreenState extends State<SigninScreen> {
                     padding: const EdgeInsets.all(10),
                     child: InternationalPhoneNumberInput(
                       onSaved: (value) {
-                        print("Valllllllllllllllllllllllllllllllll");
-                        print(value);
                         _auth["phoneNumber"] = value.toString();
                       },
-                      onInputChanged: (PhoneNumber number) {
-                        print(number.phoneNumber);
-                      },
-                      onInputValidated: (bool value) {
-                        print(value);
-                      },
+                      onInputChanged: (PhoneNumber number) {},
+                      onInputValidated: (bool value) {},
                       selectorConfig: const SelectorConfig(
                           selectorType: PhoneInputSelectorType.BOTTOM_SHEET,
                           trailingSpace: false),

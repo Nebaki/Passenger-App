@@ -44,7 +44,6 @@ class _MobileVerificationState extends State<MobileVerification> {
       setState(() {
         showLoading = false;
       });
-      print(e.message);
     }
   }
 
@@ -62,7 +61,6 @@ class _MobileVerificationState extends State<MobileVerification> {
           setState(() {
             showLoading = false;
           });
-          print(verificationFailed.message);
         },
         codeSent: (verificationId, resendingToken) async {
           setState(() {
@@ -105,14 +103,11 @@ class _MobileVerificationState extends State<MobileVerification> {
                     padding: const EdgeInsets.symmetric(vertical: 10),
                     child: InternationalPhoneNumberInput(
                       onInputChanged: (PhoneNumber number) {
-                        print(number.phoneNumber);
                         setState(() {
                           phoneController = number.phoneNumber!;
                         });
                       },
-                      onInputValidated: (bool value) {
-                        print(value);
-                      },
+                      onInputValidated: (bool value) {},
                       selectorConfig: const SelectorConfig(
                         selectorType: PhoneInputSelectorType.BOTTOM_SHEET,
                       ),
@@ -168,8 +163,6 @@ class _MobileVerificationState extends State<MobileVerification> {
                                           actions: [
                                             TextButton(
                                                 onPressed: () async {
-                                                  print(phoneController);
-
                                                   sendVerificationCode();
                                                   // Navigator
                                                   //     .pushReplacementNamed(

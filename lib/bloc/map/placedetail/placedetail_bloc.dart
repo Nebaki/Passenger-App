@@ -15,7 +15,6 @@ class PlaceDetailBloc extends Bloc<PlaceDetailEvent, PlaceDetailState> {
       try {
         final placeDetail =
             await placeDetailRepository.getPlaceAddressDetails(event.placeId);
-        print("Yeah Here");
 
         yield PlaceDetailLoadSuccess(placeDetail: placeDetail);
       } catch (_) {

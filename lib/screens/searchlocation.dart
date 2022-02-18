@@ -126,8 +126,6 @@ class _SearchScreenState extends State<SearchScreen> {
                   return const Center(child: CircularProgressIndicator());
                 }
                 if (state is LocationPredictionLoadSuccess) {
-                  print("Successssssssssssssssssssssssss");
-                  print(state.placeList);
                   return SizedBox(
                     height: MediaQuery.of(context).size.height - 260,
                     child: Container(
@@ -181,7 +179,6 @@ class _SearchScreenState extends State<SearchScreen> {
 
   void findPlace(String placeName) {
     if (placeName.isNotEmpty) {
-      print("YAYAYAY");
       LocationPredictionEvent event =
           LocationPredictionLoad(placeName: placeName);
       BlocProvider.of<LocationPredictionBloc>(context).add(event);
@@ -200,8 +197,6 @@ class _SearchScreenState extends State<SearchScreen> {
           return BlocBuilder<PlaceDetailBloc, PlaceDetailState>(
               builder: (conext, state) {
             if (state is PlaceDetailLoadSuccess) {
-              print("successss");
-
               DirectionEvent event = DirectionLoad(
                   destination:
                       LatLng(state.placeDetail.lat, state.placeDetail.lng));

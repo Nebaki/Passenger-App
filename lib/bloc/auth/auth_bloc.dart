@@ -20,6 +20,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     }
 
     if (event is AuthDataLoad) {
+      yield AuthDataLoading();
       try {
         final auth = await authRepository.getUserData();
         yield AuthDataLoadSuccess(auth);

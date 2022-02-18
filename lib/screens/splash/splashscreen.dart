@@ -89,7 +89,6 @@ class _CustomSplashScreenState extends State<CustomSplashScreen> {
         textColor: Colors.white,
       ),
     );
-    print(_connectionStatus);
     // WidgetsBinding.instance!.addPostFrameCallback((_) {
     //   print(_connectionStatus);
     //   if (_connectionStatus == ConnectivityResult.none) {
@@ -133,7 +132,6 @@ class _CustomSplashScreenState extends State<CustomSplashScreen> {
           );
         }, listener: (_, state) {
           if (state is AuthDataLoading) {
-            print("Loadloadloadloadloadload");
             const Align(
               alignment: Alignment.bottomCenter,
               child: LinearProgressIndicator(),
@@ -146,7 +144,6 @@ class _CustomSplashScreenState extends State<CustomSplashScreen> {
                 _connectionStatus == ConnectivityResult.mobile) {
               requestLocationPermission();
 
-              print("teststst");
               print(state.auth.token);
 
               state.auth.token != null

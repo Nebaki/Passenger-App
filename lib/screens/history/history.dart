@@ -12,7 +12,7 @@ class HistoryPage extends StatelessWidget {
       appBar: AppBar(
         elevation: 0,
         iconTheme: const IconThemeData(color: Colors.black),
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.grey.shade100,
         title: const Text(
           "Trips",
           style: TextStyle(color: Colors.black),
@@ -20,7 +20,7 @@ class HistoryPage extends StatelessWidget {
         centerTitle: true,
       ),
       body: ListView(
-        padding: const EdgeInsets.fromLTRB(10, 20, 10, 0),
+        padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
         children: List.generate(10, (index) => _builHistoryCard(context)
             //_savedItems(context: context, text: "Mon, 18 Feb")
             ),
@@ -76,9 +76,9 @@ class HistoryPage extends StatelessWidget {
               boxShadow: [
                 BoxShadow(
                     blurStyle: BlurStyle.normal,
-                    color: Colors.grey.shade200,
+                    color: Colors.grey.shade300,
                     blurRadius: 8,
-                    spreadRadius: 8)
+                    spreadRadius: 5)
               ]),
           child: Column(
             children: [

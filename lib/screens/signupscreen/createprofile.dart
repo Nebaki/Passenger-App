@@ -38,7 +38,6 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
               leading: Icon(Icons.image),
               title: Text("Gallery"),
               onTap: () async {
-                print("heyyyyyyyyyyyyyyyyyyyyy");
                 XFile? image = (await ImagePicker.platform.getImage(
                   source: ImageSource.gallery,
                 )
@@ -49,10 +48,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                     //   maxWidth: 400,
                     // )
                     );
-                print("testtttttttttttttttttttttttttttttttttttttttttttt");
 
-                print(image.toString() +
-                    "testtttttttttttttttttttttttttttttttttttttttttttt");
                 setState(() {
                   _image = image;
                 });

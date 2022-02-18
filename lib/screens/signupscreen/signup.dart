@@ -65,7 +65,6 @@ class _SignupScreenState extends State<SignupScreen> {
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
               backgroundColor: Colors.red.shade900,
               content: Text(verificationFailed.message.toString())));
-          print(verificationFailed.message);
         },
         codeSent: (verificationId, resendingToken) async {
           setState(() {
@@ -113,7 +112,6 @@ class _SignupScreenState extends State<SignupScreen> {
                     padding: const EdgeInsets.symmetric(vertical: 10),
                     child: InternationalPhoneNumberInput(
                       onInputChanged: (PhoneNumber number) {
-                        print(number.phoneNumber);
                         setState(() {
                           phoneController = number.phoneNumber!;
                         });
@@ -121,7 +119,6 @@ class _SignupScreenState extends State<SignupScreen> {
                       initialValue: PhoneNumber(isoCode: "ET"),
 
                       onInputValidated: (bool value) {
-                        print(value);
                         value
                             ? setState(() {
                                 isCorrect = true;
@@ -183,7 +180,6 @@ class _SignupScreenState extends State<SignupScreen> {
                                           actions: [
                                             TextButton(
                                                 onPressed: () async {
-                                                  print(phoneController);
                                                   setState(() {
                                                     _isLoading = true;
                                                   });

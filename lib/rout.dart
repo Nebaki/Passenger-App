@@ -83,7 +83,11 @@ class AppRoute {
       return MaterialPageRoute(builder: (context) => ContactUsScreen());
     }
     if (settings.name == PreferenceScreen.routeNAme) {
-      return MaterialPageRoute(builder: (context) => PreferenceScreen());
+      PreferenceArgument argument = settings.arguments as PreferenceArgument;
+      return MaterialPageRoute(
+          builder: (context) => PreferenceScreen(
+                args: argument,
+              ));
     }
     return MaterialPageRoute(builder: (context) => CustomSplashScreen());
   }
@@ -121,4 +125,13 @@ class CreateProfileScreenArgument {
 class EditProfileArgument {
   Auth auth;
   EditProfileArgument({required this.auth});
+}
+
+class PreferenceArgument {
+  String gender;
+  double min_rate;
+  String carType;
+
+  PreferenceArgument(
+      {required this.gender, required this.min_rate, required this.carType});
 }

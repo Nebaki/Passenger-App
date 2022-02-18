@@ -21,12 +21,6 @@ class DirectionDataProvider {
     Position p = await _determinePosition();
     final initialPosition = LatLng(p.latitude, p.longitude);
 
-    print("Hereeeeeeeeeeeeeeeeeeeeeeeeeee");
-    print(initialPosition.latitude);
-    print(initialPosition.longitude);
-    print(destination.latitude);
-    print(destination.longitude);
-
     final _directionUrl =
         "https://maps.googleapis.com/maps/api/directions/json?origin=${initialPosition.latitude},${initialPosition.longitude}&destination=${destination.latitude},${destination.longitude}&key=$_api_key";
 
@@ -34,7 +28,6 @@ class DirectionDataProvider {
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
-      print(data);
 
       return Direction.fromJson(data);
     } else {

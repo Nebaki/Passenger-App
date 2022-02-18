@@ -22,7 +22,6 @@ class LocationPredictionDataProvider {
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
-      print(data);
 
       List places = data["predictions"];
       return places.map((e) => LocationPrediction.fromJson(e)).toList();

@@ -30,4 +30,8 @@ class UsersDeleteSuccess extends UserState {
   List<Object> get props => [isSuccessfull];
 }
 
+class ImageUploadSuccess extends UserState {}
+
+class UserPreferenceUploadSuccess extends UserState {}
+
 class UserOperationFailure extends UserState {}

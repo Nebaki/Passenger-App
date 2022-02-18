@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
@@ -21,6 +22,7 @@ class EditProfile extends StatefulWidget {
 class _EditProfileState extends State<EditProfile> {
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   bool _isLoading = false;
+  bool _isImageLoading = false;
   Map<String, dynamic> _user = {};
   final _textStyle =
       const TextStyle(color: Colors.black12, fontWeight: FontWeight.bold);
@@ -35,7 +37,6 @@ class _EditProfileState extends State<EditProfile> {
               leading: const Icon(Icons.image),
               title: const Text("Gallery"),
               onTap: () async {
-                print("heyyyyyyyyyyyyyyyyyyyyy");
                 XFile? image = (await ImagePicker.platform.getImage(
                   source: ImageSource.gallery,
                 )
@@ -46,14 +47,17 @@ class _EditProfileState extends State<EditProfile> {
                     //   maxWidth: 400,
                     // )
                     );
-                print("testtttttttttttttttttttttttttttttttttttttttttttt");
 
-                print(image.toString() +
-                    "testtttttttttttttttttttttttttttttttttttttttttttt");
+                //File f = File(image!.path);
+
                 setState(() {
                   _image = image;
                 });
                 Navigator.pop(context);
+
+                UserEvent event = UploadProfile(image!);
+
+                BlocProvider.of<UserBloc>(ctx).add(event);
               },
             ),
           );
@@ -62,18 +66,26 @@ class _EditProfileState extends State<EditProfile> {
 
   @override
   Widget build(BuildContext context) {
+    String imageurl;
     return Scaffold(
       appBar: AppBar(
+        elevation: 0,
         foregroundColor: Colors.white,
         title: const Text("Edit Profile"),
         centerTitle: true,
         backgroundColor: Colors.red,
       ),
       backgroundColor: Colors.red,
-      body: BlocConsumer<UserBloc, UserState>(builder: (_, state) {
+      body: BlocConsumer<UserBloc, UserState>(builder: (context, state) {
         return _buildProfileForm();
-      }, listener: (_, state) {
-        if (state is UserLoading) {}
+      }, listener: (context, state) {
+        if (state is ImageUploadSuccess) {
+          BlocProvider.of<AuthBloc>(context).add(AuthDataLoad());
+          _isImageLoading = false;
+        }
+        if (state is UserLoading) {
+          _isImageLoading = true;
+        }
         if (state is UsersLoadSuccess) {
           _isLoading = false;
 
@@ -114,9 +126,7 @@ class _EditProfileState extends State<EditProfile> {
                   hintStyle: TextStyle(
                       fontWeight: FontWeight.w300, color: Colors.black45),
                   // prefixIcon: Icon(
-                  //   Icons.vpn_key,
-                  //   size: 19,
-                  // ),
+                  // artist Icon
                   fillColor: Colors.white,
 
                   //filled: true,
@@ -125,7 +135,7 @@ class _EditProfileState extends State<EditProfile> {
                 ),
                 validator: (value) {
                   if (value!.isEmpty) {
-                    return 'This field can\'t be empity';
+                    return 'This field can\'t be empity:    ';
                   }
                   return null;
                 },
@@ -174,31 +184,64 @@ class _EditProfileState extends State<EditProfile> {
                             },
                             child: CircleAvatar(
                               radius: 60,
-                              child: _image == null
-                                  ? Container()
+                              child: _isImageLoading
+                                  ? CircularProgressIndicator()
                                   : ClipRRect(
                                       borderRadius: BorderRadius.circular(100),
-                                      child: Stack(
-                                        children: [
-                                          Container(
-                                            child: Image.file(
-                                              File(_image!.path),
-                                              fit: BoxFit.cover,
-                                            ),
-                                            width: 300,
-                                            height: 300,
-                                          ),
-                                          Positioned(
-                                            bottom: 4.0,
-                                            right: 4.0,
-                                            child: IconButton(
-                                              icon: const Icon(Icons.edit),
-                                              onPressed: () {},
-                                            ),
-                                          )
-                                        ],
-                                      ),
-                                    ),
+                                      child: BlocBuilder<AuthBloc, AuthState>(
+                                        builder: (_, state) {
+                                          if (state is AuthDataLoadSuccess) {
+                                            return CachedNetworkImage(
+                                              imageUrl:
+                                                  state.auth.profilePicture!,
+                                              imageBuilder:
+                                                  (context, imageProvider) =>
+                                                      Container(
+                                                decoration: BoxDecoration(
+                                                  image: DecorationImage(
+                                                    image: imageProvider,
+                                                    fit: BoxFit.cover,
+                                                  ),
+                                                ),
+                                              ),
+                                              placeholder: (context, url) =>
+                                                  const CircularProgressIndicator(),
+                                              errorWidget:
+                                                  (context, url, error) =>
+                                                      const Icon(Icons.error),
+                                            );
+                                          }
+                                          return CircleAvatar(
+                                            radius: 100,
+                                          );
+                                        },
+                                      )),
+
+                              // _image == null
+                              //     ? Container()
+                              //     : ClipRRect(
+                              //         borderRadius: BorderRadius.circular(100),
+                              //         child: Stack(
+                              //           children: [
+                              //             Container(
+                              //               child: Image.file(
+                              //                 File(_image!.path),
+                              //                 fit: BoxFit.cover,
+                              //               ),
+                              //               width: 300,
+                              //               height: 300,
+                              //             ),
+                              //             Positioned(
+                              //               bottom: 4.0,
+                              //               right: 4.0,
+                              //               child: IconButton(
+                              //                 icon: const Icon(Icons.edit),
+                              //                 onPressed: () {},
+                              //               ),
+                              //             )
+                              //           ],
+                              //         ),
+                              //       ),
                             ),
                           ),
                           const SizedBox(
@@ -375,11 +418,8 @@ class _EditProfileState extends State<EditProfile> {
                                     : () {
                                         final form = _formKey.currentState;
                                         if (form!.validate()) {
-                                          print("Yeah");
-
                                           form.save();
 
-                                          print("YAYA");
                                           updateProfile();
                                         }
                                       },

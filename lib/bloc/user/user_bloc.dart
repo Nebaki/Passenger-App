@@ -22,9 +22,20 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     }
 
     if (event is UserUpdate) {
+      yield UserLoading();
       try {
         final passenger = await userRepository.updatePassenger(event.user);
         yield UsersLoadSuccess(passenger);
+      } catch (_) {
+        yield UserOperationFailure();
+      }
+    }
+
+    if (event is UserPreferenceUpdate) {
+      yield UserLoading();
+      try {
+        await userRepository.updatePreference(event.user);
+        yield UserPreferenceUploadSuccess();
       } catch (_) {
         yield UserOperationFailure();
       }
@@ -34,6 +45,17 @@ class UserBloc extends Bloc<UserEvent, UserState> {
       try {
         await userRepository.deletePassenger(event.user.id!);
         yield const UsersDeleteSuccess(true);
+      } catch (_) {
+        yield UserOperationFailure();
+      }
+    }
+
+    if (event is UploadProfile) {
+      yield UserLoading();
+
+      try {
+        await userRepository.uploadProfilePicture(event.file);
+        yield ImageUploadSuccess();
       } catch (_) {
         yield UserOperationFailure();
       }
