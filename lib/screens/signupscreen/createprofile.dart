@@ -68,6 +68,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
           _isLoading = true;
         }
         if (state is UsersLoadSuccess) {
+          _isLoading = false;
           showDialog(
               barrierDismissible: false,
               context: context,
@@ -80,12 +81,12 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                     actions: [
                       TextButton(
                           onPressed: () {
-                            Navigator.pushReplacementNamed(
-                                context, HomeScreen.routeName,
-                                arguments:
-                                    HomeScreenArgument(isSelected: false));
+                            print("wellllllllllllllllllllllllllllllllllllllll");
 
                             Navigator.pop(con);
+                            Navigator.pushNamed(context, HomeScreen.routeName,
+                                arguments:
+                                    HomeScreenArgument(isSelected: false));
                           },
                           child: const Text("Okay")),
                     ],
@@ -115,7 +116,9 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
         firstName: _user["first_name"],
         password: _user["password"],
         phoneNumber: widget.args.phoneNumber,
-        lastName: _user["last_name"],
+        //phoneNumber: "+251986099831",
+
+        //lastName: _user["last_name"],
         gender: "Male",
         email: _user["email"],
         emergencyContact: _user["phone_number"]));

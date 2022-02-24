@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_geofire/flutter_geofire.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:passengerapp/bloc/bloc.dart';
 import 'package:passengerapp/drawer/drawer.dart';
+import 'package:passengerapp/models/nearby_driver.dart';
+import 'package:passengerapp/repository/nearby_driver.dart';
 import 'package:passengerapp/rout.dart';
 import 'dart:async';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
@@ -31,11 +35,14 @@ class _HomeScreenState extends State<HomeScreen> {
   double currentLat = 3;
   late double currentLng = 4;
   Completer<GoogleMapController> _controller = Completer();
-
+  NearbyDriverRepository repo = NearbyDriverRepository();
+  GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   List<LatLng> polylineCoordinates = [];
   PolylinePoints polylinePoints = PolylinePoints();
   Map<PolylineId, Polyline> polylines = {};
   Map<MarkerId, Marker> markers = {};
+  Map<MarkerId, Marker> driverMarkers = {};
+  late List<NearbyDriver> drivers;
 
   static const CameraPosition _addissAbaba = CameraPosition(
     target: LatLng(8.9806, 38.7578),
@@ -73,7 +80,6 @@ class _HomeScreenState extends State<HomeScreen> {
         desiredAccuracy: La.LocationAccuracy.high);
   }
 
-  GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   @override
   // ignore: must_call_super
   void initState() {
@@ -87,8 +93,6 @@ class _HomeScreenState extends State<HomeScreen> {
       _currentWidget = nextwidget;
     });
   }
-
-  String y = "";
 
   @override
   Widget build(BuildContext context) {
@@ -440,11 +444,20 @@ class _HomeScreenState extends State<HomeScreen> {
                   trafficEnabled: false,
                   myLocationButtonEnabled: true,
                   initialCameraPosition: _addissAbaba,
+                  markers: Set<Marker>.of(driverMarkers.values),
                   myLocationEnabled: true,
                   onMapCreated: (GoogleMapController controller) {
+                    print(driverMarkers);
                     _controller.complete(controller);
 
-                    _determinePosition().then((value) {
+                    _determinePosition().then((value) async {
+                      geofireListener(value.latitude, value.longitude);
+
+                      WidgetsBinding.instance!
+                          .addPostFrameCallback((timeStamp) {
+                        geofireListener(value.latitude, value.longitude);
+                      });
+
                       controller.animateCamera(CameraUpdate.newCameraPosition(
                           CameraPosition(
                               zoom: 14.4746,
@@ -471,6 +484,22 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
           _currentWidget,
+          Positioned(
+              top: 30,
+              right: 20,
+              child: ElevatedButton(
+                  onPressed: () {
+                    geofireListener(8.9936827, 38.7663247);
+                  },
+                  child: const Text("Maintenance"))),
+          // Positioned(
+          //     top: 60,
+          //     child: ElevatedButton(
+          //         onPressed: () {
+          //           Geofire.setLocation("test", 8.9936827, 38.7863247);
+          //           geofireListener(8.9936827, 38.7663247);
+          //         },
+          //         child: Text("add")))
         ],
       ),
     );
@@ -511,5 +540,110 @@ class _HomeScreenState extends State<HomeScreen> {
     polylines[id] = polyline;
 
     //Future.delayed(Duration(seconds: 1), () {});
+  }
+
+  void geofireListener(double lat, double lng) async {
+    Geofire.initialize('availableDrivers');
+    repo.resetList();
+
+    print(lat);
+    print(lng);
+    print("Mapppppppppppppppppppppppppppppppppppppppppppppppppppppppaaa");
+
+    try {
+      //print(await Geofire.queryAtLocation(lat, lng, 1));
+
+      await Geofire.queryAtLocation(lat, lng, 1)!.listen((map) {
+        print("Mapppppppppppppppppppppppppppppppppppppppppppppppppppppppsss");
+
+        print(map);
+        print("Mappppppppppppppppppppppppppppppppppppppppppppppppppppppp");
+        if (map != null) {
+          var callBack = map['callBack'];
+          switch (callBack) {
+            case Geofire.onKeyEntered:
+              repo.addDriver(NearbyDriver(
+                  id: map['key'],
+                  latitude: map['latitude'],
+                  longitude: map['longitude']));
+              print("addddddddddddddddddddddddddddddddddddddd");
+              showDriversOnMap();
+
+              print("aded");
+
+              break;
+
+            case Geofire.onKeyExited:
+              repo.removeDriver(map['key']);
+              showDriversOnMap();
+
+              print("now");
+
+              break;
+
+            case Geofire.onKeyMoved:
+              print("moved");
+              repo.updateDriver(NearbyDriver(
+                  id: map['key'],
+                  latitude: map['latitude'],
+                  longitude: map['longitude']));
+              showDriversOnMap();
+              print("Yeah Moved");
+              break;
+
+            case Geofire.onGeoQueryReady:
+              showDriversOnMap();
+              print(map['result']);
+
+              break;
+          }
+          if (!mounted) {
+            return;
+          }
+        }
+
+        setState(() {});
+      });
+    } on PlatformException {
+      print("platform exceprionnnnnnnnnnnnnnnnnnnnnnnnnnnnnn");
+    } catch (_) {
+      print("here");
+    }
+  }
+
+  void showDriversOnMap() {
+    print("Length :: ");
+    print(repo.getNearbyDrivers().first.id);
+    ImageConfiguration imageConfiguration =
+        createLocalImageConfiguration(context, size: Size(1, 2));
+    Map<MarkerId, Marker> newMarker = {};
+    for (NearbyDriver driver in repo.getNearbyDrivers()) {
+      LatLng driverPosition = LatLng(driver.latitude, driver.longitude);
+      MarkerId markerId = MarkerId(driver.id);
+
+      BitmapDescriptor.fromAssetImage(
+              imageConfiguration, 'assets/icons/car.png')
+          .then((value) {
+        Marker marker =
+            Marker(markerId: markerId, position: driverPosition, icon: value);
+
+        newMarker[markerId] = marker;
+      });
+    }
+
+    setState(() {
+      driverMarkers = newMarker;
+    });
+  }
+
+  void searchNearbyDriver() {
+    // List<NearbyDriver> availableDriver = repo.getNearbyDrivers();
+
+    // if (repo.getNearbyDrivers().isEmpty) {
+    //   return;
+    // }
+
+    // var driver = availableDriver;
+    // availableDriver.removeAt(0);
   }
 }

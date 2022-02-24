@@ -190,6 +190,8 @@ class _SignupScreenState extends State<SignupScreen> {
                                                   //         .routeName);
                                                   Navigator.pop(context);
 
+                                                  print(phoneController);
+
                                                   sendVerificationCode();
                                                   // Navigator
                                                   //     .pushReplacementNamed(

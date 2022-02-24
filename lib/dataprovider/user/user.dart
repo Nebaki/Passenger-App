@@ -18,6 +18,12 @@ class UserDataProvider {
   UserDataProvider({required this.httpClient}) : assert(httpClient != null);
 
   Future<User> createPassenger(User user) async {
+    print(user.firstName);
+    print(user.email);
+    print(user.gender);
+    print(user.password);
+    print(user.phoneNumber);
+    //print(user.emergencyContact);
     final response = await http.post(
       Uri.parse('$_baseUrl/create-passenger'),
       headers: <String, String>{'Content-Type': 'application/json'},
@@ -27,9 +33,11 @@ class UserDataProvider {
         'gender': user.gender,
         'password': user.password,
         'phone_number': user.phoneNumber,
-        'emergency_contact': user.emergencyContact,
+        //'emergency_contact': user.emergencyContact,
       }),
     );
+    print("Hererersetttttttttttttttttttttttttttttttttttttt");
+    print(response.statusCode);
 
     if (response.statusCode == 200) {
       return User.fromJson(jsonDecode(response.body));

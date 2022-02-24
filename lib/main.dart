@@ -16,6 +16,8 @@ void main() {
   final ReverseLocationRepository reverseLocationRepository =
       ReverseLocationRepository(
           dataProvider: ReverseGocoding(httpClient: http.Client()));
+  final RideRequestRepository rideRequestRepository = RideRequestRepository(
+      dataProvider: RideRequestDataProvider(httpClient: http.Client()));
   final LocationPredictionRepository locationPredictionRepository =
       LocationPredictionRepository(
           dataProvider:
@@ -33,6 +35,7 @@ void main() {
   final AuthRepository authRepository =
       AuthRepository(dataProvider: AuthDataProvider(httpClient: http.Client()));
   runApp(MyApp(
+    rideRequestRepository: rideRequestRepository,
     authRepository: authRepository,
     userRepository: userRepository,
     reverseLocationRepository: reverseLocationRepository,
@@ -79,9 +82,11 @@ class MyApp extends StatelessWidget {
   final DirectionRepository directionRepository;
   final UserRepository userRepository;
   final AuthRepository authRepository;
+  final RideRequestRepository rideRequestRepository;
 
   const MyApp(
       {Key? key,
+      required this.rideRequestRepository,
       required this.userRepository,
       required this.authRepository,
       required this.reverseLocationRepository,
@@ -95,6 +100,7 @@ class MyApp extends StatelessWidget {
 
     return MultiRepositoryProvider(
         providers: [
+          RepositoryProvider.value(value: rideRequestRepository),
           RepositoryProvider.value(value: reverseLocationRepository),
           RepositoryProvider.value(value: locationPredictionRepository),
           RepositoryProvider.value(value: placeDetailRepository),
@@ -124,6 +130,9 @@ class MyApp extends StatelessWidget {
               BlocProvider(
                   create: (context) => AuthBloc(authRepository: authRepository)
                     ..add(AuthDataLoad())),
+              BlocProvider(
+                  create: (context) => RideRequestBloc(
+                      rideRequestRepository: rideRequestRepository)),
             ],
             child: MaterialApp(
               title: 'SafeWay',

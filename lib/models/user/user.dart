@@ -35,19 +35,19 @@ class User extends Equatable {
         email,
         phoneNumber,
         gender,
-        emergencyContact,
-        profileImage,
+        // emergencyContact,
+        // profileImage,
       ];
 
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
-      id: json["user"]["id"],
-      firstName: json["user"]["name"],
-      email: json["user"]["email"],
-      gender: json["user"]["gender"],
-      phoneNumber: json["user"]["phone_number"],
-      emergencyContact: json["user"]["emergency_contact"],
-      profileImage: json["user"]["profile_image"],
+      id: json["passenger"]["id"],
+      firstName: json["passenger"]["name"],
+      email: json["passenger"]["email"],
+      gender: json["passenger"]["gender"],
+      phoneNumber: json["passenger"]["phone_number"],
+      emergencyContact: json["passenger"]["emergency_contact"] ?? '',
+      profileImage: json["passenger"]["profile_image"] ?? '',
     );
   }
 

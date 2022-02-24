@@ -51,6 +51,7 @@ dependencies:
   email_validator: '^1.0.6'
   flutter_secure_storage: ^5.0.2
   flutter_rating_bar: ^4.0.0
+  flutter_geofire: ^2.0.1
   
 
 
