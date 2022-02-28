@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:passengerapp/bloc/bloc.dart';
+import 'package:passengerapp/bloc/notificationrequest/notification_request_bloc.dart';
 import 'package:passengerapp/bloc_observer.dart';
 import 'package:passengerapp/dataprovider/dataproviders.dart';
 import 'package:passengerapp/repository/repositories.dart';
@@ -34,7 +35,12 @@ void main() {
 
   final AuthRepository authRepository =
       AuthRepository(dataProvider: AuthDataProvider(httpClient: http.Client()));
+  final NotificationRequestRepository notificationRequestRepository =
+      NotificationRequestRepository(
+          dataProvider:
+              NotificationRequestDataProvider(httpClient: http.Client()));
   runApp(MyApp(
+    notificationRequestRepository: notificationRequestRepository,
     rideRequestRepository: rideRequestRepository,
     authRepository: authRepository,
     userRepository: userRepository,
@@ -83,9 +89,11 @@ class MyApp extends StatelessWidget {
   final UserRepository userRepository;
   final AuthRepository authRepository;
   final RideRequestRepository rideRequestRepository;
+  final NotificationRequestRepository notificationRequestRepository;
 
   const MyApp(
       {Key? key,
+      required this.notificationRequestRepository,
       required this.rideRequestRepository,
       required this.userRepository,
       required this.authRepository,
@@ -100,6 +108,7 @@ class MyApp extends StatelessWidget {
 
     return MultiRepositoryProvider(
         providers: [
+          RepositoryProvider.value(value: notificationRequestRepository),
           RepositoryProvider.value(value: rideRequestRepository),
           RepositoryProvider.value(value: reverseLocationRepository),
           RepositoryProvider.value(value: locationPredictionRepository),
@@ -133,6 +142,10 @@ class MyApp extends StatelessWidget {
               BlocProvider(
                   create: (context) => RideRequestBloc(
                       rideRequestRepository: rideRequestRepository)),
+              BlocProvider(
+                  create: (context) => NotificationRequestBloc(
+                      notificationRequestRepository:
+                          notificationRequestRepository))
             ],
             child: MaterialApp(
               title: 'SafeWay',

@@ -84,7 +84,7 @@ class _HomeScreenState extends State<HomeScreen> {
   // ignore: must_call_super
   void initState() {
     widget.args.isSelected
-        ? _currentWidget = Service(callback)
+        ? _currentWidget = Service(callback, searchNearbyDriver)
         : _currentWidget = const WhereTo();
   }
 
@@ -637,13 +637,13 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void searchNearbyDriver() {
-    // List<NearbyDriver> availableDriver = repo.getNearbyDrivers();
+    if (repo.getNearbyDrivers().isEmpty) {
+      return;
+    }
 
-    // if (repo.getNearbyDrivers().isEmpty) {
-    //   return;
-    // }
+    var driver = repo.getNearbyDrivers()[0];
+    print("Here Is The driver:: ++++++++++++++++++++");
 
-    // var driver = availableDriver;
-    // availableDriver.removeAt(0);
+    print(driver.id);
   }
 }

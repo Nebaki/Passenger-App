@@ -42,7 +42,7 @@ class _NearbyTaxyState extends State<NearbyTaxy> {
                   )
                 ],
               )),
-          SizedBox(
+          const SizedBox(
             height: 15,
           ),
           Padding(

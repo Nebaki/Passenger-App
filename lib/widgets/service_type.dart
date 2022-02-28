@@ -1,12 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:passengerapp/bloc/bloc.dart';
+import 'package:passengerapp/bloc/notificationrequest/notification_request_bloc.dart';
+import 'package:passengerapp/models/models.dart';
 import 'package:passengerapp/widgets/widgets.dart';
 
-class Service extends StatelessWidget {
+class Service extends StatefulWidget {
   Function? callback;
-  Service(this.callback);
+  Function searchNeabyDriver;
+  Service(this.callback, this.searchNeabyDriver);
 
+  @override
+  State<Service> createState() => _ServiceState();
+}
+
+class _ServiceState extends State<Service> {
   @override
   Widget build(BuildContext context) {
     return Positioned(
@@ -142,7 +152,8 @@ class Service extends StatelessWidget {
                                           borderRadius:
                                               BorderRadius.circular(10)))),
                               onPressed: () {
-                                callback!(NearbyTaxy(callback));
+                                widget.searchNeabyDriver();
+                                //callback!(NearbyTaxy(callback));
                               },
                               child: const Text(
                                 "Send Request",
@@ -162,5 +173,19 @@ class Service extends StatelessWidget {
   }
 
   final _greyTextStyle = TextStyle(color: Colors.black26, fontSize: 14);
+
   final _blackTextStyle = TextStyle(color: Colors.black);
+
+  void sendNotification() async {
+    var position = await Geolocator.getCurrentPosition();
+    NotificationRequestEvent event = NotificationRequestSend(
+        NotificationRequest(
+            pickupAddress: "Meskel Flower",
+            dropOffAddress: "Bole",
+            passengerName: "miki",
+            pickupLocation: LatLng(position.latitude, position.longitude),
+            driverToken: "driverToken"));
+
+    BlocProvider.of<NotificationRequestBloc>(context).add(event);
+  }
 }
