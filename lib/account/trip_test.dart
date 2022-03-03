@@ -59,12 +59,12 @@ class TripTest {
           "update-trip",
           "up s: " +
               updated.length.toString() /*jsonEncode(updated)*/),
-      flashTrips(updated)})
+      storeTrips(updated)})
         .onError((error, stackTrace) =>
             {session.logError("update-trip", "failed: " + error.toString())});
   }
 
-  void flashTrips(List<Trip> updated) {
+  void storeTrips(List<Trip> updated) {
     tripMan
         .saveTrips(SecItem("trips", jsonEncode(updated)))
         .then((value) => {
