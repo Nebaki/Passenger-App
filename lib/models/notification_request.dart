@@ -5,19 +5,18 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 @immutable
 class NotificationRequest extends Equatable {
   // String? id;
-  // String? driverId;
+  String? fcmToken;
   String pickupAddress;
   String dropOffAddress;
   LatLng pickupLocation;
   String passengerName;
-  String driverToken;
 
   NotificationRequest(
       {required this.pickupAddress,
       required this.dropOffAddress,
       required this.passengerName,
       required this.pickupLocation,
-      required this.driverToken});
+      required this.fcmToken});
 
   @override
   List<Object?> get props => [

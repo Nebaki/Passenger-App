@@ -42,7 +42,7 @@ class NotificationRequestSend extends NotificationRequestEvent {
 class NotificationRequestState extends Equatable {
   const NotificationRequestState();
   @override
-  List<Object?> get props => throw UnimplementedError();
+  List<Object?> get props => [];
 }
 
 class NotificationRequestSending extends NotificationRequestState {}
