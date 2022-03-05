@@ -39,11 +39,15 @@ void main() {
       NotificationRequestRepository(
           dataProvider:
               NotificationRequestDataProvider(httpClient: http.Client()));
+
+  final DriverRepository driverRepository = DriverRepository(
+      dataProvider: DriverDataProvider(httpClient: http.Client()));
   runApp(MyApp(
     notificationRequestRepository: notificationRequestRepository,
     rideRequestRepository: rideRequestRepository,
     authRepository: authRepository,
     userRepository: userRepository,
+    driverRepository: driverRepository,
     reverseLocationRepository: reverseLocationRepository,
     locationPredictionRepository: locationPredictionRepository,
     placeDetailRepository: placeDetailRepository,
@@ -87,6 +91,8 @@ class MyApp extends StatelessWidget {
   final PlaceDetailRepository placeDetailRepository;
   final DirectionRepository directionRepository;
   final UserRepository userRepository;
+  final DriverRepository driverRepository;
+
   final AuthRepository authRepository;
   final RideRequestRepository rideRequestRepository;
   final NotificationRequestRepository notificationRequestRepository;
@@ -96,6 +102,7 @@ class MyApp extends StatelessWidget {
       required this.notificationRequestRepository,
       required this.rideRequestRepository,
       required this.userRepository,
+      required this.driverRepository,
       required this.authRepository,
       required this.reverseLocationRepository,
       required this.locationPredictionRepository,
@@ -115,6 +122,7 @@ class MyApp extends StatelessWidget {
           RepositoryProvider.value(value: placeDetailRepository),
           RepositoryProvider.value(value: directionRepository),
           RepositoryProvider.value(value: userRepository),
+          RepositoryProvider.value(value: driverRepository),
           RepositoryProvider.value(value: authRepository),
         ],
         child: MultiBlocProvider(
@@ -145,7 +153,10 @@ class MyApp extends StatelessWidget {
               BlocProvider(
                   create: (context) => NotificationRequestBloc(
                       notificationRequestRepository:
-                          notificationRequestRepository))
+                          notificationRequestRepository)),
+              BlocProvider(
+                  create: (context) =>
+                      DriverBloc(driverRepository: driverRepository))
             ],
             child: MaterialApp(
               title: 'SafeWay',
@@ -172,18 +183,25 @@ class MyApp extends StatelessWidget {
                   )),
                   elevatedButtonTheme: ElevatedButtonThemeData(
                     style: ButtonStyle(
-                        textStyle: MaterialStateProperty.all<TextStyle>(
-                            const TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 20)),
-                        backgroundColor: MaterialStateProperty.all<Color>(
-                            const Color.fromRGBO(254, 79, 5, 1)),
-                        shape:
-                            MaterialStateProperty.all<RoundedRectangleBorder>(
-                                RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(80),
-                        ))),
+                      backgroundColor: MaterialStateProperty.all<Color>(
+                          const Color.fromRGBO(244, 201, 60, 1)),
+                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                          RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10))),
+
+                      textStyle: MaterialStateProperty.all<TextStyle>(
+                          const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w300,
+                              fontSize: 20)),
+                      // backgroundColor: MaterialStateProperty.all<Color>(
+                      //     const Color.fromRGBO(254, 79, 5, 1)),
+                      // shape:
+                      //     MaterialStateProperty.all<RoundedRectangleBorder>(
+                      //         RoundedRectangleBorder(
+                      //   borderRadius: BorderRadius.circular(80),
+                      // ))
+                    ),
                   ),
                   colorScheme: ColorScheme.fromSwatch(
                     primarySwatch: Colors.orange,

@@ -5,6 +5,8 @@ import 'package:passengerapp/widgets/widgets.dart';
 class DriverOnTheWay extends StatelessWidget {
   Function? callback;
   DriverOnTheWay(this.callback);
+  final _greyTextStyle = TextStyle(color: Colors.black26, fontSize: 14);
+  final _blackTextStyle = TextStyle(color: Colors.black);
   @override
   Widget build(BuildContext context) {
     return Positioned(
@@ -15,58 +17,88 @@ class DriverOnTheWay extends StatelessWidget {
         children: [
           Container(
               height: 250,
-              padding: EdgeInsets.only(top: 40, left: 20, right: 20, bottom: 0),
+              padding: EdgeInsets.only(top: 10, left: 20, right: 20, bottom: 0),
               decoration: BoxDecoration(
-                  color: Colors.black.withOpacity(0.75),
+                  color: const Color.fromRGBO(240, 241, 241, 1),
                   borderRadius: BorderRadius.circular(20)),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  const Text(
-                    "Driver On The Way",
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 20),
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        "Car Logo",
-                        style: TextStyle(color: Colors.white),
-                      ),
-                      DriverProfile(),
-                    ],
-                  ),
+                  DriverProfile(assetImage: 'assets/icons/economyCarIcon.png'),
+
                   //CarDetail()
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Divider(),
+
+                  DirectionDetail(),
+                  // Row(
+                  //   mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  //   children: [
+                  //     Column(
+                  //       crossAxisAlignment: CrossAxisAlignment.start,
+                  //       children: [
+                  //         Text.rich(TextSpan(
+                  //             text: "Price:      ",
+                  //             style: _greyTextStyle,
+                  //             children: [
+                  //               TextSpan(
+                  //                   text: "\$ ${40}", style: _blackTextStyle)
+                  //             ])),
+                  //         SizedBox(
+                  //           height: 5,
+                  //         ),
+                  //         Text.rich(TextSpan(
+                  //             text: "Member: ",
+                  //             style: _greyTextStyle,
+                  //             children: [
+                  //               TextSpan(text: "1-4", style: _blackTextStyle)
+                  //             ]))
+                  //       ],
+                  //     ),
+                  //     SizedBox(height: 35, child: VerticalDivider()),
+                  //     Column(
+                  //       crossAxisAlignment: CrossAxisAlignment.start,
+                  //       children: [
+                  //         Text.rich(TextSpan(
+                  //             text: "Distance: ",
+                  //             style: _greyTextStyle,
+                  //             children: [
+                  //               TextSpan(text: "5 km", style: _blackTextStyle)
+                  //             ])),
+                  //         SizedBox(
+                  //           height: 5,
+                  //         ),
+                  //         Text.rich(TextSpan(
+                  //             text: "Time:      ",
+                  //             style: _greyTextStyle,
+                  //             children: [
+                  //               TextSpan(text: "10 min", style: _blackTextStyle)
+                  //             ]))
+                  //       ],
+                  //     )
+                  //   ],
+                  // ),
+
+                  SizedBox(
+                    height: 30,
+                  ),
+
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: SizedBox(
+                        height: 50,
+                        width: MediaQuery.of(context).size.width,
+                        child: ElevatedButton(
+                            onPressed: () {
+                              callback!(CancelTrip(callback));
+                            },
+                            child: const Text("Cancel"))),
+                  ),
                 ],
               )),
-          const SizedBox(
-            height: 15,
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: SizedBox(
-                height: 65,
-                width: MediaQuery.of(context).size.width,
-                child: ElevatedButton(
-                    style: ButtonStyle(
-                        backgroundColor:
-                            MaterialStateProperty.all<Color>(Colors.red),
-                        shape:
-                            MaterialStateProperty.all<RoundedRectangleBorder>(
-                                RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(20)))),
-                    onPressed: () {
-                      callback!(CancelTrip(callback));
-                    },
-                    child: const Text("Cancel"))),
-          ),
-          const SizedBox(
-            height: 15,
-          )
         ],
       ),
     );

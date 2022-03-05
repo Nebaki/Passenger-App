@@ -15,7 +15,7 @@ class Driver extends StatelessWidget {
       child: Column(
         children: [
           Container(
-              height: 350,
+              height: 400,
               padding: EdgeInsets.only(top: 40, left: 20, right: 20, bottom: 0),
               decoration: BoxDecoration(
                   color: Colors.black.withOpacity(0.75),
@@ -38,34 +38,30 @@ class Driver extends StatelessWidget {
                         "Car Logo",
                         style: TextStyle(color: Colors.white),
                       ),
-                      DriverProfile(),
+                      DriverProfile(
+                          assetImage: 'assets/icons/economyCarIcon.png'),
                     ],
                   ),
-                  CarDetail()
+                  CarDetail(),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: SizedBox(
+                        height: 65,
+                        width: MediaQuery.of(context).size.width,
+                        child: ElevatedButton(
+                            style: ButtonStyle(
+                                shape: MaterialStateProperty.all<
+                                        RoundedRectangleBorder>(
+                                    RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(20)))),
+                            onPressed: () {
+                              this.callback!(DriverOnTheWay(this.callback));
+                            },
+                            child: const Text("Confirm"))),
+                  ),
                 ],
               )),
-          const SizedBox(
-            height: 15,
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: SizedBox(
-                height: 65,
-                width: MediaQuery.of(context).size.width,
-                child: ElevatedButton(
-                    style: ButtonStyle(
-                        shape:
-                            MaterialStateProperty.all<RoundedRectangleBorder>(
-                                RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(20)))),
-                    onPressed: () {
-                      this.callback!(DriverOnTheWay(this.callback));
-                    },
-                    child: const Text("Confirm"))),
-          ),
-          const SizedBox(
-            height: 15,
-          )
         ],
       ),
     );

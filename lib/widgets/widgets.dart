@@ -8,3 +8,4 @@ export 'car_detail.dart';
 export 'listtile_builder.dart';
 export 'driver_ontheway.dart';
 export 'nearby_taxi_list.dart';
+export 'direction_detail.dart';

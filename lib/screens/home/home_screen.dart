@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 // ignore: import_of_legacy_library_into_null_safe
@@ -6,6 +8,7 @@ import 'package:flutter_geofire/flutter_geofire.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:passengerapp/bloc/bloc.dart';
+import 'package:passengerapp/bloc/driver/driver_bloc.dart';
 import 'package:passengerapp/drawer/drawer.dart';
 import 'package:passengerapp/models/nearby_driver.dart';
 import 'package:passengerapp/repository/nearby_driver.dart';
@@ -43,6 +46,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Map<MarkerId, Marker> markers = {};
   Map<MarkerId, Marker> driverMarkers = {};
   late List<NearbyDriver> drivers;
+  late LatLng currentLatLng;
 
   static const CameraPosition _addissAbaba = CameraPosition(
     target: LatLng(8.9806, 38.7578),
@@ -351,6 +355,8 @@ class _HomeScreenState extends State<HomeScreen> {
 ]''');
 
                         _determinePosition().then((value) {
+                          currentLatLng =
+                              LatLng(value.latitude, value.longitude);
                           setState(() {
                             _addMarker(
                                 LatLng(value.latitude, value.longitude),
@@ -416,6 +422,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         _controller.complete(controller);
 
                         _determinePosition().then((value) {
+                          currentLatLng =
+                              LatLng(value.latitude, value.longitude);
                           controller.animateCamera(
                               CameraUpdate.newCameraPosition(CameraPosition(
                                   zoom: 14.4746,
@@ -451,6 +459,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     _controller.complete(controller);
 
                     _determinePosition().then((value) async {
+                      currentLatLng = LatLng(value.latitude, value.longitude);
                       geofireListener(value.latitude, value.longitude);
 
                       WidgetsBinding.instance!
@@ -636,14 +645,25 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-  void searchNearbyDriver() {
+  String? searchNearbyDriver() {
     if (repo.getNearbyDrivers().isEmpty) {
-      return;
+      return null;
+    }
+    var nearest;
+    var nearestDriver;
+
+    for (NearbyDriver driver in repo.getNearbyDrivers()) {
+      double distance = Geolocator.distanceBetween(currentLatLng.latitude,
+          currentLatLng.longitude, driver.latitude, driver.longitude);
+
+      nearest ??= distance;
+
+      if (distance < nearest) {
+        nearest = distance;
+        nearestDriver = driver;
+      }
     }
 
-    var driver = repo.getNearbyDrivers()[0];
-    print("Here Is The driver:: ++++++++++++++++++++");
-
-    print(driver.id);
+    return nearestDriver.id;
   }
 }
