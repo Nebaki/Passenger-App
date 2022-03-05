@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:passengerapp/bloc/bloc.dart';
 import 'package:passengerapp/dataprovider/auth/auth.dart';
+import 'package:passengerapp/drawer/custome_paint.dart';
 import 'package:passengerapp/screens/screens.dart';
 import 'package:http/http.dart' as http;
 
@@ -19,23 +20,20 @@ class NavDrawer extends StatelessWidget {
   Widget build(BuildContext context) {
     return Drawer(
         child: Material(
-      color: Colors.white,
-      child: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(top: 40),
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              height: 110,
-              decoration: const BoxDecoration(color: Colors.white, boxShadow: [
-                BoxShadow(color: Colors.black26, blurRadius: 7, spreadRadius: 3)
-              ]),
+      color: const Color.fromRGBO(240, 241, 241, 1),
+      child: CustomPaint(
+        painter: DrawerBackGround(),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(top: 40, left: 40),
               child: BlocBuilder<AuthBloc, AuthState>(
                 builder: (_, state) {
                   if (state is AuthDataLoadSuccess) {
-                    return Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.center,
+                    return Column(
+                      // mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         CircleAvatar(
                             radius: 40,
@@ -65,21 +63,11 @@ class NavDrawer extends StatelessWidget {
                                   }),
                             )),
                         const SizedBox(
-                          width: 10,
+                          height: 15,
                         ),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                state.auth.name!,
-                                style: Theme.of(context).textTheme.headline6,
-                              ),
-                              Text(state.auth.phoneNumber,
-                                  style: Theme.of(context).textTheme.subtitle1),
-                            ],
-                          ),
+                        Text(
+                          state.auth.name!,
+                          style: Theme.of(context).textTheme.headlineSmall,
                         )
                       ],
                     );
@@ -88,95 +76,98 @@ class NavDrawer extends StatelessWidget {
                 },
               ),
             ),
-          ),
-          Container(
-            padding: const EdgeInsets.only(top: 20),
-            height: MediaQuery.of(context).size.height - 170,
-            child: ListView(
-              padding: const EdgeInsets.symmetric(horizontal: 10),
-              children: [
-                GestureDetector(
-                  onTap: () {
-                    // print("YAyayyaay")
-                    // _draweKEy.currentState!.close();
-                  },
-                  child: _menuItem(
-                      divider: true,
-                      context: context,
-                      icon: Icons.home,
-                      text: "Home"),
-                ),
-                GestureDetector(
-                  onTap: () {
-                    Navigator.pushReplacementNamed(
-                        context, SavedAddress.routeName);
-                  },
-                  child: _menuItem(
-                      divider: true,
-                      context: context,
-                      icon: Icons.favorite,
-                      text: "Saved Addreses"),
-                ),
-                GestureDetector(
-                  onTap: () {
-                    Navigator.pushNamed(context, HistoryPage.routeName);
-                  },
-                  child: _menuItem(
-                      divider: true,
-                      context: context,
-                      icon: Icons.history,
-                      text: "History"),
-                ),
-                _menuItem(
-                    divider: true,
-                    context: context,
-                    icon: Icons.person,
-                    text: "Award"),
-                GestureDetector(
-                  onTap: () {
-                    BlocProvider.of<AuthBloc>(context).add(AuthDataLoad());
-                  },
-                  child: _menuItem(
+            SizedBox(
+              height: 20,
+            ),
+            Container(
+              padding: const EdgeInsets.only(top: 50),
+              height: MediaQuery.of(context).size.height * 0.7,
+              child: ListView(
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      // print("YAyayyaay")
+                      // _draweKEy.currentState!.close();
+                    },
+                    child: _menuItem(
+                        divider: true,
+                        context: context,
+                        icon: Icons.home_max_outlined,
+                        text: "Home"),
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.pushReplacementNamed(
+                          context, SavedAddress.routeName);
+                    },
+                    child: _menuItem(
+                        divider: true,
+                        context: context,
+                        icon: Icons.favorite_outline_outlined,
+                        text: "Saved Addreses"),
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.pushNamed(context, HistoryPage.routeName);
+                    },
+                    child: _menuItem(
+                        divider: true,
+                        context: context,
+                        icon: Icons.history,
+                        text: "History"),
+                  ),
+                  _menuItem(
                       divider: true,
                       context: context,
                       icon: Icons.person,
-                      text: "Contact us"),
-                ),
-                GestureDetector(
-                  onTap: () {
-                    Navigator.pushNamed(context, SettingScreen.routeName);
-                  },
-                  child: _menuItem(
-                      divider: true,
-                      context: context,
-                      icon: Icons.settings,
-                      text: "Settings"),
-                ),
-                const SizedBox(height: 20),
-                GestureDetector(
-                  onTap: () {
-                    BlocProvider.of<AuthBloc>(context).add(LogOut());
-                    Navigator.pushReplacementNamed(
-                        context, SigninScreen.routeName);
-                  },
-                  child: _menuItem(
-                      divider: false,
-                      context: context,
-                      icon: Icons.logout,
-                      text: "Logout"),
-                ),
-              ],
+                      text: "Award"),
+                  GestureDetector(
+                    onTap: () {
+                      BlocProvider.of<AuthBloc>(context).add(AuthDataLoad());
+                    },
+                    child: _menuItem(
+                        divider: true,
+                        context: context,
+                        icon: Icons.person,
+                        text: "Contact us"),
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.pushNamed(context, SettingScreen.routeName);
+                    },
+                    child: _menuItem(
+                        divider: true,
+                        context: context,
+                        icon: Icons.settings_outlined,
+                        text: "Settings"),
+                  ),
+                  const SizedBox(height: 20),
+                  GestureDetector(
+                    onTap: () {
+                      BlocProvider.of<AuthBloc>(context).add(LogOut());
+                      Navigator.pushReplacementNamed(
+                          context, SigninScreen.routeName);
+                    },
+                    child: _menuItem(
+                        divider: false,
+                        context: context,
+                        icon: Icons.logout,
+                        text: "Logout"),
+                  ),
+                ],
+              ),
             ),
-          ),
-          const SizedBox(
-            height: 15,
-            child: Center(
-              child: Text("Safe Way By Vintage Technologies",
-                  style: TextStyle(
-                      fontWeight: FontWeight.w100, color: Colors.black45)),
-            ),
-          ),
-        ],
+            // const SizedBox(
+            //   height: 15,
+            //   child: Center(
+            //     child: Text("Safe Way By Vintage Technologies",
+            //         style: TextStyle(
+            //             fontWeight: FontWeight.w100, color: Colors.black45)),
+            //   ),
+            // ),
+          ],
+        ),
       ),
     ));
   }
@@ -187,25 +178,13 @@ class NavDrawer extends StatelessWidget {
     required String text,
     required bool divider,
   }) {
-    const color = Colors.grey;
+    const color = Colors.black;
     const hoverColor = Colors.white70;
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [
-        ListTile(
-          trailing: IconButton(
-              onPressed: () {}, icon: const Icon(Icons.navigate_next_rounded)),
-          leading: Icon(icon, color: color.shade700),
-          title: Text(text, style: Theme.of(context).textTheme.bodyText2),
-          hoverColor: hoverColor,
-        ),
-        divider
-            ? Padding(
-                padding: const EdgeInsets.only(left: 65, right: 20),
-                child: Divider(color: Colors.grey.shade200),
-              )
-            : Container(),
-      ],
+    return ListTile(
+      horizontalTitleGap: 0,
+      leading: Icon(icon, color: color),
+      title: Text(text, style: Theme.of(context).textTheme.bodyLarge),
+      hoverColor: hoverColor,
     );
   }
 }

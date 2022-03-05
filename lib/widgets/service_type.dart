@@ -36,7 +36,7 @@ class _ServiceState extends State<Service> {
     }, listener: (_, state) {
       if (state is NotificationRequestSent) {
         _isLoading = false;
-        widget.callback!(Driver(this.widget.callback));
+        widget.callback!(DriverOnTheWay(this.widget.callback));
       }
       if (state is NotificationRequestSending) {}
       if (state is NotificationRequestSendingFailure) {
@@ -271,6 +271,24 @@ class _ServiceState extends State<Service> {
                         onPressed: null,
                         child: const Text(
                           "Finding nearby driver..",
+                          style: TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.normal),
+                        ),
+                      );
+                    }
+                    if (state is DriverOperationFailure) {
+                      return ElevatedButton(
+                        style: ButtonStyle(
+                            backgroundColor: MaterialStateProperty.all<Color>(
+                                const Color.fromRGBO(244, 201, 60, 1)),
+                            shape: MaterialStateProperty.all<
+                                    RoundedRectangleBorder>(
+                                RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10)))),
+                        onPressed: null,
+                        child: const Text(
+                          "No driver Found",
                           style: TextStyle(
                               color: Colors.black,
                               fontWeight: FontWeight.normal),

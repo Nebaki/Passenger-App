@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:passengerapp/bloc/bloc.dart';
+import 'package:passengerapp/helper/url_launcher.dart';
 
 class DriverProfile extends StatelessWidget {
   final String assetImage;
@@ -24,7 +25,9 @@ class DriverProfile extends StatelessWidget {
                         width: 33,
                         color: Colors.green.shade300,
                         child: IconButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              makePhoneCall(state.driver.phoneNumber);
+                            },
                             icon: Icon(
                               Icons.call,
                               size: 18,
@@ -40,7 +43,9 @@ class DriverProfile extends StatelessWidget {
                         width: 33,
                         color: Colors.red,
                         child: IconButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              sendTextMessage(state.driver.phoneNumber);
+                            },
                             icon: Icon(
                               Icons.mark_chat_read,
                               size: 18,

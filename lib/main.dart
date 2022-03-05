@@ -162,6 +162,7 @@ class MyApp extends StatelessWidget {
               title: 'SafeWay',
               theme: ThemeData(
                   //F48221
+
                   primaryColor: const Color.fromRGBO(254, 79, 5, 1),
                   textTheme: TextTheme(
                       button: const TextStyle(
