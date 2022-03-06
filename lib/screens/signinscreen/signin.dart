@@ -29,25 +29,26 @@ class _SigninScreenState extends State<SigninScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        backgroundColor: const Color.fromRGBO(240, 241, 241, 1),
         body: BlocConsumer<AuthBloc, AuthState>(builder: (_, state) {
-      return _buildSigninForm();
-    }, listener: (_, state) {
-      if (state is AuthSigningIn) {
-        _isLoading = true;
-      }
-      if (state is AuthLoginSuccess) {
-        Navigator.pushNamed(context, HomeScreen.routeName,
-            arguments: HomeScreenArgument(isSelected: false));
-      }
-      if (state is AuthOperationFailure) {
-        _isLoading = false;
+          return _buildSigninForm();
+        }, listener: (_, state) {
+          if (state is AuthSigningIn) {
+            _isLoading = true;
+          }
+          if (state is AuthLoginSuccess) {
+            Navigator.pushNamed(context, HomeScreen.routeName,
+                arguments: HomeScreenArgument(isSelected: false));
+          }
+          if (state is AuthOperationFailure) {
+            _isLoading = false;
 
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: const Text("Incorrect Phone Number or Password"),
-          backgroundColor: Colors.red.shade900,
-        ));
-      }
-    }));
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              content: const Text("Incorrect Phone Number or Password"),
+              backgroundColor: Colors.red.shade900,
+            ));
+          }
+        }));
   }
 
   void signIn() {
@@ -64,6 +65,7 @@ class _SigninScreenState extends State<SigninScreen> {
       Form(
         key: _formkey,
         child: Container(
+          color: const Color.fromRGBO(240, 241, 241, 1),
           height: 600,
           child: Padding(
               padding: const EdgeInsets.fromLTRB(20, 60, 20, 20),
@@ -107,34 +109,43 @@ class _SigninScreenState extends State<SigninScreen> {
                   ),
                   Padding(
                     padding: const EdgeInsets.all(10),
-                    child: TextFormField(
-                      decoration: const InputDecoration(
-                          alignLabelWithHint: true,
-                          hintText: "Password",
-                          hintStyle: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black45),
-                          prefixIcon: Icon(
-                            Icons.vpn_key,
-                            size: 19,
-                          ),
-                          fillColor: Colors.white,
-                          filled: true,
-                          border:
-                              OutlineInputBorder(borderSide: BorderSide.none)),
-                      validator: (value) {
-                        if (value!.isEmpty) {
-                          return 'Please enter Your Password';
-                        } else if (value.length < 4) {
-                          return 'Password length must not be less than 4';
-                        } else if (value.length > 25) {
-                          return 'Password length must not be greater than 25';
-                        }
-                        return null;
-                      },
-                      onSaved: (value) {
-                        _auth["password"] = value;
-                      },
+                    child: Container(
+                      decoration: BoxDecoration(boxShadow: [
+                        BoxShadow(
+                            color: Colors.grey.shade300,
+                            blurRadius: 4,
+                            spreadRadius: 2,
+                            blurStyle: BlurStyle.normal)
+                      ]),
+                      child: TextFormField(
+                        decoration: const InputDecoration(
+                            alignLabelWithHint: true,
+                            hintText: "Password",
+                            hintStyle: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black45),
+                            prefixIcon: Icon(
+                              Icons.vpn_key,
+                              size: 19,
+                            ),
+                            fillColor: Colors.white,
+                            filled: true,
+                            border: OutlineInputBorder(
+                                borderSide: BorderSide.none)),
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return 'Please enter Your Password';
+                          } else if (value.length < 4) {
+                            return 'Password length must not be less than 4';
+                          } else if (value.length > 25) {
+                            return 'Password length must not be greater than 25';
+                          }
+                          return null;
+                        },
+                        onSaved: (value) {
+                          _auth["password"] = value;
+                        },
+                      ),
                     ),
                   ),
                   Padding(
@@ -156,8 +167,9 @@ class _SigninScreenState extends State<SigninScreen> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             const Spacer(),
-                            const Text("Sign In",
-                                style: TextStyle(color: Colors.white)),
+                            const Text(
+                              "Sign In",
+                            ),
                             const Spacer(),
                             Align(
                               alignment: Alignment.centerRight,
@@ -166,7 +178,8 @@ class _SigninScreenState extends State<SigninScreen> {
                                       height: 20,
                                       width: 20,
                                       child: CircularProgressIndicator(
-                                        color: Colors.white,
+                                        strokeWidth: 2,
+                                        color: Colors.black,
                                       ),
                                     )
                                   : Container(),

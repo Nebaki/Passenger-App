@@ -23,6 +23,25 @@ class LocationPrediction extends Equatable {
             json["structured_formatting"]["secondary_text"] ?? "Uknown");
   }
 
+  Map<String, dynamic> toMap() {
+    var map = <String, dynamic>{
+      "placeId": placeId,
+      "mainTexta": mainText,
+      "secondaryText": secondaryText
+    };
+    // if (id != null) {
+    //   map[columnId] = id;
+    // }
+    return map;
+  }
+
+  factory LocationPrediction.fromMap(Map<String, dynamic> map) {
+    return LocationPrediction(
+        placeId: map["placeId"],
+        mainText: map["mainText"],
+        secondaryText: map["secondaryText"]);
+  }
+
   @override
   String toString() =>
       'Location {PlaceId: $placeId, Main Text: $mainText, Secondary Text: $secondaryText }';

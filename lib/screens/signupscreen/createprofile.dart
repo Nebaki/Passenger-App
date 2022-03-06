@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:passengerapp/bloc/bloc.dart';
+import 'package:passengerapp/helper/constants.dart';
 import 'package:passengerapp/models/models.dart';
 import 'package:passengerapp/rout.dart';
 import 'package:passengerapp/screens/screens.dart';
@@ -103,7 +104,9 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
         }
       },
       builder: (_, state) {
-        return _buildProfileForm();
+        return Scaffold(
+            backgroundColor: const Color.fromRGBO(240, 241, 241, 1),
+            body: _buildProfileForm());
       },
     ));
   }
@@ -187,70 +190,133 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                                   ),
                           ),
                         ),
-                        TextFormField(
-                          decoration: const InputDecoration(
-                            hintText: "Full Name",
-                            hintStyle: TextStyle(
-                                fontWeight: FontWeight.w300,
-                                color: Colors.black45),
-                            fillColor: Colors.white,
-                          ),
-                          validator: (value) {
-                            if (value!.isEmpty) {
-                              return 'Please enter Your Name';
-                            } else if (value.length > 25) {
-                              return 'Full name must not be longer than 25 charachters';
-                            } else if (value.length < 4) {
-                              return 'Full name must not be shorter than 4 charachters';
-                            } else if (value.split(" ").length == 1) {
-                              return ' Last Name required';
-                            }
-                            return null;
-                          },
-                          onSaved: (value) {
-                            //final val = value!.split("")[0];
-                            //print();
-                            _user["first_name"] = value!.split(" ")[0];
-                            _user["last_name"] = value.split(" ")[1];
-                          },
+                        const SizedBox(
+                          height: 10,
                         ),
-                        TextFormField(
-                            controller: password,
+                        Container(
+                          decoration: BoxDecoration(boxShadow: [
+                            BoxShadow(
+                                color: Colors.grey.shade300,
+                                blurRadius: 4,
+                                spreadRadius: 2,
+                                blurStyle: BlurStyle.normal)
+                          ]),
+                          child: TextFormField(
                             decoration: const InputDecoration(
-                              hintText: "Password",
-                              hintStyle: TextStyle(
-                                  fontWeight: FontWeight.w300,
-                                  color: Colors.black45),
-                              fillColor: Colors.white,
-                            ),
+                                hintText: "Full Name",
+                                hintStyle: TextStyle(
+                                    fontWeight: FontWeight.w300,
+                                    color: Colors.black45),
+                                prefixIcon: Icon(
+                                  Icons.phone,
+                                  size: 19,
+                                ),
+                                fillColor: Colors.white,
+                                filled: true,
+                                border: OutlineInputBorder(
+                                    borderSide: BorderSide.none)),
                             validator: (value) {
                               if (value!.isEmpty) {
                                 return 'Please enter Your Name';
                               } else if (value.length > 25) {
                                 return 'Full name must not be longer than 25 charachters';
-                              } else if (value.length < 8) {
-                                return 'Full name must not be shorter than 8 charachters';
+                              } else if (value.length < 4) {
+                                return 'Full name must not be shorter than 4 charachters';
+                              } else if (value.split(" ").length == 1) {
+                                return ' Last Name required';
                               }
                               return null;
                             },
                             onSaved: (value) {
-                              _user["password"] = value;
-                            }),
-                        TextFormField(
-                          decoration: const InputDecoration(
-                            hintText: "Confirm Password",
-                            hintStyle: TextStyle(
-                                fontWeight: FontWeight.w300,
-                                color: Colors.black45),
+                              //final val = value!.split("")[0];
+                              //print();
+                              _user["first_name"] = value!.split(" ")[0];
+                              _user["last_name"] = value.split(" ")[1];
+                            },
                           ),
-                          validator: (value) {
-                            if (value != password.text) {
-                              return 'Password must match';
-                            }
-                            return null;
-                          },
+                        ),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        Container(
+                          decoration: BoxDecoration(boxShadow: [
+                            BoxShadow(
+                                color: Colors.grey.shade300,
+                                blurRadius: 4,
+                                spreadRadius: 2,
+                                blurStyle: BlurStyle.normal)
+                          ]),
+                          child: TextFormField(
+                              controller: password,
+                              decoration: const InputDecoration(
+                                  hintText: "Password",
+                                  hintStyle: TextStyle(
+                                      fontWeight: FontWeight.w300,
+                                      color: Colors.black45),
+                                  prefixIcon: Icon(
+                                    Icons.phone,
+                                    size: 19,
+                                  ),
+                                  fillColor: Colors.white,
+                                  filled: true,
+                                  border: OutlineInputBorder(
+                                      borderSide: BorderSide.none)),
+                              validator: (value) {
+                                if (value!.isEmpty) {
+                                  return 'Please enter Your Name';
+                                } else if (value.length > 25) {
+                                  return 'Full name must not be longer than 25 charachters';
+                                } else if (value.length < 8) {
+                                  return 'Full name must not be shorter than 8 charachters';
+                                }
+                                return null;
+                              },
+                              onSaved: (value) {
+                                _user["password"] = value;
+                              }),
+                        ),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        Container(
+                          decoration: BoxDecoration(boxShadow: [
+                            BoxShadow(
+                                color: Colors.grey.shade300,
+                                blurRadius: 4,
+                                spreadRadius: 2,
+                                blurStyle: BlurStyle.normal)
+                          ]),
+                          child: TextFormField(
+                            decoration: const InputDecoration(
+                                hintText: "Confirm Password",
+                                hintStyle: TextStyle(
+                                    fontWeight: FontWeight.w300,
+                                    color: Colors.black45),
+                                fillColor: Colors.white,
+                                filled: true,
+                                border: OutlineInputBorder(
+                                    borderSide: BorderSide.none)),
+                            validator: (value) {
+                              if (value != password.text) {
+                                return 'Password must match';
+                              }
+                              return null;
+                            },
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 10,
                         ),
                         InternationalPhoneNumberInput(
+                          inputDecoration: const InputDecoration(
+                              hintText: "Phone Number",
+                              hintStyle: TextStyle(
+                                  fontWeight: FontWeight.w300,
+                                  color: Colors.black45),
+                              fillColor: Colors.white,
+                              filled: true,
+                              border: OutlineInputBorder(
+                                  borderSide: BorderSide.none)),
                           onInputChanged: (val) {},
                           hintText: "Emergency Contact number",
                           onSaved: (value) {
@@ -268,39 +334,66 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                           keyboardType: const TextInputType.numberWithOptions(
                               signed: true, decimal: true),
                         ),
-                        TextFormField(
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        Container(
+                          decoration: BoxDecoration(boxShadow: [
+                            BoxShadow(
+                                color: Colors.grey.shade300,
+                                blurRadius: 4,
+                                spreadRadius: 2,
+                                blurStyle: BlurStyle.normal)
+                          ]),
+                          child: TextFormField(
+                              decoration: const InputDecoration(
+                                  hintText: "Email",
+                                  hintStyle: TextStyle(
+                                      fontWeight: FontWeight.w300,
+                                      color: Colors.black45),
+                                  fillColor: Colors.white,
+                                  filled: true,
+                                  border: OutlineInputBorder(
+                                      borderSide: BorderSide.none)),
+                              validator: (value) {
+                                if (value!.isNotEmpty) {
+                                  return EmailValidator.validate(value)
+                                      ? null
+                                      : "Please enter a valid email";
+                                }
+                              },
+                              onSaved: (value) {
+                                _user["email"] = value;
+                              }),
+                        ),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        Container(
+                          decoration: BoxDecoration(boxShadow: [
+                            BoxShadow(
+                                color: Colors.grey.shade300,
+                                blurRadius: 4,
+                                spreadRadius: 2,
+                                blurStyle: BlurStyle.normal)
+                          ]),
+                          child: TextFormField(
                             decoration: const InputDecoration(
-                              hintText: "Email",
-                              hintStyle: TextStyle(
-                                  fontWeight: FontWeight.w300,
-                                  color: Colors.black45),
-                            ),
-                            validator: (value) {
-                              if (value!.isNotEmpty) {
-                                return EmailValidator.validate(value)
-                                    ? null
-                                    : "Please enter a valid email";
-                              }
-                            },
-                            onSaved: (value) {
-                              _user["email"] = value;
-                            }),
-                        TextFormField(
-                          decoration: const InputDecoration(
-                            hintText: "Promo/Referal Code",
-                            hintStyle: TextStyle(
-                                fontWeight: FontWeight.w300,
-                                color: Colors.black45),
-                            fillColor: Colors.white,
+                                hintText: "Promo/Referal Code",
+                                hintStyle: TextStyle(
+                                    fontWeight: FontWeight.w300,
+                                    color: Colors.black45),
+                                fillColor: Colors.white,
+                                filled: true,
+                                border: OutlineInputBorder(
+                                    borderSide: BorderSide.none)),
                           ),
                         ),
                         const Padding(
                           padding: EdgeInsets.symmetric(vertical: 10),
                           child: Center(
                             child: Text(
-                              """By continuing, iconfirm that i have read
-                              & agree to the Terms & conditions and 
-                              Privacypolicy""",
+                              createProfileArgumentText,
                               overflow: TextOverflow.fade,
                               textAlign: TextAlign.center,
                               style: TextStyle(
@@ -329,9 +422,9 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
                                       const Spacer(),
-                                      const Text("Register",
-                                          style:
-                                              TextStyle(color: Colors.white)),
+                                      const Text(
+                                        "Register",
+                                      ),
                                       const Spacer(),
                                       Align(
                                         alignment: Alignment.centerRight,

@@ -81,6 +81,7 @@ class _MobileVerificationState extends State<MobileVerification> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color.fromRGBO(240, 241, 241, 1),
       body: Stack(
         children: [
           CustomeBackArrow(),
@@ -102,6 +103,15 @@ class _MobileVerificationState extends State<MobileVerification> {
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 10),
                     child: InternationalPhoneNumberInput(
+                      inputDecoration: const InputDecoration(
+                          hintText: "Phone Number",
+                          hintStyle: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black45),
+                          fillColor: Colors.white,
+                          filled: true,
+                          border:
+                              OutlineInputBorder(borderSide: BorderSide.none)),
                       onInputChanged: (PhoneNumber number) {
                         setState(() {
                           phoneController = number.phoneNumber!;
@@ -181,8 +191,9 @@ class _MobileVerificationState extends State<MobileVerification> {
                                         ));
                               }
                             },
-                            child: const Text("Continue",
-                                style: TextStyle(color: Colors.white))),
+                            child: const Text(
+                              "Continue",
+                            )),
                       ),
                     ),
                   ),

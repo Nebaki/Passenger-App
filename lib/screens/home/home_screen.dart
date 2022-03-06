@@ -10,6 +10,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:passengerapp/bloc/bloc.dart';
 import 'package:passengerapp/bloc/driver/driver_bloc.dart';
 import 'package:passengerapp/drawer/drawer.dart';
+import 'package:passengerapp/helper/constants.dart';
 import 'package:passengerapp/models/nearby_driver.dart';
 import 'package:passengerapp/repository/nearby_driver.dart';
 import 'package:passengerapp/rout.dart';
@@ -119,21 +120,23 @@ class _HomeScreenState extends State<HomeScreen> {
         children: [
           BlocConsumer<DirectionBloc, DirectionState>(builder: (_, state) {
             return GoogleMap(
-              mapType: MapType.terrain,
-              buildingsEnabled: false,
-              indoorViewEnabled: true,
-              tiltGesturesEnabled: false,
-              trafficEnabled: false,
+              mapType: MapType.normal,
               myLocationButtonEnabled: true,
               initialCameraPosition: _addissAbaba,
+              myLocationEnabled: true,
               polylines: Set<Polyline>.of(polylines.values),
               markers: Set<Marker>.of(markers.values),
-              myLocationEnabled: true,
               onMapCreated: (GoogleMapController controller) {
                 _controller.complete(controller);
                 outerController = controller;
+                controller.setMapStyle(mapStyle);
                 _determinePosition().then((value) {
                   currentLatLng = LatLng(value.latitude, value.longitude);
+                  geofireListener(value.latitude, value.longitude);
+
+                  WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
+                    geofireListener(value.latitude, value.longitude);
+                  });
                   controller.animateCamera(CameraUpdate.newCameraPosition(
                       CameraPosition(
                           zoom: 14.4746,
@@ -141,8 +144,8 @@ class _HomeScreenState extends State<HomeScreen> {
                               currentLatLng.longitude))));
                 });
 
-                geofireListener(
-                    currentLatLng.latitude, currentLatLng.longitude);
+                // geofireListener(
+                //     currentLatLng.latitude, currentLatLng.longitude);
 
                 WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
                   geofireListener(
@@ -152,6 +155,7 @@ class _HomeScreenState extends State<HomeScreen> {
             );
           }, listener: (_, state) {
             if (state is DirectionLoadSuccess) {
+              markers.clear();
               setState(() {
                 _getPolyline(state.direction.encodedPoints);
                 _addMarker(
@@ -327,7 +331,8 @@ class _HomeScreenState extends State<HomeScreen> {
     }
 
     setState(() {
-      driverMarkers = newMarker;
+      markers = newMarker;
+      // driverMarkers.
     });
   }
 
@@ -339,16 +344,20 @@ class _HomeScreenState extends State<HomeScreen> {
     var nearestDriver;
 
     for (NearbyDriver driver in repo.getNearbyDrivers()) {
+      print("drivers ::");
+      print(driver.id);
       double distance = Geolocator.distanceBetween(currentLatLng.latitude,
           currentLatLng.longitude, driver.latitude, driver.longitude);
 
       nearest ??= distance;
 
-      if (distance < nearest) {
+      if (distance <= nearest) {
         nearest = distance;
         nearestDriver = driver;
       }
     }
+
+    print(nearestDriver.id);
 
     return nearestDriver.id;
   }

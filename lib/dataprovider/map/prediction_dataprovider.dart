@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 import 'package:passengerapp/models/models.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 // String geolocator =
 //     "https://maps.googleapis.com/maps/api/geocode/json?address=1600+Amphitheatre+Parkway,+Mountain+View,+CA&key=AIzaSyB8z8UeyROt2-ay24jiHrrcMXaEAlPUvdQ";
@@ -10,6 +11,8 @@ import 'package:passengerapp/models/models.dart';
 //    "https://maps.googleapis.com/maps/api/geocode/json?latlng=40.714224,-73.961452&key=AIzaSyB8z8UeyROt2-ay24jiHrrcMXaEAlPUvdQ";
 
 class LocationPredictionDataProvider {
+  final secure_storage = FlutterSecureStorage();
+
   final http.Client httpClient;
 
   LocationPredictionDataProvider({required this.httpClient});
