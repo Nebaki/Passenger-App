@@ -11,10 +11,10 @@ class SavedAddress extends StatelessWidget {
         padding: EdgeInsets.only(top: 60),
         child: Column(
           children: [
-            Padding(
-              padding: const EdgeInsets.only(left: 5, right: 5),
-              child: WhereTo(),
-            ),
+            // Padding(
+            //   padding: const EdgeInsets.only(left: 5, right: 5),
+            //   child: WhereTo(setIsSelected: () {}),
+            // ),
             Container(
                 padding: EdgeInsets.symmetric(horizontal: 20),
                 height: MediaQuery.of(context).size.height - 280,

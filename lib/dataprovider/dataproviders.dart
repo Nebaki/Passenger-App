@@ -8,3 +8,4 @@ export 'nearby_driver.dart';
 export 'ride_request.dart';
 export 'notification_request.dart';
 export 'driver/driver.dart';
+export 'database/database_helper.dart';

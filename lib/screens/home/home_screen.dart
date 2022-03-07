@@ -10,6 +10,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:passengerapp/bloc/bloc.dart';
 import 'package:passengerapp/bloc/driver/driver_bloc.dart';
 import 'package:passengerapp/drawer/drawer.dart';
+import 'package:passengerapp/helper/constants.dart';
 import 'package:passengerapp/models/nearby_driver.dart';
 import 'package:passengerapp/repository/nearby_driver.dart';
 import 'package:passengerapp/rout.dart';
@@ -38,6 +39,7 @@ class _HomeScreenState extends State<HomeScreen> {
   double currentLat = 3;
   late double currentLng = 4;
   Completer<GoogleMapController> _controller = Completer();
+  late GoogleMapController outerController;
   NearbyDriverRepository repo = NearbyDriverRepository();
   GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   List<LatLng> polylineCoordinates = [];
@@ -47,6 +49,8 @@ class _HomeScreenState extends State<HomeScreen> {
   Map<MarkerId, Marker> driverMarkers = {};
   late List<NearbyDriver> drivers;
   late LatLng currentLatLng;
+  bool isSelectedd = false;
+  late LatLng dtn;
 
   static const CameraPosition _addissAbaba = CameraPosition(
     target: LatLng(8.9806, 38.7578),
@@ -89,7 +93,16 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     widget.args.isSelected
         ? _currentWidget = Service(callback, searchNearbyDriver)
-        : _currentWidget = const WhereTo();
+        : _currentWidget = WhereTo(
+            setIsSelected: setIsSelected,
+            callback: callback,
+            service: Service(callback, searchNearbyDriver));
+  }
+
+  void setIsSelected(LatLng destination) {
+    setState(() {
+      dtn = destination;
+    });
   }
 
   void callback(Widget nextwidget) {
@@ -105,382 +118,67 @@ class _HomeScreenState extends State<HomeScreen> {
       drawer: NavDrawer(),
       body: Stack(
         children: [
-          widget.args.isSelected
-              ? BlocBuilder<DirectionBloc, DirectionState>(
-                  builder: (context, state) {
-                  bool isDialog = true;
+          BlocConsumer<DirectionBloc, DirectionState>(builder: (_, state) {
+            return GoogleMap(
+              mapType: MapType.normal,
+              myLocationButtonEnabled: true,
+              initialCameraPosition: _addissAbaba,
+              myLocationEnabled: true,
+              polylines: Set<Polyline>.of(polylines.values),
+              markers: Set<Marker>.of(markers.values),
+              onMapCreated: (GoogleMapController controller) {
+                _controller.complete(controller);
+                outerController = controller;
+                controller.setMapStyle(mapStyle);
+                _determinePosition().then((value) {
+                  currentLatLng = LatLng(value.latitude, value.longitude);
+                  geofireListener(value.latitude, value.longitude);
 
-                  if (state is DirectionLoadSuccess) {
-                    isDialog = false;
+                  WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
+                    geofireListener(value.latitude, value.longitude);
+                  });
+                  controller.animateCamera(CameraUpdate.newCameraPosition(
+                      CameraPosition(
+                          zoom: 14.4746,
+                          target: LatLng(currentLatLng.latitude,
+                              currentLatLng.longitude))));
+                });
 
-                    _getPolyline(state.direction.encodedPoints);
-                    _addMarker(
-                        widget.args.destinationlatlang!,
-                        "destination",
-                        BitmapDescriptor.defaultMarkerWithHue(
-                            BitmapDescriptor.hueGreen));
+                // geofireListener(
+                //     currentLatLng.latitude, currentLatLng.longitude);
 
-                    return GoogleMap(
-                      mapType: MapType.normal,
-                      myLocationButtonEnabled: true,
-                      initialCameraPosition: _addissAbaba,
-                      myLocationEnabled: true,
-                      polylines: Set<Polyline>.of(polylines.values),
-                      markers: Set<Marker>.of(markers.values),
-                      onMapCreated: (GoogleMapController controller) {
-                        _controller.complete(controller);
+                WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
+                  geofireListener(
+                      currentLatLng.latitude, currentLatLng.longitude);
+                });
+              },
+            );
+          }, listener: (_, state) {
+            if (state is DirectionLoadSuccess) {
+              markers.clear();
+              setState(() {
+                _getPolyline(state.direction.encodedPoints);
+                _addMarker(
+                    dtn,
+                    "destination",
+                    BitmapDescriptor.defaultMarkerWithHue(
+                        BitmapDescriptor.hueGreen));
+                _addMarker(
+                    LatLng(currentLatLng.latitude, currentLatLng.longitude),
+                    "pickup",
+                    BitmapDescriptor.defaultMarkerWithHue(
+                        BitmapDescriptor.hueRed));
+              });
 
-                        controller.setMapStyle('''[
-  {
-    "elementType": "geometry",
-    "stylers": [
-      {
-        "color": "#ebe3cd"
-      }
-    ]
-  },
-  {
-    "elementType": "labels.text.fill",
-    "stylers": [
-      {
-        "color": "#523735"
-      }
-    ]
-  },
-  {
-    "elementType": "labels.text.stroke",
-    "stylers": [
-      {
-        "color": "#f5f1e6"
-      }
-    ]
-  },
-  {
-    "featureType": "administrative",
-    "elementType": "geometry.stroke",
-    "stylers": [
-      {
-        "color": "#c9b2a6"
-      }
-    ]
-  },
-  {
-    "featureType": "administrative.land_parcel",
-    "elementType": "geometry.stroke",
-    "stylers": [
-      {
-        "color": "#dcd2be"
-      }
-    ]
-  },
-  {
-    "featureType": "administrative.land_parcel",
-    "elementType": "labels.text.fill",
-    "stylers": [
-      {
-        "color": "#ae9e90"
-      }
-    ]
-  },
-  {
-    "featureType": "landscape.natural",
-    "elementType": "geometry",
-    "stylers": [
-      {
-        "color": "#dfd2ae"
-      }
-    ]
-  },
-  {
-    "featureType": "poi",
-    "elementType": "geometry",
-    "stylers": [
-      {
-        "color": "#dfd2ae"
-      }
-    ]
-  },
-  {
-    "featureType": "poi",
-    "elementType": "labels.text.fill",
-    "stylers": [
-      {
-        "color": "#93817c"
-      }
-    ]
-  },
-  {
-    "featureType": "poi.park",
-    "elementType": "geometry.fill",
-    "stylers": [
-      {
-        "color": "#a5b076"
-      }
-    ]
-  },
-  {
-    "featureType": "poi.park",
-    "elementType": "labels.text.fill",
-    "stylers": [
-      {
-        "color": "#447530"
-      }
-    ]
-  },
-  {
-    "featureType": "road",
-    "elementType": "geometry",
-    "stylers": [
-      {
-        "color": "#f5f1e6"
-      }
-    ]
-  },
-  {
-    "featureType": "road.arterial",
-    "elementType": "geometry",
-    "stylers": [
-      {
-        "color": "#fdfcf8"
-      }
-    ]
-  },
-  {
-    "featureType": "road.highway",
-    "elementType": "geometry",
-    "stylers": [
-      {
-        "color": "#f8c967"
-      }
-    ]
-  },
-  {
-    "featureType": "road.highway",
-    "elementType": "geometry.stroke",
-    "stylers": [
-      {
-        "color": "#e9bc62"
-      }
-    ]
-  },
-  {
-    "featureType": "road.highway.controlled_access",
-    "elementType": "geometry",
-    "stylers": [
-      {
-        "color": "#e98d58"
-      }
-    ]
-  },
-  {
-    "featureType": "road.highway.controlled_access",
-    "elementType": "geometry.stroke",
-    "stylers": [
-      {
-        "color": "#db8555"
-      }
-    ]
-  },
-  {
-    "featureType": "road.local",
-    "elementType": "labels.text.fill",
-    "stylers": [
-      {
-        "color": "#806b63"
-      }
-    ]
-  },
-  {
-    "featureType": "transit.line",
-    "elementType": "geometry",
-    "stylers": [
-      {
-        "color": "#dfd2ae"
-      }
-    ]
-  },
-  {
-    "featureType": "transit.line",
-    "elementType": "labels.text.fill",
-    "stylers": [
-      {
-        "color": "#8f7d77"
-      }
-    ]
-  },
-  {
-    "featureType": "transit.line",
-    "elementType": "labels.text.stroke",
-    "stylers": [
-      {
-        "color": "#ebe3cd"
-      }
-    ]
-  },
-  {
-    "featureType": "transit.station",
-    "elementType": "geometry",
-    "stylers": [
-      {
-        "color": "#dfd2ae"
-      }
-    ]
-  },
-  {
-    "featureType": "water",
-    "elementType": "geometry.fill",
-    "stylers": [
-      {
-        "color": "#b9d3c2"
-      }
-    ]
-  },
-  {
-    "featureType": "water",
-    "elementType": "labels.text.fill",
-    "stylers": [
-      {
-        "color": "#92998d"
-      }
-    ]
-  },
-  {
-    "featureType": "poi",
-    "stylers": [
-      {
-        "visibility": "off"
-      }
-    ]
-  }
-]''');
-
-                        _determinePosition().then((value) {
-                          currentLatLng =
-                              LatLng(value.latitude, value.longitude);
-                          setState(() {
-                            _addMarker(
-                                LatLng(value.latitude, value.longitude),
-                                "pickup",
-                                BitmapDescriptor.defaultMarkerWithHue(
-                                    BitmapDescriptor.hueRed));
-                          });
-
-                          LatLngBounds latLngBounds;
-
-                          final destinationLatLng =
-                              widget.args.destinationlatlang;
-                          final pickupLatLng =
-                              LatLng(value.latitude, value.longitude);
-                          if (pickupLatLng.latitude >
-                                  destinationLatLng!.latitude &&
-                              pickupLatLng.longitude >
-                                  destinationLatLng.longitude) {
-                            latLngBounds = LatLngBounds(
-                                southwest: destinationLatLng,
-                                northeast: pickupLatLng);
-                          } else if (pickupLatLng.longitude >
-                              destinationLatLng.longitude) {
-                            latLngBounds = LatLngBounds(
-                                southwest: LatLng(pickupLatLng.latitude,
-                                    destinationLatLng.longitude),
-                                northeast: LatLng(destinationLatLng.latitude,
-                                    pickupLatLng.longitude));
-                          } else if (pickupLatLng.latitude >
-                              destinationLatLng.latitude) {
-                            latLngBounds = LatLngBounds(
-                                southwest: LatLng(destinationLatLng.latitude,
-                                    pickupLatLng.longitude),
-                                northeast: LatLng(pickupLatLng.latitude,
-                                    destinationLatLng.longitude));
-                          } else {
-                            latLngBounds = LatLngBounds(
-                                southwest: pickupLatLng,
-                                northeast: destinationLatLng);
-                          }
-
-                          controller.animateCamera(
-                              CameraUpdate.newLatLngBounds(latLngBounds, 70));
-                        });
-                      },
-                    );
-                  }
-                  if (state is DirectionOperationFailure) {
-                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                      content: const Text("Unable to find direction"),
-                      backgroundColor: Colors.red.shade900,
-                    ));
-                    return GoogleMap(
-                      mapType: MapType.terrain,
-                      buildingsEnabled: false,
-                      indoorViewEnabled: true,
-                      tiltGesturesEnabled: false,
-                      trafficEnabled: false,
-                      myLocationButtonEnabled: true,
-                      initialCameraPosition: _addissAbaba,
-                      myLocationEnabled: true,
-                      onMapCreated: (GoogleMapController controller) {
-                        _controller.complete(controller);
-
-                        _determinePosition().then((value) {
-                          currentLatLng =
-                              LatLng(value.latitude, value.longitude);
-                          controller.animateCamera(
-                              CameraUpdate.newCameraPosition(CameraPosition(
-                                  zoom: 14.4746,
-                                  target: LatLng(
-                                      value.latitude, value.longitude))));
-                        });
-                      },
-                    );
-                  }
-                  return isDialog
-                      ? AlertDialog(
-                          content: Row(
-                            children: const [
-                              CircularProgressIndicator(),
-                              Text("finding direction")
-                            ],
-                          ),
-                        )
-                      : Container();
-                })
-              : GoogleMap(
-                  mapType: MapType.terrain,
-                  buildingsEnabled: false,
-                  indoorViewEnabled: true,
-                  tiltGesturesEnabled: false,
-                  trafficEnabled: false,
-                  myLocationButtonEnabled: true,
-                  initialCameraPosition: _addissAbaba,
-                  markers: Set<Marker>.of(driverMarkers.values),
-                  myLocationEnabled: true,
-                  onMapCreated: (GoogleMapController controller) {
-                    print(driverMarkers);
-                    _controller.complete(controller);
-
-                    _determinePosition().then((value) async {
-                      currentLatLng = LatLng(value.latitude, value.longitude);
-                      geofireListener(value.latitude, value.longitude);
-
-                      WidgetsBinding.instance!
-                          .addPostFrameCallback((timeStamp) {
-                        geofireListener(value.latitude, value.longitude);
-                      });
-
-                      controller.animateCamera(CameraUpdate.newCameraPosition(
-                          CameraPosition(
-                              zoom: 14.4746,
-                              target:
-                                  LatLng(value.latitude, value.longitude))));
-                    });
-                  },
-                ),
+              changeCameraView();
+            }
+          }),
           Padding(
             padding: const EdgeInsets.only(top: 40, left: 10),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(100),
               child: Container(
-                color: Colors.blueGrey.shade900.withOpacity(0.7),
+                color: Colors.black,
                 child: IconButton(
                   onPressed: () => _scaffoldKey.currentState!.openDrawer(),
                   icon: const Icon(
@@ -501,14 +199,6 @@ class _HomeScreenState extends State<HomeScreen> {
                     geofireListener(8.9936827, 38.7663247);
                   },
                   child: const Text("Maintenance"))),
-          // Positioned(
-          //     top: 60,
-          //     child: ElevatedButton(
-          //         onPressed: () {
-          //           Geofire.setLocation("test", 8.9936827, 38.7863247);
-          //           geofireListener(8.9936827, 38.7663247);
-          //         },
-          //         child: Text("add")))
         ],
       ),
     );
@@ -641,7 +331,8 @@ class _HomeScreenState extends State<HomeScreen> {
     }
 
     setState(() {
-      driverMarkers = newMarker;
+      markers = newMarker;
+      // driverMarkers.
     });
   }
 
@@ -653,17 +344,427 @@ class _HomeScreenState extends State<HomeScreen> {
     var nearestDriver;
 
     for (NearbyDriver driver in repo.getNearbyDrivers()) {
+      print("drivers ::");
+      print(driver.id);
       double distance = Geolocator.distanceBetween(currentLatLng.latitude,
           currentLatLng.longitude, driver.latitude, driver.longitude);
 
       nearest ??= distance;
 
-      if (distance < nearest) {
+      if (distance <= nearest) {
         nearest = distance;
         nearestDriver = driver;
       }
     }
 
+    print(nearestDriver.id);
+
     return nearestDriver.id;
   }
+
+  void changeCameraView() {
+    LatLngBounds latLngBounds;
+
+    final destinationLatLng = dtn;
+    final pickupLatLng =
+        LatLng(currentLatLng.latitude, currentLatLng.longitude);
+    if (pickupLatLng.latitude > destinationLatLng.latitude &&
+        pickupLatLng.longitude > destinationLatLng.longitude) {
+      latLngBounds =
+          LatLngBounds(southwest: destinationLatLng, northeast: pickupLatLng);
+    } else if (pickupLatLng.longitude > destinationLatLng.longitude) {
+      latLngBounds = LatLngBounds(
+          southwest: LatLng(pickupLatLng.latitude, destinationLatLng.longitude),
+          northeast:
+              LatLng(destinationLatLng.latitude, pickupLatLng.longitude));
+    } else if (pickupLatLng.latitude > destinationLatLng.latitude) {
+      latLngBounds = LatLngBounds(
+          southwest: LatLng(destinationLatLng.latitude, pickupLatLng.longitude),
+          northeast:
+              LatLng(pickupLatLng.latitude, destinationLatLng.longitude));
+    } else {
+      latLngBounds =
+          LatLngBounds(southwest: pickupLatLng, northeast: destinationLatLng);
+    }
+
+    outerController
+        .animateCamera(CameraUpdate.newLatLngBounds(latLngBounds, 70));
+  }
 }
+
+
+
+//for maintenance
+
+
+//           isSelectedd
+//               ? BlocBuilder<DirectionBloc, DirectionState>(
+//                   builder: (context, state) {
+//                   bool isDialog = true;
+
+//                   if (state is DirectionLoadSuccess) {
+//                     isDialog = false;
+
+//                     print("Welcome");
+
+//                     _getPolyline(state.direction.encodedPoints);
+//                     _addMarker(
+//                         dtn,
+//                         "destination",
+//                         BitmapDescriptor.defaultMarkerWithHue(
+//                             BitmapDescriptor.hueGreen));
+
+//                     return GoogleMap(
+//                       mapType: MapType.normal,
+//                       myLocationButtonEnabled: true,
+//                       initialCameraPosition: _addissAbaba,
+//                       myLocationEnabled: true,
+//                       polylines: Set<Polyline>.of(polylines.values),
+//                       markers: Set<Marker>.of(markers.values),
+//                       onMapCreated: (GoogleMapController controller) {
+//                         // _controller.complete(controller);
+
+//                         controller.setMapStyle('''[
+//   {
+//     "elementType": "geometry",
+//     "stylers": [
+//       {
+//         "color": "#ebe3cd"
+//       }
+//     ]
+//   },
+//   {
+//     "elementType": "labels.text.fill",
+//     "stylers": [
+//       {
+//         "color": "#523735"
+//       }
+//     ]
+//   },
+//   {
+//     "elementType": "labels.text.stroke",
+//     "stylers": [
+//       {
+//         "color": "#f5f1e6"
+//       }
+//     ]
+//   },
+//   {
+//     "featureType": "administrative",
+//     "elementType": "geometry.stroke",
+//     "stylers": [
+//       {
+//         "color": "#c9b2a6"
+//       }
+//     ]
+//   },
+//   {
+//     "featureType": "administrative.land_parcel",
+//     "elementType": "geometry.stroke",
+//     "stylers": [
+//       {
+//         "color": "#dcd2be"
+//       }
+//     ]
+//   },
+//   {
+//     "featureType": "administrative.land_parcel",
+//     "elementType": "labels.text.fill",
+//     "stylers": [
+//       {
+//         "color": "#ae9e90"
+//       }
+//     ]
+//   },
+//   {
+//     "featureType": "landscape.natural",
+//     "elementType": "geometry",
+//     "stylers": [
+//       {
+//         "color": "#dfd2ae"
+//       }
+//     ]
+//   },
+//   {
+//     "featureType": "poi",
+//     "elementType": "geometry",
+//     "stylers": [
+//       {
+//         "color": "#dfd2ae"
+//       }
+//     ]
+//   },
+//   {
+//     "featureType": "poi",
+//     "elementType": "labels.text.fill",
+//     "stylers": [
+//       {
+//         "color": "#93817c"
+//       }
+//     ]
+//   },
+//   {
+//     "featureType": "poi.park",
+//     "elementType": "geometry.fill",
+//     "stylers": [
+//       {
+//         "color": "#a5b076"
+//       }
+//     ]
+//   },
+//   {
+//     "featureType": "poi.park",
+//     "elementType": "labels.text.fill",
+//     "stylers": [
+//       {
+//         "color": "#447530"
+//       }
+//     ]
+//   },
+//   {
+//     "featureType": "road",
+//     "elementType": "geometry",
+//     "stylers": [
+//       {
+//         "color": "#f5f1e6"
+//       }
+//     ]
+//   },
+//   {
+//     "featureType": "road.arterial",
+//     "elementType": "geometry",
+//     "stylers": [
+//       {
+//         "color": "#fdfcf8"
+//       }
+//     ]
+//   },
+//   {
+//     "featureType": "road.highway",
+//     "elementType": "geometry",
+//     "stylers": [
+//       {
+//         "color": "#f8c967"
+//       }
+//     ]
+//   },
+//   {
+//     "featureType": "road.highway",
+//     "elementType": "geometry.stroke",
+//     "stylers": [
+//       {
+//         "color": "#e9bc62"
+//       }
+//     ]
+//   },
+//   {
+//     "featureType": "road.highway.controlled_access",
+//     "elementType": "geometry",
+//     "stylers": [
+//       {
+//         "color": "#e98d58"
+//       }
+//     ]
+//   },
+//   {
+//     "featureType": "road.highway.controlled_access",
+//     "elementType": "geometry.stroke",
+//     "stylers": [
+//       {
+//         "color": "#db8555"
+//       }
+//     ]
+//   },
+//   {
+//     "featureType": "road.local",
+//     "elementType": "labels.text.fill",
+//     "stylers": [
+//       {
+//         "color": "#806b63"
+//       }
+//     ]
+//   },
+//   {
+//     "featureType": "transit.line",
+//     "elementType": "geometry",
+//     "stylers": [
+//       {
+//         "color": "#dfd2ae"
+//       }
+//     ]
+//   },
+//   {
+//     "featureType": "transit.line",
+//     "elementType": "labels.text.fill",
+//     "stylers": [
+//       {
+//         "color": "#8f7d77"
+//       }
+//     ]
+//   },
+//   {
+//     "featureType": "transit.line",
+//     "elementType": "labels.text.stroke",
+//     "stylers": [
+//       {
+//         "color": "#ebe3cd"
+//       }
+//     ]
+//   },
+//   {
+//     "featureType": "transit.station",
+//     "elementType": "geometry",
+//     "stylers": [
+//       {
+//         "color": "#dfd2ae"
+//       }
+//     ]
+//   },
+//   {
+//     "featureType": "water",
+//     "elementType": "geometry.fill",
+//     "stylers": [
+//       {
+//         "color": "#b9d3c2"
+//       }
+//     ]
+//   },
+//   {
+//     "featureType": "water",
+//     "elementType": "labels.text.fill",
+//     "stylers": [
+//       {
+//         "color": "#92998d"
+//       }
+//     ]
+//   },
+//   {
+//     "featureType": "poi",
+//     "stylers": [
+//       {
+//         "visibility": "off"
+//       }
+//     ]
+//   }
+// ]''');
+
+//                         _determinePosition().then((value) {
+//                           currentLatLng =
+//                               LatLng(value.latitude, value.longitude);
+//                           setState(() {
+//                             _addMarker(
+//                                 LatLng(value.latitude, value.longitude),
+//                                 "pickup",
+//                                 BitmapDescriptor.defaultMarkerWithHue(
+//                                     BitmapDescriptor.hueRed));
+//                           });
+
+//                           LatLngBounds latLngBounds;
+
+//                           final destinationLatLng = dtn;
+//                           final pickupLatLng =
+//                               LatLng(value.latitude, value.longitude);
+//                           if (pickupLatLng.latitude >
+//                                   destinationLatLng.latitude &&
+//                               pickupLatLng.longitude >
+//                                   destinationLatLng.longitude) {
+//                             latLngBounds = LatLngBounds(
+//                                 southwest: destinationLatLng,
+//                                 northeast: pickupLatLng);
+//                           } else if (pickupLatLng.longitude >
+//                               destinationLatLng.longitude) {
+//                             latLngBounds = LatLngBounds(
+//                                 southwest: LatLng(pickupLatLng.latitude,
+//                                     destinationLatLng.longitude),
+//                                 northeast: LatLng(destinationLatLng.latitude,
+//                                     pickupLatLng.longitude));
+//                           } else if (pickupLatLng.latitude >
+//                               destinationLatLng.latitude) {
+//                             latLngBounds = LatLngBounds(
+//                                 southwest: LatLng(destinationLatLng.latitude,
+//                                     pickupLatLng.longitude),
+//                                 northeast: LatLng(pickupLatLng.latitude,
+//                                     destinationLatLng.longitude));
+//                           } else {
+//                             latLngBounds = LatLngBounds(
+//                                 southwest: pickupLatLng,
+//                                 northeast: destinationLatLng);
+//                           }
+
+//                           controller.animateCamera(
+//                               CameraUpdate.newLatLngBounds(latLngBounds, 70));
+//                         });
+//                       },
+//                     );
+//                   }
+//                   if (state is DirectionOperationFailure) {
+//                     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+//                       content: const Text("Unable to find direction"),
+//                       backgroundColor: Colors.red.shade900,
+//                     ));
+//                     return GoogleMap(
+//                       mapType: MapType.terrain,
+//                       buildingsEnabled: false,
+//                       indoorViewEnabled: true,
+//                       tiltGesturesEnabled: false,
+//                       trafficEnabled: false,
+//                       myLocationButtonEnabled: true,
+//                       initialCameraPosition: _addissAbaba,
+//                       myLocationEnabled: true,
+//                       onMapCreated: (GoogleMapController controller) {
+//                         _controller.complete(controller);
+
+//                         _determinePosition().then((value) {
+//                           currentLatLng =
+//                               LatLng(value.latitude, value.longitude);
+//                           controller.animateCamera(
+//                               CameraUpdate.newCameraPosition(CameraPosition(
+//                                   zoom: 14.4746,
+//                                   target: LatLng(
+//                                       value.latitude, value.longitude))));
+//                         });
+//                       },
+//                     );
+//                   }
+//                   return isDialog
+//                       ? AlertDialog(
+//                           content: Row(
+//                             children: const [
+//                               CircularProgressIndicator(),
+//                               Text("finding direction")
+//                             ],
+//                           ),
+//                         )
+//                       : Container();
+//                 })
+//               : GoogleMap(
+//                   mapType: MapType.terrain,
+//                   buildingsEnabled: false,
+//                   indoorViewEnabled: true,
+//                   tiltGesturesEnabled: false,
+//                   trafficEnabled: false,
+//                   myLocationButtonEnabled: true,
+//                   initialCameraPosition: _addissAbaba,
+//                   markers: Set<Marker>.of(driverMarkers.values),
+//                   myLocationEnabled: true,
+//                   onMapCreated: (GoogleMapController controller) {
+//                     print(driverMarkers);
+//                     _controller.complete(controller);
+
+//                     _determinePosition().then((value) async {
+//                       currentLatLng = LatLng(value.latitude, value.longitude);
+//                       geofireListener(value.latitude, value.longitude);
+
+//                       WidgetsBinding.instance!
+//                           .addPostFrameCallback((timeStamp) {
+//                         geofireListener(value.latitude, value.longitude);
+//                       });
+
+//                       controller.animateCamera(CameraUpdate.newCameraPosition(
+//                           CameraPosition(
+//                               zoom: 14.4746,
+//                               target:
+//                                   LatLng(value.latitude, value.longitude))));
+//                     });
+//                   },
+//                 ),

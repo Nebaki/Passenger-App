@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:passengerapp/bloc/bloc.dart';
+import 'package:passengerapp/bloc/database/location_history_bloc.dart';
 import 'package:passengerapp/bloc/notificationrequest/notification_request_bloc.dart';
 import 'package:passengerapp/bloc_observer.dart';
 import 'package:passengerapp/dataprovider/dataproviders.dart';
@@ -40,6 +41,9 @@ void main() {
           dataProvider:
               NotificationRequestDataProvider(httpClient: http.Client()));
 
+  final DataBaseHelperRepository dataBaseHelperRepository =
+      DataBaseHelperRepository(dataProvider: DatabaseHelper());
+
   final DriverRepository driverRepository = DriverRepository(
       dataProvider: DriverDataProvider(httpClient: http.Client()));
   runApp(MyApp(
@@ -52,6 +56,7 @@ void main() {
     locationPredictionRepository: locationPredictionRepository,
     placeDetailRepository: placeDetailRepository,
     directionRepository: directionRepository,
+    dataBaseHelperRepository: dataBaseHelperRepository,
   ));
 }
 
@@ -96,6 +101,7 @@ class MyApp extends StatelessWidget {
   final AuthRepository authRepository;
   final RideRequestRepository rideRequestRepository;
   final NotificationRequestRepository notificationRequestRepository;
+  final DataBaseHelperRepository dataBaseHelperRepository;
 
   const MyApp(
       {Key? key,
@@ -107,7 +113,8 @@ class MyApp extends StatelessWidget {
       required this.reverseLocationRepository,
       required this.locationPredictionRepository,
       required this.placeDetailRepository,
-      required this.directionRepository})
+      required this.directionRepository,
+      required this.dataBaseHelperRepository})
       : super(key: key);
   @override
   Widget build(BuildContext context) {
@@ -124,6 +131,7 @@ class MyApp extends StatelessWidget {
           RepositoryProvider.value(value: userRepository),
           RepositoryProvider.value(value: driverRepository),
           RepositoryProvider.value(value: authRepository),
+          RepositoryProvider.value(value: dataBaseHelperRepository)
         ],
         child: MultiBlocProvider(
             providers: [
@@ -156,12 +164,16 @@ class MyApp extends StatelessWidget {
                           notificationRequestRepository)),
               BlocProvider(
                   create: (context) =>
-                      DriverBloc(driverRepository: driverRepository))
+                      DriverBloc(driverRepository: driverRepository)),
+              BlocProvider(
+                  create: (context) => LocationHistoryBloc(
+                      dataBaseHelperRepository: dataBaseHelperRepository))
             ],
             child: MaterialApp(
               title: 'SafeWay',
               theme: ThemeData(
                   //F48221
+
                   primaryColor: const Color.fromRGBO(254, 79, 5, 1),
                   textTheme: TextTheme(
                       button: const TextStyle(
