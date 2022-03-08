@@ -26,7 +26,7 @@ class LocationPrediction extends Equatable {
   Map<String, dynamic> toMap() {
     var map = <String, dynamic>{
       "placeId": placeId,
-      "mainTexta": mainText,
+      "mainText": mainText,
       "secondaryText": secondaryText
     };
     // if (id != null) {

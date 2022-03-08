@@ -88,6 +88,7 @@ class UserDataProvider {
   }
 
   Future<User> updatePassenger(User user) async {
+    print("heree");
     final http.Response response = await http.post(
       Uri.parse('$_baseUrl/update-profile'),
       headers: <String, String>{
@@ -95,8 +96,7 @@ class UserDataProvider {
         'x-access-token': '${await authDataProvider.getToken()}'
       },
       body: jsonEncode(<String, dynamic>{
-        'first_name': user.firstName,
-        'last_name': user.lastName,
+        'name': '${user.firstName} ${user.lastName}',
         'email': user.email,
         'gender': user.gender,
         'phone_number': user.phoneNumber,
@@ -104,6 +104,9 @@ class UserDataProvider {
         'preference': user.preference
       }),
     );
+
+    print(response.statusCode);
+    print(response.body);
 
     if (response.statusCode == 200) {
       authDataProvider.updateUserData(user);

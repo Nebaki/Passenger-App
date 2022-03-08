@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:passengerapp/bloc/bloc.dart';
 import 'package:passengerapp/dataprovider/auth/auth.dart';
 import 'package:passengerapp/drawer/custome_paint.dart';
+import 'package:passengerapp/rout.dart';
 import 'package:passengerapp/screens/screens.dart';
 import 'package:http/http.dart' as http;
 
@@ -87,8 +88,9 @@ class NavDrawer extends StatelessWidget {
                 children: [
                   GestureDetector(
                     onTap: () {
-                      // print("YAyayyaay")
-                      // _draweKEy.currentState!.close();
+                      Navigator.pushReplacementNamed(
+                          context, HomeScreen.routeName,
+                          arguments: HomeScreenArgument(isSelected: false));
                     },
                     child: _menuItem(
                         divider: true,
@@ -116,6 +118,17 @@ class NavDrawer extends StatelessWidget {
                         context: context,
                         icon: Icons.history,
                         text: "History"),
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.pushNamed(
+                          context, OrderForOtherScreen.routeName);
+                    },
+                    child: _menuItem(
+                        divider: true,
+                        context: context,
+                        icon: Icons.border_outer_rounded,
+                        text: "Order for other"),
                   ),
                   _menuItem(
                       divider: true,
