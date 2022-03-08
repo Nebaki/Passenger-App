@@ -9,7 +9,7 @@ class TripStore {
   TripStore({required this.trips});
 
   TripStore.fromJson(List<dynamic> parsedJson){
-    trips = parsedJson.map((i) => Trip.fromJson(i)).toList();
+    trips = parsedJson.map((i) => Trip.fromMap(i)).toList();
     //return TripStore(trips: states);
   }
   String toJson() {
@@ -18,17 +18,22 @@ class TripStore {
   }
 }
 class Trip {
-  Trip(this.id, this.start, this.end, this.price);
-  late int id;
-  late Location start;
-  late Location end;
-  late double price;
-
-  Trip.fromJson(Map<String, dynamic> json){
-    id = json['id'];
-    start = Location.fromJson(json['start']);
-    end = Location.fromJson(json['end']);
-    price = json['price'];
+  Trip({this.id, this.start, this.end, this.price});
+   int? id;
+   Location? start;
+   Location? end;
+   double? price;
+   Trip.fromJson(Map<String,dynamic> json){
+     id = json['id'];
+     start = Location.fromJson(json['start']);
+     end = Location.fromJson(json['end']);
+     price = json['price'];
+   }
+  Trip.fromMap(Map<String, dynamic> map){
+    id = map['id'];
+    start = Location.fromJson(map['start']);
+    end = Location.fromJson(map['end']);
+    price = map['price'];
   }
 
   Map<String, dynamic> toJson() {
@@ -39,4 +44,12 @@ class Trip {
     data['price'] = price;
     return data;
   }
+  Map<String, dynamic> toMap() {
+    return {'id': id,'start': start,'end': end,'price': price};
+  }
+  @override
+  String toString(){
+    return 'Trip(id: $id, start: $start, end: $end, price: $price)';
+  }
+
 }
