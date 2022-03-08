@@ -41,13 +41,12 @@ class DatabaseHelper {
   }
 
   Future<List<LocationPrediction>> queryLocation() async {
+    print("yow yow yow");
     Database db = await database;
-    List<Map<String, dynamic>> maps = await db.query(
-      "LocationHistory",
-      columns: ["placeId", "mainText", "secondaryText"],
-    );
+    List<Map<String, dynamic>> maps = await db.query("LocationHistory",
+        columns: ["placeId", "mainText", "secondaryText"]);
     if (maps.length > 0) {
-      return maps.map((e) => LocationPrediction.fromMap(e)).toList();
+      return maps.reversed.map((e) => LocationPrediction.fromMap(e)).toList();
       // LocationPrediction.fromMap(maps.first);
     } else {
       throw "";

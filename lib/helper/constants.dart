@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 const mapStyle = '''[
   {
     "elementType": "geometry",
@@ -174,3 +176,4 @@ const mapStyle = '''[
 
 const createProfileArgumentText =
     "By continuing, iconfirm that i have read & agree to the Terms & conditions and Privacypolicy";
+const backGroundColor = Color.fromRGBO(240, 241, 241, 1);

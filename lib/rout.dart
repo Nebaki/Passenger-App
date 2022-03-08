@@ -89,6 +89,9 @@ class AppRoute {
                 args: argument,
               ));
     }
+    if (settings.name == OrderForOtherScreen.routeName) {
+      return MaterialPageRoute(builder: (context) => OrderForOtherScreen());
+    }
     return MaterialPageRoute(builder: (context) => CustomSplashScreen());
   }
 }

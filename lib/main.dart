@@ -9,6 +9,7 @@ import 'package:passengerapp/bloc/database/location_history_bloc.dart';
 import 'package:passengerapp/bloc/notificationrequest/notification_request_bloc.dart';
 import 'package:passengerapp/bloc_observer.dart';
 import 'package:passengerapp/dataprovider/dataproviders.dart';
+import 'package:passengerapp/helper/constants.dart';
 import 'package:passengerapp/repository/repositories.dart';
 import 'package:passengerapp/rout.dart';
 import 'package:http/http.dart' as http;
@@ -167,13 +168,14 @@ class MyApp extends StatelessWidget {
                       DriverBloc(driverRepository: driverRepository)),
               BlocProvider(
                   create: (context) => LocationHistoryBloc(
-                      dataBaseHelperRepository: dataBaseHelperRepository))
+                      dataBaseHelperRepository: dataBaseHelperRepository)
+                    ..add(LocationHistoryLoad()))
             ],
             child: MaterialApp(
               title: 'SafeWay',
               theme: ThemeData(
                   //F48221
-
+                  scaffoldBackgroundColor: backGroundColor,
                   primaryColor: const Color.fromRGBO(254, 79, 5, 1),
                   textTheme: TextTheme(
                       button: const TextStyle(
@@ -203,7 +205,7 @@ class MyApp extends StatelessWidget {
 
                       textStyle: MaterialStateProperty.all<TextStyle>(
                           const TextStyle(
-                              color: Colors.white,
+                              color: Colors.black,
                               fontWeight: FontWeight.w300,
                               fontSize: 20)),
                       // backgroundColor: MaterialStateProperty.all<Color>(
@@ -216,7 +218,7 @@ class MyApp extends StatelessWidget {
                     ),
                   ),
                   colorScheme: ColorScheme.fromSwatch(
-                    primarySwatch: Colors.orange,
+                    primarySwatch: Colors.green,
                   ).copyWith(secondary: Colors.grey.shade600)),
               onGenerateRoute: AppRoute.generateRoute,
             )));

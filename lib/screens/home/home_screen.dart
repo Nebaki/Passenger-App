@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 // ignore: import_of_legacy_library_into_null_safe
@@ -121,7 +119,7 @@ class _HomeScreenState extends State<HomeScreen> {
           BlocConsumer<DirectionBloc, DirectionState>(builder: (_, state) {
             return GoogleMap(
               mapType: MapType.normal,
-              myLocationButtonEnabled: true,
+              myLocationButtonEnabled: false,
               initialCameraPosition: _addissAbaba,
               myLocationEnabled: true,
               polylines: Set<Polyline>.of(polylines.values),
@@ -227,7 +225,7 @@ class _HomeScreenState extends State<HomeScreen> {
     polylines.clear();
     PolylineId id = PolylineId("poly");
     Polyline polyline = Polyline(
-        width: 2,
+        width: 4,
         polylineId: id,
         jointType: JointType.round,
         startCap: Cap.roundCap,

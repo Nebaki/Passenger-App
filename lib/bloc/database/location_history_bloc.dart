@@ -13,6 +13,7 @@ class LocationHistoryBloc
   Stream<LocationHistoryState> mapEventToState(
       LocationHistoryEvent event) async* {
     if (event is LocationHistoryLoad) {
+      print("yow yow yow");
       yield LocationHistoryLoading();
 
       try {
