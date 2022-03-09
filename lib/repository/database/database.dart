@@ -18,7 +18,6 @@ class DataBaseHelperRepository {
   Future<int> insertToSaveLocation(Trip request) async {
     return await dataProvider.insertLocation(request);
   }
-
   Future<List<Trip>> loadSavedLocations() async {
     return await dataProvider.loadSavedLocations();
   }
