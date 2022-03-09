@@ -3,7 +3,7 @@ import 'dart:io';
 import 'dart:math';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:passengerapp/models/local_models/models.dart';
+import 'package:passengerapp/models/trips/models.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 enum _Actions { deleteAll }

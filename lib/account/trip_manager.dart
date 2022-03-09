@@ -1,7 +1,7 @@
 import 'dart:convert';
 
-import 'package:passengerapp/models/local_models/models.dart';
-import 'package:passengerapp/models/local_models/trips.dart';
+import 'package:passengerapp/models/trips/models.dart';
+import 'package:passengerapp/models/trips/trips.dart';
 import 'package:passengerapp/utils/session.dart';
 import 'package:passengerapp/utils/storage.dart';
 
