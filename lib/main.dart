@@ -19,8 +19,13 @@ void main() {
   final ReverseLocationRepository reverseLocationRepository =
       ReverseLocationRepository(
           dataProvider: ReverseGocoding(httpClient: http.Client()));
+
   final RideRequestRepository rideRequestRepository = RideRequestRepository(
       dataProvider: RideRequestDataProvider(httpClient: http.Client()));
+
+  final SavedLocationRepository savedLocationsRepository = SavedLocationRepository(
+      dataProvider: SavedLocationDataProvider(httpClient: http.Client()));
+
   final LocationPredictionRepository locationPredictionRepository =
       LocationPredictionRepository(
           dataProvider:
@@ -50,6 +55,7 @@ void main() {
   runApp(MyApp(
     notificationRequestRepository: notificationRequestRepository,
     rideRequestRepository: rideRequestRepository,
+    savedLocationRepository:savedLocationsRepository,
     authRepository: authRepository,
     userRepository: userRepository,
     driverRepository: driverRepository,
@@ -101,6 +107,7 @@ class MyApp extends StatelessWidget {
 
   final AuthRepository authRepository;
   final RideRequestRepository rideRequestRepository;
+  final SavedLocationRepository savedLocationRepository;
   final NotificationRequestRepository notificationRequestRepository;
   final DataBaseHelperRepository dataBaseHelperRepository;
 
@@ -108,6 +115,7 @@ class MyApp extends StatelessWidget {
       {Key? key,
       required this.notificationRequestRepository,
       required this.rideRequestRepository,
+      required this.savedLocationRepository,
       required this.userRepository,
       required this.driverRepository,
       required this.authRepository,

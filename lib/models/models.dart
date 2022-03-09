@@ -7,3 +7,4 @@ export 'auth/auth.dart';
 export 'ride_request.dart';
 export 'notification_request.dart';
 export 'driver/driver.dart';
+export 'trips/trips.dart';

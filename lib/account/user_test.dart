@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:passengerapp/account/user_manager.dart';
-import 'package:passengerapp/models/local_models/models.dart';
+import 'package:passengerapp/models/trips/models.dart';
 import 'package:passengerapp/utils/session.dart';
 import 'package:passengerapp/utils/validator.dart';
 class UserTest {

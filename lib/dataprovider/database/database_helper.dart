@@ -1,7 +1,5 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:passengerapp/models/local_models/location.dart';
-import 'package:passengerapp/models/local_models/trips.dart';
 import 'package:passengerapp/models/models.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
@@ -27,7 +25,7 @@ class DatabaseHelper {
         version: _databaseVersion, onCreate: _onCreate);
   }
 
-  Future<List<Trip>> loadSavedLocations(List<Trip> trips) async {
+  Future<List<Trip>> loadSavedLocations() async {
     Database db = await database;
     List<Map<String, Object?>> result;
     result = await db.query("SavedLocation");
