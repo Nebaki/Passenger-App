@@ -1,16 +1,22 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:passengerapp/account/trip_test.dart';
 import 'package:passengerapp/bloc/bloc.dart';
 import 'package:passengerapp/models/models.dart';
 import 'package:passengerapp/rout.dart';
 import 'package:passengerapp/screens/screens.dart';
+
+import '../faker/faker.dart';
 
 class SettingScreen extends StatelessWidget {
   static const routeName = "/settings";
 
   final _textStyle =
       const TextStyle(color: Colors.black, fontWeight: FontWeight.bold);
+  void startFaker(BuildContext context){
+    Navigator.pushNamed(context, Faker.routeName);
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -45,6 +51,15 @@ class SettingScreen extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    TextButton(
+                      onPressed: (){
+                        startFaker(context);
+                      },
+                      child: const Padding(
+                          padding: EdgeInsets.all(5.0),
+                          child: Text("Faker")
+                      ),
+                    ),
                     Padding(
                       padding: const EdgeInsets.only(top: 8, left: 5),
                       child: Text(

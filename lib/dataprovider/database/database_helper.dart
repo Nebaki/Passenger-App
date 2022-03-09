@@ -1,12 +1,15 @@
+import 'dart:convert';
 import 'dart:io';
+import 'package:passengerapp/models/local_models/location.dart';
+import 'package:passengerapp/models/local_models/trips.dart';
 import 'package:passengerapp/models/models.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 
 class DatabaseHelper {
-  static final _databaseName = "MyDatabase.db";
-  static final _databaseVersion = 1;
+  static const _databaseName = "MyDatabase.db";
+  static const _databaseVersion = 1;
 
   static Database? _database;
   Future<Database> get database async {
@@ -24,14 +27,49 @@ class DatabaseHelper {
         version: _databaseVersion, onCreate: _onCreate);
   }
 
-  Future _onCreate(Database db, int version) async {
+  Future<List<Trip>> loadSavedLocations(List<Trip> trips) async {
+    Database db = await database;
+    List<Map<String, Object?>> result;
+    result = await db.query("SavedLocation");
+    return result.map((e) =>  Trip.fromMap(e)).toList();
+  }
+
+  Future<int> insertLocation(Trip trip) async {
+    var data = trip.toMap();
+    Database db = await database;
+    int id = await db.insert("SavedLocation", data);
+    return id;
+  }
+
+  Future _createSavedLocations(Database db, int version) async{
     await db.execute('''
-              CREATE TABLE LocationHistory (
+              CREATE TABLE SavedLocation (
+                locationId INTEGER PRIMARY KEY AUTOINCREMENT ,
+                mainText TEXT NOT NULL
+              )
+              ''');
+  }
+
+  Future _createTripHistory(Database db, int version) async{
+    await db.execute('''
+              CREATE TABLE TripHistory (
                 placeId TEXT PRIMARY KEY,
                 mainText TEXT NOT NULL,
                 secondaryText TEXT
               )
               ''');
+  }
+
+  Future _onCreate(Database db, int version) async {
+    _createSavedLocations(db, version);
+    _createTripHistory(db, version);
+     /*await db.execute('''
+              CREATE TABLE LocationHistory (
+                placeId TEXT PRIMARY KEY,
+                mainText TEXT NOT NULL,
+                secondaryText TEXT
+              )
+              ''');*/
   }
 
   Future<int> insert(LocationPrediction location) async {
@@ -52,4 +90,5 @@ class DatabaseHelper {
       throw "";
     }
   }
+
 }
