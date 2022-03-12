@@ -12,9 +12,6 @@ class TermsAndConditionScreen extends StatefulWidget {
 }
 
 class LoadTermsAndConditions extends State<TermsAndConditionScreen> {
-
-  bool isLoading=true;
-  final _key = UniqueKey();
   @override
   void initState() {
     super.initState();
@@ -42,22 +39,9 @@ class LoadTermsAndConditions extends State<TermsAndConditionScreen> {
           style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
         ),
       ),
-      body: Stack(
-        children: <Widget>[
-          WebView(
-            key: _key,
-            initialUrl: 'https://flutter.dev',
-            javascriptMode: JavascriptMode.unrestricted,
-            onPageFinished: (finish) {
-              setState(() {
-                isLoading = false;
-              });
-            },
-          ),
-          isLoading ? const Center( child: CircularProgressIndicator(),)
-              : Stack(),
-        ],
-      )
+      body: const WebView(
+        initialUrl: 'https://google.dev',
+      ),
     );
   }
 }
