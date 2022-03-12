@@ -5,6 +5,9 @@ import 'package:passengerapp/screens/faker/faker.dart';
 import 'package:passengerapp/screens/screens.dart';
 
 import 'models/models.dart';
+import 'screens/settings/pages/feedbacks.dart';
+import 'screens/settings/pages/privacy.dart';
+import 'screens/settings/pages/terms.dart';
 
 class AppRoute {
   static Route generateRoute(RouteSettings settings) {
@@ -49,6 +52,17 @@ class AppRoute {
     if (settings.name == Faker.routeName) {
       return MaterialPageRoute(builder: (context) => Faker());
     }
+
+    if (settings.name == FeedbackScreen.routeName) {
+      return MaterialPageRoute(builder: (context) => FeedbackScreen());
+    }
+    if (settings.name == PrivacyScreen.routeName) {
+      return MaterialPageRoute(builder: (context) => PrivacyScreen());
+    }
+    if (settings.name == TermsAndConditionScreen.routeName) {
+      return MaterialPageRoute(builder: (context) => TermsAndConditionScreen());
+    }
+
     if (settings.name == EditProfile.routeName) {
       EditProfileArgument argumnet = settings.arguments as EditProfileArgument;
       return MaterialPageRoute(
