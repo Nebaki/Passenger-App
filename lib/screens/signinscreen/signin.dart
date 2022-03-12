@@ -77,35 +77,44 @@ class _SigninScreenState extends State<SigninScreen> {
                   ),
                   Padding(
                     padding: const EdgeInsets.all(10),
-                    child: InternationalPhoneNumberInput(
-                      onSaved: (value) {
-                        _auth["phoneNumber"] = value.toString();
-                      },
-                      onInputChanged: (PhoneNumber number) {},
-                      onInputValidated: (bool value) {},
-                      selectorConfig: const SelectorConfig(
-                          selectorType: PhoneInputSelectorType.BOTTOM_SHEET,
-                          trailingSpace: false),
-                      ignoreBlank: false,
-                      autoValidateMode: AutovalidateMode.onUserInteraction,
-                      selectorTextStyle: const TextStyle(color: Colors.black),
-                      initialValue: PhoneNumber(isoCode: "ET"),
-                      formatInput: true,
-                      keyboardType: const TextInputType.numberWithOptions(
-                          signed: true, decimal: true),
-                      inputBorder:
-                          const OutlineInputBorder(borderSide: BorderSide.none),
-                      spaceBetweenSelectorAndTextField: 0,
-                      inputDecoration: const InputDecoration(
-                          hintText: "Phone Number",
-                          hintStyle: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black45),
-                          fillColor: Colors.white,
-                          filled: true,
-                          border:
-                              OutlineInputBorder(borderSide: BorderSide.none)),
-                    ),
+                    child: Container(
+                      decoration: const BoxDecoration(boxShadow: [
+                        BoxShadow(
+                            color: Colors.white,
+                            blurRadius: 2,
+                            spreadRadius: 2,
+                            blurStyle: BlurStyle.solid)
+                      ]),
+                      child: InternationalPhoneNumberInput(
+                        onSaved: (value) {
+                          _auth["phoneNumber"] = value.toString();
+                        },
+                        onInputChanged: (PhoneNumber number) {},
+                        onInputValidated: (bool value) {},
+                        selectorConfig: const SelectorConfig(
+                            selectorType: PhoneInputSelectorType.BOTTOM_SHEET,
+                            trailingSpace: false),
+                        ignoreBlank: false,
+                        autoValidateMode: AutovalidateMode.onUserInteraction,
+                        selectorTextStyle: const TextStyle(color: Colors.black),
+                        initialValue: PhoneNumber(isoCode: "ET"),
+                        formatInput: true,
+                        keyboardType: const TextInputType.numberWithOptions(
+                            signed: true, decimal: true),
+                        inputBorder:
+                        const OutlineInputBorder(borderSide: BorderSide.none),
+                        spaceBetweenSelectorAndTextField: 0,
+                        inputDecoration: const InputDecoration(
+                            hintText: "Phone Number",
+                            hintStyle: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black45),
+                            fillColor: Colors.white,
+                            filled: true,
+                            border:
+                            OutlineInputBorder(borderSide: BorderSide.none)),
+                      ),
+                    )
                   ),
                   Padding(
                     padding: const EdgeInsets.all(10),
