@@ -194,19 +194,20 @@ class SettingScreen extends StatelessWidget {
                         thickness: 1.5,
                       ),
                       Container(
-                        padding: const EdgeInsets.only(left: 10, bottom: 20, top: 10),
+                        padding: const EdgeInsets.only(left: 2, bottom: 2, top: 2),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            TextButton(
-                              onPressed: () {
-                                openFeedBack(context);
-                              },
-                              child: Text(
-                                "Contact Us",
-                                style: _textStyle,
+                             TextButton(
+                                onPressed: () {
+                                  openFeedBack(context);
+                                },
+                                child: Text(
+                                  "Contact Us",
+                                  style: _textStyle,
+                                ),
                               ),
-                            ),
+
                             TextButton(
                                 onPressed: (){
                                   openPrivacyPolicy(context);

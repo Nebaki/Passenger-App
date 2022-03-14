@@ -7,9 +7,7 @@ class SecItem {
 
 class Result {
   Result(this.success, this.message);
-
   final bool success;
   final String message;
 }
-
 
