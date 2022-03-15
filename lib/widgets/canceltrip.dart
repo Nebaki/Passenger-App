@@ -59,7 +59,7 @@ class CancelTrip extends StatelessWidget {
                       )),
                     ),
                     onPressed: () {
-                      callback!(DriverOnTheWay(callback));
+                      // callback!(DriverOnTheWay(callback));
                     },
                     child: const Text(
                       "No",

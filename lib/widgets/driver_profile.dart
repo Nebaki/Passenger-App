@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:passengerapp/bloc/bloc.dart';
+import 'package:passengerapp/helper/constants.dart';
 import 'package:passengerapp/helper/url_launcher.dart';
 
 class DriverProfile extends StatelessWidget {
@@ -44,13 +45,36 @@ class DriverProfile extends StatelessWidget {
                         color: Colors.red,
                         child: IconButton(
                             onPressed: () {
-                              sendTextMessage(state.driver.phoneNumber);
+                              sendTextMessage(state.driver.phoneNumber, "test");
                             },
                             icon: Icon(
                               Icons.mark_chat_read,
                               size: 18,
                             ))),
-                  )
+                  ),
+                  SizedBox(
+                    width: 10,
+                  ),
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(100),
+                    child: Container(
+                        height: 33,
+                        width: 33,
+                        color: Colors.indigo.shade900,
+                        child: IconButton(
+                            onPressed: () {
+                              print("hey ${state.driver}");
+                              print(pickupAddress);
+                              print(droppOffAddress);
+                              sendTelegramMessage(state.driver.firstName,
+                                  state.driver.phoneNumber);
+                              // makePhoneCall(state.driver.phoneNumber);
+                            },
+                            icon: Icon(
+                              Icons.share,
+                              size: 18,
+                            ))),
+                  ),
                 ],
               ),
               Row(
