@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:passengerapp/bloc/bloc.dart';
 import 'package:passengerapp/bloc/database/location_history_bloc.dart';
+import 'package:passengerapp/helper/constants.dart';
 import 'package:passengerapp/rout.dart';
 import 'package:passengerapp/screens/screens.dart';
 
@@ -122,7 +123,7 @@ class _WhereToState extends State<WhereTo> {
                 print("Succccccccccccccccccccccccccccesssssss");
                 print(state.locationHistory[0]);
                 return SizedBox(
-                  height: 65,
+                  height: 70,
                   width: double.infinity,
                   child: ListView.separated(
                     scrollDirection: Axis.horizontal,
@@ -246,6 +247,7 @@ class _WhereToState extends State<WhereTo> {
 
               destinationLtlng =
                   LatLng(state.placeDetail.lat, state.placeDetail.lng);
+              droppOffLatLng = destinationLtlng;
 
               Future.delayed(Duration(seconds: 1), () {
                 //Navigator.pop(context);

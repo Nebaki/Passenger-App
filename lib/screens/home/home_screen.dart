@@ -10,6 +10,7 @@ import 'package:passengerapp/bloc/driver/driver_bloc.dart';
 import 'package:passengerapp/drawer/drawer.dart';
 import 'package:passengerapp/helper/constants.dart';
 import 'package:passengerapp/models/nearby_driver.dart';
+import 'package:passengerapp/notification/push_notification_service.dart';
 import 'package:passengerapp/repository/nearby_driver.dart';
 import 'package:passengerapp/rout.dart';
 import 'dart:async';
@@ -52,6 +53,7 @@ class _HomeScreenState extends State<HomeScreen> {
   LatLng currentLatLng = _addissAbaba.target;
   bool isSelectedd = false;
   late LatLng dtn;
+  PushNotificationService pushNotificationService = PushNotificationService();
 
   static const CameraPosition _addissAbaba = CameraPosition(
     target: LatLng(8.9806, 38.7578),
@@ -92,6 +94,8 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   // ignore: must_call_super
   void initState() {
+    pushNotificationService.initialize(context, callback, searchNearbyDriver);
+    pushNotificationService.seubscribeTopic();
     widget.args.isSelected
         ? _currentWidget = Service(callback, searchNearbyDriver)
         : _currentWidget = WhereTo(
@@ -142,6 +146,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 outerController = controller;
                 controller.setMapStyle(mapStyle);
                 _determinePosition().then((value) {
+                  pickupLatLng = LatLng(value.latitude, value.longitude);
+
                   currentLatLng = LatLng(value.latitude, value.longitude);
                   geofireListener(value.latitude, value.longitude);
 

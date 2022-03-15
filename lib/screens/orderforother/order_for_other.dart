@@ -468,6 +468,7 @@ class _OrderForOtherScreenState extends State<OrderForOtherScreen> {
                                         NotificationRequestEvent event =
                                             NotificationRequestSend(
                                                 NotificationRequest(
+                                                    requestId: "d",
                                                     pickupAddress:
                                                         pickupAddress!,
                                                     dropOffAddress:

@@ -8,6 +8,7 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:passengerapp/bloc/bloc.dart';
+import 'package:passengerapp/helper/constants.dart';
 import 'package:passengerapp/rout.dart';
 import 'package:passengerapp/screens/screens.dart';
 
@@ -145,6 +146,9 @@ class _CustomSplashScreenState extends State<CustomSplashScreen> {
               requestLocationPermission();
 
               print(state.auth.token);
+
+              name = state.auth.name!;
+              number = state.auth.phoneNumber;
 
               state.auth.token != null
                   ? Navigator.pushReplacementNamed(
