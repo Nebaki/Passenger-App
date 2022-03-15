@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_geofire/flutter_geofire.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:passengerapp/bloc/bloc.dart';
+import 'package:passengerapp/bloc/notificationrequest/notification_request_bloc.dart';
+import 'package:passengerapp/helper/helper_functions.dart';
 import 'package:passengerapp/widgets/custome_back_arrow.dart';
 
 import '../../models/models.dart';
@@ -21,9 +26,12 @@ class _OrderForOtherScreenState extends State<OrderForOtherScreen> {
   int selected = -1;
   String? pickupAddress;
   String? droppOffAddress;
+  late LatLng pickupLatLng;
+  late LatLng dropOffLatLng;
   GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
   String? name;
   String? number;
+  String? driverId;
 
   @override
   Widget build(BuildContext context) {
@@ -37,18 +45,23 @@ class _OrderForOtherScreenState extends State<OrderForOtherScreen> {
             child: Column(
               children: [
                 TextFormField(
+                  onSaved: (value) {
+                    name = value;
+                  },
                   validator: (value) {
                     if (value!.isEmpty) {
                       return "Name Can't be empity";
                     }
                   },
-                  
                   decoration:
                       InputDecoration(hintText: "Full Name of the passenger"),
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 10),
                   child: InternationalPhoneNumberInput(
+                    onSaved: (value) {
+                      number = value.phoneNumber;
+                    },
                     inputDecoration: const InputDecoration(
                       hintText: "Phone Number of the passenger",
                       hintStyle: TextStyle(
@@ -88,6 +101,9 @@ class _OrderForOtherScreenState extends State<OrderForOtherScreen> {
                     setState(() {
                       selected = 0;
                     });
+                  },
+                  onChanged: (value) {
+                    findPlace(value);
                   },
                   // focusNode: FocusNode.a,
                   decoration: InputDecoration(
@@ -237,6 +253,8 @@ class _OrderForOtherScreenState extends State<OrderForOtherScreen> {
           children: [
             GestureDetector(
               onTap: () {
+                geofireListener();
+
                 setState(() {
                   _isSelected = 1;
                   // DriverEvent event = DriverLoad(widget.searchNeabyDriver());
@@ -394,13 +412,7 @@ class _OrderForOtherScreenState extends State<OrderForOtherScreen> {
                           return Row(
                             children: [
                               ElevatedButton(
-                                  onPressed: () {
-                                    final form = _formKey.currentState;
-                                    if (form!.validate()) {
-                                      form.save();
-                                      details.onStepContinue;
-                                    }
-                                  },
+                                  onPressed: details.onStepContinue,
                                   child: Text(
                                     "Next",
                                     style: TextStyle(color: Colors.black),
@@ -415,7 +427,9 @@ class _OrderForOtherScreenState extends State<OrderForOtherScreen> {
                           return Row(
                             children: [
                               ElevatedButton(
-                                  onPressed: details.onStepContinue,
+                                  onPressed: driverId != null
+                                      ? details.onStepContinue
+                                      : null,
                                   child: Text(
                                     "Next",
                                     style: TextStyle(color: Colors.black),
@@ -443,19 +457,45 @@ class _OrderForOtherScreenState extends State<OrderForOtherScreen> {
                             ],
                           );
                         } else {
-                          return Row(
-                            children: [
-                              ElevatedButton(
-                                  onPressed: details.onStepContinue,
-                                  child: const Text(
-                                    "Confirm and Send Request",
-                                    style: TextStyle(color: Colors.black),
-                                  )),
-                              TextButton(
-                                  onPressed: details.onStepCancel,
-                                  child: const Text("Back"))
-                            ],
-                          );
+                          return BlocBuilder<DriverBloc, DriverState>(
+                              builder: (_, state) {
+                            print(state);
+                            if (state is DriverLoadSuccess) {
+                              return Row(
+                                children: [
+                                  ElevatedButton(
+                                      onPressed: () {
+                                        NotificationRequestEvent event =
+                                            NotificationRequestSend(
+                                                NotificationRequest(
+                                                    pickupAddress:
+                                                        pickupAddress!,
+                                                    dropOffAddress:
+                                                        droppOffAddress!,
+                                                    passengerName: "name!",
+                                                    pickupLocation:
+                                                        pickupLatLng,
+                                                    fcmToken:
+                                                        state.driver.fcmId));
+                                        BlocProvider.of<
+                                                    NotificationRequestBloc>(
+                                                context)
+                                            .add(event);
+                                        Navigator.pop(context);
+                                        // geofireListener();
+                                      },
+                                      child: const Text(
+                                        "Confirm and Send Request",
+                                        style: TextStyle(color: Colors.black),
+                                      )),
+                                  TextButton(
+                                      onPressed: details.onStepCancel,
+                                      child: const Text("Back"))
+                                ],
+                              );
+                            }
+                            return Container();
+                          });
                         }
                       }),
                       onStepContinue: () {
@@ -487,12 +527,16 @@ class _OrderForOtherScreenState extends State<OrderForOtherScreen> {
                     setState(() {
                       pickupAddress = state.placeDetail.placeName;
                       _pickUpPlaceDetail = state.placeDetail;
+                      pickupLatLng =
+                          LatLng(state.placeDetail.lat, state.placeDetail.lng);
                     });
                   } else if (selected == 1) {
                     print("drop Of Selected");
                     setState(() {
                       droppOffAddress = state.placeDetail.placeName;
                       _droppOffPlaceDetail = state.placeDetail;
+                      dropOffLatLng =
+                          LatLng(state.placeDetail.lat, state.placeDetail.lng);
                     });
                   }
                 }
@@ -549,5 +593,20 @@ class _OrderForOtherScreenState extends State<OrderForOtherScreen> {
   void getPlaceDetail(String placeId) {
     PlaceDetailEvent event = PlaceDetailLoad(placeId: placeId);
     BlocProvider.of<PlaceDetailBloc>(context).add(event);
+  }
+
+  void geofireListener() async {
+    Geofire.stopListener();
+    final loc = await Geolocator.getCurrentPosition();
+    final data = await Geofire.queryAtLocation(loc.latitude, loc.longitude, 1)!
+        .elementAt(0);
+
+    print("Hey yow ${data}");
+    setState(() {
+      driverId = data['key'];
+    });
+
+    DriverEvent event = DriverLoad(data['key']);
+    BlocProvider.of<DriverBloc>(context).add(event);
   }
 }
