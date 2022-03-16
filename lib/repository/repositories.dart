@@ -9,3 +9,4 @@ export 'ride_request.dart';
 export 'notification_request.dart';
 export 'driver.dart';
 export 'database/database.dart';
+export 'review/review.dart';

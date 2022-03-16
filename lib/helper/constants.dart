@@ -185,3 +185,8 @@ late LatLng pickupLatLng;
 late LatLng droppOffLatLng;
 late String name;
 late String number;
+
+String? driverName;
+String? driverId;
+String? driverImage;
+double? driverRating;

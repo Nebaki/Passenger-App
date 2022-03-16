@@ -1,5 +1,6 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:passengerapp/screens/screens.dart';
 
 import '../widgets/widgets.dart';
 
@@ -11,16 +12,25 @@ class PushNotificationService {
       // print("yow yo mikiki ${message.data['response']}");
       if (message.data['response'] == "Accepted") {
         callback(DriverOnTheWay(callback));
-      } else {
+      } else if (message.data['response'] == "Arrived") {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: const Text("request cancelled"),
-          backgroundColor: Colors.red.shade900,
+          content: const Text(" Driver Arrived"),
+          backgroundColor: Colors.indigo.shade900,
+        ));
+      } else if (message.data['response'] == "Cancelled") {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: const Text(" Request cancelled"),
+          backgroundColor: Colors.indigo.shade900,
         ));
         callback(Service(callback, searchNearbyDriver));
+      } else if (message.data['response'] == "Completed") {
+        Navigator.pushNamed(context, ReviewScreen.routeName);
+      } else {
+        print(message.data['response']);
       }
-      message.data['response'] == "Accepted"
-          ? callback(DriverOnTheWay(callback))
-          : callback(Service(callback, searchNearbyDriver));
+      // message.data['response'] == "Accepted"
+      //     ? callback(DriverOnTheWay(callback))
+      //     : callback(Service(callback, searchNearbyDriver));
     });
 
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {

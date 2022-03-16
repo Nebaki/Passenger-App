@@ -59,7 +59,7 @@ class _ServiceState extends State<Service> {
   final _blackTextStyle = TextStyle(color: Colors.black);
 
   void sendNotification(String fcmToken, String id) async {
-    print("geefefefefefef");
+    print(' driver fcm $fcmToken');
     // _isLoading = true;
     RideRequestEvent riderequestEvent = RideRequestCreate(RideRequest(
         driverFcm: fcmToken,

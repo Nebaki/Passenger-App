@@ -61,6 +61,8 @@ void main() async {
 
   final DriverRepository driverRepository = DriverRepository(
       dataProvider: DriverDataProvider(httpClient: http.Client()));
+  final ReviewRepository reviewRepository = ReviewRepository(
+      dataProvider: ReviewDataProvider(httpClient: http.Client()));
   runApp(MyApp(
     notificationRequestRepository: notificationRequestRepository,
     rideRequestRepository: rideRequestRepository,
@@ -72,6 +74,7 @@ void main() async {
     placeDetailRepository: placeDetailRepository,
     directionRepository: directionRepository,
     dataBaseHelperRepository: dataBaseHelperRepository,
+    reviewRepository: reviewRepository,
   ));
 }
 
@@ -118,6 +121,8 @@ class MyApp extends StatelessWidget {
   final NotificationRequestRepository notificationRequestRepository;
   final DataBaseHelperRepository dataBaseHelperRepository;
 
+  final ReviewRepository reviewRepository;
+
   const MyApp(
       {Key? key,
       required this.notificationRequestRepository,
@@ -129,7 +134,8 @@ class MyApp extends StatelessWidget {
       required this.locationPredictionRepository,
       required this.placeDetailRepository,
       required this.directionRepository,
-      required this.dataBaseHelperRepository})
+      required this.dataBaseHelperRepository,
+      required this.reviewRepository})
       : super(key: key);
   @override
   Widget build(BuildContext context) {
@@ -146,7 +152,8 @@ class MyApp extends StatelessWidget {
           RepositoryProvider.value(value: userRepository),
           RepositoryProvider.value(value: driverRepository),
           RepositoryProvider.value(value: authRepository),
-          RepositoryProvider.value(value: dataBaseHelperRepository)
+          RepositoryProvider.value(value: dataBaseHelperRepository),
+          RepositoryProvider.value(value: reviewRepository)
         ],
         child: MultiBlocProvider(
             providers: [
@@ -183,7 +190,10 @@ class MyApp extends StatelessWidget {
               BlocProvider(
                   create: (context) => LocationHistoryBloc(
                       dataBaseHelperRepository: dataBaseHelperRepository)
-                    ..add(LocationHistoryLoad()))
+                    ..add(LocationHistoryLoad())),
+              BlocProvider(
+                  create: (context) =>
+                      ReviewBloc(reviewRepository: reviewRepository)),
             ],
             child: MaterialApp(
               title: 'SafeWay',

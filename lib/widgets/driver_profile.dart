@@ -5,6 +5,8 @@ import 'package:passengerapp/bloc/bloc.dart';
 import 'package:passengerapp/helper/constants.dart';
 import 'package:passengerapp/helper/url_launcher.dart';
 
+import '../screens/screens.dart';
+
 class DriverProfile extends StatelessWidget {
   final String assetImage;
 
@@ -13,6 +15,11 @@ class DriverProfile extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<DriverBloc, DriverState>(builder: (_, state) {
       if (state is DriverLoadSuccess) {
+        ////////////////////////////////////
+        driverName = state.driver.firstName;
+        driverImage = state.driver.profileImage;
+        driverId = state.driver.id;
+        ///////////////////////////////////
         return Container(
           child: Column(
             children: [
@@ -68,6 +75,11 @@ class DriverProfile extends StatelessWidget {
                               print(droppOffAddress);
                               sendTelegramMessage(state.driver.firstName,
                                   state.driver.phoneNumber);
+
+                              //     Navigator.pushNamed(
+                              // context,
+                              // ReviewScreen
+                              //     .routeName);
                               // makePhoneCall(state.driver.phoneNumber);
                             },
                             icon: Icon(

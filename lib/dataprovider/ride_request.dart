@@ -78,9 +78,15 @@ class RideRequestDataProvider {
       body: json.encode({
         "data": {
           "pickupAddress": "request.pickupAddress",
-          "pickupLocation": request.pickupLocation!.latitude,
+          "pickupLocation": [
+            request.pickupLocation!.latitude,
+            request.pickupLocation!.longitude
+          ],
           "dropOffAddress": "request.dropOffAddress",
-          "dropOffLocation": request.pickupLocation!.longitude,
+          "droppoffLocation": [
+            request.dropOffLocation!.latitude,
+            request.dropOffLocation!.longitude
+          ],
           "passengerName": request.passengerName,
           "requestId": requestId,
           "passengerFcm": fcmtoken
