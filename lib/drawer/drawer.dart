@@ -130,11 +130,16 @@ class NavDrawer extends StatelessWidget {
                         icon: Icons.border_outer_rounded,
                         text: "Order for other"),
                   ),
-                  _menuItem(
-                      divider: true,
-                      context: context,
-                      icon: Icons.person,
-                      text: "Award"),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.pushNamed(context, ReviewScreen.routeName);
+                    },
+                    child: _menuItem(
+                        divider: true,
+                        context: context,
+                        icon: Icons.person,
+                        text: "Award"),
+                  ),
                   GestureDetector(
                     onTap: () {
                       BlocProvider.of<AuthBloc>(context).add(AuthDataLoad());

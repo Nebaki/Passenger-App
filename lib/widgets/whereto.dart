@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:passengerapp/bloc/bloc.dart';
 import 'package:passengerapp/bloc/database/location_history_bloc.dart';
+import 'package:passengerapp/helper/constants.dart';
 import 'package:passengerapp/rout.dart';
 import 'package:passengerapp/screens/screens.dart';
 
@@ -12,8 +13,12 @@ class WhereTo extends StatefulWidget {
   final Function setIsSelected;
   final Function callback;
   final Widget service;
+  final Function setPickUpAdress;
+  final Function setDroppOffAdress;
   WhereTo(
       {Key? key,
+      required this.setPickUpAdress,
+      required this.setDroppOffAdress,
       required this.setIsSelected,
       required this.callback,
       required this.service})
@@ -24,7 +29,7 @@ class WhereTo extends StatefulWidget {
 }
 
 class _WhereToState extends State<WhereTo> {
-  late String currentLocation = "fdf";
+  late String currentLocation = "Loading current location..";
   late LatLng destinationLtlng;
 
   @override
@@ -63,6 +68,8 @@ class _WhereToState extends State<WhereTo> {
                         if (state is ReverseLocationLoadSuccess) {
                           List addresses = state.location.address1.split(",");
                           currentLocation = addresses[1];
+                          widget.setPickUpAdress(currentLocation);
+
                           // return Text(addresses[0]);
                         }
 
@@ -111,12 +118,12 @@ class _WhereToState extends State<WhereTo> {
             const Divider(),
             BlocBuilder<LocationHistoryBloc, LocationHistoryState>(
                 builder: (_, state) {
-              print("hey i'm trying");
+              print("hey i'm trying $state");
               if (state is LocationHistoryLoadSuccess) {
                 print("Succccccccccccccccccccccccccccesssssss");
                 print(state.locationHistory[0]);
                 return SizedBox(
-                  height: 65,
+                  height: 70,
                   width: double.infinity,
                   child: ListView.separated(
                     scrollDirection: Axis.horizontal,
@@ -124,7 +131,7 @@ class _WhereToState extends State<WhereTo> {
                       return GestureDetector(
                         onTap: () {
                           getPlaceDetail(state.locationHistory[index].placeId);
-                          settingDropOffDialog(context);
+                          settingDropOffDialog(null);
                         },
                         child: Padding(
                           padding: const EdgeInsets.all(8.0),
@@ -164,20 +171,23 @@ class _WhereToState extends State<WhereTo> {
                   ),
                 );
               }
-              return Column(
-                children: const [
-                  Text("Loading recent histories.."),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  Padding(
-                    padding: EdgeInsets.only(top: 10),
-                    child: LinearProgressIndicator(
-                      minHeight: 2,
+              if (state is LocationHistoryLoading) {
+                return Column(
+                  children: const [
+                    Text("Loading recent histories.."),
+                    SizedBox(
+                      height: 10,
                     ),
-                  ),
-                ],
-              );
+                    Padding(
+                      padding: EdgeInsets.only(top: 10),
+                      child: LinearProgressIndicator(
+                        minHeight: 2,
+                      ),
+                    ),
+                  ],
+                );
+              }
+              return Center(child: Text("You have not any recent history"));
             }),
           ],
         ),
@@ -185,15 +195,17 @@ class _WhereToState extends State<WhereTo> {
     );
   }
 
-  Widget _buildPredictedItem(LocationPrediction prediction, con) {
+  Widget _buildPredictedItem(LocationPrediction prediction, BuildContext con) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: GestureDetector(
         onTap: () {
+          // Navigator.pop(con);
+
           getPlaceDetail(prediction.placeId);
-          settingDropOffDialog(con);
           LocationHistoryEvent event = LocationHistoryAdd(location: prediction);
           BlocProvider.of<LocationHistoryBloc>(context).add(event);
+          settingDropOffDialog(con);
         },
         child: Container(
           color: Colors.black.withOpacity(0),
@@ -221,13 +233,15 @@ class _WhereToState extends State<WhereTo> {
     BlocProvider.of<PlaceDetailBloc>(context).add(event);
   }
 
-  void settingDropOffDialog(con) {
+  void settingDropOffDialog(BuildContext? con) {
     showDialog(
         context: context,
         builder: (BuildContext cont) {
           return BlocBuilder<PlaceDetailBloc, PlaceDetailState>(
-              builder: (conext, state) {
+              builder: (_, state) {
             if (state is PlaceDetailLoadSuccess) {
+              widget.setDroppOffAdress(state.placeDetail.placeName);
+
               DirectionEvent event = DirectionLoad(
                   destination:
                       LatLng(state.placeDetail.lat, state.placeDetail.lng));
@@ -235,13 +249,18 @@ class _WhereToState extends State<WhereTo> {
 
               destinationLtlng =
                   LatLng(state.placeDetail.lat, state.placeDetail.lng);
+              droppOffLatLng = destinationLtlng;
+              print("Hey trying to pop the context around here::");
 
               Future.delayed(Duration(seconds: 1), () {
-                //Navigator.pop(context);
-                Navigator.pop(con);
-
                 widget.setIsSelected(destinationLtlng);
                 widget.callback(widget.service);
+                // Navigator.pop(cont);
+                Navigator.pop(_);
+
+                if (con != null) {
+                  Navigator.pop(con);
+                }
 
                 // return Navigator.pushNamed(context, HomeScreen.routeName,
                 //     arguments: HomeScreenArgument(
@@ -287,7 +306,7 @@ class _WhereToState extends State<WhereTo> {
           return Stack(
             children: [
               BlocBuilder<LocationPredictionBloc, LocationPredictionState>(
-                  builder: (context, state) {
+                  builder: (_, state) {
                 if (state is LocationPredictionLoading) {
                   return const Center(child: CircularProgressIndicator());
                 }
@@ -308,7 +327,7 @@ class _WhereToState extends State<WhereTo> {
                         child: ListView.separated(
                             physics: const ClampingScrollPhysics(),
                             shrinkWrap: true,
-                            itemBuilder: (cont, index) {
+                            itemBuilder: (_, index) {
                               return _buildPredictedItem(
                                   state.placeList[index], context);
                             },

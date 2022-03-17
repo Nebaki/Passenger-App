@@ -6,7 +6,8 @@ class DataBaseHelperRepository {
 
   DataBaseHelperRepository({required this.dataProvider});
 
-  Future<int> inserToDatabase(LocationPrediction request) async {
+  Future<List<LocationPrediction>> inserToDatabase(
+      LocationPrediction request) async {
     return await dataProvider.insert(request);
   }
 

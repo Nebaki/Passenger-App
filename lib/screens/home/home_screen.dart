@@ -10,10 +10,14 @@ import 'package:passengerapp/bloc/driver/driver_bloc.dart';
 import 'package:passengerapp/drawer/drawer.dart';
 import 'package:passengerapp/helper/constants.dart';
 import 'package:passengerapp/models/nearby_driver.dart';
+import 'package:passengerapp/notification/push_notification_service.dart';
 import 'package:passengerapp/repository/nearby_driver.dart';
 import 'package:passengerapp/rout.dart';
 import 'dart:async';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
+import 'package:passengerapp/helper/helper_functions.dart';
+
+import 'package:passengerapp/helper/constants.dart';
 
 // import 'package:location/location.dart';
 import 'package:geolocator_platform_interface/src/enums/location_accuracy.dart'
@@ -46,9 +50,10 @@ class _HomeScreenState extends State<HomeScreen> {
   Map<MarkerId, Marker> markers = {};
   Map<MarkerId, Marker> driverMarkers = {};
   late List<NearbyDriver> drivers;
-  late LatLng currentLatLng;
+  LatLng currentLatLng = _addissAbaba.target;
   bool isSelectedd = false;
   late LatLng dtn;
+  PushNotificationService pushNotificationService = PushNotificationService();
 
   static const CameraPosition _addissAbaba = CameraPosition(
     target: LatLng(8.9806, 38.7578),
@@ -89,9 +94,13 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   // ignore: must_call_super
   void initState() {
+    pushNotificationService.initialize(context, callback, searchNearbyDriver);
+    pushNotificationService.seubscribeTopic();
     widget.args.isSelected
         ? _currentWidget = Service(callback, searchNearbyDriver)
         : _currentWidget = WhereTo(
+            setPickUpAdress: setPickUpAddress,
+            setDroppOffAdress: setDroppOffAddress,
             setIsSelected: setIsSelected,
             callback: callback,
             service: Service(callback, searchNearbyDriver));
@@ -101,6 +110,14 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {
       dtn = destination;
     });
+  }
+
+  void setPickUpAddress(String address) {
+    pickupAddress = address;
+  }
+
+  void setDroppOffAddress(String address) {
+    droppOffAddress = address;
   }
 
   void callback(Widget nextwidget) {
@@ -129,6 +146,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 outerController = controller;
                 controller.setMapStyle(mapStyle);
                 _determinePosition().then((value) {
+                  pickupLatLng = LatLng(value.latitude, value.longitude);
+
                   currentLatLng = LatLng(value.latitude, value.longitude);
                   geofireListener(value.latitude, value.longitude);
 
@@ -189,14 +208,14 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
           _currentWidget,
-          Positioned(
-              top: 30,
-              right: 20,
-              child: ElevatedButton(
-                  onPressed: () {
-                    geofireListener(8.9936827, 38.7663247);
-                  },
-                  child: const Text("Maintenance"))),
+          // Positioned(
+          //     top: 30,
+          //     right: 20,
+          //     child: ElevatedButton(
+          //         onPressed: () {
+          //           geofireListener(8.9936827, 38.7663247);
+          //         },
+          //         child: const Text("Maintenance"))),
         ],
       ),
     );
@@ -344,10 +363,12 @@ class _HomeScreenState extends State<HomeScreen> {
     for (NearbyDriver driver in repo.getNearbyDrivers()) {
       print("drivers ::");
       print(driver.id);
-      double distance = Geolocator.distanceBetween(currentLatLng.latitude,
-          currentLatLng.longitude, driver.latitude, driver.longitude);
+      double distance = Geolocator.distanceBetween(
+          8.9966827, 38.7675547, driver.latitude, driver.longitude);
 
       nearest ??= distance;
+
+      print(distance);
 
       if (distance <= nearest) {
         nearest = distance;

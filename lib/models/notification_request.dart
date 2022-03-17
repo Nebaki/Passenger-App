@@ -6,6 +6,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 class NotificationRequest extends Equatable {
   // String? id;
   String? fcmToken;
+  String requestId;
   String pickupAddress;
   String dropOffAddress;
   LatLng pickupLocation;
@@ -14,6 +15,7 @@ class NotificationRequest extends Equatable {
   NotificationRequest(
       {required this.pickupAddress,
       required this.dropOffAddress,
+      required this.requestId,
       required this.passengerName,
       required this.pickupLocation,
       required this.fcmToken});

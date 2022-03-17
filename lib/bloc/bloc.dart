@@ -6,3 +6,4 @@ export 'user/bloc.dart';
 export 'auth/bloc.dart';
 export 'riderequest/bloc.dart';
 export 'driver/driver_bloc.dart';
+export 'review/review.dart';

@@ -4,7 +4,7 @@ import 'package:passengerapp/models/models.dart';
 class RideRequestEvent extends Equatable {
   const RideRequestEvent();
   @override
-  List<Object?> get props => throw UnimplementedError();
+  List<Object?> get props => [];
 }
 
 class RideRequestCreate extends RideRequestEvent {

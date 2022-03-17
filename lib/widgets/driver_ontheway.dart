@@ -1,12 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:passengerapp/bloc/bloc.dart';
+import 'package:passengerapp/helper/constants.dart';
+import 'package:passengerapp/helper/url_launcher.dart';
 import 'package:passengerapp/widgets/canceltrip.dart';
 import 'package:passengerapp/widgets/widgets.dart';
 
-class DriverOnTheWay extends StatelessWidget {
+class DriverOnTheWay extends StatefulWidget {
   Function? callback;
   DriverOnTheWay(this.callback);
+
+  @override
+  State<DriverOnTheWay> createState() => _DriverOnTheWayState();
+}
+
+class _DriverOnTheWayState extends State<DriverOnTheWay> {
   final _greyTextStyle = TextStyle(color: Colors.black26, fontSize: 14);
+
   final _blackTextStyle = TextStyle(color: Colors.black);
+
   @override
   Widget build(BuildContext context) {
     return Positioned(
@@ -93,7 +105,7 @@ class DriverOnTheWay extends StatelessWidget {
                         width: MediaQuery.of(context).size.width,
                         child: ElevatedButton(
                             onPressed: () {
-                              callback!(CancelTrip(callback));
+                              widget.callback!(CancelTrip(widget.callback));
                             },
                             child: const Text("Cancel"))),
                   ),

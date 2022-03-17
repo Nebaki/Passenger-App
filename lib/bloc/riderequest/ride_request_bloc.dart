@@ -11,12 +11,15 @@ class RideRequestBloc extends Bloc<RideRequestEvent, RideRequestState> {
   @override
   Stream<RideRequestState> mapEventToState(RideRequestEvent event) async* {
     if (event is RideRequestCreate) {
+      print("i'm arround here");
       yield RideRequestLoading();
       try {
         final request =
             await rideRequestRepository.createRequest(event.rideRequest);
         yield RideRequestSuccess(request);
       } catch (_) {
+        print("i'm'nt arround here");
+
         yield RideRequestOperationFailur();
       }
     }

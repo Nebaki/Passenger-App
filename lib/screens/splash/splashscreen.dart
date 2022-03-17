@@ -8,6 +8,7 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:passengerapp/bloc/bloc.dart';
+import 'package:passengerapp/helper/constants.dart';
 import 'package:passengerapp/rout.dart';
 import 'package:passengerapp/screens/screens.dart';
 
@@ -116,47 +117,58 @@ class _CustomSplashScreenState extends State<CustomSplashScreen> {
 
     return Scaffold(
         backgroundColor: Colors.red,
-        body: BlocConsumer<AuthBloc, AuthState>(builder: (_, state) {
-          // if (state is AuthDataLoading) {
-          //   print("Loadloadloadloadloadload");
-          //   return const Align(
-          //     alignment: Alignment.bottomCenter,
-          //     child: LinearProgressIndicator(),
-          //   );
-          // }
-          return const Center(
-            child: Image(
-              height: 150,
-              image: AssetImage("assets/icons/logo.png"),
-            ),
-          );
-        }, listener: (_, state) {
-          if (state is AuthDataLoading) {
-            const Align(
-              alignment: Alignment.bottomCenter,
-              child: LinearProgressIndicator(),
-            );
-          }
-          if (state is AuthDataLoadSuccess) {
-            if (_connectionStatus == ConnectivityResult.none) {
-              ScaffoldMessenger.of(context).showSnackBar(_snackBar);
-            } else if (_connectionStatus == ConnectivityResult.wifi ||
-                _connectionStatus == ConnectivityResult.mobile) {
-              requestLocationPermission();
+        body: _connectionStatus == ConnectivityResult.none
+            ? const Center(
+                child: Image(
+                  height: 150,
+                  image: AssetImage("assets/icons/logo.png"),
+                ),
+              )
+            // ScaffoldMessenger.of(context).showSnackBar(_snackBar);
+            : BlocConsumer<AuthBloc, AuthState>(builder: (_, state) {
+                // if (state is AuthDataLoading) {
+                //   print("Loadloadloadloadloadload");
+                //   return const Align(
+                //     alignment: Alignment.bottomCenter,
+                //     child: LinearProgressIndicator(),
+                //   );
+                // }
+                return const Center(
+                  child: Image(
+                    height: 150,
+                    image: AssetImage("assets/icons/logo.png"),
+                  ),
+                );
+              }, listener: (_, state) {
+                if (state is AuthDataLoading) {
+                  const Align(
+                    alignment: Alignment.bottomCenter,
+                    child: LinearProgressIndicator(),
+                  );
+                }
+                if (state is AuthDataLoadSuccess) {
+                  if (_connectionStatus == ConnectivityResult.none) {
+                    ScaffoldMessenger.of(context).showSnackBar(_snackBar);
+                  } else if (_connectionStatus == ConnectivityResult.wifi ||
+                      _connectionStatus == ConnectivityResult.mobile) {
+                    requestLocationPermission();
 
-              print(state.auth.token);
+                    print(state.auth.token);
 
-              state.auth.token != null
-                  ? Navigator.pushReplacementNamed(
-                      context, HomeScreen.routeName,
-                      arguments: HomeScreenArgument(isSelected: false))
-                  : Navigator.pushReplacementNamed(
-                      context, SigninScreen.routeName);
+                    name = state.auth.name!;
+                    number = state.auth.phoneNumber;
 
-              //0967543215
-            }
-          }
-          if (state is AuthOperationFailure) {}
-        }));
+                    state.auth.token != null
+                        ? Navigator.pushReplacementNamed(
+                            context, HomeScreen.routeName,
+                            arguments: HomeScreenArgument(isSelected: false))
+                        : Navigator.pushReplacementNamed(
+                            context, SigninScreen.routeName);
+
+                    //0967543215
+                  }
+                }
+                if (state is AuthOperationFailure) {}
+              }));
   }
 }
