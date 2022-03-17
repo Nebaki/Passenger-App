@@ -27,8 +27,9 @@ class LocationHistoryBloc
     if (event is LocationHistoryAdd) {
       yield LocationHistoryLoading();
       try {
-        await dataBaseHelperRepository.inserToDatabase(event.location);
-        yield LocationHistoryAdded();
+        final data =
+            await dataBaseHelperRepository.inserToDatabase(event.location);
+        yield LocationHistoryLoadSuccess(data);
       } catch (_) {
         yield LocationHistoryLoadFailure();
       }

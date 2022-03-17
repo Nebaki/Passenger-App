@@ -34,21 +34,35 @@ class DatabaseHelper {
               ''');
   }
 
-  Future<int> insert(LocationPrediction location) async {
+  Future<List<LocationPrediction>> insert(LocationPrediction location) async {
     Database db = await database;
-    int id = await db.insert("LocationHistory", location.toMap());
-    return id;
+    try {
+      print("trying");
+      final res = await db
+          .insert("LocationHistory", location.toMap())
+          .catchError((err) {
+        db.delete("LocationHistory",
+            where: 'placeId = ?', whereArgs: [location.placeId]);
+        db.insert("LocationHistory", location.toMap());
+      });
+      print("yow insert me $res");
+      return queryLocation();
+    } catch (_) {
+      return queryLocation();
+    }
   }
 
   Future<List<LocationPrediction>> queryLocation() async {
-    print("yow yow yow");
+    print("yow yow yows");
     Database db = await database;
     List<Map<String, dynamic>> maps = await db.query("LocationHistory",
         columns: ["placeId", "mainText", "secondaryText"]);
     if (maps.length > 0) {
+      print("that's true");
       return maps.reversed.map((e) => LocationPrediction.fromMap(e)).toList();
       // LocationPrediction.fromMap(maps.first);
     } else {
+      print("that's not true");
       throw "";
     }
   }
