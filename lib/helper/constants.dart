@@ -177,3 +177,6 @@ const mapStyle = '''[
 const createProfileArgumentText =
     "By continuing, iconfirm that i have read & agree to the Terms & conditions and Privacypolicy";
 const backGroundColor = Color.fromRGBO(240, 241, 241, 1);
+const buttonColor = Color.fromRGBO(244, 201, 60, 1);
+late String pickupAddress;
+late String droppOffAddress;

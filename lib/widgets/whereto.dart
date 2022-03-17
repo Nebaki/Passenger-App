@@ -12,8 +12,12 @@ class WhereTo extends StatefulWidget {
   final Function setIsSelected;
   final Function callback;
   final Widget service;
+  final Function setPickUpAdress;
+  final Function setDroppOffAdress;
   WhereTo(
       {Key? key,
+      required this.setPickUpAdress,
+      required this.setDroppOffAdress,
       required this.setIsSelected,
       required this.callback,
       required this.service})
@@ -63,6 +67,8 @@ class _WhereToState extends State<WhereTo> {
                         if (state is ReverseLocationLoadSuccess) {
                           List addresses = state.location.address1.split(",");
                           currentLocation = addresses[1];
+                          widget.setPickUpAdress(currentLocation);
+
                           // return Text(addresses[0]);
                         }
 
@@ -164,20 +170,23 @@ class _WhereToState extends State<WhereTo> {
                   ),
                 );
               }
-              return Column(
-                children: const [
-                  Text("Loading recent histories.."),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  Padding(
-                    padding: EdgeInsets.only(top: 10),
-                    child: LinearProgressIndicator(
-                      minHeight: 2,
+              if (state is LocationHistoryLoading) {
+                return Column(
+                  children: const [
+                    Text("Loading recent histories.."),
+                    SizedBox(
+                      height: 10,
                     ),
-                  ),
-                ],
-              );
+                    Padding(
+                      padding: EdgeInsets.only(top: 10),
+                      child: LinearProgressIndicator(
+                        minHeight: 2,
+                      ),
+                    ),
+                  ],
+                );
+              }
+              return Center(child: Text("You have not any recent history"));
             }),
           ],
         ),
@@ -228,6 +237,8 @@ class _WhereToState extends State<WhereTo> {
           return BlocBuilder<PlaceDetailBloc, PlaceDetailState>(
               builder: (conext, state) {
             if (state is PlaceDetailLoadSuccess) {
+              widget.setDroppOffAdress(state.placeDetail.placeName);
+
               DirectionEvent event = DirectionLoad(
                   destination:
                       LatLng(state.placeDetail.lat, state.placeDetail.lng));

@@ -1,3 +1,6 @@
+import 'package:flutter_share/flutter_share.dart';
+import 'package:passengerapp/helper/constants.dart';
+import 'package:social_share/social_share.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 Future<void> _launchInBrowser(String url) async {
@@ -11,7 +14,7 @@ Future<void> _launchInBrowser(String url) async {
   }
 }
 
-Future<void> _launchInWebViewOrVC(String url) async {
+Future<void> launchInWebViewOrVC(String url) async {
   if (!await launch(
     url,
     forceSafariVC: true,
@@ -44,7 +47,7 @@ Future<void> _launchInWebViewWithDomStorage(String url) async {
   }
 }
 
-Future<void> _launchUniversalLinkIos(String url) async {
+Future<void> launchUniversalLinkIos(String url) async {
   final bool nativeAppLaunchSucceeded = await launch(
     url,
     forceSafariVC: false,
@@ -78,14 +81,35 @@ Future<void> makePhoneCall(String phoneNumber) async {
   await launch(launchUri.toString());
 }
 
-Future<void> sendTextMessage(String phoneNumber) async {
+Future<void> sendTextMessage(String phoneNumber, String message) async {
   // Use `Uri` to ensure that `phoneNumber` is properly URL-encoded.
   // Just using 'tel:$phoneNumber' would create invalid URLs in some cases,
   // such as spaces in the input, which would cause `launch` to fail on some
   // platforms.
-  final Uri launchUri = Uri(
-    scheme: 'sms',
-    path: phoneNumber,
-  );
+  final Uri launchUri =
+      Uri(scheme: 'sms', path: phoneNumber, queryParameters: {"body": message});
   await launch(launchUri.toString());
+}
+
+Future<void> sendTelegramMessage(String driverName, String driverNumber) async {
+  // final Uri launchUri =
+  //   content  Uri(path: "https://t.me/@mikio34", queryParameters: {"body": "message"});
+  // await launch(launchUri.toString());
+
+  print("wait");
+
+  String message = ''' Driver Name : $driverName,
+  Driver Number: $driverNumber
+
+  PickUp Location: $pickupAddress ,
+
+  DropOff Location: $droppOffAddress,
+
+  Time: ${DateTime.now()}
+  ''';
+  await FlutterShare.share(title: "Safety Information", text: message);
+  // await SocialShare.shareTelegram("content").then((value) {
+  //   print("desn't load");
+  //   print(value);
+  // });
 }
