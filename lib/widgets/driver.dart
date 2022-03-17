@@ -34,7 +34,7 @@ class Driver extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
+                      const Text(
                         "Car Logo",
                         style: TextStyle(color: Colors.white),
                       ),

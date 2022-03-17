@@ -1,8 +1,8 @@
 import 'dart:convert';
 import 'package:passengerapp/account/trip_manager.dart';
-import 'package:passengerapp/models/local_models/location.dart';
-import 'package:passengerapp/models/local_models/models.dart';
-import 'package:passengerapp/models/local_models/trips.dart';
+import 'package:passengerapp/models/trips/location.dart';
+import 'package:passengerapp/models/trips/models.dart';
+import 'package:passengerapp/models/trips/trips.dart';
 import 'package:passengerapp/utils/session.dart';
 
 class TripTest {
@@ -16,11 +16,12 @@ class TripTest {
     List<Trip> tripsList = [];
     var trip;
     for (var i = 0; i < 3; i++) {
-      trip = Trip(i, start, end, price * i);
+      trip = Trip();
       tripsList.add(trip);
     }
-    var trips = SecItem("trips", jsonEncode(tripsList));
-    //session.logSuccess("save-trip", "trips: " + jsonEncode(tripsList));
+    String save_location = jsonEncode(tripsList);
+    var trips = SecItem("trips", save_location);
+    session.logSuccess("save-trip", "trips: " + save_location);
     tripMan
         .saveTrips(trips)
         .then((value) =>
@@ -47,14 +48,13 @@ class TripTest {
     var start = Location("4 killo", 95.000006, 95.000004);
     var end = Location("bole", 95.000006, 95.000004);
     var price = 50.0;
-    var trip = Trip(2, start, end, price);
+    var trip = Trip();
+
     List<Trip> updated;
     tripMan
         .loadTrips()
         .then((value) => {
           updated = value.trips,
-      updated.removeAt(trip.id - 1),
-
       session.logSuccess(
           "update-trip",
           "up s: " +

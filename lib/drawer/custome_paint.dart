@@ -10,7 +10,7 @@ class DrawerBackGround extends CustomPainter {
 
     Path mainbackround = Path();
     mainbackround.addRect(Rect.fromLTRB(0, 0, width, height));
-    paint.color = Color.fromRGBO(230, 230, 234, 1);
+    paint.color = const Color.fromRGBO(230, 230, 234, 1);
     canvas.drawPath(mainbackround, paint);
 
     Path bottomPath = Path();
@@ -28,7 +28,7 @@ class DrawerBackGround extends CustomPainter {
 
     bottomPath.lineTo(0, height);
 
-    paint.color = Color.fromARGB(255, 226, 182, 34);
+    paint.color = const Color.fromARGB(255, 226, 182, 34);
 
     canvas.drawPath(bottomPath, paint);
 
