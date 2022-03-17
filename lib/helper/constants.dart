@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 const mapStyle = '''[
   {
@@ -177,3 +178,15 @@ const mapStyle = '''[
 const createProfileArgumentText =
     "By continuing, iconfirm that i have read & agree to the Terms & conditions and Privacypolicy";
 const backGroundColor = Color.fromRGBO(240, 241, 241, 1);
+const buttonColor = Color.fromRGBO(244, 201, 60, 1);
+late String pickupAddress;
+late String droppOffAddress;
+late LatLng pickupLatLng;
+late LatLng droppOffLatLng;
+late String name;
+late String number;
+
+String? driverName;
+String? driverId;
+String? driverImage;
+double? driverRating;

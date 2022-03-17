@@ -92,6 +92,9 @@ class AppRoute {
     if (settings.name == OrderForOtherScreen.routeName) {
       return MaterialPageRoute(builder: (context) => OrderForOtherScreen());
     }
+    if (settings.name == ReviewScreen.routeName) {
+      return MaterialPageRoute(builder: (context) => ReviewScreen());
+    }
     return MaterialPageRoute(builder: (context) => CustomSplashScreen());
   }
 }

@@ -4,12 +4,16 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:passengerapp/bloc/bloc.dart';
 import 'package:passengerapp/bloc/notificationrequest/notification_request_bloc.dart';
+import 'package:passengerapp/helper/constants.dart';
 import 'package:passengerapp/models/models.dart';
+import 'package:passengerapp/rout.dart';
+import 'package:passengerapp/screens/screens.dart';
 import 'package:passengerapp/widgets/widgets.dart';
 
 class Service extends StatefulWidget {
   Function? callback;
   Function searchNeabyDriver;
+
   Service(this.callback, this.searchNeabyDriver);
 
   @override
@@ -20,6 +24,7 @@ class _ServiceState extends State<Service> {
   int _isSelected = 0;
   bool _isLoading = false;
   late LatLng currentLatlng;
+
   @override
   void initState() {
     // TODO: implement initState
@@ -30,16 +35,16 @@ class _ServiceState extends State<Service> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<NotificationRequestBloc, NotificationRequestState>(
-        builder: (_, state) {
+    return BlocConsumer<RideRequestBloc, RideRequestState>(builder: (_, state) {
       return serviceTypeWidget();
     }, listener: (_, state) {
-      if (state is NotificationRequestSent) {
+      if (state is RideRequestSuccess) {
         _isLoading = false;
-        widget.callback!(DriverOnTheWay(this.widget.callback));
+        widget.callback!(WaitingDriverResponse(widget.callback));
+        // widget.callback!(DriverOnTheWay(this.widget.callback));
       }
       if (state is NotificationRequestSending) {}
-      if (state is NotificationRequestSendingFailure) {
+      if (state is RideRequestOperationFailur) {
         _isLoading = false;
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: const Text("Notification Not Sent"),
@@ -53,18 +58,36 @@ class _ServiceState extends State<Service> {
 
   final _blackTextStyle = TextStyle(color: Colors.black);
 
-  void sendNotification(String fcmToken) async {
-    _isLoading = true;
-    NotificationRequestEvent event = NotificationRequestSend(
-        NotificationRequest(
-            pickupAddress: "Meskel Flower",
-            dropOffAddress: "Bole",
-            passengerName: "miki",
-            pickupLocation:
-                LatLng(currentLatlng.latitude, currentLatlng.longitude),
-            fcmToken: fcmToken));
+  void sendNotification(String fcmToken, String id) async {
+    print(' driver fcm $fcmToken');
+    // _isLoading = true;
+    RideRequestEvent riderequestEvent = RideRequestCreate(RideRequest(
+        driverFcm: fcmToken,
+        driverId: id,
+        passengerName: name,
+        passengerPhoneNumber: number,
+        pickUpAddress: pickupAddress,
+        droppOffAddress: droppOffAddress,
+        pickupLocation: pickupLatLng,
+        dropOffLocation: droppOffLatLng));
+    BlocProvider.of<RideRequestBloc>(context).add(riderequestEvent);
+    // BlocListener<RideRequestBloc, RideRequestState>(
+    //   listener: (_, state) {
+    //     if (state is RideRequestSuccess) {
+    //       NotificationRequestEvent event = NotificationRequestSend(
+    //           NotificationRequest(
+    //               requestId: state.request.id!,
+    //               pickupAddress: "Meskel Flower",
+    //               dropOffAddress: "Bole",
+    //               passengerName: "miki",
+    //               pickupLocation:
+    //                   LatLng(currentLatlng.latitude, currentLatlng.longitude),
+    //               fcmToken: fcmToken));
 
-    BlocProvider.of<NotificationRequestBloc>(context).add(event);
+    //       BlocProvider.of<NotificationRequestBloc>(context).add(event);
+    //     }
+    //   },
+    // );
   }
 
   Widget serviceTypeWidget() {
@@ -226,7 +249,8 @@ class _ServiceState extends State<Service> {
                                 RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(10)))),
                         onPressed: () {
-                          sendNotification(state.driver.fcmId);
+                          sendNotification(state.driver.fcmId, state.driver.id);
+                          // print(name);
 
                           // print(widget.searchNeabyDriver());
                           //callback!(NearbyTaxy(callback));

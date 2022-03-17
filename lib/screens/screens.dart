@@ -19,3 +19,4 @@ export 'history/history_detail.dart';
 export 'contactus/contact_us.dart';
 export 'settings/preference.dart';
 export 'orderforother/order_for_other.dart';
+export 'review/review.dart';
