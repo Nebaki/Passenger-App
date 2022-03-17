@@ -24,7 +24,14 @@ class DatabaseHelper {
         version: _databaseVersion, onCreate: _onCreate);
   }
 
-  Future _onCreate(Database db, int version) async {
+  Future _createTripHistory(Database db, int version) async {
+    await db.execute('''
+              CREATE TABLE TripHistory (
+                placeId TEXT PRIMARY KEY,
+                mainText TEXT NOT NULL
+              ''');
+  }
+  Future _createSavedLocation(Database db, int version) async {
     await db.execute('''
               CREATE TABLE LocationHistory (
                 placeId TEXT PRIMARY KEY,
@@ -32,6 +39,25 @@ class DatabaseHelper {
                 secondaryText TEXT
               )
               ''');
+  }
+  Future<List<Trip>> loadSavedLocations() async {
+    Database db = await database;
+    List<Map<String, Object?>> result;
+    result = await db.query("SavedLocation");
+    return result.map((e) =>  Trip.fromMap(e)).toList();
+  }
+
+  Future<int> insertLocation(Trip trip) async {
+    var data = trip.toMap();
+    Database db = await database;
+    int id = await db.insert("SavedLocation", data);
+    return id;
+  }
+
+
+  Future _onCreate(Database db, int version) async {
+    _createTripHistory(db, version);
+    _createSavedLocation(db, version);
   }
 
   Future<List<LocationPrediction>> insert(LocationPrediction location) async {
@@ -66,4 +92,5 @@ class DatabaseHelper {
       throw "";
     }
   }
+
 }

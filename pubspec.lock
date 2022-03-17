@@ -342,13 +342,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.1.2"
-  flutter_share:
-    dependency: "direct main"
-    description:
-      name: flutter_share
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "2.0.0"
   flutter_test:
     dependency: "direct dev"
     description: flutter
@@ -665,13 +658,6 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.99"
-  social_share:
-    dependency: "direct main"
-    description:
-      name: social_share
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "2.2.1"
   source_span:
     dependency: transitive
     description:
