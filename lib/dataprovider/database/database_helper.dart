@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:io';
 import 'package:passengerapp/models/models.dart';
 import 'package:path/path.dart';
@@ -6,8 +5,8 @@ import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 
 class DatabaseHelper {
-  static const _databaseName = "MyDatabase.db";
-  static const _databaseVersion = 1;
+  static final _databaseName = "MyDatabase.db";
+  static final _databaseVersion = 1;
 
   static Database? _database;
   Future<Database> get database async {
@@ -25,6 +24,22 @@ class DatabaseHelper {
         version: _databaseVersion, onCreate: _onCreate);
   }
 
+  Future _createTripHistory(Database db, int version) async {
+    await db.execute('''
+              CREATE TABLE TripHistory (
+                placeId TEXT PRIMARY KEY,
+                mainText TEXT NOT NULL
+              ''');
+  }
+  Future _createSavedLocation(Database db, int version) async {
+    await db.execute('''
+              CREATE TABLE LocationHistory (
+                placeId TEXT PRIMARY KEY,
+                mainText TEXT NOT NULL,
+                secondaryText TEXT
+              )
+              ''');
+  }
   Future<List<Trip>> loadSavedLocations() async {
     Database db = await database;
     List<Map<String, Object?>> result;
@@ -39,56 +54,41 @@ class DatabaseHelper {
     return id;
   }
 
-  Future _createSavedLocations(Database db, int version) async{
-    await db.execute('''
-              CREATE TABLE SavedLocation (
-                locationId INTEGER PRIMARY KEY AUTOINCREMENT ,
-                mainText TEXT NOT NULL
-              )
-              ''');
-  }
-
-  Future _createTripHistory(Database db, int version) async{
-    await db.execute('''
-              CREATE TABLE TripHistory (
-                placeId TEXT PRIMARY KEY,
-                mainText TEXT NOT NULL,
-                secondaryText TEXT
-              )
-              ''');
-  }
-  Future _createLocalHistory(Database db, int version) async{
-    await db.execute('''
-              CREATE TABLE LocationHistory (
-                placeId TEXT PRIMARY KEY,
-                mainText TEXT NOT NULL,
-                secondaryText TEXT
-              )
-              ''');
-  }
 
   Future _onCreate(Database db, int version) async {
-    _createSavedLocations(db, version);
     _createTripHistory(db, version);
-    _createLocalHistory(db, version);
-
+    _createSavedLocation(db, version);
   }
 
-  Future<int> insert(LocationPrediction location) async {
+  Future<List<LocationPrediction>> insert(LocationPrediction location) async {
     Database db = await database;
-    int id = await db.insert("LocationHistory", location.toMap());
-    return id;
+    try {
+      print("trying");
+      final res = await db
+          .insert("LocationHistory", location.toMap())
+          .catchError((err) {
+        db.delete("LocationHistory",
+            where: 'placeId = ?', whereArgs: [location.placeId]);
+        db.insert("LocationHistory", location.toMap());
+      });
+      print("yow insert me $res");
+      return queryLocation();
+    } catch (_) {
+      return queryLocation();
+    }
   }
 
   Future<List<LocationPrediction>> queryLocation() async {
-    print("yow yow yow");
+    print("yow yow yows");
     Database db = await database;
     List<Map<String, dynamic>> maps = await db.query("LocationHistory",
         columns: ["placeId", "mainText", "secondaryText"]);
     if (maps.length > 0) {
+      print("that's true");
       return maps.reversed.map((e) => LocationPrediction.fromMap(e)).toList();
       // LocationPrediction.fromMap(maps.first);
     } else {
+      print("that's not true");
       throw "";
     }
   }
