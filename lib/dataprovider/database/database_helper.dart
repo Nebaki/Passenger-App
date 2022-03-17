@@ -57,17 +57,21 @@ class DatabaseHelper {
               )
               ''');
   }
-
-  Future _onCreate(Database db, int version) async {
-    _createSavedLocations(db, version);
-    _createTripHistory(db, version);
-     /*await db.execute('''
+  Future _createLocalHistory(Database db, int version) async{
+    await db.execute('''
               CREATE TABLE LocationHistory (
                 placeId TEXT PRIMARY KEY,
                 mainText TEXT NOT NULL,
                 secondaryText TEXT
               )
-              ''');*/
+              ''');
+  }
+
+  Future _onCreate(Database db, int version) async {
+    _createSavedLocations(db, version);
+    _createTripHistory(db, version);
+    _createLocalHistory(db, version);
+
   }
 
   Future<int> insert(LocationPrediction location) async {
