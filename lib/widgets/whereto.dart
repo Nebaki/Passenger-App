@@ -29,7 +29,7 @@ class WhereTo extends StatefulWidget {
 }
 
 class _WhereToState extends State<WhereTo> {
-  late String currentLocation = "fdf";
+  late String currentLocation = "Loading current location..";
   late LatLng destinationLtlng;
 
   @override
@@ -118,7 +118,7 @@ class _WhereToState extends State<WhereTo> {
             const Divider(),
             BlocBuilder<LocationHistoryBloc, LocationHistoryState>(
                 builder: (_, state) {
-              print("hey i'm trying");
+              print("hey i'm trying $state");
               if (state is LocationHistoryLoadSuccess) {
                 print("Succccccccccccccccccccccccccccesssssss");
                 print(state.locationHistory[0]);
@@ -131,7 +131,7 @@ class _WhereToState extends State<WhereTo> {
                       return GestureDetector(
                         onTap: () {
                           getPlaceDetail(state.locationHistory[index].placeId);
-                          settingDropOffDialog(context);
+                          settingDropOffDialog(null);
                         },
                         child: Padding(
                           padding: const EdgeInsets.all(8.0),
@@ -195,15 +195,17 @@ class _WhereToState extends State<WhereTo> {
     );
   }
 
-  Widget _buildPredictedItem(LocationPrediction prediction, con) {
+  Widget _buildPredictedItem(LocationPrediction prediction, BuildContext con) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: GestureDetector(
         onTap: () {
+          // Navigator.pop(con);
+
           getPlaceDetail(prediction.placeId);
-          settingDropOffDialog(con);
           LocationHistoryEvent event = LocationHistoryAdd(location: prediction);
           BlocProvider.of<LocationHistoryBloc>(context).add(event);
+          settingDropOffDialog(con);
         },
         child: Container(
           color: Colors.black.withOpacity(0),
@@ -231,12 +233,12 @@ class _WhereToState extends State<WhereTo> {
     BlocProvider.of<PlaceDetailBloc>(context).add(event);
   }
 
-  void settingDropOffDialog(con) {
+  void settingDropOffDialog(BuildContext? con) {
     showDialog(
         context: context,
         builder: (BuildContext cont) {
           return BlocBuilder<PlaceDetailBloc, PlaceDetailState>(
-              builder: (conext, state) {
+              builder: (_, state) {
             if (state is PlaceDetailLoadSuccess) {
               widget.setDroppOffAdress(state.placeDetail.placeName);
 
@@ -248,13 +250,17 @@ class _WhereToState extends State<WhereTo> {
               destinationLtlng =
                   LatLng(state.placeDetail.lat, state.placeDetail.lng);
               droppOffLatLng = destinationLtlng;
+              print("Hey trying to pop the context around here::");
 
               Future.delayed(Duration(seconds: 1), () {
-                //Navigator.pop(context);
-                Navigator.pop(con);
-
                 widget.setIsSelected(destinationLtlng);
                 widget.callback(widget.service);
+                // Navigator.pop(cont);
+                Navigator.pop(_);
+
+                if (con != null) {
+                  Navigator.pop(con);
+                }
 
                 // return Navigator.pushNamed(context, HomeScreen.routeName,
                 //     arguments: HomeScreenArgument(
@@ -300,7 +306,7 @@ class _WhereToState extends State<WhereTo> {
           return Stack(
             children: [
               BlocBuilder<LocationPredictionBloc, LocationPredictionState>(
-                  builder: (context, state) {
+                  builder: (_, state) {
                 if (state is LocationPredictionLoading) {
                   return const Center(child: CircularProgressIndicator());
                 }
@@ -321,7 +327,7 @@ class _WhereToState extends State<WhereTo> {
                         child: ListView.separated(
                             physics: const ClampingScrollPhysics(),
                             shrinkWrap: true,
-                            itemBuilder: (cont, index) {
+                            itemBuilder: (_, index) {
                               return _buildPredictedItem(
                                   state.placeList[index], context);
                             },
