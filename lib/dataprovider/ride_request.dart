@@ -6,7 +6,7 @@ import 'package:passengerapp/models/models.dart';
 class RideRequestDataProvider {
   final _fcmUrl = 'https://fcm.googleapis.com/fcm/send';
 
-  final _baseUrl = 'http://192.168.1.9:5000/api/rideRequests';
+  final _baseUrl = 'https://safeway-api.herokuapp.com/api/ride-requests';
   final http.Client httpClient;
   final token =
       "AAAAKTCNpPU:APA91bHPscWDa8pPO5MGRj11FWo6NZkpK5tRPodi_2wuMdHhDNwlTO3l4jF50tFGiU55EWMyNss0St0l_kk2H1YmKH1z4yzWPVL25xGTt-GqOFWUdh7BgjJmiNo55eVzzJgHeEOBvHtH";
@@ -16,7 +16,7 @@ class RideRequestDataProvider {
   Future<RideRequest> createRequest(RideRequest request) async {
     print("yow yow ");
     final response = await http.post(
-      Uri.parse('$_baseUrl/create-rideRequest'),
+      Uri.parse('$_baseUrl/create-ride-request'),
       headers: <String, String>{
         'Content-Type': 'application/json',
         "x-access-token":

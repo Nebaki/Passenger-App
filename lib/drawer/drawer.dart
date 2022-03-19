@@ -100,8 +100,7 @@ class NavDrawer extends StatelessWidget {
                   ),
                   GestureDetector(
                     onTap: () {
-                      Navigator.pushReplacementNamed(
-                          context, SavedAddress.routeName);
+                      Navigator.pushNamed(context, SavedAddress.routeName);
                     },
                     child: _menuItem(
                         divider: true,
@@ -142,7 +141,8 @@ class NavDrawer extends StatelessWidget {
                   ),
                   GestureDetector(
                     onTap: () {
-                      BlocProvider.of<AuthBloc>(context).add(AuthDataLoad());
+                      // BlocProvider.of<AuthBloc>(context).add(AuthDataLoad());
+                      Navigator.pushNamed(context, PlacePickerScreen.routeName);
                     },
                     child: _menuItem(
                         divider: true,

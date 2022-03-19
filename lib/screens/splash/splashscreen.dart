@@ -154,9 +154,10 @@ class _CustomSplashScreenState extends State<CustomSplashScreen> {
                     requestLocationPermission();
 
                     print(state.auth.token);
-
-                    name = state.auth.name!;
-                    number = state.auth.phoneNumber;
+                    if (state.auth.token != null) {
+                      name = state.auth.name!;
+                      number = state.auth.phoneNumber;
+                    }
 
                     state.auth.token != null
                         ? Navigator.pushReplacementNamed(

@@ -9,6 +9,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:passengerapp/bloc/bloc.dart';
 import 'package:passengerapp/bloc/database/location_history_bloc.dart';
 import 'package:passengerapp/bloc/notificationrequest/notification_request_bloc.dart';
+import 'package:passengerapp/bloc/savedlocation/saved_location_bloc.dart';
 import 'package:passengerapp/bloc_observer.dart';
 import 'package:passengerapp/dataprovider/dataproviders.dart';
 import 'package:passengerapp/helper/constants.dart';
@@ -63,6 +64,11 @@ void main() async {
       dataProvider: DriverDataProvider(httpClient: http.Client()));
   final ReviewRepository reviewRepository = ReviewRepository(
       dataProvider: ReviewDataProvider(httpClient: http.Client()));
+
+  final SavedLocationRepository savedLocationRepository =
+      SavedLocationRepository(
+          savedLocationDataProvider:
+              SavedLocationDataProvider(httpClient: http.Client()));
   runApp(MyApp(
     notificationRequestRepository: notificationRequestRepository,
     rideRequestRepository: rideRequestRepository,
@@ -75,6 +81,7 @@ void main() async {
     directionRepository: directionRepository,
     dataBaseHelperRepository: dataBaseHelperRepository,
     reviewRepository: reviewRepository,
+    savedLocationRepository: savedLocationRepository,
   ));
 }
 
@@ -123,6 +130,8 @@ class MyApp extends StatelessWidget {
 
   final ReviewRepository reviewRepository;
 
+  final SavedLocationRepository savedLocationRepository;
+
   const MyApp(
       {Key? key,
       required this.notificationRequestRepository,
@@ -135,7 +144,8 @@ class MyApp extends StatelessWidget {
       required this.placeDetailRepository,
       required this.directionRepository,
       required this.dataBaseHelperRepository,
-      required this.reviewRepository})
+      required this.reviewRepository,
+      required this.savedLocationRepository})
       : super(key: key);
   @override
   Widget build(BuildContext context) {
@@ -153,7 +163,8 @@ class MyApp extends StatelessWidget {
           RepositoryProvider.value(value: driverRepository),
           RepositoryProvider.value(value: authRepository),
           RepositoryProvider.value(value: dataBaseHelperRepository),
-          RepositoryProvider.value(value: reviewRepository)
+          RepositoryProvider.value(value: reviewRepository),
+          RepositoryProvider.value(value: savedLocationRepository)
         ],
         child: MultiBlocProvider(
             providers: [
@@ -194,6 +205,10 @@ class MyApp extends StatelessWidget {
               BlocProvider(
                   create: (context) =>
                       ReviewBloc(reviewRepository: reviewRepository)),
+              BlocProvider(
+                  create: (context) => SavedLocationBloc(
+                      savedLocationRepository: savedLocationRepository)
+                    ..add(SavedLocationsLoad())),
             ],
             child: MaterialApp(
               title: 'SafeWay',

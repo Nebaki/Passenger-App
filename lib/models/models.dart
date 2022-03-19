@@ -8,3 +8,4 @@ export 'ride_request.dart';
 export 'notification_request.dart';
 export 'driver/driver.dart';
 export 'review/review.dart';
+export 'savedlocation/saved_location.dart';

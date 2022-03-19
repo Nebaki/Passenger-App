@@ -20,3 +20,5 @@ class LocationPredictionLoadSuccess extends LocationPredictionState {
 }
 
 class LocationPredictionOperationFailure extends LocationPredictionState {}
+
+class LocationPredictionInitState extends LocationPredictionState {}
