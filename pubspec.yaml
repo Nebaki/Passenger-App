@@ -60,6 +60,7 @@ dependencies:
   social_share:
   firebase_messaging: ^11.2.6
   google_maps_place_picker:
+  flutter_animarker: ^3.3.1-beta.4
   
 # dependency_overrides:
   # geolocator: ^7.0.1

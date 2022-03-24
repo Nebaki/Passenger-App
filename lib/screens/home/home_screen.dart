@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_animarker/widgets/animarker.dart';
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_geofire/flutter_geofire.dart';
@@ -57,7 +58,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   static const CameraPosition _addissAbaba = CameraPosition(
     target: LatLng(8.9806, 38.7578),
-    zoom: 14.4746,
+    zoom: 16.4746,
   );
 
   Future<Position> _determinePosition() async {
@@ -134,41 +135,50 @@ class _HomeScreenState extends State<HomeScreen> {
       body: Stack(
         children: [
           BlocConsumer<DirectionBloc, DirectionState>(builder: (_, state) {
-            return GoogleMap(
-              mapType: MapType.normal,
-              myLocationButtonEnabled: false,
-              initialCameraPosition: _addissAbaba,
-              myLocationEnabled: true,
-              polylines: Set<Polyline>.of(polylines.values),
-              markers: Set<Marker>.of(markers.values),
-              onMapCreated: (GoogleMapController controller) {
-                _controller.complete(controller);
-                outerController = controller;
-                controller.setMapStyle(mapStyle);
-                _determinePosition().then((value) {
-                  pickupLatLng = LatLng(value.latitude, value.longitude);
+            return Animarker(
+              mapId: _controller.future.then((value) => value.mapId),
+              curve: Curves.ease,
+              // markers: Set<Marker>.of(markers.values),
+              shouldAnimateCamera: false,
+              child: GoogleMap(
+                // scrollGesturesEnabled: false,
+                // zoomGesturesEnabled: false,
+                // rotateGesturesEnabled: false,
+                mapType: MapType.normal,
+                myLocationButtonEnabled: false,
+                initialCameraPosition: _addissAbaba,
+                myLocationEnabled: true,
+                polylines: Set<Polyline>.of(polylines.values),
+                markers: Set<Marker>.of(markers.values),
+                onMapCreated: (GoogleMapController controller) {
+                  _controller.complete(controller);
+                  outerController = controller;
+                  controller.setMapStyle(mapStyle);
+                  _determinePosition().then((value) {
+                    pickupLatLng = LatLng(value.latitude, value.longitude);
 
-                  currentLatLng = LatLng(value.latitude, value.longitude);
-                  geofireListener(value.latitude, value.longitude);
+                    currentLatLng = LatLng(value.latitude, value.longitude);
+                    geofireListener(value.latitude, value.longitude);
+
+                    WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
+                      geofireListener(value.latitude, value.longitude);
+                    });
+                    controller.animateCamera(CameraUpdate.newCameraPosition(
+                        CameraPosition(
+                            zoom: 16.1746,
+                            target: LatLng(currentLatLng.latitude,
+                                currentLatLng.longitude))));
+                  });
+
+                  // geofireListener(
+                  //     currentLatLng.latitude, currentLatLng.longitude);
 
                   WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
-                    geofireListener(value.latitude, value.longitude);
+                    geofireListener(
+                        currentLatLng.latitude, currentLatLng.longitude);
                   });
-                  controller.animateCamera(CameraUpdate.newCameraPosition(
-                      CameraPosition(
-                          zoom: 14.4746,
-                          target: LatLng(currentLatLng.latitude,
-                              currentLatLng.longitude))));
-                });
-
-                // geofireListener(
-                //     currentLatLng.latitude, currentLatLng.longitude);
-
-                WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
-                  geofireListener(
-                      currentLatLng.latitude, currentLatLng.longitude);
-                });
-              },
+                },
+              ),
             );
           }, listener: (_, state) {
             if (state is DirectionLoadSuccess) {
