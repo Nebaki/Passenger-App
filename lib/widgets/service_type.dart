@@ -1,3 +1,4 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geolocator/geolocator.dart';
@@ -71,23 +72,6 @@ class _ServiceState extends State<Service> {
         pickupLocation: pickupLatLng,
         dropOffLocation: droppOffLatLng));
     BlocProvider.of<RideRequestBloc>(context).add(riderequestEvent);
-    // BlocListener<RideRequestBloc, RideRequestState>(
-    //   listener: (_, state) {
-    //     if (state is RideRequestSuccess) {
-    //       NotificationRequestEvent event = NotificationRequestSend(
-    //           NotificationRequest(
-    //               requestId: state.request.id!,
-    //               pickupAddress: "Meskel Flower",
-    //               dropOffAddress: "Bole",
-    //               passengerName: "miki",
-    //               pickupLocation:
-    //                   LatLng(currentLatlng.latitude, currentLatlng.longitude),
-    //               fcmToken: fcmToken));
-
-    //       BlocProvider.of<NotificationRequestBloc>(context).add(event);
-    //     }
-    //   },
-    // );
   }
 
   Widget serviceTypeWidget() {
@@ -240,6 +224,9 @@ class _ServiceState extends State<Service> {
                   child:
                       BlocBuilder<DriverBloc, DriverState>(builder: (_, state) {
                     if (state is DriverLoadSuccess) {
+                      //  FirebaseMessaging.onMessage.listen((event) {
+
+                      //   });
                       return ElevatedButton(
                         style: ButtonStyle(
                             backgroundColor: MaterialStateProperty.all<Color>(
