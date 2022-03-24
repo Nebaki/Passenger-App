@@ -6,7 +6,6 @@ export 'user/user.dart';
 export 'auth/auth.dart';
 export 'nearby_driver.dart';
 export 'ride_request.dart';
-export 'saved_location.dart';
 export 'notification_request.dart';
 export 'driver/driver.dart';
 export 'database/database_helper.dart';
