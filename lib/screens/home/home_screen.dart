@@ -208,14 +208,14 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
           _currentWidget,
-          // Positioned(
-          //     top: 30,
-          //     right: 20,
-          //     child: ElevatedButton(
-          //         onPressed: () {
-          //           geofireListener(8.9936827, 38.7663247);
-          //         },
-          //         child: const Text("Maintenance"))),
+          Positioned(
+              top: 30,
+              right: 20,
+              child: ElevatedButton(
+                  onPressed: () {
+                    geofireListener(8.9936827, 38.7663247);
+                  },
+                  child: const Text("Maintenance"))),
         ],
       ),
     );

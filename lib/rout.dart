@@ -95,6 +95,20 @@ class AppRoute {
     if (settings.name == ReviewScreen.routeName) {
       return MaterialPageRoute(builder: (context) => ReviewScreen());
     }
+    if (settings.name == PlacePickerScreen.routeName) {
+      return MaterialPageRoute(builder: (context) => PlacePickerScreen());
+    }
+    if (settings.name == PlacePickerScreen.routeName) {
+      return MaterialPageRoute(builder: (context) => PlacePickerScreen());
+    }
+    if (settings.name == AddAddressScreen.routeName) {
+      AddAdressScreenArgument argument =
+          settings.arguments as AddAdressScreenArgument;
+      return MaterialPageRoute(
+          builder: (context) => AddAddressScreen(
+                args: argument,
+              ));
+    }
     return MaterialPageRoute(builder: (context) => CustomSplashScreen());
   }
 }
@@ -140,4 +154,11 @@ class PreferenceArgument {
 
   PreferenceArgument(
       {required this.gender, required this.min_rate, required this.carType});
+}
+
+class AddAdressScreenArgument {
+  final bool edit;
+  final SavedLocation? savedLocation;
+
+  AddAdressScreenArgument({required this.edit, this.savedLocation});
 }

@@ -10,3 +10,4 @@ export 'notification_request.dart';
 export 'driver/driver.dart';
 export 'database/database_helper.dart';
 export 'review/review.dart';
+export 'savedlocation/saved_locations.dart';

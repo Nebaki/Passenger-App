@@ -9,6 +9,8 @@ class PushNotificationService {
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       RemoteNotification? notification = message.notification;
       AndroidNotification? android = message.notification?.android;
+      print('this is the respomse : ${message.data['response']}');
+
       // print("yow yo mikiki ${message.data['response']}");
       if (message.data['response'] == "Accepted") {
         callback(DriverOnTheWay(callback));
@@ -24,6 +26,7 @@ class PushNotificationService {
         ));
         callback(Service(callback, searchNearbyDriver));
       } else if (message.data['response'] == "Completed") {
+        print("it's Completedd");
         Navigator.pushNamed(context, ReviewScreen.routeName);
       } else {
         print(message.data['response']);

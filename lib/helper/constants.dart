@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:google_maps_place_picker/google_maps_place_picker.dart';
 
 const mapStyle = '''[
   {
@@ -190,3 +191,8 @@ String? driverName;
 String? driverId;
 String? driverImage;
 double? driverRating;
+const initialPosition = LatLng(8.9806, 38.7578);
+
+PickResult? selectedPlace;
+
+const String apiKey = "AIzaSyB8z8UeyROt2-ay24jiHrrcMXaEAlPUvdQ";
