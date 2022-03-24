@@ -57,7 +57,11 @@ dependencies:
   sqflite: ^2.0.2
   path_provider: ^2.0.9
   webview_flutter: ^3.0.1
-  
+  flutter_share:
+  social_share:
+  firebase_messaging: ^11.2.6
+
+
 
 
 

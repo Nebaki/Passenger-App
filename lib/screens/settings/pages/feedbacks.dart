@@ -90,9 +90,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                                   });
                                   prepareRequest(
                                       context,
-                                      _chosenValue +
-                                          ": " +
-                                          feedBackController.text);
+                                      _chosenValue,feedBackController.text);
                                 } else {
                                   if(!form.validate()){
                                     showMessage(context, 'Form is invalid');
@@ -131,9 +129,9 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
 
   final _formKey = GlobalKey<FormState>();
 
-  void prepareRequest(BuildContext context, String message) {
+  void prepareRequest(BuildContext context, String title, String description) {
     var sender = SendFeedback(httpClient: http.Client());
-    var res = sender.sendFeedback("0922877115", message);
+    var res = sender.sendFeedback(title,description);
     res.then((value) => {
           setState(() {
             _isLoading = false;
