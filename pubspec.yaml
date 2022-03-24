@@ -37,7 +37,7 @@ dependencies:
   intl_phone_number_input: ^0.7.0+2
   image_picker: ^0.8.4+4
   google_maps_flutter: ^2.1.1
-  geolocator: ^7.0.1
+  geolocator: ^8.0.3
   carousel_slider: ^4.0.0
   firebase_core: ^1.12.0
   firebase_auth: ^3.3.6
@@ -46,7 +46,7 @@ dependencies:
   #location: ^4.2.0
   http: ^0.13.4
   dio: ^4.0.4
-  flutter_bloc: 
+  flutter_bloc: ^6.1.2
   flutter_polyline_points: ^1.0.0
   email_validator: '^1.0.6'
   flutter_secure_storage: ^5.0.2
@@ -56,18 +56,12 @@ dependencies:
   url_launcher: ^6.0.18
   sqflite: ^2.0.2
   path_provider: ^2.0.9
+  webview_flutter: ^3.0.1
   flutter_share:
   social_share:
   firebase_messaging: ^11.2.6
-  google_maps_place_picker:
-  
-# dependency_overrides:
-  # geolocator: ^7.0.1
-    
 
 
-
-  
 
 
 
