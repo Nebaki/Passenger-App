@@ -38,9 +38,6 @@ void main() async {
   final RideRequestRepository rideRequestRepository = RideRequestRepository(
       dataProvider: RideRequestDataProvider(httpClient: http.Client()));
 
-  final SavedLocationRepository savedLocationsRepository = SavedLocationRepository(
-      dataProvider: SavedLocationDataProvider(httpClient: http.Client()));
-
   final LocationPredictionRepository locationPredictionRepository =
       LocationPredictionRepository(
           dataProvider:
@@ -77,7 +74,6 @@ void main() async {
   runApp(MyApp(
     notificationRequestRepository: notificationRequestRepository,
     rideRequestRepository: rideRequestRepository,
-    savedLocationRepository:savedLocationsRepository,
     authRepository: authRepository,
     userRepository: userRepository,
     driverRepository: driverRepository,
@@ -137,13 +133,11 @@ class MyApp extends StatelessWidget {
 
   final ReviewRepository reviewRepository;
 
-  final SavedLocationRepository savedLocationRepository;
 
   const MyApp(
       {Key? key,
       required this.notificationRequestRepository,
       required this.rideRequestRepository,
-      required this.savedLocationRepository,
       required this.userRepository,
       required this.driverRepository,
       required this.authRepository,
