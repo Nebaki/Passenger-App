@@ -1,11 +1,13 @@
-import 'dart:io';
+
+import 'package:connectivity_plus/connectivity_plus.dart';
 
 class Service {
-  Future<bool> isNetworkConnected() async {
-    try {
-      final result = await InternetAddress.lookup('example.com');
-      return result.isNotEmpty && result[0].rawAddress.isNotEmpty;
-    } on SocketException catch (_) {
+  Future<bool> isNetworkConnected(int i) async {
+    var connectivityResult = await (Connectivity().checkConnectivity());
+    if (connectivityResult == ConnectivityResult.mobile ||
+        connectivityResult == ConnectivityResult.wifi) {
+      return true;
+    } else {
       return false;
     }
   }
