@@ -40,19 +40,6 @@ class DatabaseHelper {
               )
               ''');
   }
-  Future<List<Trip>> loadSavedLocations() async {
-    Database db = await database;
-    List<Map<String, Object?>> result;
-    result = await db.query("SavedLocation");
-    return result.map((e) =>  Trip.fromMap(e)).toList();
-  }
-
-  Future<int> insertLocation(Trip trip) async {
-    var data = trip.toMap();
-    Database db = await database;
-    int id = await db.insert("SavedLocation", data);
-    return id;
-  }
 
 
   Future _onCreate(Database db, int version) async {
