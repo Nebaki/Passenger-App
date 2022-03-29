@@ -65,7 +65,12 @@ class AppRoute {
       return MaterialPageRoute(builder: (context) => ResetPassword());
     }
     if (settings.name == CancelReason.routeName) {
-      return MaterialPageRoute(builder: (context) => CancelReason());
+      CancelReasonArgument argument =
+          settings.arguments as CancelReasonArgument;
+      return MaterialPageRoute(
+          builder: (context) => CancelReason(
+                arg: argument,
+              ));
     }
     if (settings.name == SigninScreen.routeName) {
       return MaterialPageRoute(builder: (context) => SigninScreen());
@@ -161,4 +166,9 @@ class AddAdressScreenArgument {
   final SavedLocation? savedLocation;
 
   AddAdressScreenArgument({required this.edit, this.savedLocation});
+}
+
+class CancelReasonArgument {
+  final bool sendRequest;
+  CancelReasonArgument({required this.sendRequest});
 }

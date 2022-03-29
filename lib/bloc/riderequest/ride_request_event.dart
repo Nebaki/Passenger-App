@@ -18,11 +18,12 @@ class RideRequestCreate extends RideRequestEvent {
   String toString() => 'Request Created {user: $rideRequest}';
 }
 
-class RideRequestDelete extends RideRequestEvent {
+class RideRequestChangeStatus extends RideRequestEvent {
   final String id;
+  final bool sendRequest;
 
-  const RideRequestDelete(this.id);
+  const RideRequestChangeStatus(this.id, this.sendRequest);
 
   @override
-  List<Object> get props => [id];
+  List<Object> get props => [id, this.sendRequest];
 }

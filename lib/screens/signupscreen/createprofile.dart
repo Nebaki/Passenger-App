@@ -82,8 +82,6 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                     actions: [
                       TextButton(
                           onPressed: () {
-                            print("wellllllllllllllllllllllllllllllllllllllll");
-
                             Navigator.pop(con);
                             Navigator.pushNamed(context, HomeScreen.routeName,
                                 arguments:
@@ -138,14 +136,14 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
               const EdgeInsets.only(top: 80, right: 20, left: 20, bottom: 10),
           child: Form(
             key: _formKey,
-            child: Container(
+            child: SizedBox(
               height: MediaQuery.of(context).size.height,
               child: SingleChildScrollView(
                 scrollDirection: Axis.vertical,
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: Container(
-                    height: MediaQuery.of(context).size.height * 0.9,
+                  child: SizedBox(
+                    height: MediaQuery.of(context).size.height,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -162,14 +160,19 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                             _showModalNavigation();
                           },
                           child: CircleAvatar(
+                            backgroundColor: Colors.grey.shade300,
                             radius: 40,
                             child: _image == null
-                                ? Container()
+                                ? const Icon(
+                                    Icons.person,
+                                    size: 50,
+                                    color: Colors.black,
+                                  )
                                 : ClipRRect(
                                     borderRadius: BorderRadius.circular(100),
                                     child: Stack(
                                       children: [
-                                        Container(
+                                        SizedBox(
                                           child: Image.file(
                                             File(_image!.path),
                                             fit: BoxFit.cover,
@@ -178,11 +181,27 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                                           height: 300,
                                         ),
                                         Positioned(
-                                          top: 4.0,
-                                          right: 4.0,
-                                          child: IconButton(
-                                            icon: Icon(Icons.close),
-                                            onPressed: () {},
+                                          top: 6.0,
+                                          right: 6.0,
+                                          child: GestureDetector(
+                                            onTap: () {
+                                              setState(() {
+                                                _image = null;
+                                              });
+                                            },
+                                            child: Container(
+                                              padding: EdgeInsets.zero,
+                                              decoration: BoxDecoration(
+                                                  // color: Colors.white,
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          100)),
+                                              child: const Icon(
+                                                Icons.close,
+                                                color: Colors.white,
+                                                size: 25,
+                                              ),
+                                            ),
                                           ),
                                         )
                                       ],
@@ -193,201 +212,164 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                         const SizedBox(
                           height: 10,
                         ),
-                        Container(
-                          decoration: BoxDecoration(boxShadow: [
-                            BoxShadow(
-                                color: Colors.grey.shade300,
-                                blurRadius: 4,
-                                spreadRadius: 2,
-                                blurStyle: BlurStyle.normal)
-                          ]),
-                          child: TextFormField(
+                        TextFormField(
+                          decoration: const InputDecoration(
+                            hintText: "Full Name",
+                            hintStyle: TextStyle(
+                                fontWeight: FontWeight.w300,
+                                color: Colors.black45),
+                            prefixIcon: Icon(
+                              Icons.contacts_rounded,
+                              size: 19,
+                            ),
+                            // fillColor: Colors.white,
+                            // filled: true,
+                            // border: OutlineInputBorder(
+                            //     borderSide: BorderSide.none)
+                          ),
+                          validator: (value) {
+                            if (value!.isEmpty) {
+                              return 'Please enter Your Name';
+                            } else if (value.length > 25) {
+                              return 'Full name must not be longer than 25 charachters';
+                            } else if (value.length < 4) {
+                              return 'Full name must not be shorter than 4 charachters';
+                            } else if (value.split(" ").length == 1) {
+                              return ' Last Name required';
+                            }
+                            return null;
+                          },
+                          onSaved: (value) {
+                            //final val = value!.split("")[0];
+                            //print();
+                            _user["first_name"] = value!.split(" ")[0];
+                            _user["last_name"] = value.split(" ")[1];
+                          },
+                        ),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        TextFormField(
+                            controller: password,
                             decoration: const InputDecoration(
-                                hintText: "Full Name",
-                                hintStyle: TextStyle(
-                                    fontWeight: FontWeight.w300,
-                                    color: Colors.black45),
-                                prefixIcon: Icon(
-                                  Icons.phone,
-                                  size: 19,
-                                ),
-                                fillColor: Colors.white,
-                                filled: true,
-                                border: OutlineInputBorder(
-                                    borderSide: BorderSide.none)),
+                              hintText: "Password",
+                              hintStyle: TextStyle(
+                                  fontWeight: FontWeight.w300,
+                                  color: Colors.black45),
+                              prefixIcon: Icon(
+                                Icons.lock,
+                                size: 19,
+                              ),
+                            ),
                             validator: (value) {
                               if (value!.isEmpty) {
-                                return 'Please enter Your Name';
+                                return 'Please enter Your Password';
                               } else if (value.length > 25) {
                                 return 'Full name must not be longer than 25 charachters';
-                              } else if (value.length < 4) {
-                                return 'Full name must not be shorter than 4 charachters';
-                              } else if (value.split(" ").length == 1) {
-                                return ' Last Name required';
+                              } else if (value.length < 8) {
+                                return 'Full name must not be shorter than 8 charachters';
                               }
                               return null;
                             },
                             onSaved: (value) {
-                              //final val = value!.split("")[0];
-                              //print();
-                              _user["first_name"] = value!.split(" ")[0];
-                              _user["last_name"] = value.split(" ")[1];
-                            },
+                              _user["password"] = value;
+                            }),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        TextFormField(
+                          decoration: const InputDecoration(
+                            hintText: "Confirm Password",
+                            hintStyle: TextStyle(
+                                fontWeight: FontWeight.w300,
+                                color: Colors.black45),
+                            prefixIcon: Icon(
+                              Icons.confirmation_num,
+                              size: 19,
+                            ),
                           ),
+                          validator: (value) {
+                            if (value != password.text) {
+                              return 'Password must match';
+                            }
+                            return null;
+                          },
                         ),
                         const SizedBox(
                           height: 10,
                         ),
-                        Container(
-                          decoration: BoxDecoration(boxShadow: [
-                            BoxShadow(
-                                color: Colors.grey.shade300,
-                                blurRadius: 4,
-                                spreadRadius: 2,
-                                blurStyle: BlurStyle.normal)
-                          ]),
-                          child: TextFormField(
-                              controller: password,
-                              decoration: const InputDecoration(
-                                  hintText: "Password",
-                                  hintStyle: TextStyle(
-                                      fontWeight: FontWeight.w300,
-                                      color: Colors.black45),
-                                  prefixIcon: Icon(
-                                    Icons.phone,
-                                    size: 19,
-                                  ),
-                                  fillColor: Colors.white,
-                                  filled: true,
-                                  border: OutlineInputBorder(
-                                      borderSide: BorderSide.none)),
-                              validator: (value) {
-                                if (value!.isEmpty) {
-                                  return 'Please enter Your Name';
-                                } else if (value.length > 25) {
-                                  return 'Full name must not be longer than 25 charachters';
-                                } else if (value.length < 8) {
-                                  return 'Full name must not be shorter than 8 charachters';
-                                }
-                                return null;
-                              },
-                              onSaved: (value) {
-                                _user["password"] = value;
-                              }),
-                        ),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        Container(
-                          decoration: BoxDecoration(boxShadow: [
-                            BoxShadow(
-                                color: Colors.grey.shade300,
-                                blurRadius: 4,
-                                spreadRadius: 2,
-                                blurStyle: BlurStyle.normal)
-                          ]),
-                          child: TextFormField(
-                            decoration: const InputDecoration(
-                                hintText: "Confirm Password",
-                                hintStyle: TextStyle(
-                                    fontWeight: FontWeight.w300,
-                                    color: Colors.black45),
-                                fillColor: Colors.white,
-                                filled: true,
-                                border: OutlineInputBorder(
-                                    borderSide: BorderSide.none)),
-                            validator: (value) {
-                              if (value != password.text) {
-                                return 'Password must match';
-                              }
-                              return null;
-                            },
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        InternationalPhoneNumberInput(
-                          inputDecoration: const InputDecoration(
-                              hintText: "Phone Number",
+                        // InternationalPhoneNumberInput(
+                        //   inputDecoration: const InputDecoration(
+                        //       hintText: "Phone Number",
+                        //       hintStyle: TextStyle(
+                        //           fontWeight: FontWeight.w300,
+                        //           color: Colors.black45),
+                        //       fillColor: Colors.white,
+                        //       filled: true,
+                        //       border: OutlineInputBorder(
+                        //           borderSide: BorderSide.none)),
+                        //   onInputChanged: (val) {},
+                        //   hintText: "Emergency Contact number",
+                        //   onSaved: (value) {
+                        //     _user["emergency_contact"] = value;
+                        //   },
+                        //   selectorConfig: const SelectorConfig(
+                        //     selectorType: PhoneInputSelectorType.BOTTOM_SHEET,
+                        //   ),
+                        //   ignoreBlank: false,
+                        //   autoValidateMode: AutovalidateMode.onUserInteraction,
+                        //   selectorTextStyle:
+                        //       const TextStyle(color: Colors.black),
+                        //   initialValue: PhoneNumber(isoCode: "ET"),
+                        //   formatInput: false,
+                        //   keyboardType: const TextInputType.numberWithOptions(
+                        //       signed: true, decimal: true),
+                        // ),
+                        // const SizedBox(
+                        //   height: 10,
+                        // ),
+                        // Container(
+                        //   decoration: BoxDecoration(boxShadow: [
+                        //     BoxShadow(
+                        //         color: Colors.grey.shade300,
+                        //         blurRadius: 4,
+                        //         spreadRadius: 2,
+                        //         blurStyle: BlurStyle.normal)
+                        //   ]),
+                        //   child: TextFormField(
+                        //       decoration: const InputDecoration(
+                        //           hintText: "Email",
+                        //           hintStyle: TextStyle(
+                        //               fontWeight: FontWeight.w300,
+                        //               color: Colors.black45),
+                        //           fillColor: Colors.white,
+                        //           filled: true,
+                        //           border: OutlineInputBorder(
+                        //               borderSide: BorderSide.none)),
+                        //       validator: (value) {
+                        //         if (value!.isNotEmpty) {
+                        //           return EmailValidator.validate(value)
+                        //               ? null
+                        //               : "Please enter a valid email";
+                        //         }
+                        //       },
+                        //       onSaved: (value) {
+                        //         _user["email"] = value;
+                        //       }),
+                        // ),
+                        // const SizedBox(
+                        //   height: 10,
+                        // ),
+                        TextFormField(
+                          decoration: const InputDecoration(
+                              hintText: "Promo/Referal Code (Optional)",
                               hintStyle: TextStyle(
                                   fontWeight: FontWeight.w300,
                                   color: Colors.black45),
-                              fillColor: Colors.white,
-                              filled: true,
-                              border: OutlineInputBorder(
-                                  borderSide: BorderSide.none)),
-                          onInputChanged: (val) {},
-                          hintText: "Emergency Contact number",
-                          onSaved: (value) {
-                            _user["emergency_contact"] = value;
-                          },
-                          selectorConfig: const SelectorConfig(
-                            selectorType: PhoneInputSelectorType.BOTTOM_SHEET,
-                          ),
-                          ignoreBlank: false,
-                          autoValidateMode: AutovalidateMode.onUserInteraction,
-                          selectorTextStyle:
-                              const TextStyle(color: Colors.black),
-                          initialValue: PhoneNumber(isoCode: "ET"),
-                          formatInput: false,
-                          keyboardType: const TextInputType.numberWithOptions(
-                              signed: true, decimal: true),
-                        ),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        Container(
-                          decoration: BoxDecoration(boxShadow: [
-                            BoxShadow(
-                                color: Colors.grey.shade300,
-                                blurRadius: 4,
-                                spreadRadius: 2,
-                                blurStyle: BlurStyle.normal)
-                          ]),
-                          child: TextFormField(
-                              decoration: const InputDecoration(
-                                  hintText: "Email",
-                                  hintStyle: TextStyle(
-                                      fontWeight: FontWeight.w300,
-                                      color: Colors.black45),
-                                  fillColor: Colors.white,
-                                  filled: true,
-                                  border: OutlineInputBorder(
-                                      borderSide: BorderSide.none)),
-                              validator: (value) {
-                                if (value!.isNotEmpty) {
-                                  return EmailValidator.validate(value)
-                                      ? null
-                                      : "Please enter a valid email";
-                                }
-                              },
-                              onSaved: (value) {
-                                _user["email"] = value;
-                              }),
-                        ),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        Container(
-                          decoration: BoxDecoration(boxShadow: [
-                            BoxShadow(
-                                color: Colors.grey.shade300,
-                                blurRadius: 4,
-                                spreadRadius: 2,
-                                blurStyle: BlurStyle.normal)
-                          ]),
-                          child: TextFormField(
-                            decoration: const InputDecoration(
-                                hintText: "Promo/Referal Code",
-                                hintStyle: TextStyle(
-                                    fontWeight: FontWeight.w300,
-                                    color: Colors.black45),
-                                fillColor: Colors.white,
-                                filled: true,
-                                border: OutlineInputBorder(
-                                    borderSide: BorderSide.none)),
-                          ),
+                              prefixIcon: Icon(
+                                Icons.gif,
+                                size: 19,
+                              )),
                         ),
                         const Padding(
                           padding: EdgeInsets.symmetric(vertical: 10),
@@ -434,7 +416,8 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                                                 width: 20,
                                                 child:
                                                     CircularProgressIndicator(
-                                                  color: Colors.white,
+                                                  strokeWidth: 1,
+                                                  color: Colors.black,
                                                 ),
                                               )
                                             : Container(),

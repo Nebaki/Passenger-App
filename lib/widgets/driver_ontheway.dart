@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:passengerapp/bloc/bloc.dart';
 import 'package:passengerapp/helper/constants.dart';
 import 'package:passengerapp/helper/url_launcher.dart';
+import 'package:passengerapp/rout.dart';
+import 'package:passengerapp/screens/screens.dart';
 import 'package:passengerapp/widgets/canceltrip.dart';
 import 'package:passengerapp/widgets/widgets.dart';
 
@@ -28,7 +30,7 @@ class _DriverOnTheWayState extends State<DriverOnTheWay> {
       child: Column(
         children: [
           Container(
-              height: 250,
+              height: 280,
               padding: EdgeInsets.only(top: 10, left: 20, right: 20, bottom: 0),
               decoration: BoxDecoration(
                   color: const Color.fromRGBO(240, 241, 241, 1),
@@ -45,7 +47,7 @@ class _DriverOnTheWayState extends State<DriverOnTheWay> {
                   ),
                   Divider(),
 
-                  DirectionDetail(),
+                  DirectionDetail(priceMultiplier: 1, durationMultiplier: 1),
                   // Row(
                   //   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   //   children: [
@@ -105,7 +107,12 @@ class _DriverOnTheWayState extends State<DriverOnTheWay> {
                         width: MediaQuery.of(context).size.width,
                         child: ElevatedButton(
                             onPressed: () {
-                              widget.callback!(CancelTrip(widget.callback));
+                              Navigator.pushNamed(
+                                  context, CancelReason.routeName,
+                                  arguments:
+                                      CancelReasonArgument(sendRequest: true));
+                              // widget.callback!(CancelTrip(widget.callback,
+                              //     DriverOnTheWay(widget.callback)));
                             },
                             child: const Text("Cancel"))),
                   ),

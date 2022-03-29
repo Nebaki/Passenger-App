@@ -1,8 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:passengerapp/bloc/bloc.dart';
+import 'package:passengerapp/helper/constants.dart';
 
 class DirectionDetail extends StatefulWidget {
+  final double priceMultiplier;
+  final double durationMultiplier;
+
+  const DirectionDetail(
+      {Key? key,
+      required this.priceMultiplier,
+      required this.durationMultiplier})
+      : super(key: key);
   @override
   _DirectionDetailState createState() => _DirectionDetailState();
 }
@@ -21,6 +30,15 @@ class _DirectionDetailState extends State<DirectionDetail> {
           double totalFareAmount = timeTraveledFare + distanceTraveldFare;
 
           double localFareAmount = totalFareAmount * 1;
+          price =
+              (localFareAmount * widget.priceMultiplier).truncate().toString();
+          distance =
+              (state.direction.distanceValue / 1000).truncate().toString();
+          duration =
+              ((state.direction.durationValue / 60) * widget.durationMultiplier)
+                  .truncate()
+                  .toString();
+
           return Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
@@ -32,7 +50,8 @@ class _DirectionDetailState extends State<DirectionDetail> {
                       style: _greyTextStyle,
                       children: [
                         TextSpan(
-                            text: "\$ ${localFareAmount.truncate()}",
+                            text:
+                                "\$ ${(localFareAmount * widget.priceMultiplier).truncate()}",
                             style: _blackTextStyle)
                       ])),
                   SizedBox(
@@ -68,7 +87,7 @@ class _DirectionDetailState extends State<DirectionDetail> {
                       children: [
                         TextSpan(
                             text:
-                                "${(state.direction.durationValue / 60).truncate()} min",
+                                "${((state.direction.durationValue / 60) * widget.durationMultiplier).truncate()} min",
                             style: _blackTextStyle)
                       ]))
                 ],

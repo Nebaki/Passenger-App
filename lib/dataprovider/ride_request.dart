@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:http/http.dart' as http;
 import 'package:passengerapp/dataprovider/auth/auth.dart';
+import 'package:passengerapp/helper/constants.dart';
 import 'package:passengerapp/models/models.dart';
 
 class RideRequestDataProvider {
@@ -43,6 +44,7 @@ class RideRequestDataProvider {
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
+      rideRequestId = data["rideRequest"]["id"];
 
       sendNotification(request, data["rideRequest"]["id"]);
       print('my data is this bruhhh $data');
@@ -52,7 +54,7 @@ class RideRequestDataProvider {
     }
   }
 
-  Future<void> deleteRequest(String id) async {
+  Future<void> cancelRequest(String id) async {
     final http.Response response = await httpClient.delete(
         Uri.parse('$_baseUrl/delete-request/$id'),
         headers: <String, String>{
@@ -65,11 +67,31 @@ class RideRequestDataProvider {
     }
   }
 
+  Future sendCanceledNotification(String fcmToken) async {
+    final response = await http.post(
+      Uri.parse(_fcmUrl),
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+        'Authorization': 'key=$token'
+      },
+      body: json.encode({
+        "data": {'response': 'Cancelled'},
+        "android": {"priority": "high"},
+        "to": fcmToken,
+        "notification": {
+          "title": "RideRequest Cancelled",
+          "body": "The rider has cancceled the request"
+        }
+      }),
+    );
+  }
+
   Future sendNotification(RideRequest request, String requestId) async {
     final fcmtoken = await FirebaseMessaging.instance.getToken();
 
     print("Sending notification");
     print(fcmtoken);
+    print(request.driverFcm);
     print(requestId);
     final response = await http.post(
       Uri.parse(_fcmUrl),
@@ -79,27 +101,32 @@ class RideRequestDataProvider {
       },
       body: json.encode({
         "data": {
-          "pickupAddress": "request.pickupAddress",
+          "response": "Cancelled",
+          "requestId": "623b41d4e39d607d2271a079",
+          "passengerFcm": fcmtoken,
           "pickupLocation": [
             request.pickupLocation!.latitude,
             request.pickupLocation!.longitude
           ],
-          "dropOffAddress": "request.dropOffAddress",
-          "droppoffLocation": [
+          "droppOffLocation": [
             request.dropOffLocation!.latitude,
             request.dropOffLocation!.longitude
           ],
-          "passengerName": request.passengerName,
-          "requestId": requestId,
-          "passengerFcm": fcmtoken
+          "passengerName": name,
+          "pickupAddress": pickupAddress,
+          "droppOffAddress": droppOffAddress,
+          "passengerPhoneNumber": number,
+          "price": price,
+          "duration": duration,
+          "distance": distance,
+          "profilePictureUrl": "someurl"
         },
+        "android": {"priority": "high"},
         "to": request.driverFcm,
-        //request.driverToken,
-        // "dIZJlO16S6aIiFoGPAg9qf:APA91bHjrxQ0I5vRqyrBFHqbYBM90rYZfmb2llmtA6q8Ps6LmIS9WwoO3ENnBGUDaax7l1eTpzh71RK9YS4fyDdPdowyalVhZXbjWxq337ZEtDvOSGihA5pyuTJeS0dqQl0I9H5MfnFp",
         "notification": {
-          "title": "New-Ride Request",
+          "title": "New RideRequest",
           "body":
-              "You have new ride request. tap on the notification to accept or cancel the request"
+              "You have new ride request open it by tapping the nottification."
         }
       }),
     );
@@ -117,4 +144,54 @@ class RideRequestDataProvider {
       throw Exception('Failed to send notification.');
     }
   }
+
+  Future<void> changeRequestStatus(String status, bool sendRequest) async {
+    print("we Are hereeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee!!!!!!!!!!!!!!");
+    print(rideRequestId);
+
+    final response = await http.post(
+        Uri.parse('$_baseUrl/set-ride-request-status/$rideRequestId'),
+        headers: <String, String>{
+          'Content-Type': 'application/json',
+          "x-access-token": '${await authDataProvider.getToken()}'
+        },
+        body: json.encode({'status': status}));
+
+    print("this is the status code: ${response.statusCode}");
+    if (response.statusCode == 200) {
+      if (sendRequest) {
+        sendCanceledNotification("fcmToken");
+      }
+    } else {
+      throw Exception('Failed to respond to the request.');
+    }
+  }
 }
+
+
+//  {
+//         "data": {
+//           "pickupAddress": "request.pickupAddress",
+//           "pickupLocation": [
+//             request.pickupLocation!.latitude,
+//             request.pickupLocation!.longitude
+//           ],
+//           "dropOffAddress": "request.dropOffAddress",
+//           "droppoffLocation": [
+//             request.dropOffLocation!.latitude,
+//             request.dropOffLocation!.longitude
+//           ],
+//           "passengerName": request.passengerName,
+//           "requestId": requestId,
+//           "passengerFcm": fcmtoken
+//         },
+//         "android": {"priority": "high"},
+//         "to": request.driverFcm,
+//         //request.driverToken,
+//         // "dIZJlO16S6aIiFoGPAg9qf:APA91bHjrxQ0I5vRqyrBFHqbYBM90rYZfmb2llmtA6q8Ps6LmIS9WwoO3ENnBGUDaax7l1eTpzh71RK9YS4fyDdPdowyalVhZXbjWxq337ZEtDvOSGihA5pyuTJeS0dqQl0I9H5MfnFp",
+//         "notification": {
+//           "title": "New-Ride Request",
+//           "body":
+//               "You have new ride request. tap on the notification to accept or cancel the request"
+//         }
+//       }
