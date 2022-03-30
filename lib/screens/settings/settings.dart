@@ -10,18 +10,12 @@ import 'package:passengerapp/screens/settings/pages/feedbacks.dart';
 import 'package:passengerapp/screens/settings/pages/privacy.dart';
 import 'package:passengerapp/screens/settings/pages/terms.dart';
 
-import '../faker/faker.dart';
-
 class SettingScreen extends StatelessWidget {
   static const routeName = "/settings";
 
   final _textStyle =
   const TextStyle(
       height: 2.0, color: Colors.black, fontWeight: FontWeight.bold);
-
-  void startFaker(BuildContext context) {
-    Navigator.pushNamed(context, Faker.routeName);
-  }
 
   void openFeedBack(BuildContext context) {
     Navigator.pushNamed(context, FeedbackScreen.routeName);
@@ -67,15 +61,6 @@ class SettingScreen extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      /*TextButton(
-                      onPressed: (){
-                        startFaker(context);
-                      },
-                      child: const Padding(
-                          padding: EdgeInsets.all(5.0),
-                          child: Text("Faker")
-                      ),
-                    ),*/
                       Padding(
                         padding: const EdgeInsets.only(top: 8, left: 5),
                         child: Text(
