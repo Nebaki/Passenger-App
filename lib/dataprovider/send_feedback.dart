@@ -5,13 +5,13 @@ import 'package:passengerapp/dataprovider/dataproviders.dart';
 import 'package:passengerapp/models/models.dart';
 import 'package:passengerapp/models/trips/models.dart';
 
+import 'header/header.dart';
+
 
 class SendFeedback {
   AuthDataProvider dp = AuthDataProvider(httpClient: http.Client());
-  final _baseUrl = 'https://safeway-api.herokuapp.com/api/feedbacks';
+  final _baseUrl = RequestHeader.baseURL+'feedbacks';
   final http.Client httpClient;
-  AuthDataProvider authDataProvider =
-  AuthDataProvider(httpClient: http.Client());
   final secure_storage = const FlutterSecureStorage();
   SendFeedback({required this.httpClient});
   Future<String> sendFeedback(message,description) async {
@@ -19,10 +19,7 @@ class SendFeedback {
     print("$message : $description : $user_phone");
     final http.Response response = await httpClient.post(
         Uri.parse('$_baseUrl/create-feedback'),
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-          "x-access-token": "${await authDataProvider.getToken()}"
-        },
+        headers: await RequestHeader().authorisedHeader(),
         body: json.encode({
           "phone_number": user_phone.toString(),
           "name": "message",
