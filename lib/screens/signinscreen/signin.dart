@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
@@ -20,6 +21,8 @@ class _SigninScreenState extends State<SigninScreen> {
   String password = "1111";
   late String phoneNumber;
   late String pass;
+  final Connectivity _connectivity = Connectivity();
+  late ConnectivityResult result;
 
   final Map<String, dynamic> _auth = {};
 
@@ -51,8 +54,17 @@ class _SigninScreenState extends State<SigninScreen> {
         }));
   }
 
-  void signIn() {
+  void signIn() async {
+    result = await _connectivity.checkConnectivity();
+    if (result == ConnectivityResult.none) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: const Text("No Internet Connection"),
+        backgroundColor: Colors.red.shade900,
+      ));
+      return;
+    }
     _isLoading = true;
+
     AuthEvent event = AuthLogin(
         Auth(phoneNumber: _auth["phoneNumber"], password: _auth["password"]));
 
@@ -119,13 +131,15 @@ class _SigninScreenState extends State<SigninScreen> {
                   Padding(
                     padding: const EdgeInsets.all(10),
                     child: Container(
-                      decoration: BoxDecoration(boxShadow: [
-                        BoxShadow(
-                            color: Colors.grey.shade300,
-                            blurRadius: 4,
-                            spreadRadius: 2,
-                            blurStyle: BlurStyle.normal)
-                      ]),
+                      decoration: BoxDecoration(
+                          // boxShadow: [
+                          // BoxShadow(
+                          //     color: Colors.grey.shade300,
+                          //     blurRadius: 4,
+                          //     spreadRadius: 2,
+                          //     blurStyle: BlurStyle.normal)
+                          // ]
+                          ),
                       child: TextFormField(
                         decoration: const InputDecoration(
                             alignLabelWithHint: true,

@@ -22,7 +22,9 @@ class Service extends StatefulWidget {
 }
 
 class _ServiceState extends State<Service> {
-  int _isSelected = 0;
+  double priceMultiplier = 1;
+  double durationMultiplier = 1;
+  int _isSelected = 1;
   bool _isLoading = false;
   late LatLng currentLatlng;
 
@@ -75,6 +77,8 @@ class _ServiceState extends State<Service> {
   }
 
   Widget serviceTypeWidget() {
+    DriverEvent event = DriverLoad(widget.searchNeabyDriver());
+    BlocProvider.of<DriverBloc>(context).add(event);
     return Positioned(
       bottom: 0.0,
       left: 8.0,
@@ -99,9 +103,6 @@ class _ServiceState extends State<Service> {
                     onTap: () {
                       setState(() {
                         _isSelected = 1;
-                        DriverEvent event =
-                            DriverLoad(widget.searchNeabyDriver());
-                        BlocProvider.of<DriverBloc>(context).add(event);
                       });
                     },
                     child: Column(
@@ -137,6 +138,8 @@ class _ServiceState extends State<Service> {
                     onTap: () {
                       setState(() {
                         _isSelected = 2;
+                        priceMultiplier = 2;
+                        durationMultiplier = 2;
                         DriverEvent event =
                             DriverLoad(widget.searchNeabyDriver());
                         BlocProvider.of<DriverBloc>(context).add(event);
@@ -175,6 +178,8 @@ class _ServiceState extends State<Service> {
                     onTap: () {
                       setState(() {
                         _isSelected = 3;
+                        priceMultiplier = 2.5;
+                        durationMultiplier = 2.5;
                         DriverEvent event =
                             DriverLoad(widget.searchNeabyDriver());
                         BlocProvider.of<DriverBloc>(context).add(event);
@@ -209,10 +214,12 @@ class _ServiceState extends State<Service> {
                 ],
               ),
               const Divider(),
-              SizedBox(
+              const SizedBox(
                 height: 10,
               ),
-              DirectionDetail(),
+              DirectionDetail(
+                  priceMultiplier: priceMultiplier,
+                  durationMultiplier: durationMultiplier),
               const SizedBox(
                 height: 15,
               ),

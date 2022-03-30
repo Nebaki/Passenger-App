@@ -10,7 +10,7 @@ class RideRequestRepository {
     return await dataProvider.createRequest(request);
   }
 
-  Future deleteRequest(String id) async {
-    return await dataProvider.deleteRequest(id);
+  Future changeRequestStatus(String id, bool sendRequest) async {
+    return await dataProvider.changeRequestStatus(id, sendRequest);
   }
 }

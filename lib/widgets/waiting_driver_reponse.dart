@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:passengerapp/rout.dart';
+import 'package:passengerapp/screens/screens.dart';
+import 'package:passengerapp/widgets/canceltrip.dart';
+import 'package:passengerapp/widgets/widgets.dart';
 
 class WaitingDriverResponse extends StatelessWidget {
   Function? callback;
@@ -27,13 +31,36 @@ class WaitingDriverResponse extends StatelessWidget {
                     topRight: Radius.circular(20))),
             child: Column(
               children: [
-                const Center(
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(vertical: 20),
-                    child: Text(
-                      "Waiting for driver's response",
-                      style: TextStyle(fontSize: 20),
-                    ),
+                Center(
+                  child: Stack(
+                    children: [
+                      const Align(
+                        alignment: Alignment.center,
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(vertical: 20),
+                          child: Text(
+                            "Looking for nearby providers...",
+                            style: TextStyle(fontSize: 20),
+                          ),
+                        ),
+                      ),
+                      Align(
+                          alignment: Alignment.centerRight,
+                          child: TextButton(
+                              onPressed: () {
+                                Navigator.pushNamed(
+                                    context, CancelReason.routeName,
+                                    arguments: CancelReasonArgument(
+                                        sendRequest: false));
+
+                                // callback!(CancelTrip(
+                                //     callback, WaitingDriverResponse(callback)));
+                              },
+                              child: Text(
+                                "Cancel",
+                                style: Theme.of(context).textTheme.titleLarge,
+                              )))
+                    ],
                   ),
                 ),
                 const LinearProgressIndicator(
@@ -41,11 +68,11 @@ class WaitingDriverResponse extends StatelessWidget {
                 ),
                 Container(
                   height: 90,
-                  padding: const EdgeInsets.only(left: 20, top: 15, bottom: 15),
+                  // padding: const EdgeInsets.only(left: 20, top: 15, bottom: 15),
                   width: MediaQuery.of(context).size.width,
                   color: Colors.black26.withOpacity(0.05),
                   child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    mainAxisAlignment: MainAxisAlignment.end,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [],
                   ),

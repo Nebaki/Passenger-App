@@ -38,7 +38,7 @@ class NavDrawer extends StatelessWidget {
                       children: [
                         CircleAvatar(
                             radius: 40,
-                            backgroundColor: Colors.grey.shade800,
+                            backgroundColor: Colors.grey.shade300,
                             child: ClipRRect(
                               borderRadius: BorderRadius.circular(100),
                               child: CachedNetworkImage(
@@ -60,7 +60,11 @@ class NavDrawer extends StatelessWidget {
                                   placeholder: (context, url) =>
                                       const CircularProgressIndicator(),
                                   errorWidget: (context, url, error) {
-                                    return const Icon(Icons.error);
+                                    return const Icon(
+                                      Icons.person,
+                                      color: Colors.black,
+                                      size: 50,
+                                    );
                                   }),
                             )),
                         const SizedBox(

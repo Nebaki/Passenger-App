@@ -6,6 +6,10 @@ class NearbyDriverRepository {
     return NearbyDriversData.getList();
   }
 
+  List getIdList() {
+    return NearbyDriversData.getlistId();
+  }
+
   void addDriver(NearbyDriver driver) {
     NearbyDriversData.addDriver(driver);
   }

@@ -164,11 +164,11 @@ class _MobileVerificationState extends State<MobileVerification> {
                                     builder: (BuildContext context) =>
                                         AlertDialog(
                                           title: const Text("Confirm"),
-                                          content: const Text.rich(TextSpan(
+                                          content: Text.rich(TextSpan(
                                               text:
                                                   "We will send a verivication code to ",
                                               children: [
-                                                TextSpan(text: "+251934540217")
+                                                TextSpan(text: phoneController)
                                               ])),
                                           actions: [
                                             TextButton(

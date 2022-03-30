@@ -21,13 +21,14 @@ class CustomSplashScreen extends StatefulWidget {
 }
 
 class _CustomSplashScreenState extends State<CustomSplashScreen> {
-  ConnectivityResult _connectionStatus = ConnectivityResult.none;
+  ConnectivityResult? _connectionStatus;
   final Connectivity _connectivity = Connectivity();
   late StreamSubscription<ConnectivityResult> _connectivitySubscription;
 
   @override
   void initState() {
     super.initState();
+    requestLocationPermission();
     initConnectivity();
 
     _connectivitySubscription =
@@ -43,7 +44,6 @@ class _CustomSplashScreenState extends State<CustomSplashScreen> {
   // Platform messages are asynchronous, so we initialize in an async method.
   Future<void> initConnectivity() async {
     late ConnectivityResult result;
-    // Platform messages may fail, so we use a try/catch PlatformException.
     try {
       result = await _connectivity.checkConnectivity();
     } on PlatformException catch (e) {
@@ -116,60 +116,123 @@ class _CustomSplashScreenState extends State<CustomSplashScreen> {
     // });
 
     return Scaffold(
-        backgroundColor: Colors.red,
-        body: _connectionStatus == ConnectivityResult.none
-            ? const Center(
-                child: Image(
-                  height: 150,
-                  image: AssetImage("assets/icons/logo.png"),
-                ),
-              )
-            // ScaffoldMessenger.of(context).showSnackBar(_snackBar);
-            : BlocConsumer<AuthBloc, AuthState>(builder: (_, state) {
-                // if (state is AuthDataLoading) {
-                //   print("Loadloadloadloadloadload");
-                //   return const Align(
-                //     alignment: Alignment.bottomCenter,
-                //     child: LinearProgressIndicator(),
-                //   );
-                // }
-                return const Center(
-                  child: Image(
-                    height: 150,
-                    image: AssetImage("assets/icons/logo.png"),
-                  ),
-                );
-              }, listener: (_, state) {
-                if (state is AuthDataLoading) {
-                  const Align(
-                    alignment: Alignment.bottomCenter,
-                    child: LinearProgressIndicator(),
-                  );
-                }
-                if (state is AuthDataLoadSuccess) {
-                  if (_connectionStatus == ConnectivityResult.none) {
-                    ScaffoldMessenger.of(context).showSnackBar(_snackBar);
-                  } else if (_connectionStatus == ConnectivityResult.wifi ||
-                      _connectionStatus == ConnectivityResult.mobile) {
-                    requestLocationPermission();
+      backgroundColor: Colors.red,
+      body: Stack(
+        children: [
+          const Align(
+            alignment: Alignment.center,
+            child: Center(
+              child: Image(
+                height: 150,
+                image: AssetImage("assets/icons/logo.png"),
+              ),
+            ),
+          ),
+          _connectionStatus == ConnectivityResult.none
+              ? Stack(
+                  children: [
+                    Align(
+                      alignment: Alignment.topCenter,
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 20),
+                        child: Container(
+                          height: 20,
+                          width: MediaQuery.of(context).size.width,
+                          color: Colors.black,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: const [
+                              Icon(
+                                Icons.signal_wifi_connected_no_internet_4,
+                                size: 13,
+                              ),
+                              SizedBox(
+                                width: 5,
+                              ),
+                              Text(
+                                "No Internet Connection",
+                                style: TextStyle(
+                                    fontSize: 13,
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w300),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    const Align(
+                      alignment: Alignment.bottomCenter,
+                      child: Padding(
+                        padding: EdgeInsets.only(bottom: 15),
+                        child: Align(
+                          alignment: Alignment.bottomCenter,
+                          child: LinearProgressIndicator(
+                            minHeight: 1,
+                            color: Colors.black,
+                            backgroundColor: Colors.red,
+                          ),
+                        ),
+                      ),
+                    )
+                  ],
+                )
+              : _connectionStatus == null
+                  ? Container()
+                  : BlocConsumer<AuthBloc, AuthState>(builder: (_, state) {
+                      // if (state is AuthDataLoading) {
+                      //   print("Loadloadloadloadloadload");
+                      //   return const Align(
+                      //     alignment: Alignment.bottomCenter,
+                      //     child: LinearProgressIndicator(),
+                      //   );
+                      // }
+                      return const Center(
+                        child: Image(
+                          height: 150,
+                          image: AssetImage("assets/icons/logo.png"),
+                        ),
+                      );
+                    }, listener: (_, state) {
+                      if (state is AuthDataLoading) {
+                        const Align(
+                          alignment: Alignment.bottomCenter,
+                          child: LinearProgressIndicator(),
+                        );
+                      }
+                      if (state is AuthDataLoadSuccess) {
+                        print(state.auth.token);
+                        if (state.auth.token != null) {
+                          name = state.auth.name!;
+                          number = state.auth.phoneNumber;
+                        }
 
-                    print(state.auth.token);
-                    if (state.auth.token != null) {
-                      name = state.auth.name!;
-                      number = state.auth.phoneNumber;
-                    }
+                        state.auth.token != null
+                            ? Navigator.pushReplacementNamed(
+                                context, HomeScreen.routeName,
+                                arguments:
+                                    HomeScreenArgument(isSelected: false))
+                            : Navigator.pushReplacementNamed(
+                                context, SigninScreen.routeName);
 
-                    state.auth.token != null
-                        ? Navigator.pushReplacementNamed(
-                            context, HomeScreen.routeName,
-                            arguments: HomeScreenArgument(isSelected: false))
-                        : Navigator.pushReplacementNamed(
-                            context, SigninScreen.routeName);
+                        //0967543215
 
-                    //0967543215
-                  }
-                }
-                if (state is AuthOperationFailure) {}
-              }));
+                      }
+                    })
+        ],
+      ),
+    );
   }
 }
+
+
+
+//  _connectionStatus == ConnectivityResult.none
+//             ? const Center(
+//                 child: Image(
+//                   height: 150,
+//                   image: AssetImage("assets/icons/logo.png"),
+//                 ),
+//               )
+//             // ScaffoldMessenger.of(context).showSnackBar(_snackBar);
+//             : 
