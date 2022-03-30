@@ -130,9 +130,7 @@ class DriverProfile extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            state.driver.firstName +
-                                " " +
-                                state.driver.lastName,
+                            state.driver.firstName,
                             style: TextStyle(
                                 fontSize: 20, fontWeight: FontWeight.w300),
                           ),
@@ -151,8 +149,34 @@ class DriverProfile extends StatelessWidget {
                       ),
                     ],
                   ),
-                  Image(height: 50, image: AssetImage(assetImage))
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Image(height: 50, image: AssetImage(assetImage)),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Spacer(),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: const [
+                              Text("Car Model: V8"),
+                              Text("Plate Number: 34567")
+                            ],
+                          ),
+                          SizedBox(
+                            width: 15,
+                          ),
+                          Text('Color: Silver'),
+                        ],
+                      )
+                    ],
+                  ),
                 ],
+              ),
+              SizedBox(
+                height: 10,
               ),
             ],
           ),

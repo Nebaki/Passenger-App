@@ -1,3 +1,4 @@
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_animarker/widgets/animarker.dart';
@@ -10,6 +11,7 @@ import 'package:passengerapp/bloc/bloc.dart';
 import 'package:passengerapp/bloc/driver/driver_bloc.dart';
 import 'package:passengerapp/drawer/drawer.dart';
 import 'package:passengerapp/helper/constants.dart';
+import 'package:passengerapp/helper/url_launcher.dart';
 import 'package:passengerapp/models/nearby_driver.dart';
 import 'package:passengerapp/notification/push_notification_service.dart';
 import 'package:passengerapp/repository/nearby_driver.dart';
@@ -56,10 +58,39 @@ class _HomeScreenState extends State<HomeScreen> {
   late LatLng dtn;
   PushNotificationService pushNotificationService = PushNotificationService();
 
+  final GeolocatorPlatform _geolocatorPlatform = GeolocatorPlatform.instance;
+  StreamSubscription<ServiceStatus>? _serviceStatusStreamSubscription;
+  late StreamSubscription<ConnectivityResult> _connectivitySubscription;
+  ConnectivityResult _connectionStatus = ConnectivityResult.bluetooth;
+  final Connectivity _connectivity = Connectivity();
+
+  bool? isLocationOn;
+  bool isModal = false;
+  bool isConModal = false;
+
   static const CameraPosition _addissAbaba = CameraPosition(
     target: LatLng(8.9806, 38.7578),
     zoom: 16.4746,
   );
+
+  Future<void> initConnectivity() async {
+    late ConnectivityResult result;
+    try {
+      result = await _connectivity.checkConnectivity();
+    } on PlatformException catch (e) {
+      return;
+    }
+    if (!mounted) {
+      return Future.value(null);
+    }
+    return _updateConnectionStatus(result);
+  }
+
+  Future<void> _updateConnectionStatus(ConnectivityResult result) async {
+    setState(() {
+      _connectionStatus = result;
+    });
+  }
 
   Future<Position> _determinePosition() async {
     bool serviceEnabled;
@@ -93,8 +124,12 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   @override
-  // ignore: must_call_super
   void initState() {
+    super.initState();
+    initConnectivity();
+    _connectivitySubscription =
+        _connectivity.onConnectivityChanged.listen(_updateConnectionStatus);
+    _toggleServiceStatusStream();
     pushNotificationService.initialize(context, callback, searchNearbyDriver);
     pushNotificationService.seubscribeTopic();
     widget.args.isSelected
@@ -105,6 +140,18 @@ class _HomeScreenState extends State<HomeScreen> {
             setIsSelected: setIsSelected,
             callback: callback,
             service: Service(callback, searchNearbyDriver));
+    Geolocator.getCurrentPosition().then((value) {
+      geofireListener(value.latitude, value.longitude);
+      Geofire.stopListener();
+      geofireListener(value.latitude, value.longitude);
+    });
+  }
+
+  @override
+  void dispose() {
+    _serviceStatusStreamSubscription!.cancel();
+    _connectivitySubscription.cancel();
+    super.dispose();
   }
 
   void setIsSelected(LatLng destination) {
@@ -129,6 +176,147 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    if (isLocationOn != null) {
+      if (isLocationOn! && isModal) {
+        setState(() {
+          isModal = false;
+        });
+
+        Navigator.pop(context);
+      }
+    }
+    if (isLocationOn != null) {
+      if (isLocationOn == false && isModal == false) {
+        WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
+          setState(() {
+            isModal = true;
+          });
+          showModalBottomSheet(
+              enableDrag: false,
+              isDismissible: false,
+              context: context,
+              shape: const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(10),
+                      topRight: Radius.circular(10))),
+              builder: (BuildContext ctx) {
+                return WillPopScope(
+                  onWillPop: () async => false,
+                  child: Container(
+                    height: MediaQuery.of(context).size.height * 0.4,
+                    padding: const EdgeInsets.fromLTRB(30, 30, 20, 20),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: Text("Location Services are off",
+                              style: Theme.of(context).textTheme.headline5),
+                        ),
+                        Expanded(
+                            child: Text(
+                                "Please enable Location Service to allow us finding your location.",
+                                style: Theme.of(context).textTheme.bodyText2)),
+                        Expanded(
+                            child: Text(
+                                "For better accuracy,please turn on both GPS and WIFI location services",
+                                style: Theme.of(context).textTheme.bodyText2)),
+                        Expanded(
+                            child: SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton(
+                              onPressed: () async {
+                                await Geolocator.openLocationSettings();
+                              },
+                              child: Text("Go to Location Services")),
+                        )),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        Expanded(
+                            child: SizedBox(
+                          width: double.infinity,
+                          child: TextButton(
+                              onPressed: () async {
+                                SystemNavigator.pop();
+                              },
+                              child: Text("Close App")),
+                        ))
+                      ],
+                    ),
+                  ),
+                );
+              });
+        });
+      }
+    }
+
+    if (_connectionStatus == ConnectivityResult.wifi && isConModal == true ||
+        _connectionStatus == ConnectivityResult.mobile && isConModal == true) {
+      // setState(() {
+      isConModal = false;
+      // });
+      Navigator.pop(context);
+    }
+
+    if (_connectionStatus == ConnectivityResult.none && isConModal == false) {
+      WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
+        // setState(() {
+        isConModal = true;
+        // });
+        showModalBottomSheet(
+            enableDrag: false,
+            isDismissible: false,
+            context: context,
+            builder: (BuildContext context) {
+              return WillPopScope(
+                onWillPop: () async => false,
+                child: Container(
+                  height: MediaQuery.of(context).size.height * 0.4,
+                  padding: const EdgeInsets.fromLTRB(30, 30, 20, 20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        child: Text("No Internet Connection",
+                            style: Theme.of(context).textTheme.headline5),
+                      ),
+                      Expanded(
+                          child: Text(
+                              "Please enable WIFI or Mobile Data to allow us finding your location.",
+                              style: Theme.of(context).textTheme.bodyText2)),
+                      Expanded(
+                          child: Text(
+                              "For better accuracy,please turn on both GPS and WIFI location services",
+                              style: Theme.of(context).textTheme.bodyText2)),
+                      Expanded(
+                          child: SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                            onPressed: () async {
+                              await Geolocator.openAppSettings();
+                            },
+                            child: Text("Go to Settings")),
+                      )),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Expanded(
+                          child: SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                            onPressed: () async {
+                              SystemNavigator.pop();
+                            },
+                            child: Text("Close App")),
+                      ))
+                    ],
+                  ),
+                ),
+              );
+            });
+      });
+    }
+
     return Scaffold(
       key: _scaffoldKey,
       drawer: NavDrawer(),
@@ -139,11 +327,11 @@ class _HomeScreenState extends State<HomeScreen> {
               mapId: _controller.future.then((value) => value.mapId),
               curve: Curves.ease,
               // markers: Set<Marker>.of(markers.values),
-              shouldAnimateCamera: false,
+              shouldAnimateCamera: true,
               child: GoogleMap(
-                // scrollGesturesEnabled: false,
-                // zoomGesturesEnabled: false,
-                // rotateGesturesEnabled: false,
+                scrollGesturesEnabled: false,
+                zoomGesturesEnabled: false,
+                rotateGesturesEnabled: false,
                 mapType: MapType.normal,
                 myLocationButtonEnabled: false,
                 initialCameraPosition: _addissAbaba,
@@ -153,34 +341,24 @@ class _HomeScreenState extends State<HomeScreen> {
                 onMapCreated: (GoogleMapController controller) {
                   _controller.complete(controller);
                   outerController = controller;
-                  controller.setMapStyle(mapStyle);
+                  // controller.setMapStyle(mapStyle);
                   _determinePosition().then((value) {
                     pickupLatLng = LatLng(value.latitude, value.longitude);
 
                     currentLatLng = LatLng(value.latitude, value.longitude);
-                    geofireListener(value.latitude, value.longitude);
 
-                    WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
-                      geofireListener(value.latitude, value.longitude);
-                    });
                     controller.animateCamera(CameraUpdate.newCameraPosition(
                         CameraPosition(
                             zoom: 16.1746,
                             target: LatLng(currentLatLng.latitude,
                                 currentLatLng.longitude))));
                   });
-
-                  // geofireListener(
-                  //     currentLatLng.latitude, currentLatLng.longitude);
-
-                  WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
-                    geofireListener(
-                        currentLatLng.latitude, currentLatLng.longitude);
-                  });
                 },
               ),
             );
           }, listener: (_, state) {
+            print("Yow we are around here");
+
             if (state is DirectionLoadSuccess) {
               markers.clear();
               setState(() {
@@ -218,14 +396,30 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
           _currentWidget,
-          Positioned(
-              top: 30,
-              right: 20,
-              child: ElevatedButton(
-                  onPressed: () {
-                    geofireListener(8.9936827, 38.7663247);
-                  },
-                  child: const Text("Maintenance"))),
+          Align(
+            alignment: Alignment.centerRight,
+            child: ClipRRect(
+              borderRadius: BorderRadius.only(
+                  bottomLeft: Radius.circular(30),
+                  topLeft: Radius.circular(30)),
+              child: Container(
+                color: Colors.grey.shade300,
+                child: IconButton(
+                    onPressed: () {
+                      makePhoneCall('9495');
+                    },
+                    icon: Icon(
+                      Icons.call,
+                      color: Colors.indigo.shade900,
+                      size: 30,
+                    )),
+              ),
+            ),
+          ),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: Text(repo.getNearbyDrivers().length.toString()),
+          )
         ],
       ),
     );
@@ -271,31 +465,31 @@ class _HomeScreenState extends State<HomeScreen> {
   void geofireListener(double lat, double lng) async {
     Geofire.initialize('availableDrivers');
     repo.resetList();
-
-    print(lat);
-    print(lng);
     print("Mapppppppppppppppppppppppppppppppppppppppppppppppppppppppaaa");
 
     try {
       //print(await Geofire.queryAtLocation(lat, lng, 1));
 
-      await Geofire.queryAtLocation(lat, lng, 1)!.listen((map) {
+      await Geofire.queryAtLocation(lat, lng, 1)?.listen((map) {
         print("Mapppppppppppppppppppppppppppppppppppppppppppppppppppppppsss");
+        print("adeddd ${repo.getIdList()}");
+
+        print('herer is your length ${repo.getNearbyDrivers().length}');
 
         print(map);
         print("Mappppppppppppppppppppppppppppppppppppppppppppppppppppppp");
         if (map != null) {
           var callBack = map['callBack'];
+          print('callBack = $callBack');
           switch (callBack) {
             case Geofire.onKeyEntered:
               repo.addDriver(NearbyDriver(
                   id: map['key'],
                   latitude: map['latitude'],
                   longitude: map['longitude']));
-              print("addddddddddddddddddddddddddddddddddddddd");
               showDriversOnMap();
 
-              print("aded");
+              print("adeddd ${repo.getIdList()}");
 
               break;
 
@@ -309,6 +503,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
             case Geofire.onKeyMoved:
               print("moved");
+              print(map['key']);
               repo.updateDriver(NearbyDriver(
                   id: map['key'],
                   latitude: map['latitude'],
@@ -327,8 +522,6 @@ class _HomeScreenState extends State<HomeScreen> {
             return;
           }
         }
-
-        setState(() {});
       });
     } on PlatformException {
       print("platform exceprionnnnnnnnnnnnnnnnnnnnnnnnnnnnnn");
@@ -339,7 +532,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void showDriversOnMap() {
     print("Length :: ");
-    print(repo.getNearbyDrivers().first.id);
+    print(repo.getNearbyDrivers().length);
     ImageConfiguration imageConfiguration =
         createLocalImageConfiguration(context, size: Size(1, 2));
     Map<MarkerId, Marker> newMarker = {};
@@ -359,7 +552,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
     setState(() {
       markers = newMarker;
-      // driverMarkers.
+      //   // driverMarkers.
     });
   }
 
@@ -419,6 +612,41 @@ class _HomeScreenState extends State<HomeScreen> {
     outerController
         .animateCamera(CameraUpdate.newLatLngBounds(latLngBounds, 70));
   }
+
+  void _toggleServiceStatusStream() {
+    if (_serviceStatusStreamSubscription == null) {
+      print("yeah it's enabled");
+
+      final serviceStatusStream = _geolocatorPlatform.getServiceStatusStream();
+      _serviceStatusStreamSubscription =
+          serviceStatusStream.handleError((error) {
+        print("yeah it's the error bruhh $error");
+
+        _serviceStatusStreamSubscription?.cancel();
+        _serviceStatusStreamSubscription = null;
+      }).listen((serviceStatus) {
+        String serviceStatusValue;
+        if (serviceStatus == ServiceStatus.enabled) {
+          print("yeah it's enabled");
+          setState(() {
+            isLocationOn = true;
+          });
+          // if (positionStreamStarted) {
+          //   _toggleListening();
+          // }
+          serviceStatusValue = 'enabled';
+        } else {
+          setState(() {
+            isLocationOn = false;
+          });
+
+          print("nope ist's disabled");
+
+          serviceStatusValue = 'disabled';
+        }
+      });
+    }
+  }
 }
 
 
@@ -453,229 +681,6 @@ class _HomeScreenState extends State<HomeScreen> {
 //                       onMapCreated: (GoogleMapController controller) {
 //                         // _controller.complete(controller);
 
-//                         controller.setMapStyle('''[
-//   {
-//     "elementType": "geometry",
-//     "stylers": [
-//       {
-//         "color": "#ebe3cd"
-//       }
-//     ]
-//   },
-//   {
-//     "elementType": "labels.text.fill",
-//     "stylers": [
-//       {
-//         "color": "#523735"
-//       }
-//     ]
-//   },
-//   {
-//     "elementType": "labels.text.stroke",
-//     "stylers": [
-//       {
-//         "color": "#f5f1e6"
-//       }
-//     ]
-//   },
-//   {
-//     "featureType": "administrative",
-//     "elementType": "geometry.stroke",
-//     "stylers": [
-//       {
-//         "color": "#c9b2a6"
-//       }
-//     ]
-//   },
-//   {
-//     "featureType": "administrative.land_parcel",
-//     "elementType": "geometry.stroke",
-//     "stylers": [
-//       {
-//         "color": "#dcd2be"
-//       }
-//     ]
-//   },
-//   {
-//     "featureType": "administrative.land_parcel",
-//     "elementType": "labels.text.fill",
-//     "stylers": [
-//       {
-//         "color": "#ae9e90"
-//       }
-//     ]
-//   },
-//   {
-//     "featureType": "landscape.natural",
-//     "elementType": "geometry",
-//     "stylers": [
-//       {
-//         "color": "#dfd2ae"
-//       }
-//     ]
-//   },
-//   {
-//     "featureType": "poi",
-//     "elementType": "geometry",
-//     "stylers": [
-//       {
-//         "color": "#dfd2ae"
-//       }
-//     ]
-//   },
-//   {
-//     "featureType": "poi",
-//     "elementType": "labels.text.fill",
-//     "stylers": [
-//       {
-//         "color": "#93817c"
-//       }
-//     ]
-//   },
-//   {
-//     "featureType": "poi.park",
-//     "elementType": "geometry.fill",
-//     "stylers": [
-//       {
-//         "color": "#a5b076"
-//       }
-//     ]
-//   },
-//   {
-//     "featureType": "poi.park",
-//     "elementType": "labels.text.fill",
-//     "stylers": [
-//       {
-//         "color": "#447530"
-//       }
-//     ]
-//   },
-//   {
-//     "featureType": "road",
-//     "elementType": "geometry",
-//     "stylers": [
-//       {
-//         "color": "#f5f1e6"
-//       }
-//     ]
-//   },
-//   {
-//     "featureType": "road.arterial",
-//     "elementType": "geometry",
-//     "stylers": [
-//       {
-//         "color": "#fdfcf8"
-//       }
-//     ]
-//   },
-//   {
-//     "featureType": "road.highway",
-//     "elementType": "geometry",
-//     "stylers": [
-//       {
-//         "color": "#f8c967"
-//       }
-//     ]
-//   },
-//   {
-//     "featureType": "road.highway",
-//     "elementType": "geometry.stroke",
-//     "stylers": [
-//       {
-//         "color": "#e9bc62"
-//       }
-//     ]
-//   },
-//   {
-//     "featureType": "road.highway.controlled_access",
-//     "elementType": "geometry",
-//     "stylers": [
-//       {
-//         "color": "#e98d58"
-//       }
-//     ]
-//   },
-//   {
-//     "featureType": "road.highway.controlled_access",
-//     "elementType": "geometry.stroke",
-//     "stylers": [
-//       {
-//         "color": "#db8555"
-//       }
-//     ]
-//   },
-//   {
-//     "featureType": "road.local",
-//     "elementType": "labels.text.fill",
-//     "stylers": [
-//       {
-//         "color": "#806b63"
-//       }
-//     ]
-//   },
-//   {
-//     "featureType": "transit.line",
-//     "elementType": "geometry",
-//     "stylers": [
-//       {
-//         "color": "#dfd2ae"
-//       }
-//     ]
-//   },
-//   {
-//     "featureType": "transit.line",
-//     "elementType": "labels.text.fill",
-//     "stylers": [
-//       {
-//         "color": "#8f7d77"
-//       }
-//     ]
-//   },
-//   {
-//     "featureType": "transit.line",
-//     "elementType": "labels.text.stroke",
-//     "stylers": [
-//       {
-//         "color": "#ebe3cd"
-//       }
-//     ]
-//   },
-//   {
-//     "featureType": "transit.station",
-//     "elementType": "geometry",
-//     "stylers": [
-//       {
-//         "color": "#dfd2ae"
-//       }
-//     ]
-//   },
-//   {
-//     "featureType": "water",
-//     "elementType": "geometry.fill",
-//     "stylers": [
-//       {
-//         "color": "#b9d3c2"
-//       }
-//     ]
-//   },
-//   {
-//     "featureType": "water",
-//     "elementType": "labels.text.fill",
-//     "stylers": [
-//       {
-//         "color": "#92998d"
-//       }
-//     ]
-//   },
-//   {
-//     "featureType": "poi",
-//     "stylers": [
-//       {
-//         "visibility": "off"
-//       }
-//     ]
-//   }
-// ]''');
 
 //                         _determinePosition().then((value) {
 //                           currentLatLng =

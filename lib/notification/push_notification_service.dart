@@ -62,32 +62,42 @@ class PushNotificationService {
           backgroundColor: Colors.indigo.shade900,
         ));
       } else if (message.data['response'] == "Cancelled") {
-        // repo.removeDriver(searchNearbyDriver());
-        // searchNearbyDriver();
-        DriverEvent event = DriverLoad(searchNearbyDriver());
-        BlocProvider.of<DriverBloc>(context).add(event);
+        List oldList = [];
+        if (repo.getNearbyDrivers().isNotEmpty) {
+          print(
+              "Here is Ther  list ${repo.getNearbyDrivers().length} ${repo.getNearbyDrivers().map((e) => e.id)}");
+          repo.removeDriver(searchNearbyDriver());
 
-        BlocListener(listener: (_, state) {
-          print('so the state is $state');
-          if (state is DriverLoadSuccess) {
-            RideRequestEvent riderequestEvent = RideRequestCreate(RideRequest(
-                driverFcm: state.driver.fcmId,
-                driverId: state.driver.id,
-                passengerName: name,
-                passengerPhoneNumber: number,
-                pickUpAddress: pickupAddress,
-                droppOffAddress: droppOffAddress,
-                pickupLocation: pickupLatLng,
-                dropOffLocation: droppOffLatLng));
-            BlocProvider.of<RideRequestBloc>(_).add(riderequestEvent);
-          }
-        });
+          print(
+              "Here is Ther  list ${repo.getNearbyDrivers().length} ${repo.getNearbyDrivers().map((e) => e.id)}");
 
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: const Text(" Request cancelled"),
-          backgroundColor: Colors.indigo.shade900,
-        ));
-        callback(Service(callback, searchNearbyDriver));
+          // repo.removeDriver(searchNearbyDriver());
+          // searchNearbyDriver();
+          DriverEvent event = DriverLoad(searchNearbyDriver());
+          BlocProvider.of<DriverBloc>(context).add(event);
+
+          // BlocListener(listener: (_, state) {
+          //   print('so the state is $state');
+          //   if (state is DriverLoadSuccess) {
+          //     RideRequestEvent riderequestEvent = RideRequestCreate(RideRequest(
+          //         // driverFcm: state.driver.fcmId,
+          //         driverId: state.driver.id,
+          //         passengerName: name,
+          //         passengerPhoneNumber: number,
+          //         pickUpAddress: pickupAddress,
+          //         droppOffAddress: droppOffAddress,
+          //         pickupLocation: pickupLatLng,
+          //         dropOffLocation: droppOffLatLng));
+          //     BlocProvider.of<RideRequestBloc>(_).add(riderequestEvent);
+          //   }
+          // });
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: const Text(" Request cancelled"),
+            backgroundColor: Colors.indigo.shade900,
+          ));
+          callback(Service(callback, searchNearbyDriver));
+        }
       } else if (message.data['response'] == "Completed") {
         print("it's Completedd");
         Navigator.pushNamed(context, ReviewScreen.routeName);

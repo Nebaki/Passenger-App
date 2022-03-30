@@ -20,4 +20,4 @@ class RideRequestSuccess extends RideRequestState {
 
 class RideRequestOperationFailur extends RideRequestState {}
 
-class RideRequestDeleteSuccess extends RideRequestState {}
+class RideRequestStatusChangedSuccess extends RideRequestState {}

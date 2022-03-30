@@ -24,12 +24,13 @@ class RideRequestBloc extends Bloc<RideRequestEvent, RideRequestState> {
       }
     }
 
-    if (event is RideRequestDelete) {
+    if (event is RideRequestChangeStatus) {
       yield RideRequestLoading();
 
       try {
-        await rideRequestRepository.deleteRequest(event.id);
-        yield RideRequestDeleteSuccess();
+        await rideRequestRepository.changeRequestStatus(
+            event.id, event.sendRequest);
+        yield RideRequestStatusChangedSuccess();
       } catch (_) {
         yield RideRequestOperationFailur();
       }

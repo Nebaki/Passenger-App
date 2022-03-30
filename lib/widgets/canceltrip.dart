@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:passengerapp/rout.dart';
 import 'package:passengerapp/screens/screens.dart';
 import 'package:passengerapp/widgets/widgets.dart';
 
 class CancelTrip extends StatelessWidget {
   Function? callback;
-  CancelTrip(this.callback);
+  Widget? lastWidget;
+  CancelTrip(this.callback, this.lastWidget);
   @override
   Widget build(BuildContext context) {
     return Positioned(
@@ -36,7 +38,8 @@ class CancelTrip extends StatelessWidget {
                     )),
                   ),
                   onPressed: () {
-                    Navigator.pushNamed(context, CancelReason.routeName);
+                    Navigator.pushNamed(context, CancelReason.routeName,
+                        arguments: CancelReasonArgument(sendRequest: false));
                   },
                   child: const Text(
                     "Yes, Cancel",
@@ -59,7 +62,8 @@ class CancelTrip extends StatelessWidget {
                       )),
                     ),
                     onPressed: () {
-                      // callback!(DriverOnTheWay(callback));
+                      Widget _widget = lastWidget!;
+                      callback!(_widget);
                     },
                     child: const Text(
                       "No",

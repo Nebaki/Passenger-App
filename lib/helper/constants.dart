@@ -177,7 +177,7 @@ const mapStyle = '''[
 ]''';
 
 const createProfileArgumentText =
-    "By continuing, iconfirm that i have read & agree to the Terms & conditions and Privacypolicy";
+    "By continuing I confirm that I agree to the terms and conditions.";
 const backGroundColor = Color.fromRGBO(240, 241, 241, 1);
 const buttonColor = Color.fromRGBO(244, 201, 60, 1);
 late String pickupAddress;
@@ -186,6 +186,9 @@ late LatLng pickupLatLng;
 late LatLng droppOffLatLng;
 late String name;
 late String number;
+late String price;
+late String duration;
+late String distance;
 
 String? driverName;
 String? driverId;
@@ -196,3 +199,5 @@ const initialPosition = LatLng(8.9806, 38.7578);
 PickResult? selectedPlace;
 
 const String apiKey = "AIzaSyB8z8UeyROt2-ay24jiHrrcMXaEAlPUvdQ";
+
+late String rideRequestId;
