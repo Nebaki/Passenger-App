@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:passengerapp/main.dart';
-import 'package:passengerapp/screens/faker/faker.dart';
 import 'package:passengerapp/screens/screens.dart';
 
 import 'models/models.dart';
@@ -48,9 +47,6 @@ class AppRoute {
     }
     if (settings.name == ProfileDetail.routeName) {
       return MaterialPageRoute(builder: (context) => ProfileDetail());
-    }
-    if (settings.name == Faker.routeName) {
-      return MaterialPageRoute(builder: (context) => Faker());
     }
 
     if (settings.name == FeedbackScreen.routeName) {
