@@ -1,3 +1,4 @@
+import 'package:app_settings/app_settings.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -133,13 +134,16 @@ class _HomeScreenState extends State<HomeScreen> {
     pushNotificationService.initialize(context, callback, searchNearbyDriver);
     pushNotificationService.seubscribeTopic();
     widget.args.isSelected
-        ? _currentWidget = Service(callback, searchNearbyDriver)
+        ? _currentWidget = DriverOnTheWay(callback)
         : _currentWidget = WhereTo(
             setPickUpAdress: setPickUpAddress,
             setDroppOffAdress: setDroppOffAddress,
             setIsSelected: setIsSelected,
             callback: callback,
             service: Service(callback, searchNearbyDriver));
+
+    widget.args.isSelected ? _getPolyline(widget.args.encodedPts!) : null;
+
     Geolocator.getCurrentPosition().then((value) {
       geofireListener(value.latitude, value.longitude);
       Geofire.stopListener();
@@ -292,12 +296,13 @@ class _HomeScreenState extends State<HomeScreen> {
                           child: SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(
-                            onPressed: () async {
-                              await Geolocator.openAppSettings();
+                            onPressed: () {
+                              AppSettings.openDeviceSettings(
+                                  asAnotherTask: true);
                             },
-                            child: Text("Go to Settings")),
+                            child: const Text("Go to Settings")),
                       )),
-                      SizedBox(
+                      const SizedBox(
                         height: 10,
                       ),
                       Expanded(
@@ -307,7 +312,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             onPressed: () async {
                               SystemNavigator.pop();
                             },
-                            child: Text("Close App")),
+                            child: const Text("Close App")),
                       ))
                     ],
                   ),
@@ -329,9 +334,9 @@ class _HomeScreenState extends State<HomeScreen> {
               // markers: Set<Marker>.of(markers.values),
               shouldAnimateCamera: true,
               child: GoogleMap(
-                scrollGesturesEnabled: false,
-                zoomGesturesEnabled: false,
-                rotateGesturesEnabled: false,
+                // scrollGesturesEnabled: false,
+                // zoomGesturesEnabled: false,
+                // rotateGesturesEnabled: false,
                 mapType: MapType.normal,
                 myLocationButtonEnabled: false,
                 initialCameraPosition: _addissAbaba,
@@ -360,6 +365,8 @@ class _HomeScreenState extends State<HomeScreen> {
             print("Yow we are around here");
 
             if (state is DirectionLoadSuccess) {
+              direction = state.direction.encodedPoints;
+
               markers.clear();
               setState(() {
                 _getPolyline(state.direction.encodedPoints);
@@ -419,7 +426,25 @@ class _HomeScreenState extends State<HomeScreen> {
           Align(
             alignment: Alignment.centerLeft,
             child: Text(repo.getNearbyDrivers().length.toString()),
-          )
+          ),
+          Align(
+            alignment: Alignment.topRight,
+            child: ElevatedButton(
+                onPressed: () async {
+                  final res = await Geofire.stopListener();
+                  if (res == true) {
+                    print("Yow yow yow");
+                    final res = await Geofire.initialize('availableTrucks');
+                    if (res == true) {
+                      await Geofire.queryAtLocation(8.9936827, 38.7695649, 1)!
+                          .listen((event) {
+                        print("Yowwwwwwwwwwwwwwwwwwwwww $event");
+                      });
+                    }
+                  }
+                },
+                child: Text("Maintenance")),
+          ),
         ],
       ),
     );

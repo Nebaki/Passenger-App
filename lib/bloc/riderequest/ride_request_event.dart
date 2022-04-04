@@ -27,3 +27,13 @@ class RideRequestChangeStatus extends RideRequestEvent {
   @override
   List<Object> get props => [id, this.sendRequest];
 }
+
+class RideRequestLoad extends RideRequestEvent {
+  @override
+  List<Object?> get props => [];
+}
+
+class RideRequestCheckStartedTrip extends RideRequestEvent {
+  @override
+  List<Object?> get props => [];
+}
