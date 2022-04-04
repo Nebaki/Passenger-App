@@ -24,6 +24,7 @@ class _CustomSplashScreenState extends State<CustomSplashScreen> {
   ConnectivityResult? _connectionStatus;
   final Connectivity _connectivity = Connectivity();
   late StreamSubscription<ConnectivityResult> _connectivitySubscription;
+  bool isSuccess = false;
 
   @override
   void initState() {
@@ -208,20 +209,53 @@ class _CustomSplashScreenState extends State<CustomSplashScreen> {
                         }
 
                         state.auth.token != null
-                            ? Navigator.pushReplacementNamed(
-                                context, HomeScreen.routeName,
-                                arguments:
-                                    HomeScreenArgument(isSelected: false))
+                            ? setState(() {
+                                isSuccess = true;
+                              })
                             : Navigator.pushReplacementNamed(
                                 context, SigninScreen.routeName);
 
                         //0967543215
 
                       }
-                    })
+                    }),
+          isSuccess
+              ? BlocConsumer<RideRequestBloc, RideRequestState>(
+                  builder: (context, state) {
+                  return Container();
+                }, listener: (context, st) {
+                  print("Yoyoyoyoyoyoyoyoyoyooyqqq $st");
+                  if (st is RideRequestStartedTripChecked) {
+                    print(st.rideRequest);
+                    print("data is is is is ${st.rideRequest.pickUpAddress}");
+
+                    if (st.rideRequest.pickUpAddress == null) {
+                      Navigator.pushReplacementNamed(
+                          context, HomeScreen.routeName,
+                          arguments: HomeScreenArgument(isSelected: false));
+                    } else {
+                      DriverEvent event = DriverLoad(st.rideRequest.driverId!);
+                      BlocProvider.of<DriverBloc>(context).add(event);
+                      price = st.rideRequest.price!;
+                      distance = st.rideRequest.distance!;
+                      Navigator.pushReplacementNamed(
+                          context, HomeScreen.routeName,
+                          arguments: HomeScreenArgument(
+                              isSelected: true,
+                              encodedPts: st.rideRequest.direction));
+                    }
+                    // loadRideRequest();
+                  }
+                })
+              : Container()
         ],
       ),
     );
+  }
+
+  void loadRideRequest() {
+    RideRequestEvent event = RideRequestLoad();
+    BlocProvider.of<RideRequestBloc>(context).add(event);
   }
 }
 

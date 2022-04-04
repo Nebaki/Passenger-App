@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:passengerapp/bloc/bloc.dart';
 import 'package:passengerapp/screens/screens.dart';
 import 'package:passengerapp/widgets/widgets.dart';
 
@@ -9,23 +11,41 @@ class HistoryPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        elevation: 0,
-        iconTheme: const IconThemeData(color: Colors.black),
-        backgroundColor: Colors.grey.shade100,
-        title: const Text(
-          "Trips",
-          style: TextStyle(color: Colors.black),
+        appBar: AppBar(
+          elevation: 0,
+          iconTheme: const IconThemeData(color: Colors.black),
+          backgroundColor: Colors.grey.shade100,
+          title: const Text(
+            "Trips",
+            style: TextStyle(color: Colors.black),
+          ),
+          centerTitle: true,
         ),
-        centerTitle: true,
-      ),
-      body: ListView(
-        padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
-        children: List.generate(10, (index) => _builHistoryCard(context)
-            //_savedItems(context: context, text: "Mon, 18 Feb")
-            ),
-      ),
-    );
+        body: BlocBuilder<RideRequestBloc, RideRequestState>(
+          builder: (context, state) {
+            if (state is RideRequestLoadSuccess) {
+              return ListView.builder(
+                itemCount: state.rideRequests.length,
+                itemBuilder: (context, index) {
+                  return _builHistoryCard(
+                      context,
+                      state.rideRequests[index].pickUpAddress,
+                      state.rideRequests[index].droppOffAddress);
+                },
+                padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
+              );
+            }
+            if (state is RideRequestOperationFailur) {
+              print("Yeah Filedddddddd");
+            }
+            return const SizedBox(
+                height: 50,
+                width: 50,
+                child: CircularProgressIndicator(
+                  strokeWidth: 1,
+                ));
+          },
+        ));
   }
 
   Widget _savedItems({
@@ -61,7 +81,8 @@ class HistoryPage extends StatelessWidget {
     );
   }
 
-  Widget _builHistoryCard(BuildContext context) {
+  Widget _builHistoryCard(
+      BuildContext context, String? pickupAddress, String? droppoffAddress) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: GestureDetector(
@@ -99,13 +120,13 @@ class HistoryPage extends StatelessWidget {
                   ),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.end,
-                    children: const [
+                    children: [
                       Text(
-                        "700 Mathew St.",
+                        droppoffAddress!,
                         style: TextStyle(color: Colors.black),
                       ),
                       Text(
-                        "San Joes",
+                        pickupAddress!,
                         style: TextStyle(color: Colors.black38),
                       )
                     ],

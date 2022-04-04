@@ -186,9 +186,10 @@ late LatLng pickupLatLng;
 late LatLng droppOffLatLng;
 late String name;
 late String number;
-late String price;
-late String duration;
-late String distance;
+ String price = 'Loading';
+String duration = 'Loading';
+ String distance = 'Loading';
+late String direction;
 
 String? driverName;
 String? driverId;

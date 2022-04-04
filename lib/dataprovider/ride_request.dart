@@ -9,35 +9,78 @@ class RideRequestDataProvider {
   final _fcmUrl = 'https://fcm.googleapis.com/fcm/send';
 
   final _baseUrl = 'https://safeway-api.herokuapp.com/api/ride-requests';
+  final _secondUrl = 'https://mobiletaxi-api.herokuapp.com/api/ride-requests';
   final http.Client httpClient;
   AuthDataProvider authDataProvider =
       AuthDataProvider(httpClient: http.Client());
+
   final token =
       "AAAAKTCNpPU:APA91bHPscWDa8pPO5MGRj11FWo6NZkpK5tRPodi_2wuMdHhDNwlTO3l4jF50tFGiU55EWMyNss0St0l_kk2H1YmKH1z4yzWPVL25xGTt-GqOFWUdh7BgjJmiNo55eVzzJgHeEOBvHtH";
 
   RideRequestDataProvider({required this.httpClient});
 
+  Future<RideRequest> checkStartedTrip() async {
+    final http.Response response = await http.get(
+        Uri.parse(
+            'https://mobiletaxi-api.herokuapp.com/api/ride-requests/check-started-trip'),
+        headers: <String, String>{
+          'Content-Type': "application/json",
+          'x-access-token': '${await authDataProvider.getToken()}'
+        });
+    print(' this is the response Status coed: ${response.body}');
+    print(' hah ${json.decode(response.body)['ride_Request']}');
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body)['ride_Request'] as List;
+      return data.isNotEmpty
+          ? RideRequest.fromJson(data[0])
+          : RideRequest(
+              pickUpAddress: null, droppOffAddress: null, driverId: null);
+    } else {
+      throw 'Unable to get Started Trips';
+    }
+  }
+
+  Future<List<RideRequest>> getRideRequests() async {
+    final http.Response response = await http.get(
+        Uri.parse('$_baseUrl/get-ride-requests'),
+        headers: <String, String>{
+          'Content-Type': "application/json",
+          'x-access-token': '${await authDataProvider.getToken()}'
+        });
+    print(' this is the response Status code: ${response.body}');
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body)['items'] as List;
+      return data.map((e) => RideRequest.fromJson(e)).toList();
+    } else {
+      throw 'Unable to fetch RideRequests';
+    }
+  }
+
   Future<RideRequest> createRequest(RideRequest request) async {
     print("yow yow ");
     final response = await http.post(
-      Uri.parse('$_baseUrl/create-ride-request'),
+      Uri.parse('$_secondUrl/create-ride-request'),
       headers: <String, String>{
         'Content-Type': 'application/json',
         "x-access-token": "${await authDataProvider.getToken()}"
       },
       body: json.encode({
-        'driverId': 'waiting',
-        'passengerName': request.passengerName,
-        'passengerPhoneNumber': request.passengerPhoneNumber,
-        "pickupAddress": request.pickUpAddress,
-        'pickupLocation': [
+        "pickup_address": request.pickUpAddress,
+        'pickup_location': [
           request.pickupLocation!.latitude,
           request.pickupLocation!.longitude
         ],
-        'droppoffLocation': [
+        'droppoff_location': [
           request.dropOffLocation!.longitude,
           request.dropOffLocation!.latitude
         ],
+        'droppoff_address': droppOffAddress,
+        'direction': direction,
+        'price': int.parse(price),
+        'duration': duration,
+        'distance': int.parse(distance)
       }),
     );
     print(' this is the response Status coed: ${response.body}');
@@ -45,9 +88,9 @@ class RideRequestDataProvider {
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
       rideRequestId = data["rideRequest"]["id"];
+      print('my data is this bruhhh $rideRequestId');
 
       sendNotification(request, data["rideRequest"]["id"]);
-      print('my data is this bruhhh $data');
       return RideRequest.fromJson(data);
     } else {
       throw Exception('Failed to create request.');
@@ -102,7 +145,7 @@ class RideRequestDataProvider {
       body: json.encode({
         "data": {
           "response": "Cancelled",
-          "requestId": "623b41d4e39d607d2271a079",
+          "requestId": requestId,
           "passengerFcm": fcmtoken,
           "pickupLocation": [
             request.pickupLocation!.latitude,

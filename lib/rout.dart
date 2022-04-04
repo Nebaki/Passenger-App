@@ -136,8 +136,10 @@ class HomeScreenArgument {
   //String widgetName;
   bool isSelected = false;
   LatLng? destinationlatlang;
+  String? encodedPts;
 
-  HomeScreenArgument({required this.isSelected, this.destinationlatlang});
+  HomeScreenArgument(
+      {required this.isSelected, this.destinationlatlang, this.encodedPts});
 }
 
 class VerificationArgument {

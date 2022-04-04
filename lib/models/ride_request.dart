@@ -9,19 +9,31 @@ class RideRequest extends Equatable {
   String? driverFcm;
   LatLng? pickupLocation;
   LatLng? dropOffLocation;
-  String passengerName;
-  String pickUpAddress;
-  String passengerPhoneNumber;
-  String droppOffAddress;
+  String? passengerName;
+  String? pickUpAddress;
+  String? passengerPhoneNumber;
+  String? droppOffAddress;
+  String? status;
+  String? cancelReason;
+  String? price;
+  String? distance;
+  String? duration;
+  String? direction;
 
   RideRequest({
     this.id,
     this.driverFcm,
-    required this.passengerPhoneNumber,
+    this.direction,
+    this.duration,
+    this.price,
+    this.status,
+    this.distance,
+    this.cancelReason,
+    this.passengerPhoneNumber,
     required this.pickUpAddress,
     required this.droppOffAddress,
     required this.driverId,
-    required this.passengerName,
+    this.passengerName,
     this.pickupLocation,
     this.dropOffLocation,
   });
@@ -31,17 +43,21 @@ class RideRequest extends Equatable {
       [id, driverId, passengerName, pickupLocation, dropOffLocation];
 
   factory RideRequest.fromJson(Map<String, dynamic> json) {
-    print("this is the response data ${json["rideRequest"]["id"]}");
+    print("this is the response data ${json["id"]}");
     return RideRequest(
-      id: json["rideRequest"]["id"],
-      driverId: json["rideRequest"]["driverId"],
-      // pickupLocation: json["rideRequest"]["pickupLocation"],
-      // dropOffLocation: json["passenger"]["gender"],
-      passengerPhoneNumber: json["rideRequest"]["passengerName"],
-      pickUpAddress: json["rideRequest"]["id"],
-      droppOffAddress: json["rideRequest"]["id"],
-      passengerName: json["rideRequest"]["passengerName"],
-    );
+        id: json["id"],
+        driverId: json["driver_id"] ?? '',
+        // pickupLocation: json["rideRequest"]["pickupLocation"],
+        // dropOffLocation: json["passenger"]["gender"],
+        // passengerPhoneNumber: json["rideRequest"]["passengerName"],
+        direction: json['direction'],
+        pickUpAddress: json["pickup_address"] ?? '',
+        droppOffAddress: json["droppoff_address"] ?? '',
+        status: json['status'],
+        price: json['price'].toString(),
+        distance: json['distance'].toString()
+        // passengerName: json["rideRequest"]["passengerName"],
+        );
   }
 
   @override
