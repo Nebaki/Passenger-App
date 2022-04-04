@@ -13,4 +13,12 @@ class RideRequestRepository {
   Future changeRequestStatus(String id, bool sendRequest) async {
     return await dataProvider.changeRequestStatus(id, sendRequest);
   }
+
+  Future<List<RideRequest>> getRideRequests() async {
+    return await dataProvider.getRideRequests();
+  }
+
+  Future<RideRequest> checkStartedTrip() async {
+    return await dataProvider.checkStartedTrip();
+  }
 }

@@ -1,3 +1,4 @@
+import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -13,6 +14,7 @@ import '../widgets/widgets.dart';
 
 class PushNotificationService {
   NearbyDriverRepository repo = NearbyDriverRepository();
+  final player = AssetsAudioPlayer();
 
   String? searchNearbyDriver() {
     if (repo.getNearbyDrivers().isEmpty) {
@@ -52,6 +54,7 @@ class PushNotificationService {
       RemoteNotification? notification = message.notification;
       AndroidNotification? android = message.notification?.android;
       print('this is the respomse : ${message.data['response']}');
+      player.open(Audio("assets/sounds/announcement-sound.mp3"));
 
       // print("yow yo mikiki ${message.data['response']}");
       if (message.data['response'] == "Accepted") {

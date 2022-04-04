@@ -16,6 +16,7 @@ import 'package:passengerapp/helper/constants.dart';
 import 'package:passengerapp/repository/repositories.dart';
 import 'package:passengerapp/rout.dart';
 import 'package:http/http.dart' as http;
+import 'package:wakelock/wakelock.dart';
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   // If you're going to use other Firebase services in the background, such as Firestore,
@@ -150,6 +151,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Firebase.initializeApp();
+    Wakelock.enable();
 
     return MultiRepositoryProvider(
         providers: [
@@ -190,7 +192,8 @@ class MyApp extends StatelessWidget {
                     ..add(AuthDataLoad())),
               BlocProvider(
                   create: (context) => RideRequestBloc(
-                      rideRequestRepository: rideRequestRepository)),
+                      rideRequestRepository: rideRequestRepository)
+                    ..add(RideRequestCheckStartedTrip())),
               BlocProvider(
                   create: (context) => NotificationRequestBloc(
                       notificationRequestRepository:
