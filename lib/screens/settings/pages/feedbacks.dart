@@ -135,7 +135,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
           setState(() {
             _isLoading = false;
           }),
-          showMessage(context, value)
+          showMessage(context, value.message)
         });
   }
 
