@@ -160,6 +160,8 @@ class _PhoneVerificationState extends State<PhoneVerification> {
                             style: const TextStyle(fontSize: 26.0),
                             onChanged: (value) {
                               if (value.length == 1) node.nextFocus();
+                              if (value.length == 0) node.previousFocus();
+                              print("Changedd");
                             },
                             maxLength: 1,
                             keyboardType: TextInputType.number,
@@ -183,6 +185,7 @@ class _PhoneVerificationState extends State<PhoneVerification> {
                             style: const TextStyle(fontSize: 26.0),
                             onChanged: (value) {
                               if (value.length == 1) node.nextFocus();
+                              if (value.length == 0) node.previousFocus();
                             },
                             maxLength: 1,
                             keyboardType: TextInputType.number,
@@ -206,6 +209,7 @@ class _PhoneVerificationState extends State<PhoneVerification> {
                             style: const TextStyle(fontSize: 26.0),
                             onChanged: (value) {
                               if (value.length == 1) node.nextFocus();
+                              if (value.length == 0) node.previousFocus();
                             },
                             maxLength: 1,
                             keyboardType: TextInputType.number,
@@ -229,6 +233,7 @@ class _PhoneVerificationState extends State<PhoneVerification> {
                             style: const TextStyle(fontSize: 26.0),
                             onChanged: (value) {
                               if (value.length == 1) node.nextFocus();
+                              if (value.length == 0) node.previousFocus();
                             },
                             maxLength: 1,
                             keyboardType: TextInputType.number,
@@ -252,6 +257,7 @@ class _PhoneVerificationState extends State<PhoneVerification> {
                             style: const TextStyle(fontSize: 26.0),
                             onChanged: (value) {
                               if (value.length == 1) node.nextFocus();
+                              if (value.length == 0) node.previousFocus();
                             },
                             maxLength: 1,
                             keyboardType: TextInputType.number,
@@ -275,6 +281,7 @@ class _PhoneVerificationState extends State<PhoneVerification> {
                             style: const TextStyle(fontSize: 26.0),
                             onChanged: (value) {
                               if (value.length == 1) node.nextFocus();
+                              if (value.length == 0) node.previousFocus();
                             },
                             maxLength: 1,
                             keyboardType: TextInputType.number,

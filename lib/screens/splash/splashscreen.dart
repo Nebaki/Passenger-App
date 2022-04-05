@@ -29,7 +29,7 @@ class _CustomSplashScreenState extends State<CustomSplashScreen> {
   @override
   void initState() {
     super.initState();
-    requestLocationPermission();
+    // requestLocationPermission();
     initConnectivity();
 
     _connectivitySubscription =

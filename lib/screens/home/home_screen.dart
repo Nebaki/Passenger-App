@@ -26,6 +26,7 @@ import 'package:passengerapp/helper/constants.dart';
 // import 'package:location/location.dart';
 import 'package:geolocator_platform_interface/src/enums/location_accuracy.dart'
     as La;
+import 'package:passengerapp/screens/screens.dart';
 
 import 'package:passengerapp/widgets/widgets.dart';
 
@@ -111,6 +112,7 @@ class _HomeScreenState extends State<HomeScreen> {
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
       if (permission == LocationPermission.denied) {
+        SystemNavigator.pop();
         return Future.error('Location permissions are denied');
       }
     }
@@ -155,6 +157,8 @@ class _HomeScreenState extends State<HomeScreen> {
   void dispose() {
     _serviceStatusStreamSubscription!.cancel();
     _connectivitySubscription.cancel();
+    Geofire.stopListener();
+
     super.dispose();
   }
 
@@ -239,7 +243,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         Expanded(
                             child: SizedBox(
                           width: double.infinity,
-                          child: TextButton(
+                          child: ElevatedButton(
                               onPressed: () async {
                                 SystemNavigator.pop();
                               },
@@ -427,23 +431,67 @@ class _HomeScreenState extends State<HomeScreen> {
             alignment: Alignment.centerLeft,
             child: Text(repo.getNearbyDrivers().length.toString()),
           ),
-          Align(
-            alignment: Alignment.topRight,
-            child: ElevatedButton(
-                onPressed: () async {
-                  final res = await Geofire.stopListener();
-                  if (res == true) {
-                    print("Yow yow yow");
-                    final res = await Geofire.initialize('availableTrucks');
-                    if (res == true) {
-                      await Geofire.queryAtLocation(8.9936827, 38.7695649, 1)!
-                          .listen((event) {
-                        print("Yowwwwwwwwwwwwwwwwwwwwww $event");
-                      });
-                    }
-                  }
-                },
-                child: Text("Maintenance")),
+          Padding(
+            padding: const EdgeInsets.only(top: 20),
+            child: Align(
+              alignment: Alignment.topRight,
+              child: ElevatedButton(
+                  onPressed: () async {
+                    removeQueryListener();
+                    removeQueryListener();
+                    removeQueryListener();
+                    removeQueryListener();
+
+                    // final g = Geofire();
+                    // final res = await Geofire.stopListener();
+                    // if (res == true) {
+
+                    //   print("Yow yow yow");
+                    //   final res = await Geofire.initialize('availableTrucks');
+                    //   if (res == true) {
+                    //     await Geofire.queryAtLocation(8.9936827, 38.7695649, 1)!
+                    //         .listen((event) {
+                    //       print("Yowwwwwwwwwwwwwwwwwwwwww $event");
+                    //     });
+                    //   }
+                    // }
+                  },
+                  child: Text("Maintenance")),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(top: 60),
+            child: Align(
+              alignment: Alignment.topRight,
+              child: ElevatedButton(
+                  onPressed: () async {
+                    // removeQueryListener();
+                    // await Geofire.initialize('availableTrucks')
+                    //     .whenComplete(() {
+                    //   print('completed');
+                    //   geofireListener(8.9936827, 38.7695649);
+                    // });
+
+                    // if (res == true) {
+                    //   print("Yeah initialised");
+                    // }
+
+                    // final g = Geofire();
+                    // final res = await Geofire.stopListener();
+                    // if (res == true) {
+
+                    //   print("Yow yow yow");
+                    //   final res = await Geofire.initialize('availableTrucks');
+                    //   if (res == true) {
+                    //     await Geofire.queryAtLocation(8.9936827, 38.7695649, 1)!
+                    //         .listen((event) {
+                    //       print("Yowwwwwwwwwwwwwwwwwwwwww $event");
+                    //     });
+                    //   }
+                    // }
+                  },
+                  child: Text("Maintenance")),
+            ),
           ),
         ],
       ),
@@ -671,6 +719,15 @@ class _HomeScreenState extends State<HomeScreen> {
         }
       });
     }
+  }
+
+  void removeQueryListener() async {
+    bool? response = await Geofire.stopListener();
+
+    repo.resetList();
+    setState(() {});
+
+    print(response);
   }
 }
 

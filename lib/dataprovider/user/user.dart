@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 // import 'package:dio/dio.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:meta/meta.dart';
 import 'dart:io';
@@ -16,6 +17,9 @@ class UserDataProvider {
   AuthDataProvider authDataProvider =
       AuthDataProvider(httpClient: http.Client());
   UserDataProvider({required this.httpClient}) : assert(httpClient != null);
+  final _imageBaseUrl = 'https://safeway-api.herokuapp.com/';
+
+  final secure_storage = new FlutterSecureStorage();
 
   Future<User> createPassenger(User user) async {
     print(user.firstName);
@@ -29,17 +33,43 @@ class UserDataProvider {
       headers: <String, String>{'Content-Type': 'application/json'},
       body: json.encode({
         'name': user.firstName,
-        'email': user.email,
         'gender': user.gender,
         'password': user.password,
         'phone_number': user.phoneNumber,
-        //'emergency_contact': user.emergencyContact,
       }),
     );
     print("Hererersetttttttttttttttttttttttttttttttttttttt");
-    print(response.statusCode);
+    print(response.body);
 
     if (response.statusCode == 200) {
+      final output = jsonDecode(response.body);
+      await secure_storage.write(key: 'id', value: output['passenger']['id']);
+      await secure_storage.write(
+          key: 'phone_number', value: output['passenger']['phone_number']);
+      await secure_storage.write(
+          key: 'name', value: output['passenger']['name']);
+      await secure_storage.write(key: 'token', value: output['token'] ?? "");
+      await secure_storage.write(
+          key: "email", value: output['passenger']['email'] ?? "");
+      await secure_storage.write(
+          key: "emergency_contact",
+          value: output['passenger']['emergency_contact'] ?? "");
+
+      await secure_storage.write(
+          key: 'profile_image',
+          value: output['passenger']['profile_image'] != null
+              ? _imageBaseUrl + output['passenger']['profile_image']
+              : '');
+
+      await secure_storage.write(
+          key: "driver_gender",
+          value: output["passenger"]['preference']['gender']);
+      await secure_storage.write(
+          key: "min_rate",
+          value: output["passenger"]['preference']['min_rate'].toString());
+      await secure_storage.write(
+          key: "car_type",
+          value: output["passenger"]['preference']['car_type']);
       return User.fromJson(jsonDecode(response.body));
     } else {
       throw Exception('Failed to create user.');
