@@ -187,7 +187,7 @@ class _WhereToState extends State<WhereTo> {
                   ],
                 );
               }
-              return Center(child: Text("You have not any recent history"));
+              return Center(child: Text("No recent history"));
             }),
           ],
         ),

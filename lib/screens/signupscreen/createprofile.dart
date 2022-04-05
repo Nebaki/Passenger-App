@@ -82,6 +82,9 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                     actions: [
                       TextButton(
                           onPressed: () {
+                            // ignore: avoid_single_cascade_in_expression_statements
+                            BlocProvider.of<AuthBloc>(context)
+                              ..add(AuthDataLoad());
                             Navigator.pop(con);
                             Navigator.pushNamed(context, HomeScreen.routeName,
                                 arguments:
