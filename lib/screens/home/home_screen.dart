@@ -229,10 +229,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                 "Please enable Location Service to allow us finding your location.",
                                 style: Theme.of(context).textTheme.bodyText2)),
                         Expanded(
-                            child: Text(
-                                "For better accuracy,please turn on both GPS and WIFI location services",
-                                style: Theme.of(context).textTheme.bodyText2)),
-                        Expanded(
                             child: SizedBox(
                           width: double.infinity,
                           child: ElevatedButton(
@@ -295,10 +291,6 @@ class _HomeScreenState extends State<HomeScreen> {
                       Expanded(
                           child: Text(
                               "Please enable WIFI or Mobile Data to allow us finding your location.",
-                              style: Theme.of(context).textTheme.bodyText2)),
-                      Expanded(
-                          child: Text(
-                              "For better accuracy,please turn on both GPS and WIFI location services",
                               style: Theme.of(context).textTheme.bodyText2)),
                       Expanded(
                           child: SizedBox(
