@@ -29,7 +29,7 @@ class RideRequestBloc extends Bloc<RideRequestEvent, RideRequestState> {
 
       try {
         await rideRequestRepository.changeRequestStatus(
-            event.id, event.sendRequest);
+            event.id, event.status, event.sendRequest);
         yield RideRequestStatusChangedSuccess();
       } catch (_) {
         yield RideRequestOperationFailur();

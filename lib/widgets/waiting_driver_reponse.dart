@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:passengerapp/helper/constants.dart';
 import 'package:passengerapp/rout.dart';
 import 'package:passengerapp/screens/screens.dart';
 import 'package:passengerapp/widgets/canceltrip.dart';
@@ -9,6 +10,9 @@ class WaitingDriverResponse extends StatelessWidget {
   WaitingDriverResponse(this.callback);
   @override
   Widget build(BuildContext context) {
+    WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
+      setWillScreenPop();
+    });
     return Positioned(
       bottom: 0,
       right: 0,
@@ -46,20 +50,23 @@ class WaitingDriverResponse extends StatelessWidget {
                       ),
                       Align(
                           alignment: Alignment.centerRight,
-                          child: TextButton(
-                              onPressed: () {
-                                Navigator.pushNamed(
-                                    context, CancelReason.routeName,
-                                    arguments: CancelReasonArgument(
-                                        sendRequest: false));
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 10),
+                            child: TextButton(
+                                onPressed: () {
+                                  Navigator.pushNamed(
+                                      context, CancelReason.routeName,
+                                      arguments: CancelReasonArgument(
+                                          sendRequest: true));
 
-                                // callback!(CancelTrip(
-                                //     callback, WaitingDriverResponse(callback)));
-                              },
-                              child: Text(
-                                "Cancel",
-                                style: Theme.of(context).textTheme.titleLarge,
-                              )))
+                                  // callback!(CancelTrip(
+                                  //     callback, WaitingDriverResponse(callback)));
+                                },
+                                child: Text(
+                                  "Cancel",
+                                  style: Theme.of(context).textTheme.titleLarge,
+                                )),
+                          ))
                     ],
                   ),
                 ),

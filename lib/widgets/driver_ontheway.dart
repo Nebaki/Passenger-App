@@ -22,6 +22,11 @@ class _DriverOnTheWayState extends State<DriverOnTheWay> {
   final _blackTextStyle = TextStyle(color: Colors.black);
 
   @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Positioned(
       bottom: 3.0,

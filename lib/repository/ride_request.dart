@@ -10,8 +10,8 @@ class RideRequestRepository {
     return await dataProvider.createRequest(request);
   }
 
-  Future changeRequestStatus(String id, bool sendRequest) async {
-    return await dataProvider.changeRequestStatus(id, sendRequest);
+  Future changeRequestStatus(String id, String status, bool sendRequest) async {
+    return await dataProvider.changeRequestStatus(id, status, sendRequest);
   }
 
   Future<List<RideRequest>> getRideRequests() async {
