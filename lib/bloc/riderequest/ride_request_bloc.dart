@@ -57,5 +57,16 @@ class RideRequestBloc extends Bloc<RideRequestEvent, RideRequestState> {
         RideRequestOperationFailur();
       }
     }
+
+    if (event is RideRequestSendNotification) {
+      yield RideRequestLoading();
+
+      try {
+        await rideRequestRepository.sendNotification(event.request, event.id);
+        yield RideRequestNotificationSent();
+      } catch (_) {
+        yield RideRequestOperationFailur();
+      }
+    }
   }
 }

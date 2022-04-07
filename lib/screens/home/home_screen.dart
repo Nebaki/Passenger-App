@@ -414,7 +414,7 @@ class _HomeScreenState extends State<HomeScreen> {
             Align(
               alignment: Alignment.centerRight,
               child: ClipRRect(
-                borderRadius: BorderRadius.only(
+                borderRadius: const BorderRadius.only(
                     bottomLeft: Radius.circular(30),
                     topLeft: Radius.circular(30)),
                 child: Container(
@@ -442,9 +442,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: ElevatedButton(
                     onPressed: () async {
                       removeQueryListener();
-                      removeQueryListener();
-                      removeQueryListener();
-                      removeQueryListener();
 
                       // final g = Geofire();
                       // final res = await Geofire.stopListener();
@@ -470,11 +467,11 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: ElevatedButton(
                     onPressed: () async {
                       // removeQueryListener();
-                      // await Geofire.initialize('availableTrucks')
-                      //     .whenComplete(() {
-                      //   print('completed');
-                      //   geofireListener(8.9936827, 38.7695649);
-                      // });
+                      await Geofire.initialize('availableDrivers')
+                          .whenComplete(() {
+                        print('completed');
+                        geofireListener(8.9936827, 38.7695649);
+                      });
 
                       // if (res == true) {
                       //   print("Yeah initialised");
@@ -613,8 +610,6 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void showDriversOnMap() {
-    print("Length :: ");
-    print(repo.getNearbyDrivers().length);
     ImageConfiguration imageConfiguration =
         createLocalImageConfiguration(context, size: Size(1, 2));
     Map<MarkerId, Marker> newMarker = {};
@@ -634,7 +629,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
     setState(() {
       markers = newMarker;
-      //   // driverMarkers.
     });
   }
 

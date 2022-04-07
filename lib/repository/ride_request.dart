@@ -21,4 +21,8 @@ class RideRequestRepository {
   Future<RideRequest> checkStartedTrip() async {
     return await dataProvider.checkStartedTrip();
   }
+
+  Future<void> sendNotification(RideRequest request, String requestId) async {
+    return await dataProvider.sendNotification(request, requestId);
+  }
 }

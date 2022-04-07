@@ -38,3 +38,13 @@ class RideRequestCheckStartedTrip extends RideRequestEvent {
   @override
   List<Object?> get props => [];
 }
+
+class RideRequestSendNotification extends RideRequestEvent {
+  final RideRequest request;
+  final String id;
+
+  const RideRequestSendNotification(this.request, this.id);
+
+  @override
+  List<Object> get props => [request, id];
+}
