@@ -44,8 +44,8 @@ class _CancelReasonState extends State<CancelReason> {
   }
 
   void cancelTrip() {
-    RideRequestEvent event =
-        RideRequestChangeStatus(rideRequestId, widget.arg.sendRequest);
+    RideRequestEvent event = RideRequestChangeStatus(
+        rideRequestId, 'Cancel', widget.arg.sendRequest);
     BlocProvider.of<RideRequestBloc>(context).add(event);
   }
 
@@ -81,9 +81,6 @@ class _CancelReasonState extends State<CancelReason> {
                     ),
                     onPressed: () {
                       cancelTrip();
-                      Navigator.pushReplacementNamed(
-                          context, HomeScreen.routeName,
-                          arguments: HomeScreenArgument(isSelected: false));
                     },
                     child: const Text(
                       "Confirm",

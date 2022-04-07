@@ -29,7 +29,7 @@ class RideRequestBloc extends Bloc<RideRequestEvent, RideRequestState> {
 
       try {
         await rideRequestRepository.changeRequestStatus(
-            event.id, event.sendRequest);
+            event.id, event.status, event.sendRequest);
         yield RideRequestStatusChangedSuccess();
       } catch (_) {
         yield RideRequestOperationFailur();
@@ -55,6 +55,17 @@ class RideRequestBloc extends Bloc<RideRequestEvent, RideRequestState> {
         yield RideRequestStartedTripChecked(rideRequest);
       } catch (_) {
         RideRequestOperationFailur();
+      }
+    }
+
+    if (event is RideRequestSendNotification) {
+      yield RideRequestLoading();
+
+      try {
+        await rideRequestRepository.sendNotification(event.request, event.id);
+        yield RideRequestNotificationSent();
+      } catch (_) {
+        yield RideRequestOperationFailur();
       }
     }
   }

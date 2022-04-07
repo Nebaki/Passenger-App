@@ -39,7 +39,7 @@ class CancelTrip extends StatelessWidget {
                   ),
                   onPressed: () {
                     Navigator.pushNamed(context, CancelReason.routeName,
-                        arguments: CancelReasonArgument(sendRequest: false));
+                        arguments: CancelReasonArgument(sendRequest: true));
                   },
                   child: const Text(
                     "Yes, Cancel",
