@@ -243,6 +243,7 @@ class _ServiceState extends State<Service> {
                                 RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(10)))),
                         onPressed: () {
+                          driverFcm = state.driver.fcmId;
                           sendNotification(state.driver.fcmId, state.driver.id);
                           // print(name);
 

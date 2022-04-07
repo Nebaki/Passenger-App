@@ -21,11 +21,12 @@ class RideRequestCreate extends RideRequestEvent {
 class RideRequestChangeStatus extends RideRequestEvent {
   final String id;
   final bool sendRequest;
+  final String status;
 
-  const RideRequestChangeStatus(this.id, this.sendRequest);
+  const RideRequestChangeStatus(this.id, this.status, this.sendRequest);
 
   @override
-  List<Object> get props => [id, this.sendRequest];
+  List<Object> get props => [id, status, sendRequest];
 }
 
 class RideRequestLoad extends RideRequestEvent {
@@ -36,4 +37,14 @@ class RideRequestLoad extends RideRequestEvent {
 class RideRequestCheckStartedTrip extends RideRequestEvent {
   @override
   List<Object?> get props => [];
+}
+
+class RideRequestSendNotification extends RideRequestEvent {
+  final RideRequest request;
+  final String id;
+
+  const RideRequestSendNotification(this.request, this.id);
+
+  @override
+  List<Object> get props => [request, id];
 }

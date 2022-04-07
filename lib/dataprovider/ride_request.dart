@@ -111,6 +111,8 @@ class RideRequestDataProvider {
   }
 
   Future sendCanceledNotification(String fcmToken) async {
+    print(
+        "come on come on turn the radio on it;s friday night status ${driverFcm}");
     final response = await http.post(
       Uri.parse(_fcmUrl),
       headers: <String, String>{
@@ -120,13 +122,23 @@ class RideRequestDataProvider {
       body: json.encode({
         "data": {'response': 'Cancelled'},
         "android": {"priority": "high"},
-        "to": fcmToken,
+        "to": driverFcm,
         "notification": {
           "title": "RideRequest Cancelled",
-          "body": "The rider has cancceled the request"
+          "body": "The rider has canceled the request"
         }
       }),
     );
+    print(
+        "come on come on turn the radio on it;s friday night status ${response.statusCode}");
+
+    if (response.statusCode == 200) {
+      print("Bodyyyyyyyyyyyyyyyyyyy ${response.body}");
+      final data = (response.body);
+      //return NotificationRequest.fromJson(data);
+    } else {
+      throw Exception('Failed to send notification.');
+    }
   }
 
   Future sendNotification(RideRequest request, String requestId) async {
@@ -188,8 +200,10 @@ class RideRequestDataProvider {
     }
   }
 
-  Future<void> changeRequestStatus(String status, bool sendRequest) async {
-    print("we Are hereeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee!!!!!!!!!!!!!!");
+  Future<void> changeRequestStatus(
+      String id, String status, bool sendRequest) async {
+    print(
+        "we Are hereeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee!!!!!!!!!!!!!! $id $status, $sendRequest");
     print(rideRequestId);
 
     final response = await http.post(
@@ -198,12 +212,16 @@ class RideRequestDataProvider {
           'Content-Type': 'application/json',
           "x-access-token": '${await authDataProvider.getToken()}'
         },
-        body: json.encode({'status': status}));
+        body: json.encode({'status': 'Canceled'}));
 
-    print("this is the status code: ${response.statusCode}");
+    print("this is the status codesssssssss: ${response.statusCode}");
     if (response.statusCode == 200) {
+      print("finally we are here: ${response.statusCode} ${sendRequest}");
+
       if (sendRequest) {
-        sendCanceledNotification("fcmToken");
+        print("finally we are here and here: ${response.statusCode}");
+
+        sendCanceledNotification(driverFcm);
       }
     } else {
       throw Exception('Failed to respond to the request.');
