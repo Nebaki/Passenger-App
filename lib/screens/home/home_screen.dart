@@ -530,12 +530,15 @@ class _HomeScreenState extends State<HomeScreen> {
               final cat = driver.split(',')[1];
               final id = driver.split(',')[0];
               if (cat == "Truck") {
+                print("Truckkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk");
                 truckRepo.addDriver(NearbyDriver(
                     id: id,
                     latitude: map['latitude'],
                     longitude: map['longitude']));
                 showTrucksOnMap();
               } else {
+                print("driverrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr");
+
                 repo.addDriver(NearbyDriver(
                     id: map['key'],
                     latitude: map['latitude'],
@@ -554,10 +557,16 @@ class _HomeScreenState extends State<HomeScreen> {
               final id = driver.split(',')[0];
               if (cat == "Truck") {
                 truckRepo.removeDriver(id);
-                showTrucksOnMap();
+                setState(() {
+                  markers.remove(MarkerId(id));
+                });
+                // showTrucksOnMap();
               } else {
                 repo.removeDriver(map['key']);
-                showDriversOnMap();
+                setState(() {
+                  markers.remove(MarkerId(map['key']));
+                });
+                // showDriversOnMap();
               }
 
               print("now");
@@ -590,8 +599,8 @@ class _HomeScreenState extends State<HomeScreen> {
               break;
 
             case Geofire.onGeoQueryReady:
-              showTrucksOnMap();
-              showDriversOnMap();
+              // showTrucksOnMap();
+              // showDriversOnMap();
               print(map['result']);
 
               break;
@@ -623,12 +632,15 @@ class _HomeScreenState extends State<HomeScreen> {
             Marker(markerId: markerId, position: driverPosition, icon: value);
 
         newMarker[markerId] = marker;
+        setState(() {
+          markers[markerId] = marker;
+        });
       });
     }
 
-    setState(() {
-      markers = newMarker;
-    });
+    // setState(() {
+    //   markers = newMarker;
+    // });
   }
 
   void showTrucksOnMap() {
@@ -646,12 +658,15 @@ class _HomeScreenState extends State<HomeScreen> {
             Marker(markerId: markerId, position: driverPosition, icon: value);
 
         newMarker[markerId] = marker;
+        setState(() {
+          markers[markerId] = marker;
+        });
       });
     }
 
-    setState(() {
-      markers = newMarker;
-    });
+    // setState(() {
+    //   markers = newMarker;
+    // });
   }
 
   String? searchNearbyDriver() {
