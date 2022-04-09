@@ -194,6 +194,7 @@ late String direction;
 String? driverName;
 String? driverId;
 String? driverImage;
+Map<String, String>? vehicle;
 double? driverRating;
 late String driverFcm;
 const initialPosition = LatLng(8.9806, 38.7578);

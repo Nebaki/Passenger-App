@@ -38,6 +38,8 @@ class _ServiceState extends State<Service> {
 
   @override
   Widget build(BuildContext context) {
+    print("YAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAYs");
+
     return BlocConsumer<RideRequestBloc, RideRequestState>(builder: (_, state) {
       return serviceTypeWidget();
     }, listener: (_, state) {
@@ -140,6 +142,7 @@ class _ServiceState extends State<Service> {
                         _isSelected = 2;
                         priceMultiplier = 2;
                         durationMultiplier = 2;
+
                         DriverEvent event =
                             DriverLoad(widget.searchNeabyDriver());
                         BlocProvider.of<DriverBloc>(context).add(event);

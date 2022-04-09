@@ -5,7 +5,7 @@ import '../../models/models.dart';
 
 class DriverBloc extends Bloc<DriverEvent, DriverState> {
   final DriverRepository driverRepository;
-  DriverBloc({required this.driverRepository}) : super(const DriverState());
+  DriverBloc({required this.driverRepository}) : super(DriverLoading());
 
   @override
   Stream<DriverState> mapEventToState(DriverEvent event) async* {

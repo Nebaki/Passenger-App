@@ -21,9 +21,13 @@ class _DirectionDetailState extends State<DirectionDetail> {
   final _blackTextStyle = TextStyle(color: Colors.black);
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<DirectionBloc, DirectionState>(
-      listener: (_, state) {
+    return BlocBuilder<DirectionBloc, DirectionState>(
+      builder: (_, state) {
+        print("YAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAY");
+
         if (state is DirectionLoadSuccess) {
+          print("YAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAYyy");
+
           double timeTraveledFare = (state.direction.durationValue / 60) * 0.20;
           double distanceTraveldFare =
               (state.direction.distanceValue / 100) * 0.20;
@@ -38,54 +42,59 @@ class _DirectionDetailState extends State<DirectionDetail> {
               ((state.direction.durationValue / 60) * widget.durationMultiplier)
                   .truncate()
                   .toString();
+          return Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text.rich(TextSpan(
+                      text: "Price:      ",
+                      style: _greyTextStyle,
+                      children: [
+                        TextSpan(text: "\$ $price", style: _blackTextStyle)
+                      ])),
+                  SizedBox(
+                    height: 5,
+                  ),
+                  Text.rich(TextSpan(
+                      text: "Member: ",
+                      style: _greyTextStyle,
+                      children: [
+                        TextSpan(text: "1-4", style: _blackTextStyle)
+                      ]))
+                ],
+              ),
+              SizedBox(height: 35, child: VerticalDivider()),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text.rich(TextSpan(
+                      text: "Distance: ",
+                      style: _greyTextStyle,
+                      children: [
+                        TextSpan(text: "$distance km", style: _blackTextStyle)
+                      ])),
+                  SizedBox(
+                    height: 5,
+                  ),
+                  Text.rich(TextSpan(
+                      text: "Time:      ",
+                      style: _greyTextStyle,
+                      children: [
+                        TextSpan(text: "$duration min", style: _blackTextStyle)
+                      ]))
+                ],
+              )
+            ],
+          );
         }
+        return Container();
       },
-      builder: (_, state) {
-        return Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text.rich(TextSpan(
-                    text: "Price:      ",
-                    style: _greyTextStyle,
-                    children: [
-                      TextSpan(text: "\$ $price", style: _blackTextStyle)
-                    ])),
-                SizedBox(
-                  height: 5,
-                ),
-                Text.rich(TextSpan(
-                    text: "Member: ",
-                    style: _greyTextStyle,
-                    children: [TextSpan(text: "1-4", style: _blackTextStyle)]))
-              ],
-            ),
-            SizedBox(height: 35, child: VerticalDivider()),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text.rich(TextSpan(
-                    text: "Distance: ",
-                    style: _greyTextStyle,
-                    children: [
-                      TextSpan(text: "$distance km", style: _blackTextStyle)
-                    ])),
-                SizedBox(
-                  height: 5,
-                ),
-                Text.rich(TextSpan(
-                    text: "Time:      ",
-                    style: _greyTextStyle,
-                    children: [
-                      TextSpan(text: "$duration min", style: _blackTextStyle)
-                    ]))
-              ],
-            )
-          ],
-        );
-      },
+      // builder: (_, state) {
+      //   print("YAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAYay");
+
+      // },
     );
   }
 }

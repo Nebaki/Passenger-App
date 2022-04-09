@@ -343,6 +343,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 // markers: Set<Marker>.of(markers.values),
                 shouldAnimateCamera: true,
                 child: GoogleMap(
+                  padding: EdgeInsets.only(top: 100, right: 10, bottom: 250),
                   // scrollGesturesEnabled: false,
                   // zoomGesturesEnabled: false,
                   // rotateGesturesEnabled: false,
@@ -540,7 +541,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 print("driverrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr");
 
                 repo.addDriver(NearbyDriver(
-                    id: map['key'],
+                    id: id,
                     latitude: map['latitude'],
                     longitude: map['longitude']));
                 showDriversOnMap();
@@ -562,9 +563,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 });
                 // showTrucksOnMap();
               } else {
-                repo.removeDriver(map['key']);
+                repo.removeDriver(id);
                 setState(() {
-                  markers.remove(MarkerId(map['key']));
+                  markers.remove(MarkerId(id));
                 });
                 // showDriversOnMap();
               }
@@ -589,7 +590,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 print(map['key']);
 
                 repo.updateDriver(NearbyDriver(
-                    id: map['key'],
+                    id: id,
                     latitude: map['latitude'],
                     longitude: map['longitude']));
                 showDriversOnMap();
@@ -723,7 +724,7 @@ class _HomeScreenState extends State<HomeScreen> {
     }
 
     outerController
-        .animateCamera(CameraUpdate.newLatLngBounds(latLngBounds, 70));
+        .animateCamera(CameraUpdate.newLatLngBounds(latLngBounds, 100));
   }
 
   void _toggleServiceStatusStream() {
