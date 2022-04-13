@@ -193,7 +193,8 @@ class MyApp extends StatelessWidget {
               BlocProvider(
                   create: (context) => RideRequestBloc(
                       rideRequestRepository: rideRequestRepository)
-                    ..add(RideRequestCheckStartedTrip())),
+                    ..add(RideRequestCheckStartedTrip())
+                    ..add(RideRequestLoad())),
               BlocProvider(
                   create: (context) => NotificationRequestBloc(
                       notificationRequestRepository:

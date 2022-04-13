@@ -254,8 +254,8 @@ class _CustomSplashScreenState extends State<CustomSplashScreen> {
   }
 
   void loadRideRequest() {
-    RideRequestEvent event = RideRequestLoad();
-    BlocProvider.of<RideRequestBloc>(context).add(event);
+    // RideRequestEvent event = RideRequestLoad();
+    BlocProvider.of<RideRequestBloc>(context).add(RideRequestLoad());
   }
 }
 

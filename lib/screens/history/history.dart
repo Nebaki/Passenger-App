@@ -1,38 +1,59 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:passengerapp/bloc/bloc.dart';
+import 'package:passengerapp/models/models.dart';
+import 'package:passengerapp/rout.dart';
 import 'package:passengerapp/screens/screens.dart';
 import 'package:passengerapp/widgets/widgets.dart';
 
-class HistoryPage extends StatelessWidget {
+class HistoryPage extends StatefulWidget {
+  static const routeName = "/history";
+
+  @override
+  State<HistoryPage> createState() => _HistoryPageState();
+}
+
+class _HistoryPageState extends State<HistoryPage> {
   final _textStyle = TextStyle(fontSize: 20);
 
-  static const routeName = "/history";
+  @override
+  void initState() {
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          elevation: 0,
-          iconTheme: const IconThemeData(color: Colors.black),
-          backgroundColor: Colors.grey.shade100,
-          title: const Text(
-            "Trips",
-            style: TextStyle(color: Colors.black),
-          ),
-          centerTitle: true,
-        ),
-        body: BlocBuilder<RideRequestBloc, RideRequestState>(
+        // appBar: AppBar(
+        //   elevation: 0,
+        //   iconTheme: const IconThemeData(color: Colors.black),
+        //   backgroundColor: Colors.grey.shade100,
+        //   title: const Text(
+        //     "Trips",
+        //     style: TextStyle(color: Colors.black),
+        //   ),
+        //   centerTitle: true,
+        // ),
+        body: Stack(
+      children: [
+        BlocBuilder<RideRequestBloc, RideRequestState>(
           builder: (context, state) {
             if (state is RideRequestLoadSuccess) {
-              return ListView.builder(
-                itemCount: state.rideRequests.length,
-                itemBuilder: (context, index) {
-                  return _builHistoryCard(
-                      context,
-                      state.rideRequests[index].pickUpAddress,
-                      state.rideRequests[index].droppOffAddress);
-                },
-                padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
+              return Padding(
+                padding: const EdgeInsets.only(top: 80),
+                child: ListView.builder(
+                  itemCount: state.rideRequests.length,
+                  itemBuilder: (context, index) {
+                    return _builHistoryCard(
+                        context,
+                        state.rideRequests[index].pickUpAddress,
+                        state.rideRequests[index].droppOffAddress,
+                        state.rideRequests[index].status!,
+                        state.rideRequests[index].date!,
+                        state.rideRequests[index].time!);
+                  },
+                  padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
+                ),
               );
             }
             if (state is RideRequestOperationFailur) {
@@ -45,7 +66,19 @@ class HistoryPage extends StatelessWidget {
                   strokeWidth: 1,
                 ));
           },
-        ));
+        ),
+        CustomeBackArrow(),
+        Padding(
+          padding: const EdgeInsets.only(top: 50),
+          child: Align(
+              alignment: Alignment.topCenter,
+              child: Text(
+                "History",
+                style: Theme.of(context).textTheme.titleLarge,
+              )),
+        )
+      ],
+    ));
   }
 
   Widget _savedItems({
@@ -81,13 +114,21 @@ class HistoryPage extends StatelessWidget {
     );
   }
 
-  Widget _builHistoryCard(
-      BuildContext context, String? pickupAddress, String? droppoffAddress) {
+  Widget _builHistoryCard(BuildContext context, String? pickupAddress,
+      String? droppoffAddress, String status, String date, String time) {
+    String st = status.substring(0, 1);
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: GestureDetector(
         onTap: () {
-          Navigator.pushNamed(context, DetailHistoryScreen.routeName);
+          Navigator.pushNamed(context, DetailHistoryScreen.routeName,
+              arguments: DetailHistoryArgument(
+                  request: RideRequest(
+                      pickUpAddress: pickupAddress,
+                      droppOffAddress: droppoffAddress,
+                      driverId: 'driverId',
+                      date: date,
+                      time: time)));
         },
         child: Container(
           padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
@@ -111,9 +152,17 @@ class HistoryPage extends StatelessWidget {
                     child: Container(
                         padding: const EdgeInsets.symmetric(
                             horizontal: 8, vertical: 2),
-                        color: Colors.grey,
-                        child: const Text("P",
-                            style: TextStyle(
+                        color: status == "Completed"
+                            ? Colors.green
+                            : status == "Cancelled"
+                                ? Colors.red
+                                : status == "Accepted"
+                                    ? Colors.indigo.shade900
+                                    : status == "Searching"
+                                        ? Colors.indigo
+                                        : Colors.grey,
+                        child: Text(st,
+                            style: const TextStyle(
                                 color: Colors.white,
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold))),
@@ -140,17 +189,21 @@ class HistoryPage extends StatelessWidget {
                 children: [
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: const [
+                    children: [
                       Text(
-                        "05/02/2022",
+                        date,
                         style: TextStyle(color: Colors.black38),
                       ),
-                      SizedBox(
-                        width: 20,
+                      const SizedBox(
+                        width: 10,
                       ),
                       Text(
-                        "10:16 AM",
+                        time,
                         style: TextStyle(color: Colors.black38),
+                      ),
+                      Text(status),
+                      const SizedBox(
+                        width: 10,
                       ),
                     ],
                   ),

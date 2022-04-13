@@ -25,4 +25,10 @@ class RideRequestRepository {
   Future<void> sendNotification(RideRequest request, String requestId) async {
     return await dataProvider.sendNotification(request, requestId);
   }
+
+  Future cancelRideRequest(String id, String cancelReason, String? passengerFcm,
+      bool sendRequest) async {
+    return await dataProvider.cancelRideRequest(
+        id, cancelReason, passengerFcm, sendRequest);
+  }
 }

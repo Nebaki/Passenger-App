@@ -37,3 +37,5 @@ class RideRequestStartedTripChecked extends RideRequestState {
 }
 
 class RideRequestNotificationSent extends RideRequestState {}
+
+class RideRequestCancelled extends RideRequestState {}

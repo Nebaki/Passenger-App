@@ -1,14 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:passengerapp/rout.dart';
 
 class DetailHistoryScreen extends StatelessWidget {
   static const routeName = "/detailhistory";
+  final DetailHistoryArgument args;
+
+  DetailHistoryScreen({Key? key, required this.args}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
         centerTitle: true,
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.black,
         title: const Text("Trip Details"),
         actions: [
           Padding(
@@ -34,13 +38,13 @@ class DetailHistoryScreen extends StatelessWidget {
                 child: Column(
                   children: [
                     Row(
-                      children: const [
-                        Icon(
+                      children: [
+                        const Icon(
                           Icons.location_on_outlined,
                           color: Colors.blue,
                         ),
                         Text(
-                          "Bole Airport,Addis Abeba",
+                          args.request.pickUpAddress!,
                         )
                       ],
                     ),
@@ -48,9 +52,10 @@ class DetailHistoryScreen extends StatelessWidget {
                       height: 5,
                     ),
                     Row(
-                      children: const [
-                        Icon(Icons.location_on_outlined, color: Colors.green),
-                        Text("Meskel Flower,Addis Abeba")
+                      children: [
+                        const Icon(Icons.location_on_outlined,
+                            color: Colors.green),
+                        Text(args.request.droppOffAddress!)
                       ],
                     ),
                     const Center(
@@ -100,9 +105,9 @@ class DetailHistoryScreen extends StatelessWidget {
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: const [
+                      children: [
                         Text("Date & Time"),
-                        Text("14 Feb'19 at 9:42 am")
+                        Text('${args.request.date!} at ${args.request.time!}')
                       ],
                     ),
                     const SizedBox(
@@ -123,20 +128,20 @@ class DetailHistoryScreen extends StatelessWidget {
                       height: 10,
                     ),
                     const Divider(),
-                    Center(
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: const [
-                          Text("You rated: Yonas Kebede"),
-                          SizedBox(
-                            width: 10,
-                          ),
-                          CircleAvatar(
-                            radius: 10,
-                          )
-                        ],
-                      ),
-                    )
+                    // Center(
+                    //   child: Row(
+                    //     mainAxisAlignment: MainAxisAlignment.center,
+                    //     children: const [
+                    //       Text("You rated: Yonas Kebede"),
+                    //       SizedBox(
+                    //         width: 10,
+                    //       ),
+                    //       CircleAvatar(
+                    //         radius: 10,
+                    //       )
+                    //     ],
+                    //   ),
+                    // )
                   ],
                 ),
               ),

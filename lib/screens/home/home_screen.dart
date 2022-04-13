@@ -8,6 +8,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_geofire/flutter_geofire.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:intl/intl.dart';
 import 'package:passengerapp/bloc/bloc.dart';
 import 'package:passengerapp/bloc/driver/driver_bloc.dart';
 import 'package:passengerapp/drawer/drawer.dart';
@@ -347,6 +348,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   // scrollGesturesEnabled: false,
                   // zoomGesturesEnabled: false,
                   // rotateGesturesEnabled: false,
+
+                  zoomControlsEnabled: false,
                   mapType: MapType.normal,
                   myLocationButtonEnabled: false,
                   initialCameraPosition: _addissAbaba,

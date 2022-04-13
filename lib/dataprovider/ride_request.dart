@@ -9,6 +9,8 @@ class RideRequestDataProvider {
   final _fcmUrl = 'https://fcm.googleapis.com/fcm/send';
 
   final _baseUrl = 'https://safeway-api.herokuapp.com/api/ride-requests';
+  final _maintenanceUrl =
+      'https://mobiletaxi-api.herokuapp.com/api/ride-requests';
   final _secondUrl = 'https://mobiletaxi-api.herokuapp.com/api/ride-requests';
   final http.Client httpClient;
   AuthDataProvider authDataProvider =
@@ -43,7 +45,7 @@ class RideRequestDataProvider {
 
   Future<List<RideRequest>> getRideRequests() async {
     final http.Response response = await http.get(
-        Uri.parse('$_baseUrl/get-ride-requests'),
+        Uri.parse('$_maintenanceUrl/get-ride-requests'),
         headers: <String, String>{
           'Content-Type': "application/json",
           'x-access-token': '${await authDataProvider.getToken()}'
@@ -225,6 +227,53 @@ class RideRequestDataProvider {
       }
     } else {
       throw Exception('Failed to respond to the request.');
+    }
+  }
+
+  Future cancelRideRequest(
+      String id, String cancelReason, String? fcmId, bool sendRequest) async {
+    final http.Response response =
+        await http.post(Uri.parse('$_baseUrl/cancel-ride-request/$id'),
+            headers: <String, String>{
+              "Content-Type": "application/json",
+              "x-access-token": "${await authDataProvider.getToken()}"
+            },
+            body: json.encode({'cancel_reason': cancelReason}));
+
+    print("response ${response.statusCode} ${response.body}");
+
+    if (response.statusCode == 200) {
+      if (sendRequest) {
+        cancelNotification(fcmId!);
+      }
+    } else {
+      throw 'Unable to cancel the request';
+    }
+  }
+
+  Future cancelNotification(String fcmId) async {
+    final response = await http.post(
+      Uri.parse(_fcmUrl),
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+        'Authorization': 'key=$token'
+      },
+      body: json.encode({
+        "data": {'response': 'Cancelled'},
+        "to": fcmId,
+        "notification": {
+          "title": "RideRequest Cancelled",
+          "body": "Your ride request has been Cancelled."
+        }
+      }),
+    );
+
+    print(response.statusCode);
+
+    if (response.statusCode == 200) {
+      final data = (response.body);
+    } else {
+      throw Exception('Failed to send notification.');
     }
   }
 }
