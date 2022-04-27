@@ -11,11 +11,11 @@ class DriverModel extends Equatable {
   String profileImage;
   String fcmId;
   double rating;
-  Map<String, String> vehicle;
+  Map<String, dynamic>? vehicle;
 
   DriverModel(
       {required this.id,
-      required this.vehicle,
+      this.vehicle,
       required this.firstName,
       required this.lastName,
       required this.phoneNumber,
@@ -37,19 +37,20 @@ class DriverModel extends Equatable {
       ];
 
   factory DriverModel.fromJson(Map<String, dynamic> json) {
+    print('jsjsjjs $json');
     return DriverModel(
-        id: json["driver"]["id"],
-        firstName: json["driver"]["first_name"],
-        lastName: json["driver"]["last_name"],
-        gender: json["driver"]["gender"],
-        phoneNumber: json["driver"]["phone_number"],
-        profileImage: json["driver"]["profile_image"] ?? '',
-        fcmId: json['driver']['fcm_id'],
-        rating: json['driver']['avg_rate']['score'],
+        id: json["id"],
+        firstName: json["first_name"],
+        lastName: json["last_name"],
+        gender: json["gender"],
+        phoneNumber: json["phone_number"],
+        profileImage: json["profile_image"] ?? '',
+        fcmId: json['fcm_id'],
+        rating: double.parse(json['avg_rate']['score'].toString()),
         vehicle: {
-          'model': json['driver']['vehicle']['model'],
-          'plate_number': json['driver']['vehicle']['plate_number'],
-          "color": json['driver']['vehicle']['color']
+          'model': json['vehicle']['model'],
+          'plate_number': json['vehicle']['plate_number'],
+          "color": json['vehicle']['color']
         });
   }
 

@@ -16,100 +16,43 @@ class PushNotificationService {
   NearbyDriverRepository repo = NearbyDriverRepository();
   final player = AssetsAudioPlayer();
 
-  String? searchNearbyDriver() {
-    if (repo.getNearbyDrivers().isEmpty) {
-      return null;
-    }
-    var nearest;
-    var nearestDriver;
-
-    for (NearbyDriver driver in repo.getNearbyDrivers()) {
-      print("drivers ::");
-      print(driver.id);
-      double distance = Geolocator.distanceBetween(
-          8.9966827, 38.7675547, driver.latitude, driver.longitude);
-
-      nearest ??= distance;
-
-      print(distance);
-
-      if (distance <= nearest) {
-        nearest = distance;
-        nearestDriver = driver;
-      }
-    }
-
-    print(nearestDriver.id);
-
-    return nearestDriver.id;
-  }
-
-  void sendNotification(String fcmToken, String id) async {
-    print(' driver fcm $fcmToken');
-    // _isLoading = true;
-  }
-
   Future initialize(context, callback, searchNearbyDriver) async {
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       RemoteNotification? notification = message.notification;
       AndroidNotification? android = message.notification?.android;
       print('this is the respomse : ${message.data['response']}');
       player.open(Audio("assets/sounds/announcement-sound.mp3"));
-
-      // print("yow yo mikiki ${message.data['response']}");
-      if (message.data['response'] == "Accepted") {
-        callback(DriverOnTheWay(callback));
-      } else if (message.data['response'] == "Arrived") {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: const Text(" Driver Arrived"),
-          backgroundColor: Colors.indigo.shade900,
-        ));
-      } else if (message.data['response'] == "Cancelled") {
-        List oldList = [];
-        if (repo.getNearbyDrivers().isNotEmpty) {
-          print(
-              "Here is Ther  list ${repo.getNearbyDrivers().length} ${repo.getNearbyDrivers().map((e) => e.id)}");
-          repo.removeDriver(searchNearbyDriver());
-
-          print(
-              "Here is Ther  list ${repo.getNearbyDrivers().length} ${repo.getNearbyDrivers().map((e) => e.id)}");
-
-          // repo.removeDriver(searchNearbyDriver());
-          // searchNearbyDriver();
-          DriverEvent event = DriverLoad(searchNearbyDriver());
-          BlocProvider.of<DriverBloc>(context).add(event);
-
-          // BlocListener(listener: (_, state) {
-          //   print('so the state is $state');
-          //   if (state is DriverLoadSuccess) {
-          //     RideRequestEvent riderequestEvent = RideRequestCreate(RideRequest(
-          //         // driverFcm: state.driver.fcmId,
-          //         driverId: state.driver.id,
-          //         passengerName: name,
-          //         passengerPhoneNumber: number,
-          //         pickUpAddress: pickupAddress,
-          //         droppOffAddress: droppOffAddress,
-          //         pickupLocation: pickupLatLng,
-          //         dropOffLocation: droppOffLatLng));
-          //     BlocProvider.of<RideRequestBloc>(_).add(riderequestEvent);
-          //   }
-          // });
-        } else {
+      switch (message.data['response']) {
+        case 'Accepted':
+          BlocProvider.of<DriverBloc>(context)
+              .add(DriverLoad(message.data['myId']));
+          callback(DriverOnTheWay(callback));
+          break;
+        case 'Arrived':
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: const Text(" Driver Arrived"),
+            backgroundColor: Colors.indigo.shade900,
+          ));
+          break;
+        case 'Cancelled':
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
             content: const Text(" Request cancelled"),
             backgroundColor: Colors.indigo.shade900,
           ));
           callback(Service(callback, searchNearbyDriver));
-        }
-      } else if (message.data['response'] == "Completed") {
-        print("it's Completedd");
-        Navigator.pushNamed(context, ReviewScreen.routeName);
-      } else {
-        print(message.data['response']);
+          break;
+        case 'Completed':
+          Navigator.pushNamed(context, ReviewScreen.routeName);
+          break;
+        case "TimeOut":
+          callback(Service(callback, searchNearbyDriver));
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: const Text("Time out"),
+            backgroundColor: Colors.indigo.shade900,
+          ));
+          break;
+        default:
       }
-      // message.data['response'] == "Accepted"
-      //     ? callback(DriverOnTheWay(callback))
-      //     : callback(Service(callback, searchNearbyDriver));
     });
 
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {

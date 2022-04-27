@@ -28,7 +28,7 @@ class DriverDataProvider {
     print(response.statusCode);
 
     if (response.statusCode == 200) {
-      final responseData = json.decode(response.body);
+      final responseData = json.decode(response.body)['driver'];
       return DriverModel.fromJson(responseData);
     } else {
       throw Exception('Failed to get driver.');

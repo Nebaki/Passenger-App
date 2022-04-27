@@ -72,3 +72,10 @@ class UserDelete extends UserEvent {
   @override
   toString() => 'User Deleted {Passenger: $user}';
 }
+
+class UserChangePassword extends UserEvent {
+  final Map<String, String> passwordInfo;
+  const UserChangePassword(this.passwordInfo);
+  @override
+  List<Object?> get props => [passwordInfo];
+}

@@ -133,27 +133,27 @@ class NavDrawer extends StatelessWidget {
                         icon: Icons.border_outer_rounded,
                         text: "Order for other"),
                   ),
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.pushNamed(context, ReviewScreen.routeName);
-                    },
-                    child: _menuItem(
-                        divider: true,
-                        context: context,
-                        icon: Icons.person,
-                        text: "Award"),
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      // BlocProvider.of<AuthBloc>(context).add(AuthDataLoad());
-                      Navigator.pushNamed(context, PlacePickerScreen.routeName);
-                    },
-                    child: _menuItem(
-                        divider: true,
-                        context: context,
-                        icon: Icons.person,
-                        text: "Contact us"),
-                  ),
+                  // GestureDetector(
+                  //   onTap: () {
+                  //     Navigator.pushNamed(context, ReviewScreen.routeName);
+                  //   },
+                  //   child: _menuItem(
+                  //       divider: true,
+                  //       context: context,
+                  //       icon: Icons.person,
+                  //       text: "Award"),
+                  // ),
+                  // GestureDetector(
+                  //   onTap: () {
+                  //     // BlocProvider.of<AuthBloc>(context).add(AuthDataLoad());
+                  //     Navigator.pushNamed(context, PlacePickerScreen.routeName);
+                  //   },
+                  //   child: _menuItem(
+                  //       divider: true,
+                  //       context: context,
+                  //       icon: Icons.person,
+                  //       text: "Contact us"),
+                  // ),
                   GestureDetector(
                     onTap: () {
                       Navigator.pushNamed(context, SettingScreen.routeName);

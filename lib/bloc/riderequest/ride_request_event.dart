@@ -63,3 +63,13 @@ class RideRequestCancell extends RideRequestEvent {
         cancelReason,
       ];
 }
+
+class RideRequestOrderForOther extends RideRequestEvent {
+  final RideRequest request;
+  const RideRequestOrderForOther(this.request);
+  @override
+  List<Object> get props => [request];
+
+  @override
+  String toString() => 'Request Created {user: $request}';
+}

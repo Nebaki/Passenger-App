@@ -1,3 +1,6 @@
+import 'dart:isolate';
+import 'dart:ui';
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 
@@ -22,6 +25,10 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   // If you're going to use other Firebase services in the background, such as Firestore,
   // make sure you call `initializeApp` before using other Firebase services.
   await Firebase.initializeApp();
+
+  final SendPort? send = IsolateNameServer.lookupPortByName(portName);
+  send!.send(message);
+
   print('Handling a background message ${message.messageId}');
 }
 
@@ -70,6 +77,9 @@ void main() async {
       SavedLocationRepository(
           savedLocationDataProvider:
               SavedLocationDataProvider(httpClient: http.Client()));
+  final EmergencyReportRepository emergencyReportRepository =
+      EmergencyReportRepository(
+          dataProvider: EmergencyReportDataProvider(httpClient: http.Client()));
   runApp(MyApp(
     notificationRequestRepository: notificationRequestRepository,
     rideRequestRepository: rideRequestRepository,
@@ -83,6 +93,7 @@ void main() async {
     dataBaseHelperRepository: dataBaseHelperRepository,
     reviewRepository: reviewRepository,
     savedLocationRepository: savedLocationRepository,
+    emergencyReportRepository: emergencyReportRepository,
   ));
 }
 
@@ -132,6 +143,7 @@ class MyApp extends StatelessWidget {
   final ReviewRepository reviewRepository;
 
   final SavedLocationRepository savedLocationRepository;
+  final EmergencyReportRepository emergencyReportRepository;
 
   const MyApp(
       {Key? key,
@@ -146,7 +158,8 @@ class MyApp extends StatelessWidget {
       required this.directionRepository,
       required this.dataBaseHelperRepository,
       required this.reviewRepository,
-      required this.savedLocationRepository})
+      required this.savedLocationRepository,
+      required this.emergencyReportRepository})
       : super(key: key);
   @override
   Widget build(BuildContext context) {
@@ -166,7 +179,8 @@ class MyApp extends StatelessWidget {
           RepositoryProvider.value(value: authRepository),
           RepositoryProvider.value(value: dataBaseHelperRepository),
           RepositoryProvider.value(value: reviewRepository),
-          RepositoryProvider.value(value: savedLocationRepository)
+          RepositoryProvider.value(value: savedLocationRepository),
+          RepositoryProvider.value(value: emergencyReportRepository)
         ],
         child: MultiBlocProvider(
             providers: [
@@ -193,8 +207,7 @@ class MyApp extends StatelessWidget {
               BlocProvider(
                   create: (context) => RideRequestBloc(
                       rideRequestRepository: rideRequestRepository)
-                    ..add(RideRequestCheckStartedTrip())
-                    ..add(RideRequestLoad())),
+                    ..add(RideRequestCheckStartedTrip())),
               BlocProvider(
                   create: (context) => NotificationRequestBloc(
                       notificationRequestRepository:
@@ -213,6 +226,9 @@ class MyApp extends StatelessWidget {
                   create: (context) => SavedLocationBloc(
                       savedLocationRepository: savedLocationRepository)
                     ..add(SavedLocationsLoad())),
+              BlocProvider(
+                  create: (context) => EmergencyReportBloc(
+                      emergencyReportRepository: emergencyReportRepository)),
             ],
             child: MaterialApp(
               title: 'SafeWay',

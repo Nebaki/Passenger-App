@@ -7,6 +7,7 @@ import 'package:passengerapp/bloc/bloc.dart';
 import 'package:passengerapp/bloc/notificationrequest/notification_request_bloc.dart';
 import 'package:passengerapp/helper/constants.dart';
 import 'package:passengerapp/models/models.dart';
+import 'package:passengerapp/repository/nearby_driver.dart';
 import 'package:passengerapp/rout.dart';
 import 'package:passengerapp/screens/screens.dart';
 import 'package:passengerapp/widgets/widgets.dart';
@@ -58,6 +59,8 @@ class _ServiceState extends State<Service> {
       }
     });
   }
+
+  NearbyDriverRepository repo = NearbyDriverRepository();
 
   final _greyTextStyle = TextStyle(color: Colors.black26, fontSize: 14);
 
@@ -226,6 +229,7 @@ class _ServiceState extends State<Service> {
               const SizedBox(
                 height: 15,
               ),
+              // Text("${nextDrivers}"),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: SizedBox(
@@ -246,6 +250,8 @@ class _ServiceState extends State<Service> {
                                 RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(10)))),
                         onPressed: () {
+                          nextDrivers = repo.getIdList();
+                          nextDrivers.remove(state.driver.id);
                           driverFcm = state.driver.fcmId;
                           sendNotification(state.driver.fcmId, state.driver.id);
                           // print(name);

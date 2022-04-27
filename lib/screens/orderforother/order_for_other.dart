@@ -6,6 +6,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:passengerapp/bloc/bloc.dart';
 import 'package:passengerapp/bloc/notificationrequest/notification_request_bloc.dart';
+import 'package:passengerapp/helper/constants.dart';
 import 'package:passengerapp/helper/helper_functions.dart';
 import 'package:passengerapp/widgets/custome_back_arrow.dart';
 
@@ -31,6 +32,7 @@ class _OrderForOtherScreenState extends State<OrderForOtherScreen> {
   GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
   String? name;
   String? number;
+  bool _isLoading = false;
   String? driverId;
 
   @override
@@ -362,6 +364,21 @@ class _OrderForOtherScreenState extends State<OrderForOtherScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(),
+              BlocConsumer<RideRequestBloc, RideRequestState>(
+                  builder: (context, state) => Container(),
+                  listener: (context, state) {
+                    if (state is RideRequestSuccess) {
+                      setState(() {
+                        _isLoading = false;
+                      });
+                      Navigator.pop(context);
+                    }
+                    if (state is RideRequestOperationFailur) {
+                      setState(() {
+                        _isLoading = false;
+                      });
+                    }
+                  }),
               Text.rich(
                 TextSpan(
                     text: "Pickup Address:  ",
@@ -446,7 +463,13 @@ class _OrderForOtherScreenState extends State<OrderForOtherScreen> {
                                   onPressed: _droppOffPlaceDetail == null ||
                                           _pickUpPlaceDetail == null
                                       ? null
-                                      : details.onStepContinue,
+                                      : () {
+                                          BlocProvider.of<DirectionBloc>(
+                                                  context)
+                                              .add(DirectionLoad(
+                                                  destination: droppOffLatLng));
+                                          details.onStepContinue!();
+                                        },
                                   child: Text(
                                     "Next",
                                     style: TextStyle(color: Colors.black),
@@ -464,31 +487,74 @@ class _OrderForOtherScreenState extends State<OrderForOtherScreen> {
                               return Row(
                                 children: [
                                   ElevatedButton(
-                                      onPressed: () {
-                                        NotificationRequestEvent event =
-                                            NotificationRequestSend(
-                                                NotificationRequest(
-                                                    requestId: "d",
-                                                    pickupAddress:
-                                                        pickupAddress!,
-                                                    dropOffAddress:
-                                                        droppOffAddress!,
-                                                    passengerName: "name!",
-                                                    pickupLocation:
-                                                        pickupLatLng,
-                                                    fcmToken:
-                                                        state.driver.fcmId));
-                                        BlocProvider.of<
-                                                    NotificationRequestBloc>(
-                                                context)
-                                            .add(event);
-                                        Navigator.pop(context);
-                                        // geofireListener();
-                                      },
-                                      child: const Text(
-                                        "Confirm and Send Request",
-                                        style: TextStyle(color: Colors.black),
-                                      )),
+                                    onPressed: _isLoading
+                                        ? null
+                                        : () {
+                                            setState(() {
+                                              _isLoading = true;
+                                            });
+                                            RideRequestEvent event =
+                                                RideRequestOrderForOther(
+                                                    RideRequest(
+                                                        driverFcm:
+                                                            state.driver.fcmId,
+                                                        pickUpAddress:
+                                                            pickupAddress!,
+                                                        droppOffAddress:
+                                                            droppOffAddress!,
+                                                        pickupLocation:
+                                                            pickupLatLng,
+                                                        dropOffLocation:
+                                                            dropOffLatLng,
+                                                        passengerPhoneNumber:
+                                                            number));
+                                            BlocProvider.of<RideRequestBloc>(
+                                                    context)
+                                                .add(event);
+                                            // NotificationRequestEvent event =
+                                            //     NotificationRequestSend(
+                                            //         NotificationRequest(
+                                            //             requestId: "d",
+                                            //             pickupAddress:
+                                            //                 pickupAddress!,
+                                            //             dropOffAddress:
+                                            //                 droppOffAddress!,
+                                            //             passengerName: "name!",
+                                            //             pickupLocation:
+                                            //                 pickupLatLng,
+                                            //             fcmToken:
+                                            //                 state.driver.fcmId));
+                                            // BlocProvider.of<
+                                            //             NotificationRequestBloc>(
+                                            //         context)
+                                            //     .add(event);
+                                            // Navigator.pop(context);
+                                            // geofireListener();
+                                          },
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        const Text(
+                                          "Confirm",
+                                        ),
+                                        Align(
+                                          alignment: Alignment.centerRight,
+                                          child: _isLoading
+                                              ? const SizedBox(
+                                                  height: 20,
+                                                  width: 20,
+                                                  child:
+                                                      CircularProgressIndicator(
+                                                    strokeWidth: 2,
+                                                    color: Colors.black,
+                                                  ),
+                                                )
+                                              : Container(),
+                                        )
+                                      ],
+                                    ),
+                                  ),
                                   TextButton(
                                       onPressed: details.onStepCancel,
                                       child: const Text("Back"))
@@ -518,6 +584,27 @@ class _OrderForOtherScreenState extends State<OrderForOtherScreen> {
               ),
             ),
             CustomeBackArrow(),
+            BlocConsumer<DirectionBloc, DirectionState>(
+                builder: (context, state) => Container(),
+                listener: (context, state) {
+                  if (state is DirectionLoadSuccess) {
+                    double timeTraveledFare =
+                        (state.direction.durationValue / 60) * 0.20;
+                    double distanceTraveldFare =
+                        (state.direction.distanceValue / 100) * 0.20;
+                    double totalFareAmount =
+                        timeTraveledFare + distanceTraveldFare;
+
+                    double localFareAmount = totalFareAmount * 1;
+                    price = (localFareAmount * 1).truncate().toString();
+                    distance = (state.direction.distanceValue / 1000)
+                        .truncate()
+                        .toString();
+                    duration = ((state.direction.durationValue / 60) * 1)
+                        .truncate()
+                        .toString();
+                  }
+                }),
             BlocConsumer<PlaceDetailBloc, PlaceDetailState>(
               listener: (_, state) {
                 if (state is PlaceDetailLoadSuccess) {
@@ -536,6 +623,8 @@ class _OrderForOtherScreenState extends State<OrderForOtherScreen> {
                     setState(() {
                       droppOffAddress = state.placeDetail.placeName;
                       _droppOffPlaceDetail = state.placeDetail;
+                      droppOffLatLng =
+                          LatLng(state.placeDetail.lat, state.placeDetail.lng);
                       dropOffLatLng =
                           LatLng(state.placeDetail.lat, state.placeDetail.lng);
                     });
@@ -602,12 +691,15 @@ class _OrderForOtherScreenState extends State<OrderForOtherScreen> {
     final data = await Geofire.queryAtLocation(loc.latitude, loc.longitude, 1)!
         .elementAt(0);
 
+    String driver = data['key'];
+    nextDrivers = [];
+
     print("Hey yow ${data}");
     setState(() {
-      driverId = data['key'];
+      driverId = driver.split(',')[0];
     });
 
-    DriverEvent event = DriverLoad(data['key']);
+    DriverEvent event = DriverLoad(driver.split(',')[0]);
     BlocProvider.of<DriverBloc>(context).add(event);
   }
 }

@@ -27,4 +27,8 @@ class UserRepository {
   Future uploadProfilePicture(XFile file) async {
     await dataProvider.uploadImage(file);
   }
+
+  Future changePassword(Map<String, String> passwordInfo) async {
+    await dataProvider.changePassword(passwordInfo);
+  }
 }

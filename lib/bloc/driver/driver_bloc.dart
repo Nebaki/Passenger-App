@@ -15,6 +15,7 @@ class DriverBloc extends Bloc<DriverEvent, DriverState> {
         final driver = await driverRepository.getDriverById(event.id);
         yield DriverLoadSuccess(driver);
       } catch (_) {
+        print("erorss $_");
         yield DriverOperationFailure();
       }
     }

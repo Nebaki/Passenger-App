@@ -1,3 +1,5 @@
+import 'dart:isolate';
+import 'dart:ui';
 import 'package:app_settings/app_settings.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
@@ -14,6 +16,7 @@ import 'package:passengerapp/bloc/driver/driver_bloc.dart';
 import 'package:passengerapp/drawer/drawer.dart';
 import 'package:passengerapp/helper/constants.dart';
 import 'package:passengerapp/helper/url_launcher.dart';
+import 'package:passengerapp/models/models.dart';
 import 'package:passengerapp/models/nearby_driver.dart';
 import 'package:passengerapp/notification/push_notification_service.dart';
 import 'package:passengerapp/repository/nearby_driver.dart';
@@ -68,6 +71,7 @@ class _HomeScreenState extends State<HomeScreen> {
   late StreamSubscription<ConnectivityResult> _connectivitySubscription;
   ConnectivityResult _connectionStatus = ConnectivityResult.bluetooth;
   final Connectivity _connectivity = Connectivity();
+  final ReceivePort _port = ReceivePort();
 
   bool? isLocationOn;
   bool isModal = false;
@@ -135,6 +139,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
+    listenBackGroundMessage();
     initConnectivity();
     _connectivitySubscription =
         _connectivity.onConnectivityChanged.listen(_updateConnectionStatus);
@@ -161,6 +166,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void dispose() {
+    IsolateNameServer.removePortNameMapping(portName);
     _serviceStatusStreamSubscription!.cancel();
     _connectivitySubscription.cancel();
     Geofire.stopListener();
@@ -341,7 +347,7 @@ class _HomeScreenState extends State<HomeScreen> {
               return Animarker(
                 mapId: _controller.future.then((value) => value.mapId),
                 curve: Curves.ease,
-                // markers: Set<Marker>.of(markers.values),
+                markers: Set<Marker>.of(markers.values),
                 shouldAnimateCamera: true,
                 child: GoogleMap(
                   padding: EdgeInsets.only(top: 100, right: 10, bottom: 250),
@@ -355,7 +361,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   initialCameraPosition: _addissAbaba,
                   myLocationEnabled: true,
                   polylines: Set<Polyline>.of(polylines.values),
-                  markers: Set<Marker>.of(markers.values),
+                  // markers: Set<Marker>.of(markers.values),
                   onMapCreated: (GoogleMapController controller) {
                     _controller.complete(controller);
                     outerController = controller;
@@ -416,53 +422,179 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
             _currentWidget,
-            Align(
-              alignment: Alignment.centerRight,
-              child: ClipRRect(
-                borderRadius: const BorderRadius.only(
-                    bottomLeft: Radius.circular(30),
-                    topLeft: Radius.circular(30)),
-                child: Container(
-                  color: Colors.grey.shade300,
-                  child: IconButton(
-                      onPressed: () {
-                        makePhoneCall('9495');
-                      },
-                      icon: Icon(
-                        Icons.call,
-                        color: Colors.indigo.shade900,
-                        size: 30,
-                      )),
-                ),
-              ),
-            ),
+
             Align(
               alignment: Alignment.centerLeft,
               child: Text(repo.getNearbyDrivers().length.toString()),
             ),
-            Padding(
-              padding: const EdgeInsets.only(top: 20),
-              child: Align(
-                alignment: Alignment.topRight,
-                child: ElevatedButton(
-                    onPressed: () async {}, child: Text("Maintenance")),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(top: 60),
-              child: Align(
-                alignment: Alignment.topRight,
-                child: ElevatedButton(
-                    onPressed: () async {
-                      print(
-                          "Truckkkk is ${truckRepo.getNearbyDrivers().length}");
-                      print("drivers is ${repo.getNearbyDrivers().length}");
-                      // Navigator.push(
-                      //     context,
-                      //     MaterialPageRoute(
-                      //         builder: (context) => TestScreen()));
-                    },
-                    child: Text("Maintenance")),
+            // Padding(
+            //   padding: const EdgeInsets.only(top: 20),
+            //   child: Align(
+            //     alignment: Alignment.topRight,
+            //     child: ElevatedButton(
+            //         onPressed: () async {}, child: Text("Maintenance")),
+            //   ),
+            // ),
+            // Padding(
+            //   padding: const EdgeInsets.only(top: 60),
+            //   child: Align(
+            //     alignment: Alignment.topRight,
+            //     child: ElevatedButton(
+            //         onPressed: () async {
+            //           print(
+            //               "Truckkkk is ${truckRepo.getNearbyDrivers().length}");
+            //           print("drivers is ${repo.getNearbyDrivers().length}");
+            //           // Navigator.push(
+            //           //     context,
+            //           //     MaterialPageRoute(
+            //           //         builder: (context) => TestScreen()));
+            //         },
+            //         child: Text("Maintenance")),
+            //   ),
+            // ),
+            Align(
+              alignment: Alignment.centerRight,
+              child: SizedBox(
+                height: 300,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: SizedBox(
+                        height: 45,
+                        child: FloatingActionButton(
+                            heroTag: 'Mylocation',
+                            backgroundColor: Colors.grey.shade300,
+                            onPressed: () {
+                              outerController.animateCamera(
+                                  CameraUpdate.newCameraPosition(CameraPosition(
+                                      zoom: 16.4746,
+                                      target: LatLng(currentLatLng.latitude,
+                                          currentLatLng.longitude))));
+                            },
+                            child: Icon(
+                              Icons.gps_fixed,
+                              color: Colors.indigo.shade900,
+                            )),
+                      ),
+                    ),
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: ClipRRect(
+                        borderRadius: const BorderRadius.only(
+                            bottomLeft: Radius.circular(30),
+                            topLeft: Radius.circular(30)),
+                        child: Container(
+                          color: Colors.black,
+                          child: IconButton(
+                              onPressed: () {
+                                makePhoneCall('9495');
+                              },
+                              icon: const Icon(
+                                Icons.call,
+                                color: Colors.white,
+                                size: 30,
+                              )),
+                        ),
+                      ),
+                    ),
+                    BlocConsumer<EmergencyReportBloc, EmergencyReportState>(
+                        builder: (context, state) => Align(
+                              alignment: Alignment.centerRight,
+                              child: SizedBox(
+                                height: 45,
+                                child: FloatingActionButton(
+                                    heroTag: 'sos',
+                                    backgroundColor: Colors.grey.shade300,
+                                    onPressed: () {
+                                      EmergencyReportEvent event =
+                                          EmergencyReportCreate(EmergencyReport(
+                                              location: [
+                                            currentLatLng.latitude,
+                                            currentLatLng.longitude
+                                          ]));
+
+                                      BlocProvider.of<EmergencyReportBloc>(
+                                              context)
+                                          .add(event);
+                                    },
+                                    child: Text(
+                                      'SOS',
+                                      style: TextStyle(
+                                          color: Colors.indigo.shade900,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 18),
+
+                                      // color: Colors.indigo.shade900,
+                                      // size: 35,
+                                    )),
+                              ),
+                            ),
+                        listener: (context, state) {
+                          if (state is EmergencyReportCreating) {
+                            showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return AlertDialog(
+                                    content: Row(
+                                      children: const [
+                                        SizedBox(
+                                          height: 20,
+                                          width: 20,
+                                          child: CircularProgressIndicator(
+                                            strokeWidth: 1,
+                                            color: Colors.red,
+                                          ),
+                                        ),
+                                        SizedBox(
+                                          width: 5,
+                                        ),
+                                        Text("Reporting.."),
+                                      ],
+                                    ),
+                                  );
+                                });
+                          }
+                          if (state is EmergencyReportCreated) {
+                            Navigator.pop(context);
+
+                            showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return AlertDialog(
+                                    content: Row(
+                                      children: const [
+                                        SizedBox(
+                                            height: 20,
+                                            width: 20,
+                                            child: Icon(Icons.done,
+                                                color: Colors.green)),
+                                        SizedBox(
+                                          width: 5,
+                                        ),
+                                        Text("Emergency report has been sent"),
+                                      ],
+                                    ),
+                                    actions: [
+                                      TextButton(
+                                          onPressed: () {
+                                            Navigator.pop(context);
+                                          },
+                                          child: const Text('Okay'))
+                                    ],
+                                  );
+                                });
+                          }
+                          if (state is EmergencyReportOperationFailur) {
+                            Navigator.pop(context);
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                                content: const Text("Reporting Failed."),
+                                backgroundColor: Colors.red.shade900));
+                          }
+                        }),
+                  ],
+                ),
               ),
             ),
           ],
@@ -630,7 +762,7 @@ class _HomeScreenState extends State<HomeScreen> {
       MarkerId markerId = MarkerId(driver.id);
 
       BitmapDescriptor.fromAssetImage(
-              imageConfiguration, 'assets/icons/car.png')
+              imageConfiguration, 'assets/icons/luxury.png')
           .then((value) {
         Marker marker =
             Marker(markerId: markerId, position: driverPosition, icon: value);
@@ -656,7 +788,7 @@ class _HomeScreenState extends State<HomeScreen> {
       MarkerId markerId = MarkerId(driver.id);
 
       BitmapDescriptor.fromAssetImage(
-              imageConfiguration, 'assets/icons/rsz_truck-icon.png')
+              imageConfiguration, 'assets/icons/truck.png')
           .then((value) {
         Marker marker =
             Marker(markerId: markerId, position: driverPosition, icon: value);
@@ -783,6 +915,38 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {});
 
     print(response);
+  }
+
+  void listenBackGroundMessage() {
+    IsolateNameServer.registerPortWithName(_port.sendPort, portName);
+    _port.listen((message) {
+      switch (message.data['response']) {
+        case "Accepted":
+          BlocProvider.of<DriverBloc>(context)
+              .add(DriverLoad(message.data['myId']));
+          callback(DriverOnTheWay(callback));
+          break;
+        case "Arrived":
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: const Text(" Driver Arrived"),
+            backgroundColor: Colors.indigo.shade900,
+          ));
+          break;
+        case "Completed":
+          Navigator.pushNamed(context, ReviewScreen.routeName);
+          break;
+
+        case "TimeOut":
+          callback(Service(callback, searchNearbyDriver));
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: const Text("Time out"),
+            backgroundColor: Colors.indigo.shade900,
+          ));
+          break;
+        default:
+          print(message);
+      }
+    });
   }
 }
 

@@ -14,11 +14,23 @@ class RideRequestBloc extends Bloc<RideRequestEvent, RideRequestState> {
       print("i'm arround here");
       yield RideRequestLoading();
       try {
-        final request =
-            await rideRequestRepository.createRequest(event.rideRequest);
-        yield RideRequestSuccess(request);
+        await rideRequestRepository.createRequest(event.rideRequest);
+        yield RideRequestSuccess();
       } catch (_) {
-        print("i'm'nt arround here");
+        print("i'm'nt arround here $_");
+
+        yield RideRequestOperationFailur();
+      }
+    }
+
+    if (event is RideRequestOrderForOther) {
+      print("i'm arround here");
+      yield RideRequestLoading();
+      try {
+        await rideRequestRepository.orderForOther(event.request);
+        yield RideRequestSuccess();
+      } catch (_) {
+        print("i'm'nt arround here $_");
 
         yield RideRequestOperationFailur();
       }

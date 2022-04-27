@@ -10,6 +10,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:passengerapp/bloc/bloc.dart';
 import 'package:passengerapp/helper/constants.dart';
 import 'package:passengerapp/rout.dart';
+import 'package:passengerapp/screens/home/variables.dart';
 import 'package:passengerapp/screens/screens.dart';
 
 class CustomSplashScreen extends StatefulWidget {
@@ -206,6 +207,7 @@ class _CustomSplashScreenState extends State<CustomSplashScreen> {
                         if (state.auth.token != null) {
                           name = state.auth.name!;
                           number = state.auth.phoneNumber;
+                          myId = state.auth.id!;
                         }
 
                         state.auth.token != null
@@ -230,14 +232,18 @@ class _CustomSplashScreenState extends State<CustomSplashScreen> {
                     print("data is is is is ${st.rideRequest.pickUpAddress}");
 
                     if (st.rideRequest.pickUpAddress == null) {
+                      BlocProvider.of<RideRequestBloc>(context)
+                          .add(RideRequestLoad());
+
                       Navigator.pushReplacementNamed(
                           context, HomeScreen.routeName,
                           arguments: HomeScreenArgument(isSelected: false));
                     } else {
-                      DriverEvent event = DriverLoad(st.rideRequest.driverId!);
+                      DriverEvent event = DriverLoad(st.rideRequest.driver!.id);
                       BlocProvider.of<DriverBloc>(context).add(event);
                       price = st.rideRequest.price!;
                       distance = st.rideRequest.distance!;
+                      driverModel = st.rideRequest.driver!;
                       Navigator.pushReplacementNamed(
                           context, HomeScreen.routeName,
                           arguments: HomeScreenArgument(

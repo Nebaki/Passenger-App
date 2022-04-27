@@ -23,6 +23,11 @@ class _HistoryPageState extends State<HistoryPage> {
 
   @override
   Widget build(BuildContext context) {
+    BlocListener<RideRequestBloc, RideRequestState>(
+      listener: (context, state) {
+        print('staaate $state');
+      },
+    );
     return Scaffold(
         // appBar: AppBar(
         //   elevation: 0,
@@ -37,6 +42,13 @@ class _HistoryPageState extends State<HistoryPage> {
         body: Stack(
       children: [
         BlocBuilder<RideRequestBloc, RideRequestState>(
+          buildWhen: (previous, current) {
+            bool build = false;
+            if (current is RideRequestLoadSuccess) {
+              build = true;
+            }
+            return build;
+          },
           builder: (context, state) {
             if (state is RideRequestLoadSuccess) {
               return Padding(
@@ -46,11 +58,8 @@ class _HistoryPageState extends State<HistoryPage> {
                   itemBuilder: (context, index) {
                     return _builHistoryCard(
                         context,
-                        state.rideRequests[index].pickUpAddress,
-                        state.rideRequests[index].droppOffAddress,
                         state.rideRequests[index].status!,
-                        state.rideRequests[index].date!,
-                        state.rideRequests[index].time!);
+                        state.rideRequests[index]);
                   },
                   padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
                 ),
@@ -114,21 +123,15 @@ class _HistoryPageState extends State<HistoryPage> {
     );
   }
 
-  Widget _builHistoryCard(BuildContext context, String? pickupAddress,
-      String? droppoffAddress, String status, String date, String time) {
+  Widget _builHistoryCard(
+      BuildContext context, String status, RideRequest? request) {
     String st = status.substring(0, 1);
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: GestureDetector(
         onTap: () {
           Navigator.pushNamed(context, DetailHistoryScreen.routeName,
-              arguments: DetailHistoryArgument(
-                  request: RideRequest(
-                      pickUpAddress: pickupAddress,
-                      droppOffAddress: droppoffAddress,
-                      driverId: 'driverId',
-                      date: date,
-                      time: time)));
+              arguments: DetailHistoryArgument(request: request!));
         },
         child: Container(
           padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
@@ -171,11 +174,11 @@ class _HistoryPageState extends State<HistoryPage> {
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
                       Text(
-                        droppoffAddress!,
+                        request!.droppOffAddress!,
                         style: TextStyle(color: Colors.black),
                       ),
                       Text(
-                        pickupAddress!,
+                        request.pickUpAddress!,
                         style: TextStyle(color: Colors.black38),
                       )
                     ],
@@ -191,14 +194,14 @@ class _HistoryPageState extends State<HistoryPage> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        date,
+                        request.date!,
                         style: TextStyle(color: Colors.black38),
                       ),
                       const SizedBox(
                         width: 10,
                       ),
                       Text(
-                        time,
+                        request.time!,
                         style: TextStyle(color: Colors.black38),
                       ),
                       Text(status),
