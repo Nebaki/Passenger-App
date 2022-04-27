@@ -13,6 +13,7 @@ class ReviewScreen extends StatelessWidget {
   static const routeName = 'reviewscreen';
   final description = TextEditingController();
   double min_rate = 1;
+  bool _isLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -22,9 +23,13 @@ class ReviewScreen extends StatelessWidget {
             builder: ((context, state) => buildScreen(context)),
             listener: (context, state) {
               if (state is ReviewSent) {
-                Navigator.pushNamed(context, HomeScreen.routeName);
+                                _isLoading = false;
+
+                Navigator.pushNamed(context, HomeScreen.routeName,
+                    arguments: HomeScreenArgument(isSelected: false));
               }
               if (state is ReviewSendingFailure) {
+                _isLoading = false;
                 ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                   content: const Text("Review not Sent please try again"),
                   backgroundColor: Colors.red.shade900,
@@ -205,11 +210,33 @@ class ReviewScreen extends StatelessWidget {
               padding: EdgeInsets.symmetric(horizontal: 30),
               width: double.infinity,
               child: ElevatedButton(
-                  onPressed: () {
+                  onPressed: _isLoading?null:() {
                     createReview(context);
                     // print(driverId);
                   },
-                  child: const Text('Finish')),
+                  child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Spacer(),
+                            const Text(
+                              "Finish",
+                            ),
+                            const Spacer(),
+                            Align(
+                              alignment: Alignment.centerRight,
+                              child: _isLoading
+                                  ? const SizedBox(
+                                      height: 20,
+                                      width: 20,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                        color: Colors.black,
+                                      ),
+                                    )
+                                  : Container(),
+                            )
+                          ],
+                        ),),
             ),
           ),
         ],
@@ -218,6 +245,7 @@ class ReviewScreen extends StatelessWidget {
   }
 
   void createReview(BuildContext context) {
+    _isLoading = true;
     ReviewEvent event =
         ReviewCreate(Review(description: description.text, rating: min_rate));
     BlocProvider.of<ReviewBloc>(context).add(event);

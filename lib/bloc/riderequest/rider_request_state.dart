@@ -9,14 +9,7 @@ class RideRequestState extends Equatable {
 
 class RideRequestLoading extends RideRequestState {}
 
-class RideRequestSuccess extends RideRequestState {
-  final RideRequest request;
-
-  const RideRequestSuccess(this.request);
-
-  @override
-  List<Object> get props => [request];
-}
+class RideRequestSuccess extends RideRequestState {}
 
 class RideRequestLoadSuccess extends RideRequestState {
   final List<RideRequest> rideRequests;
@@ -37,3 +30,5 @@ class RideRequestStartedTripChecked extends RideRequestState {
 }
 
 class RideRequestNotificationSent extends RideRequestState {}
+
+class RideRequestCancelled extends RideRequestState {}

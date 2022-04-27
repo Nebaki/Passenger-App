@@ -6,6 +6,7 @@ import 'package:passengerapp/models/savedlocation/saved_location.dart';
 import 'package:passengerapp/rout.dart';
 import 'package:passengerapp/screens/screens.dart';
 import 'package:passengerapp/widgets/widgets.dart';
+import 'package:shimmer/shimmer.dart';
 
 class SavedAddress extends StatelessWidget {
   static const routeName = "/savedadresses";
@@ -81,12 +82,7 @@ class SavedAddress extends StatelessWidget {
                   ),
                 );
               }
-              return const SizedBox(
-                  height: 50,
-                  width: 50,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 1,
-                  ));
+              return _buildShimmer(context);
             }),
           ),
           CustomeBackArrow(),
@@ -103,6 +99,105 @@ class SavedAddress extends StatelessWidget {
                   color: Colors.black,
                 )),
           ),
+          Padding(
+            padding: const EdgeInsets.only(top: 50),
+            child: Align(
+                alignment: Alignment.topCenter,
+                child: Text(
+                  "Saved Addresses",
+                  style: Theme.of(context).textTheme.titleLarge,
+                )),
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget _buildShimmer(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.only(top: 80),
+      child: Column(
+        children: [
+          Container(
+              padding: EdgeInsets.symmetric(horizontal: 20),
+              height: MediaQuery.of(context).size.height - 80,
+              child: ListView.builder(
+                  itemCount: 10,
+                  itemBuilder: (context, index) {
+                    return Container(
+                        child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Container(
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(20),
+                            color: Colors.white,
+                            boxShadow: [
+                              BoxShadow(
+                                  blurStyle: BlurStyle.normal,
+                                  color: Colors.grey.shade300,
+                                  blurRadius: 8,
+                                  spreadRadius: 5)
+                            ]),
+                        child: Column(
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Shimmer.fromColors(
+                                      baseColor: Colors.grey.shade300,
+                                      highlightColor: Colors.white,
+                                      child: Container(
+                                        width: 50,
+                                        height: 15,
+                                        color: Colors.grey,
+                                      ),
+                                    ),
+                                    const SizedBox(
+                                      height: 5,
+                                    ),
+                                    Shimmer.fromColors(
+                                      baseColor: Colors.grey.shade300,
+                                      highlightColor: Colors.white,
+                                      child: Container(
+                                          width: 130,
+                                          height: 15,
+                                          color: Colors.grey),
+                                    )
+                                  ],
+                                ),
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(10),
+                                  child: Container(
+                                      height: 30,
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 8, vertical: 2),
+                                      color:
+                                          const Color.fromRGBO(244, 201, 60, 1),
+                                      child: const Icon(
+                                        Icons.star,
+                                        color: Colors.white,
+                                        size: 15,
+                                      )),
+                                ),
+                              ],
+                            ),
+                            const Divider(),
+                            SizedBox(height: 10),
+                          ],
+                        ),
+                      ),
+                    ));
+                    // _historyItem(
+                    //     context: context,
+                    //     text: state.savedLocation[index].name,
+                    //     routename: "routename"),
+                    // );
+                  }))
         ],
       ),
     );

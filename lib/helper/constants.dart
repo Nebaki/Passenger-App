@@ -186,14 +186,17 @@ late LatLng pickupLatLng;
 late LatLng droppOffLatLng;
 late String name;
 late String number;
+late List<dynamic> nextDrivers;
 String price = 'Loading';
 String duration = 'Loading';
 String distance = 'Loading';
 late String direction;
+late String myId;
 
 String? driverName;
 String? driverId;
 String? driverImage;
+Map<String, dynamic>? vehicle;
 double? driverRating;
 late String driverFcm;
 const initialPosition = LatLng(8.9806, 38.7578);
@@ -205,3 +208,6 @@ const String apiKey = "AIzaSyB8z8UeyROt2-ay24jiHrrcMXaEAlPUvdQ";
 late String rideRequestId;
 bool willScreenPop = true;
 late Function setWillScreenPop;
+
+String portName = 'PASSENGER_BACKGROUND_LISTENER';
+const maintenanceUrl = 'https://mobiletaxi-api.herokuapp.com/api';

@@ -66,8 +66,11 @@ dependencies:
   wakelock: ^0.6.1+2
   firebase_database: ^9.0.9
   geoflutterfire: ^3.0.3
-  cloud_firestore: ^3.1.11
+  # cloud_firestore: ^3.1.11
   webview_flutter: ^3.0.1
+  shimmer: ^2.0.0
+  intl: ^0.17.0
+
 
   
 # dependency_overrides:
