@@ -347,7 +347,7 @@ class _HomeScreenState extends State<HomeScreen> {
               return Animarker(
                 mapId: _controller.future.then((value) => value.mapId),
                 curve: Curves.ease,
-                markers: Set<Marker>.of(markers.values),
+                // markers: Set<Marker>.of(markers.values),
                 shouldAnimateCamera: true,
                 child: GoogleMap(
                   padding: EdgeInsets.only(top: 100, right: 10, bottom: 250),
@@ -361,7 +361,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   initialCameraPosition: _addissAbaba,
                   myLocationEnabled: true,
                   polylines: Set<Polyline>.of(polylines.values),
-                  // markers: Set<Marker>.of(markers.values),
+                  markers: Set<Marker>.of(markers.values),
                   onMapCreated: (GoogleMapController controller) {
                     _controller.complete(controller);
                     outerController = controller;
