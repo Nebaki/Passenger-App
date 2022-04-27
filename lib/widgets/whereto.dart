@@ -152,10 +152,14 @@ class _WhereToState extends State<WhereTo> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(
-                                    state.locationHistory[index].mainText,
-                                    style:
-                                        Theme.of(context).textTheme.titleSmall,
+                                  Flexible(
+                                    flex: 1,
+                                    child: Text(
+                                      state.locationHistory[index].mainText,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleSmall,
+                                    ),
                                   ),
                                   Text(state
                                       .locationHistory[index].secondaryText)
@@ -250,9 +254,7 @@ class _WhereToState extends State<WhereTo> {
               destinationLtlng =
                   LatLng(state.placeDetail.lat, state.placeDetail.lng);
               droppOffLatLng = destinationLtlng;
-              print("Hey trying to pop the context around here::");
-
-              Future.delayed(Duration(seconds: 1), () {
+              WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
                 widget.setIsSelected(destinationLtlng);
                 widget.callback(widget.service);
                 // Navigator.pop(cont);
@@ -261,11 +263,6 @@ class _WhereToState extends State<WhereTo> {
                 if (con != null) {
                   Navigator.pop(con);
                 }
-
-                // return Navigator.pushNamed(context, HomeScreen.routeName,
-                //     arguments: HomeScreenArgument(
-                //         isSelected: true,
-                //         destinationlatlang: destinationLtlng));
               });
             }
 
@@ -279,8 +276,18 @@ class _WhereToState extends State<WhereTo> {
             return AlertDialog(
               content: Row(
                 children: const [
-                  CircularProgressIndicator(),
-                  Text("Setting up Drop Off. Please wait")
+                  SizedBox(
+                    height: 20,
+                    width: 20,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 1,
+                      color: Colors.black,
+                    ),
+                  ),
+                  SizedBox(
+                    width: 5,
+                  ),
+                  Text("Setting up Drop Off. Please wait.."),
                 ],
               ),
             );
@@ -318,7 +325,7 @@ class _WhereToState extends State<WhereTo> {
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(20),
                       child: Container(
-                        padding: const EdgeInsets.only(top: 30, bottom: 20),
+                        padding: const EdgeInsets.only(top: 30, bottom: 22),
                         // height: 200,
                         constraints:
                             const BoxConstraints(maxHeight: 400, minHeight: 30),

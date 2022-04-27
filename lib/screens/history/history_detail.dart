@@ -1,14 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:passengerapp/rout.dart';
 
 class DetailHistoryScreen extends StatelessWidget {
   static const routeName = "/detailhistory";
+  final DetailHistoryArgument args;
+
+  DetailHistoryScreen({Key? key, required this.args}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
         centerTitle: true,
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.black,
         title: const Text("Trip Details"),
         actions: [
           Padding(
@@ -34,13 +38,13 @@ class DetailHistoryScreen extends StatelessWidget {
                 child: Column(
                   children: [
                     Row(
-                      children: const [
-                        Icon(
+                      children: [
+                        const Icon(
                           Icons.location_on_outlined,
                           color: Colors.blue,
                         ),
                         Text(
-                          "Bole Airport,Addis Abeba",
+                          args.request.pickUpAddress!,
                         )
                       ],
                     ),
@@ -48,22 +52,26 @@ class DetailHistoryScreen extends StatelessWidget {
                       height: 5,
                     ),
                     Row(
-                      children: const [
-                        Icon(Icons.location_on_outlined, color: Colors.green),
-                        Text("Meskel Flower,Addis Abeba")
+                      children: [
+                        const Icon(Icons.location_on_outlined,
+                            color: Colors.green),
+                        Text(args.request.droppOffAddress!)
                       ],
                     ),
-                    const Center(
+                    Center(
                       child: Padding(
-                        padding: EdgeInsets.symmetric(vertical: 15),
+                        padding: const EdgeInsets.symmetric(vertical: 15),
                         child: Text(
-                          "154.75",
+                          '${args.request.price!} ETB',
                           style: TextStyle(color: Colors.green, fontSize: 26),
                         ),
                       ),
                     ),
                     Center(
-                      child: Text("Payment made sucessfully by Cash",
+                      child: Text(
+                          args.request.status == "Completed"
+                              ? 'Payment made sucessfully by Cash'
+                              : "Not Paid Yet",
                           style: _greyTextStyle),
                     ),
                     const SizedBox(
@@ -85,7 +93,7 @@ class DetailHistoryScreen extends StatelessWidget {
                         const VerticalDivider(),
                         Column(
                           children: [
-                            const Text("45 mi"),
+                            Text('${args.request.distance} Km'),
                             Text("Distance", style: _greyTextStyle)
                           ],
                         )
@@ -100,9 +108,9 @@ class DetailHistoryScreen extends StatelessWidget {
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: const [
+                      children: [
                         Text("Date & Time"),
-                        Text("14 Feb'19 at 9:42 am")
+                        Text('${args.request.date!} at ${args.request.time!}')
                       ],
                     ),
                     const SizedBox(
@@ -117,90 +125,101 @@ class DetailHistoryScreen extends StatelessWidget {
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: const [Text("Trip Type"), Text("Normal")],
+                      children: [
+                        const Text("Distance"),
+                        Text('${args.request.distance} Km')
+                      ],
                     ),
                     const SizedBox(
                       height: 10,
                     ),
                     const Divider(),
-                    Center(
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: const [
-                          Text("You rated: Yonas Kebede"),
-                          SizedBox(
-                            width: 10,
-                          ),
-                          CircleAvatar(
-                            radius: 10,
-                          )
-                        ],
-                      ),
-                    )
+                    // Center(
+                    //   child: Row(
+                    //     mainAxisAlignment: MainAxisAlignment.center,
+                    //     children: const [
+                    //       Text("You rated: Yonas Kebede"),
+                    //       SizedBox(
+                    //         width: 10,
+                    //       ),
+                    //       CircleAvatar(
+                    //         radius: 10,
+                    //       )
+                    //     ],
+                    //   ),
+                    // )
                   ],
                 ),
               ),
             ),
             const Padding(
               padding: EdgeInsets.only(left: 20, top: 10, bottom: 0),
-              child: Text("RECIEPT"),
+              child: Text("Driver & Vehicle"),
             ),
-            Card(
-              child: Container(
-                padding: const EdgeInsets.fromLTRB(20, 10, 20, 5),
-                color: Colors.white,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _buildReciept(title: "Trip fares", value: "40.25"),
-                    const SizedBox(
-                      height: 15,
+            args.request.status != 'Cancelled' &&
+                    args.request.status != 'Searching'
+                ? Card(
+                    child: Container(
+                      padding: const EdgeInsets.fromLTRB(20, 10, 20, 5),
+                      color: Colors.white,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _buildReciept(
+                              title: "Driver ",
+                              value: args.request.driver!.firstName),
+                          const SizedBox(
+                            height: 15,
+                          ),
+                          _buildReciept(
+                              title: "Phone number",
+                              value: args.request.driver!.phoneNumber),
+                          const SizedBox(
+                            height: 15,
+                          ),
+                          _buildReciept(
+                              title: "Vehicle ",
+                              value: args.request.driver!.vehicle!['model']),
+                          const SizedBox(
+                            height: 15,
+                          ),
+                          _buildReciept(
+                              title: "Plate Number",
+                              value: args
+                                  .request.driver!.vehicle!['plate_number']),
+                          const SizedBox(
+                            height: 15,
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                "Your Payment",
+                                style: _greenTextStyle,
+                              ),
+                              Text("\$${args.request.price!}",
+                                  style: _greenTextStyle)
+                            ],
+                          ),
+                          const SizedBox(
+                            height: 20,
+                          ),
+                          const Text(
+                            "This trip was towards your destination you recieved Guaranted fare",
+                            style: TextStyle(
+                                fontSize: 9,
+                                color: Colors.black26,
+                                fontWeight: FontWeight.bold),
+                            textAlign: TextAlign.start,
+                          )
+                        ],
+                      ),
                     ),
-                    _buildReciept(title: "YellowTaxi fee", value: "40.25"),
-                    const SizedBox(
-                      height: 15,
-                    ),
-                    _buildReciept(title: "+Tax", value: "40.25"),
-                    const SizedBox(
-                      height: 15,
-                    ),
-                    _buildReciept(title: "+Tolls", value: "40.25"),
-                    const SizedBox(
-                      height: 15,
-                    ),
-                    _buildReciept(title: "Discount", value: "40.25"),
-                    const SizedBox(
-                      height: 15,
-                    ),
-                    _buildReciept(title: "+ Topup Added", value: "40.25"),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          "Your Payment",
-                          style: _greenTextStyle,
-                        ),
-                        Text("\$460.75", style: _greenTextStyle)
-                      ],
-                    ),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    const Text(
-                      "This trip was towards your destination you recieved Guaranted fare",
-                      style: TextStyle(
-                          fontSize: 9,
-                          color: Colors.black26,
-                          fontWeight: FontWeight.bold),
-                      textAlign: TextAlign.start,
-                    )
-                  ],
-                ),
-              ),
-            )
+                  )
+                : const Padding(
+                    padding: EdgeInsets.fromLTRB(20, 10, 20, 5),
+                    child: Text('Not Accpeted Yet'),
+                  )
           ],
         ),
       ),
@@ -223,7 +242,7 @@ class DetailHistoryScreen extends StatelessWidget {
           title,
           style: _greyTextStyle,
         ),
-        Text("\$$value", style: _greyTextStyle)
+        Text("$value", style: _greyTextStyle)
       ],
     );
   }

@@ -48,3 +48,28 @@ class RideRequestSendNotification extends RideRequestEvent {
   @override
   List<Object> get props => [request, id];
 }
+
+class RideRequestCancell extends RideRequestEvent {
+  final String id;
+  final String cancelReason;
+  final String? passengerFcm;
+  final bool sendRequest;
+
+  const RideRequestCancell(
+      this.id, this.cancelReason, this.passengerFcm, this.sendRequest);
+  @override
+  List<Object> get props => [
+        id,
+        cancelReason,
+      ];
+}
+
+class RideRequestOrderForOther extends RideRequestEvent {
+  final RideRequest request;
+  const RideRequestOrderForOther(this.request);
+  @override
+  List<Object> get props => [request];
+
+  @override
+  String toString() => 'Request Created {user: $request}';
+}

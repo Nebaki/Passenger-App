@@ -19,6 +19,9 @@ class DriverProfile extends StatelessWidget {
         driverName = state.driver.firstName;
         driverImage = state.driver.profileImage;
         driverId = state.driver.id;
+        vehicle = state.driver.vehicle;
+        driverRating = state.driver.rating;
+
         ///////////////////////////////////
         return Container(
           child: Column(
@@ -136,7 +139,7 @@ class DriverProfile extends StatelessWidget {
                           ),
                           Row(
                             children: [
-                              Text('4.3'),
+                              Text(driverRating!.toString()),
                               SizedBox(
                                 width: 3,
                               ),
@@ -160,15 +163,15 @@ class DriverProfile extends StatelessWidget {
                           // Spacer(),
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
-                            children: const [
-                              Text("Car Model: V8"),
-                              Text("Plate Number: 34567")
+                            children: [
+                              Text("Car Model: ${vehicle!['model']}"),
+                              Text("Plate Number: ${vehicle!['plate_number']}")
                             ],
                           ),
                           SizedBox(
                             width: 15,
                           ),
-                          Text('Color: Silver'),
+                          Text('Color: ${vehicle!['color']}'),
                         ],
                       )
                     ],

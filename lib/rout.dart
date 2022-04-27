@@ -82,7 +82,12 @@ class AppRoute {
       return MaterialPageRoute(builder: (context) => ChangePassword());
     }
     if (settings.name == DetailHistoryScreen.routeName) {
-      return MaterialPageRoute(builder: (context) => DetailHistoryScreen());
+      DetailHistoryArgument argument =
+          settings.arguments as DetailHistoryArgument;
+      return MaterialPageRoute(
+          builder: (context) => DetailHistoryScreen(
+                args: argument,
+              ));
     }
     if (settings.name == ContactUsScreen.routeName) {
       return MaterialPageRoute(builder: (context) => ContactUsScreen());
@@ -173,4 +178,9 @@ class AddAdressScreenArgument {
 class CancelReasonArgument {
   final bool sendRequest;
   CancelReasonArgument({required this.sendRequest});
+}
+
+class DetailHistoryArgument {
+  final RideRequest request;
+  DetailHistoryArgument({required this.request});
 }

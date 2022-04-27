@@ -6,8 +6,8 @@ class RideRequestRepository {
 
   RideRequestRepository({required this.dataProvider});
 
-  Future<RideRequest> createRequest(RideRequest request) async {
-    return await dataProvider.createRequest(request);
+  Future createRequest(RideRequest request) async {
+    await dataProvider.createRequest(request);
   }
 
   Future changeRequestStatus(String id, String status, bool sendRequest) async {
@@ -24,5 +24,15 @@ class RideRequestRepository {
 
   Future<void> sendNotification(RideRequest request, String requestId) async {
     return await dataProvider.sendNotification(request, requestId);
+  }
+
+  Future cancelRideRequest(String id, String cancelReason, String? passengerFcm,
+      bool sendRequest) async {
+    return await dataProvider.cancelRideRequest(
+        id, cancelReason, passengerFcm, sendRequest);
+  }
+
+  Future orderForOther(RideRequest request) async {
+    await dataProvider.orderForOther(request);
   }
 }

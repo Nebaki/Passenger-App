@@ -22,16 +22,20 @@ class _DirectionDetailState extends State<DirectionDetail> {
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<DirectionBloc, DirectionState>(
-      listener: (_, state) {
+      listener: (context, state) {
         if (state is DirectionLoadSuccess) {
+          price = (75 +
+                  (12 * (state.direction.distanceValue / 1000)) +
+                  (2 * ((state.direction.durationValue / 60) / 10)))
+              .toString();
           double timeTraveledFare = (state.direction.durationValue / 60) * 0.20;
           double distanceTraveldFare =
-              (state.direction.distanceValue / 100) * 0.20;
+              (state.direction.distanceValue / 1000) * 0.20;
           double totalFareAmount = timeTraveledFare + distanceTraveldFare;
 
-          double localFareAmount = totalFareAmount * 1;
-          price =
-              (localFareAmount * widget.priceMultiplier).truncate().toString();
+          double localFareAmount = totalFareAmount * 48;
+          // price =
+          //     (localFareAmount * widget.priceMultiplier).truncate().toString();
           distance =
               (state.direction.distanceValue / 1000).truncate().toString();
           duration =
@@ -86,6 +90,10 @@ class _DirectionDetailState extends State<DirectionDetail> {
           ],
         );
       },
+      // builder: (_, state) {
+      //   print("YAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAYay");
+
+      // },
     );
   }
 }

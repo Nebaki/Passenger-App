@@ -8,6 +8,7 @@ import 'dart:io';
 import 'package:http_parser/http_parser.dart';
 import 'package:http/http.dart' as http;
 import 'package:passengerapp/dataprovider/auth/auth.dart';
+import 'package:passengerapp/helper/constants.dart';
 import 'package:passengerapp/models/models.dart';
 import 'package:passengerapp/repository/auth.dart';
 
@@ -173,6 +174,24 @@ class UserDataProvider {
       throw Exception('204 Failed to update user.');
     } else {
       throw Exception('Failed to update user.');
+    }
+  }
+
+  Future changePassword(Map<String, String> passwordInfo) async {
+    final http.Response response =
+        await http.post(Uri.parse('$maintenanceUrl/passengers/change-password'),
+            headers: <String, String>{
+              'Content-Type': 'application/json',
+              'x-access-token': '${await authDataProvider.getToken()}',
+            },
+            body: json.encode({
+              'current_password': passwordInfo['current_password'],
+              "new_password": passwordInfo['new_password'],
+              "confirm_password": passwordInfo['confirm_password']
+            }));
+    print('response ${response.statusCode}');
+    if (response.statusCode != 200) {
+      throw 'Unable to change password';
     }
   }
 }

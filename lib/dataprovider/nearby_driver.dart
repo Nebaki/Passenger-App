@@ -55,3 +55,52 @@ class NearbyDriversData {
     return nearbyDrivers;
   }
 }
+
+class NerbyTrucksData {
+  static List<NearbyDriver> nearbyTrucks = [];
+  static List ids = [];
+
+  static void addDriver(NearbyDriver driver) {
+    if (!ids.contains(driver.id)) {
+      ids.add(driver.id);
+
+      nearbyTrucks.add(driver);
+    }
+  }
+
+  static List getlistId() {
+    return ids;
+  }
+
+  static void removeDriver(String id) {
+    if (ids.contains(id)) {
+      int ind = ids.indexWhere((element) => element == id);
+      ids.removeAt(ind);
+
+      int index = nearbyTrucks.indexWhere((element) => element.id == id);
+      nearbyTrucks.removeAt(index);
+    }
+  }
+
+  static void updateDriver(NearbyDriver driver) {
+    print(
+        "Yow this is the id $ids , ${nearbyTrucks.map((e) => (e.id)).toList()}");
+
+    if (ids.contains(driver.id)) {
+      int ind = ids.indexWhere((element) => element == driver.id);
+      ids.removeAt(ind);
+      int index = nearbyTrucks.indexWhere((element) => element.id == driver.id);
+      nearbyTrucks.removeAt(index);
+      addDriver(driver);
+    }
+  }
+
+  static void resetList() {
+    ids.clear();
+    nearbyTrucks.clear();
+  }
+
+  static List getList() {
+    return nearbyTrucks;
+  }
+}
