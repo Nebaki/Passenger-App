@@ -15,6 +15,7 @@ import 'package:passengerapp/bloc/bloc.dart';
 import 'package:passengerapp/bloc/driver/driver_bloc.dart';
 import 'package:passengerapp/drawer/drawer.dart';
 import 'package:passengerapp/helper/constants.dart';
+
 import 'package:passengerapp/helper/url_launcher.dart';
 import 'package:passengerapp/models/models.dart';
 import 'package:passengerapp/models/nearby_driver.dart';
@@ -229,13 +230,25 @@ class _HomeScreenState extends State<HomeScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Expanded(
-                          child: Text("Location Services are off",
+                          child: Text("Enable Location Services",
                               style: Theme.of(context).textTheme.headline5),
                         ),
+                        const Expanded(
+                            child: Center(
+                          child: Icon(Icons.location_off_outlined,
+                              color: buttonColor, size: 60),
+                        )),
+                        const Expanded(child: SizedBox()),
+
                         Expanded(
                             child: Text(
-                                "Please enable Location Service to allow us finding your location.",
+                                "We can't get your location because you have disabled location services. Please turn it on for better experience.",
                                 style: Theme.of(context).textTheme.bodyText2)),
+                        // Expanded(
+                        //     child: Text(
+                        //         "For better accuracy,please turn on both GPS and WIFI location services",
+                        //         style: Theme.of(context).textTheme.bodyText2)),
+
                         Expanded(
                             child: SizedBox(
                           width: double.infinity,
@@ -243,7 +256,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               onPressed: () async {
                                 await Geolocator.openLocationSettings();
                               },
-                              child: Text("Go to Location Services")),
+                              child: const Text("TURN ON LOCATION SERVICES")),
                         )),
                         const SizedBox(
                           height: 10,
@@ -255,7 +268,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               onPressed: () async {
                                 SystemNavigator.pop();
                               },
-                              child: Text("Close App")),
+                              child: const Text("CANCEL")),
                         ))
                       ],
                     ),
@@ -296,10 +309,23 @@ class _HomeScreenState extends State<HomeScreen> {
                         child: Text("No Internet Connection",
                             style: Theme.of(context).textTheme.headline5),
                       ),
+                      const Expanded(
+                          child: Center(
+                        child: Icon(
+                            Icons
+                                .signal_wifi_statusbar_connected_no_internet_4_rounded,
+                            color: Colors.red,
+                            size: 60),
+                      )),
+                      const Expanded(child: SizedBox()),
                       Expanded(
                           child: Text(
-                              "Please enable WIFI or Mobile Data to allow us finding your location.",
+                              "Please enable WIFI or Mobile data to serve the app",
                               style: Theme.of(context).textTheme.bodyText2)),
+                      // Expanded(
+                      //     child: Text(
+                      //         "For better accuracy,please turn on both GPS and WIFI location services",
+                      //         style: Theme.of(context).textTheme.bodyText2)),
                       Expanded(
                           child: SizedBox(
                         width: double.infinity,
@@ -320,7 +346,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             onPressed: () async {
                               SystemNavigator.pop();
                             },
-                            child: const Text("Close App")),
+                            child: const Text("Cancel")),
                       ))
                     ],
                   ),
@@ -393,12 +419,12 @@ class _HomeScreenState extends State<HomeScreen> {
                       dtn,
                       "destination",
                       BitmapDescriptor.defaultMarkerWithHue(
-                          BitmapDescriptor.hueGreen));
+                          BitmapDescriptor.hueRed));
                   _addMarker(
                       LatLng(currentLatLng.latitude, currentLatLng.longitude),
                       "pickup",
                       BitmapDescriptor.defaultMarkerWithHue(
-                          BitmapDescriptor.hueRed));
+                          BitmapDescriptor.hueGreen));
                 });
 
                 changeCameraView();
@@ -473,27 +499,23 @@ class _HomeScreenState extends State<HomeScreen> {
                                       target: LatLng(currentLatLng.latitude,
                                           currentLatLng.longitude))));
                             },
-                            child: Icon(
-                              Icons.gps_fixed,
-                              color: Colors.indigo.shade900,
-                            )),
+                            child: Icon(Icons.gps_fixed,
+                                color: Colors.indigo.shade900, size: 30)),
                       ),
                     ),
                     Align(
                       alignment: Alignment.centerRight,
                       child: ClipRRect(
-                        borderRadius: const BorderRadius.only(
-                            bottomLeft: Radius.circular(30),
-                            topLeft: Radius.circular(30)),
+                        borderRadius: BorderRadius.circular(100),
                         child: Container(
-                          color: Colors.black,
+                          color: Colors.grey.shade300,
                           child: IconButton(
                               onPressed: () {
                                 makePhoneCall('9495');
                               },
-                              icon: const Icon(
+                              icon: Icon(
                                 Icons.call,
-                                color: Colors.white,
+                                color: Colors.indigo.shade900,
                                 size: 30,
                               )),
                         ),

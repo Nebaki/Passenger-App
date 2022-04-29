@@ -40,7 +40,7 @@ class _SigninScreenState extends State<SigninScreen> {
             _isLoading = true;
           }
           if (state is AuthLoginSuccess) {
-            Navigator.pushNamed(context, HomeScreen.routeName,
+            Navigator.pushReplacementNamed(context, HomeScreen.routeName,
                 arguments: HomeScreenArgument(isSelected: false));
           }
           if (state is AuthOperationFailure) {
@@ -209,7 +209,11 @@ class _SigninScreenState extends State<SigninScreen> {
                       child: InkWell(
                           onTap: () {
                             Navigator.pushNamed(
-                                context, MobileVerification.routeName);
+                                context, CreateProfileScreen.routeName,
+                                arguments: CreateProfileScreenArgument(
+                                    phoneNumber: 'args.phoneNumber'));
+                            // Navigator.pushNamed(
+                            //     context, MobileVerification.routeName);
                           },
                           child: const Text(
                             "Forgot Password",

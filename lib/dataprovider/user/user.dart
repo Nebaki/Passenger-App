@@ -194,6 +194,23 @@ class UserDataProvider {
       throw 'Unable to change password';
     }
   }
+
+  Future<bool> checkPhoneNumber(String phoneNumber) async {
+    final http.Response response = await http.get(
+      Uri.parse('$_baseUrl/check-phone-number?phone_number=$phoneNumber'),
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+      },
+    );
+    print('response ${response.statusCode}');
+    if (response.statusCode == 200) {
+      return true;
+    } else if (response.statusCode == 404) {
+      return false;
+    } else {
+      throw 'Unable to check the phonenumber';
+    }
+  }
 }
 
 

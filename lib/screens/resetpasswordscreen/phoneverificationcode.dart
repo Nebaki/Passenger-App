@@ -1,6 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
+import 'package:passengerapp/bloc/bloc.dart';
 import 'package:passengerapp/rout.dart';
 import 'package:passengerapp/screens/screens.dart';
 import 'package:passengerapp/widgets/widgets.dart';
@@ -51,9 +53,9 @@ class _MobileVerificationState extends State<MobileVerification> {
     await _auth.verifyPhoneNumber(
         phoneNumber: phoneController,
         verificationCompleted: (phoneAuthCredential) async {
-          setState(() {
-            showLoading = false;
-          });
+          // setState(() {
+          //   showLoading = false;
+          // });
 
           signInWithPhoneAuthCredential(phoneAuthCredential);
         },
@@ -155,48 +157,99 @@ class _MobileVerificationState extends State<MobileVerification> {
                       child: SizedBox(
                         width: MediaQuery.of(context).size.width,
                         child: ElevatedButton(
-                            onPressed: () {
-                              final form = _formkey.currentState;
-                              if (form!.validate()) {
-                                form.save();
-                                showDialog(
-                                    context: context,
-                                    builder: (BuildContext context) =>
-                                        AlertDialog(
-                                          title: const Text("Confirm"),
-                                          content: Text.rich(TextSpan(
-                                              text:
-                                                  "We will send a verivication code to ",
-                                              children: [
-                                                TextSpan(text: phoneController)
-                                              ])),
-                                          actions: [
-                                            TextButton(
-                                                onPressed: () async {
-                                                  sendVerificationCode();
-                                                  // Navigator
-                                                  //     .pushReplacementNamed(
-                                                  //         context,
-                                                  //         PhoneVerification
-                                                  //             .routeName);
-                                                },
-                                                child: const Text("Send Code")),
-                                            TextButton(
-                                                onPressed: () {
-                                                  Navigator.pop(
-                                                      context, "Cancel");
-                                                },
-                                                child: const Text("Cancel")),
-                                          ],
-                                        ));
-                              }
-                            },
-                            child: const Text(
-                              "Continue",
+                            onPressed: showLoading
+                                ? null
+                                : () {
+                                    final form = _formkey.currentState;
+                                    if (form!.validate()) {
+                                      form.save();
+                                      showDialog(
+                                          context: context,
+                                          builder: (BuildContext context) =>
+                                              AlertDialog(
+                                                title: const Text("Confirm"),
+                                                content: Text.rich(TextSpan(
+                                                    text:
+                                                        "We will send a verification code to ",
+                                                    children: [
+                                                      TextSpan(
+                                                          text: phoneController)
+                                                    ])),
+                                                actions: [
+                                                  TextButton(
+                                                      onPressed: () async {
+                                                        Navigator.pop(context);
+                                                        checkPhoneNumber(
+                                                            phoneController);
+                                                        // Navigator
+                                                        //     .pushReplacementNamed(
+                                                        //         context,
+                                                        //         PhoneVerification
+                                                        //             .routeName);
+                                                      },
+                                                      child: const Text(
+                                                          "Send Code")),
+                                                  TextButton(
+                                                      onPressed: () {
+                                                        Navigator.pop(
+                                                            context, "Cancel");
+                                                      },
+                                                      child:
+                                                          const Text("Cancel")),
+                                                ],
+                                              ));
+                                    }
+                                  },
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                const Spacer(),
+                                const Text(
+                                  "Continue",
+                                ),
+                                const Spacer(),
+                                Align(
+                                  alignment: Alignment.centerRight,
+                                  child: showLoading
+                                      ? const SizedBox(
+                                          height: 20,
+                                          width: 20,
+                                          child: CircularProgressIndicator(
+                                            strokeWidth: 2,
+                                            color: Colors.black,
+                                          ),
+                                        )
+                                      : Container(),
+                                )
+                              ],
                             )),
                       ),
                     ),
                   ),
+                  BlocConsumer<UserBloc, UserState>(
+                      builder: (context, state) => Container(),
+                      listener: (context, state) {
+                        if (state is UserPhoneNumbeChecked) {
+                          if (state.phoneNumberExist) {
+                            sendVerificationCode();
+                          } else {
+                            setState(() {
+                              showLoading = false;
+                            });
+                            showPhoneNumberDoesnotExistDialog();
+                          }
+                        }
+                        if (state is UserOperationFailure) {
+                          setState(() {
+                            showLoading = false;
+                          });
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                            content:
+                                const Text("Unable to check the phone number."),
+                            backgroundColor: Colors.red.shade900,
+                          ));
+                        }
+                      })
                 ],
               ),
             ),
@@ -204,5 +257,31 @@ class _MobileVerificationState extends State<MobileVerification> {
         ],
       ),
     );
+  }
+
+  void checkPhoneNumber(String phoneNumber) {
+    setState(() {
+      showLoading = true;
+    });
+
+    BlocProvider.of<UserBloc>(context).add(UserCheckPhoneNumber(phoneNumber));
+  }
+
+  void showPhoneNumberDoesnotExistDialog() {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            content:
+                const Text("There is no user registered by this phonenumber"),
+            actions: [
+              TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: Text("Okay"))
+            ],
+          );
+        });
   }
 }

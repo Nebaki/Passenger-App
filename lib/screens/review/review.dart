@@ -23,9 +23,9 @@ class ReviewScreen extends StatelessWidget {
             builder: ((context, state) => buildScreen(context)),
             listener: (context, state) {
               if (state is ReviewSent) {
-                                _isLoading = false;
+                _isLoading = false;
 
-                Navigator.pushNamed(context, HomeScreen.routeName,
+                Navigator.pushReplacementNamed(context, HomeScreen.routeName,
                     arguments: HomeScreenArgument(isSelected: false));
               }
               if (state is ReviewSendingFailure) {
@@ -210,33 +210,36 @@ class ReviewScreen extends StatelessWidget {
               padding: EdgeInsets.symmetric(horizontal: 30),
               width: double.infinity,
               child: ElevatedButton(
-                  onPressed: _isLoading?null:() {
-                    createReview(context);
-                    // print(driverId);
-                  },
-                  child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const Spacer(),
-                            const Text(
-                              "Finish",
-                            ),
-                            const Spacer(),
-                            Align(
-                              alignment: Alignment.centerRight,
-                              child: _isLoading
-                                  ? const SizedBox(
-                                      height: 20,
-                                      width: 20,
-                                      child: CircularProgressIndicator(
-                                        strokeWidth: 2,
-                                        color: Colors.black,
-                                      ),
-                                    )
-                                  : Container(),
+                onPressed: _isLoading
+                    ? null
+                    : () {
+                        createReview(context);
+                        // print(driverId);
+                      },
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Spacer(),
+                    const Text(
+                      "Finish",
+                    ),
+                    const Spacer(),
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: _isLoading
+                          ? const SizedBox(
+                              height: 20,
+                              width: 20,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: Colors.black,
+                              ),
                             )
-                          ],
-                        ),),
+                          : Container(),
+                    )
+                  ],
+                ),
+              ),
             ),
           ),
         ],

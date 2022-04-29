@@ -71,5 +71,17 @@ class UserBloc extends Bloc<UserEvent, UserState> {
         yield UserOperationFailure();
       }
     }
+
+    if (event is UserCheckPhoneNumber) {
+      yield UserLoading();
+
+      try {
+        final phoneNumberExist =
+            await userRepository.checkPhoneNumber(event.phoneNumber);
+        yield UserPhoneNumbeChecked(phoneNumberExist);
+      } catch (_) {
+        yield UserOperationFailure();
+      }
+    }
   }
 }

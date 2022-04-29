@@ -27,6 +27,7 @@ class _DirectionDetailState extends State<DirectionDetail> {
           price = (75 +
                   (12 * (state.direction.distanceValue / 1000)) +
                   (2 * ((state.direction.durationValue / 60) / 10)))
+              .truncate()
               .toString();
           double timeTraveledFare = (state.direction.durationValue / 60) * 0.20;
           double distanceTraveldFare =

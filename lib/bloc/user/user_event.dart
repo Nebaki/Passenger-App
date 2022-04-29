@@ -79,3 +79,10 @@ class UserChangePassword extends UserEvent {
   @override
   List<Object?> get props => [passwordInfo];
 }
+
+class UserCheckPhoneNumber extends UserEvent {
+  final String phoneNumber;
+  const UserCheckPhoneNumber(this.phoneNumber);
+  @override
+  List<Object?> get props => [phoneNumber];
+}

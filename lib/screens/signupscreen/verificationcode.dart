@@ -31,6 +31,7 @@ class _PhoneVerificationState extends State<PhoneVerification> {
   final otp5Controller = TextEditingController();
 
   final otp6Controller = TextEditingController();
+  bool doesAllTextFilledsFilled = false;
 
   late Timer _timer;
   FirebaseAuth _auth = FirebaseAuth.instance;
@@ -151,8 +152,14 @@ class _PhoneVerificationState extends State<PhoneVerification> {
                           child: TextFormField(
                             validator: (value) {
                               if (value!.isEmpty) {
-                                return "Must fill all fields";
+                                setState(() {
+                                  doesAllTextFilledsFilled = false;
+                                });
+                                return null;
                               }
+                              setState(() {
+                                doesAllTextFilledsFilled = false;
+                              });
                               return null;
                             },
                             controller: otp1Controller,
@@ -176,8 +183,14 @@ class _PhoneVerificationState extends State<PhoneVerification> {
                           child: TextFormField(
                             validator: (value) {
                               if (value!.isEmpty) {
-                                return "Must fill all fields";
+                                setState(() {
+                                  doesAllTextFilledsFilled = false;
+                                });
+                                return null;
                               }
+                              setState(() {
+                                doesAllTextFilledsFilled = false;
+                              });
                               return null;
                             },
                             controller: otp2Controller,
@@ -200,8 +213,14 @@ class _PhoneVerificationState extends State<PhoneVerification> {
                           child: TextFormField(
                             validator: (value) {
                               if (value!.isEmpty) {
-                                return "Must fill all fields";
+                                setState(() {
+                                  doesAllTextFilledsFilled = false;
+                                });
+                                return null;
                               }
+                              setState(() {
+                                doesAllTextFilledsFilled = true;
+                              });
                               return null;
                             },
                             controller: otp3Controller,
@@ -224,8 +243,14 @@ class _PhoneVerificationState extends State<PhoneVerification> {
                           child: TextFormField(
                             validator: (value) {
                               if (value!.isEmpty) {
-                                return "Must fill all fields";
+                                setState(() {
+                                  doesAllTextFilledsFilled = false;
+                                });
+                                return null;
                               }
+                              setState(() {
+                                doesAllTextFilledsFilled = true;
+                              });
                               return null;
                             },
                             controller: otp4Controller,
@@ -248,8 +273,14 @@ class _PhoneVerificationState extends State<PhoneVerification> {
                           child: TextFormField(
                             validator: (value) {
                               if (value!.isEmpty) {
-                                return "Must fill all fields";
+                                setState(() {
+                                  doesAllTextFilledsFilled = false;
+                                });
+                                return null;
                               }
+                              setState(() {
+                                doesAllTextFilledsFilled = true;
+                              });
                               return null;
                             },
                             controller: otp5Controller,
@@ -272,8 +303,14 @@ class _PhoneVerificationState extends State<PhoneVerification> {
                           child: TextFormField(
                             validator: (value) {
                               if (value!.isEmpty) {
-                                return "Must fill all fields";
+                                setState(() {
+                                  doesAllTextFilledsFilled = false;
+                                });
+                                return null;
                               }
+                              setState(() {
+                                doesAllTextFilledsFilled = true;
+                              });
                               return null;
                             },
                             controller: otp6Controller,
@@ -294,7 +331,17 @@ class _PhoneVerificationState extends State<PhoneVerification> {
                     ],
                   ),
                   const SizedBox(
-                    height: 50.0,
+                    height: 20.0,
+                  ),
+                  doesAllTextFilledsFilled
+                      ? Container()
+                      : const Center(
+                          child: Text(
+                          'Must fill all fields',
+                          style: TextStyle(color: Colors.red),
+                        )),
+                  const SizedBox(
+                    height: 30.0,
                   ),
                   Container(
                       margin: const EdgeInsets.only(left: 60.0),
@@ -340,40 +387,45 @@ class _PhoneVerificationState extends State<PhoneVerification> {
                                   final form = _formKey.currentState;
                                   if (form!.validate()) {
                                     form.save();
-                                    String code = otp1Controller.text +
-                                        otp2Controller.text +
-                                        otp3Controller.text +
-                                        otp4Controller.text +
-                                        otp5Controller.text +
-                                        otp6Controller.text;
-                                    setState(() {
-                                      _isLoading = true;
-                                    });
-
-                                    PhoneAuthCredential credential =
-                                        PhoneAuthProvider.credential(
-                                            verificationId:
-                                                this.widget.args.verificationId,
-                                            smsCode: code);
-                                    _auth
-                                        .signInWithCredential(credential)
-                                        .then((value) {
-                                      Navigator.pushReplacementNamed(context,
-                                          CreateProfileScreen.routeName,
-                                          arguments:
-                                              CreateProfileScreenArgument(
-                                                  phoneNumber:
-                                                      widget.args.phoneNumber));
-                                    }).onError((error, stackTrace) {
+                                    if (doesAllTextFilledsFilled) {
+                                      String code = otp1Controller.text +
+                                          otp2Controller.text +
+                                          otp3Controller.text +
+                                          otp4Controller.text +
+                                          otp5Controller.text +
+                                          otp6Controller.text;
                                       setState(() {
-                                        _isLoading = false;
+                                        _isLoading = true;
                                       });
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(SnackBar(
-                                              backgroundColor:
-                                                  Colors.red.shade900,
-                                              content: Text(error.toString())));
-                                    });
+
+                                      PhoneAuthCredential credential =
+                                          PhoneAuthProvider.credential(
+                                              verificationId: this
+                                                  .widget
+                                                  .args
+                                                  .verificationId,
+                                              smsCode: code);
+                                      _auth
+                                          .signInWithCredential(credential)
+                                          .then((value) {
+                                        Navigator.pushReplacementNamed(context,
+                                            CreateProfileScreen.routeName,
+                                            arguments:
+                                                CreateProfileScreenArgument(
+                                                    phoneNumber: widget
+                                                        .args.phoneNumber));
+                                      }).onError((error, stackTrace) {
+                                        setState(() {
+                                          _isLoading = false;
+                                        });
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(SnackBar(
+                                                backgroundColor:
+                                                    Colors.red.shade900,
+                                                content:
+                                                    Text(error.toString())));
+                                      });
+                                    }
                                   }
                                 },
                           child: Row(

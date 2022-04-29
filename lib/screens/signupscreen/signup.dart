@@ -1,7 +1,9 @@
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
+import 'package:passengerapp/bloc/bloc.dart';
 import 'package:passengerapp/helper/constants.dart';
 import 'package:passengerapp/rout.dart';
 import 'package:passengerapp/screens/screens.dart';
@@ -55,10 +57,6 @@ class _SignupScreenState extends State<SignupScreen> {
     await _auth.verifyPhoneNumber(
         phoneNumber: phoneController,
         verificationCompleted: (phoneAuthCredential) async {
-          setState(() {
-            showLoading = false;
-          });
-
           signInWithPhoneAuthCredential(phoneAuthCredential);
         },
         verificationFailed: (verificationFailed) async {
@@ -202,7 +200,7 @@ class _SignupScreenState extends State<SignupScreen> {
                                               title: const Text("Confirm"),
                                               content: Text.rich(TextSpan(
                                                   text:
-                                                      "We will send a verivication code to ",
+                                                      "We will send a verification code to ",
                                                   children: [
                                                     TextSpan(
                                                         text: phoneController)
@@ -214,20 +212,11 @@ class _SignupScreenState extends State<SignupScreen> {
                                                         _isLoading = true;
                                                       });
 
-                                                      // Navigator.pushNamed(
-                                                      //     context,
-                                                      //     CreateProfileScreen
-                                                      //         .routeName);
                                                       Navigator.pop(context);
 
                                                       print(phoneController);
-
-                                                      sendVerificationCode();
-                                                      // Navigator
-                                                      //     .pushReplacementNamed(
-                                                      //         context,
-                                                      //         PhoneVerification
-                                                      //             .routeName);
+                                                      checkPhoneNumber(
+                                                          phoneController);
                                                     },
                                                     child: const Text(
                                                         "Send Code")),
@@ -290,6 +279,34 @@ class _SignupScreenState extends State<SignupScreen> {
                       ],
                     ),
                   ),
+                  BlocConsumer<UserBloc, UserState>(
+                      builder: (context, state) => Container(),
+                      listener: (context, state) {
+                        if (state is UserPhoneNumbeChecked) {
+                          if (state.phoneNumberExist) {
+                            setState(() {
+                              _isLoading = false;
+                            });
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                              content: const Text(
+                                  "User already registered by this number."),
+                              backgroundColor: Colors.red.shade900,
+                            ));
+                          } else {
+                            sendVerificationCode();
+                          }
+                        }
+                        if (state is UserOperationFailure) {
+                          setState(() {
+                            _isLoading = false;
+                          });
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                            content:
+                                const Text("Unable to check the phone number."),
+                            backgroundColor: Colors.red.shade900,
+                          ));
+                        }
+                      })
                 ],
               ),
             ),
@@ -297,5 +314,13 @@ class _SignupScreenState extends State<SignupScreen> {
         ],
       ),
     );
+  }
+
+  void checkPhoneNumber(String phoneNumber) {
+    setState(() {
+      _isLoading = true;
+    });
+
+    BlocProvider.of<UserBloc>(context).add(UserCheckPhoneNumber(phoneNumber));
   }
 }

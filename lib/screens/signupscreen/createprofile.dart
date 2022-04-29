@@ -138,6 +138,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
           padding:
               const EdgeInsets.only(top: 80, right: 20, left: 20, bottom: 10),
           child: Form(
+            autovalidateMode: AutovalidateMode.onUserInteraction,
             key: _formKey,
             child: SizedBox(
               height: MediaQuery.of(context).size.height,
@@ -153,23 +154,42 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                         const Padding(
                           padding: EdgeInsets.only(bottom: 10),
                           child: Text(
-                            "Create Profle",
+                            "Create Profile",
                             style: TextStyle(
                                 fontWeight: FontWeight.bold, fontSize: 24.0),
                           ),
                         ),
                         GestureDetector(
-                          onTap: () {
-                            _showModalNavigation();
-                          },
+                          onTap: () {},
                           child: CircleAvatar(
                             backgroundColor: Colors.grey.shade300,
                             radius: 40,
                             child: _image == null
-                                ? const Icon(
-                                    Icons.person,
-                                    size: 50,
-                                    color: Colors.black,
+                                ? Stack(
+                                    children: [
+                                      Align(
+                                        alignment: Alignment.center,
+                                        child: const Icon(
+                                          Icons.person,
+                                          size: 50,
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                      Align(
+                                        alignment: Alignment.bottomRight,
+                                        child: IconButton(
+                                            constraints: BoxConstraints.tight(
+                                                Size.fromRadius(20)),
+                                            splashRadius: 3,
+                                            padding: EdgeInsets.zero,
+                                            iconSize: 15,
+                                            onPressed: () {
+                                              _showModalNavigation();
+                                            },
+                                            icon: Icon(Icons.edit,
+                                                color: Colors.black)),
+                                      ),
+                                    ],
                                   )
                                 : ClipRRect(
                                     borderRadius: BorderRadius.circular(100),
@@ -268,9 +288,9 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                               if (value!.isEmpty) {
                                 return 'Please enter Your Password';
                               } else if (value.length > 25) {
-                                return 'Full name must not be longer than 25 charachters';
-                              } else if (value.length < 8) {
-                                return 'Full name must not be shorter than 8 charachters';
+                                return 'Password must not be longer than 25 charachters';
+                              } else if (value.length < 4) {
+                                return 'Password must not be shorter than 4 charachters';
                               }
                               return null;
                             },
