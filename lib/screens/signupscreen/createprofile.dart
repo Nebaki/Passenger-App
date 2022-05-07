@@ -167,9 +167,9 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                             child: _image == null
                                 ? Stack(
                                     children: [
-                                      Align(
+                                      const Align(
                                         alignment: Alignment.center,
-                                        child: const Icon(
+                                        child: Icon(
                                           Icons.person,
                                           size: 50,
                                           color: Colors.black,
@@ -179,14 +179,14 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                                         alignment: Alignment.bottomRight,
                                         child: IconButton(
                                             constraints: BoxConstraints.tight(
-                                                Size.fromRadius(20)),
+                                                const Size.fromRadius(20)),
                                             splashRadius: 3,
                                             padding: EdgeInsets.zero,
                                             iconSize: 15,
                                             onPressed: () {
                                               _showModalNavigation();
                                             },
-                                            icon: Icon(Icons.edit,
+                                            icon: const Icon(Icons.edit,
                                                 color: Colors.black)),
                                       ),
                                     ],

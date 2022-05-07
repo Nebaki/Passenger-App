@@ -2,6 +2,7 @@ import 'dart:isolate';
 import 'dart:ui';
 import 'package:app_settings/app_settings.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_animarker/widgets/animarker.dart';
@@ -31,6 +32,7 @@ import 'package:passengerapp/helper/constants.dart';
 // import 'package:location/location.dart';
 import 'package:geolocator_platform_interface/src/enums/location_accuracy.dart'
     as La;
+import 'package:passengerapp/screens/home/assistant/home_screen_assistant.dart';
 import 'package:passengerapp/screens/home/test.dart';
 import 'package:passengerapp/screens/screens.dart';
 
@@ -49,6 +51,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   //Location location = new Location();
   late Widget _currentWidget;
+  BitmapDescriptor? carMarkerIcon;
   double currentLat = 3;
   late double currentLng = 4;
   Completer<GoogleMapController> _controller = Completer();
@@ -60,6 +63,8 @@ class _HomeScreenState extends State<HomeScreen> {
   PolylinePoints polylinePoints = PolylinePoints();
   Map<PolylineId, Polyline> polylines = {};
   Map<MarkerId, Marker> markers = {};
+  Map<MarkerId, Marker> carMarker = {};
+
   Map<MarkerId, Marker> driverMarkers = {};
   late List<NearbyDriver> drivers;
   LatLng currentLatLng = _addissAbaba.target;
@@ -73,6 +78,9 @@ class _HomeScreenState extends State<HomeScreen> {
   ConnectivityResult _connectionStatus = ConnectivityResult.bluetooth;
   final Connectivity _connectivity = Connectivity();
   final ReceivePort _port = ReceivePort();
+  // FirebaseDatabase database = FirebaseDatabase.instance;
+  DatabaseReference databaseReference =
+      FirebaseDatabase.instance.ref('bookedDrivers');
 
   bool? isLocationOn;
   bool isModal = false;
@@ -159,6 +167,11 @@ class _HomeScreenState extends State<HomeScreen> {
     widget.args.isSelected ? _getPolyline(widget.args.encodedPts!) : null;
 
     _determinePosition().then((value) {
+      if (widget.args.carType == 'Truck') {
+        Geofire.initialize('availableTrucks');
+      } else {
+        Geofire.initialize('availableDrivers');
+      }
       geofireListener(value.latitude, value.longitude);
       Geofire.stopListener();
       geofireListener(value.latitude, value.longitude);
@@ -362,6 +375,8 @@ class _HomeScreenState extends State<HomeScreen> {
       });
     };
 
+    createMarkerIcon();
+    requestAccepted = showBookedDriver;
     return Scaffold(
       key: _scaffoldKey,
       drawer: NavDrawer(),
@@ -373,7 +388,7 @@ class _HomeScreenState extends State<HomeScreen> {
               return Animarker(
                 mapId: _controller.future.then((value) => value.mapId),
                 curve: Curves.ease,
-                // markers: Set<Marker>.of(markers.values),
+                markers: Set<Marker>.of(carMarker.values),
                 shouldAnimateCamera: true,
                 child: GoogleMap(
                   padding: EdgeInsets.only(top: 100, right: 10, bottom: 250),
@@ -478,6 +493,24 @@ class _HomeScreenState extends State<HomeScreen> {
             //         child: Text("Maintenance")),
             //   ),
             // ),
+
+            Padding(
+              padding: const EdgeInsets.only(top: 60),
+              child: Align(
+                alignment: Alignment.topRight,
+                child: ElevatedButton(
+                    onPressed: () async {
+                      setState(() {
+                        markers.clear();
+                      });
+                      debugPrint('Noww');
+                      showBookedDriver();
+
+                      //  databaseReference.set(value)
+                    },
+                    child: Text("Maintenance")),
+              ),
+            ),
             Align(
               alignment: Alignment.centerRight,
               child: SizedBox(
@@ -663,7 +696,6 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void geofireListener(double lat, double lng) async {
-    Geofire.initialize('availableDrivers');
     repo.resetList();
     print("Mapppppppppppppppppppppppppppppppppppppppppppppppppppppppaaa");
 
@@ -946,7 +978,9 @@ class _HomeScreenState extends State<HomeScreen> {
         case "Accepted":
           BlocProvider.of<DriverBloc>(context)
               .add(DriverLoad(message.data['myId']));
+          driverId = message.data['myId'];
           callback(DriverOnTheWay(callback));
+          requestAccepted();
           break;
         case "Arrived":
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -955,7 +989,8 @@ class _HomeScreenState extends State<HomeScreen> {
           ));
           break;
         case "Completed":
-          Navigator.pushNamed(context, ReviewScreen.routeName);
+          Navigator.pushNamed(context, ReviewScreen.routeName,
+              arguments: ReviewScreenArgument(price: message.data['price']));
           break;
 
         case "TimeOut":
@@ -969,6 +1004,38 @@ class _HomeScreenState extends State<HomeScreen> {
           print(message);
       }
     });
+  }
+
+  void showBookedDriver() {
+    debugPrint("TET");
+    ImageConfiguration imageConfiguration =
+        createLocalImageConfiguration(context, size: Size(1, 2));
+    databaseReference.onValue.listen((event) {
+      print(" NOW nOw ${event.snapshot.child('lng').value}");
+      debugPrint(event.snapshot.value.toString());
+
+      final position = LatLng(
+          double.parse(event.snapshot.child('$driverId/lat').value.toString()),
+          double.parse(event.snapshot.child('$driverId/lng').value.toString()));
+      MarkerId markerId = MarkerId('value');
+      Marker marker =
+          Marker(markerId: markerId, position: position, icon: carMarkerIcon!);
+      setState(() {
+        carMarker[markerId] = marker;
+      });
+    });
+  }
+
+  void createMarkerIcon() {
+    if (carMarkerIcon == null) {
+      ImageConfiguration imageConfiguration =
+          createLocalImageConfiguration(context, size: Size(1, 2));
+      BitmapDescriptor.fromAssetImage(
+              imageConfiguration, 'assets/icons/car.png')
+          .then((value) {
+        carMarkerIcon = value;
+      });
+    }
   }
 }
 

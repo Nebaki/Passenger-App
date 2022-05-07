@@ -62,7 +62,12 @@ class AppRoute {
       return MaterialPageRoute(builder: (context) => SettingScreen());
     }
     if (settings.name == ResetPassword.routeName) {
-      return MaterialPageRoute(builder: (context) => ResetPassword());
+      ResetPasswordArgument argument =
+          settings.arguments as ResetPasswordArgument;
+      return MaterialPageRoute(
+          builder: (context) => ResetPassword(
+                arg: argument,
+              ));
     }
     if (settings.name == CancelReason.routeName) {
       CancelReasonArgument argument =
@@ -103,7 +108,12 @@ class AppRoute {
       return MaterialPageRoute(builder: (context) => OrderForOtherScreen());
     }
     if (settings.name == ReviewScreen.routeName) {
-      return MaterialPageRoute(builder: (context) => ReviewScreen());
+      ReviewScreenArgument argument =
+          settings.arguments as ReviewScreenArgument;
+      return MaterialPageRoute(
+          builder: (context) => ReviewScreen(
+                arg: argument,
+              ));
     }
     if (settings.name == PlacePickerScreen.routeName) {
       return MaterialPageRoute(builder: (context) => PlacePickerScreen());
@@ -119,28 +129,38 @@ class AppRoute {
                 args: argument,
               ));
     }
+
+    if (settings.name == CarTypeSelector.routName) {
+      return MaterialPageRoute(builder: (context) => CarTypeSelector());
+    }
     return MaterialPageRoute(builder: (context) => CustomSplashScreen());
   }
 }
 
 class HomeScreenArgument {
   //String widgetName;
+  String? carType;
   bool isSelected = false;
   LatLng? destinationlatlang;
   String? encodedPts;
 
   HomeScreenArgument(
-      {required this.isSelected, this.destinationlatlang, this.encodedPts});
+      {required this.isSelected,
+      this.destinationlatlang,
+      this.encodedPts,
+      this.carType});
 }
 
 class VerificationArgument {
   String verificationId;
   int? resendingToken;
   String phoneNumber;
+  String from;
   VerificationArgument(
       {required this.verificationId,
       required this.resendingToken,
-      required this.phoneNumber});
+      required this.phoneNumber,
+      required this.from});
 }
 
 class SearchScreenArgument {
@@ -183,4 +203,14 @@ class CancelReasonArgument {
 class DetailHistoryArgument {
   final RideRequest request;
   DetailHistoryArgument({required this.request});
+}
+
+class ResetPasswordArgument {
+  final String phoneNumber;
+  ResetPasswordArgument({required this.phoneNumber});
+}
+
+class ReviewScreenArgument {
+  final String price;
+  ReviewScreenArgument({required this.price});
 }

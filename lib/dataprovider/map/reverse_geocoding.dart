@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
+import 'package:passengerapp/dataprovider/user/user.dart';
 import 'package:passengerapp/models/models.dart';
 
 String geolocator =
@@ -13,6 +14,7 @@ String reverseGeocoding =
     "https://maps.googleapis.com/maps/api/geocode/json?latlng=40.714224,-73.961452&key=AIzaSyB8z8UeyROt2-ay24jiHrrcMXaEAlPUvdQ";
 
 class ReverseGocoding {
+  UserDataProvider udp = UserDataProvider(httpClient: http.Client());
   Future<Position> _determinePosition() async {
     bool serviceEnabled;
     LocationPermission permission;
@@ -59,7 +61,7 @@ class ReverseGocoding {
 
     if (response.statusCode == 200) {
       final location = jsonDecode(response.body);
-
+      udp.setPassengerAvailablity([p.latitude, p.longitude]);
       return ReverseLocation.fromJson(location);
     } else {
       throw Exception('Failed to load loaction');

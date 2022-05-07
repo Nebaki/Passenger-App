@@ -31,7 +31,7 @@ class _PhoneVerificationState extends State<PhoneVerification> {
   final otp5Controller = TextEditingController();
 
   final otp6Controller = TextEditingController();
-  bool doesAllTextFilledsFilled = false;
+  bool doesAllTextFilledsFilled = true;
 
   late Timer _timer;
   FirebaseAuth _auth = FirebaseAuth.instance;
@@ -102,6 +102,7 @@ class _PhoneVerificationState extends State<PhoneVerification> {
           });
           Navigator.pushReplacementNamed(context, PhoneVerification.routeName,
               arguments: VerificationArgument(
+                  from: 'Here',
                   resendingToken: resendingToken,
                   verificationId: verificationId,
                   phoneNumber: widget.args.phoneNumber));
@@ -408,12 +409,22 @@ class _PhoneVerificationState extends State<PhoneVerification> {
                                       _auth
                                           .signInWithCredential(credential)
                                           .then((value) {
-                                        Navigator.pushReplacementNamed(context,
-                                            CreateProfileScreen.routeName,
-                                            arguments:
-                                                CreateProfileScreenArgument(
-                                                    phoneNumber: widget
-                                                        .args.phoneNumber));
+                                        if (widget.args.from == 'SignUp') {
+                                          Navigator.pushReplacementNamed(
+                                              context,
+                                              CreateProfileScreen.routeName,
+                                              arguments:
+                                                  CreateProfileScreenArgument(
+                                                      phoneNumber: widget
+                                                          .args.phoneNumber));
+                                        } else if (widget.args.from ==
+                                            'ForgetPassword') {
+                                          Navigator.pushReplacementNamed(
+                                              context, ResetPassword.routeName,
+                                              arguments: ResetPasswordArgument(
+                                                  phoneNumber:
+                                                      widget.args.phoneNumber));
+                                        }
                                       }).onError((error, stackTrace) {
                                         setState(() {
                                           _isLoading = false;

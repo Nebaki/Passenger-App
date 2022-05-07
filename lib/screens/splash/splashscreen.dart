@@ -234,10 +234,12 @@ class _CustomSplashScreenState extends State<CustomSplashScreen> {
                     if (st.rideRequest.pickUpAddress == null) {
                       BlocProvider.of<RideRequestBloc>(context)
                           .add(RideRequestLoad());
-
                       Navigator.pushReplacementNamed(
-                          context, HomeScreen.routeName,
-                          arguments: HomeScreenArgument(isSelected: false));
+                          context, CarTypeSelector.routName);
+
+                      // Navigator.pushReplacementNamed(
+                      //     context, HomeScreen.routeName,
+                      //     arguments: HomeScreenArgument(isSelected: false));
                     } else {
                       DriverEvent event = DriverLoad(st.rideRequest.driver!.id);
                       BlocProvider.of<DriverBloc>(context).add(event);

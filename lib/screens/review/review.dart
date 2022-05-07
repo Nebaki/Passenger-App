@@ -10,10 +10,13 @@ import 'package:passengerapp/screens/screens.dart';
 import 'package:passengerapp/widgets/widgets.dart';
 
 class ReviewScreen extends StatelessWidget {
+  final ReviewScreenArgument arg;
   static const routeName = 'reviewscreen';
   final description = TextEditingController();
   double min_rate = 1;
   bool _isLoading = false;
+
+  ReviewScreen({Key? key, required this.arg}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +27,8 @@ class ReviewScreen extends StatelessWidget {
             listener: (context, state) {
               if (state is ReviewSent) {
                 _isLoading = false;
-
+                BlocProvider.of<DirectionBloc>(context)
+                    .add(DirectionChangeToInitialState());
                 Navigator.pushReplacementNamed(context, HomeScreen.routeName,
                     arguments: HomeScreenArgument(isSelected: false));
               }
@@ -57,6 +61,8 @@ class ReviewScreen extends StatelessWidget {
                     //color: Colors.white,
                     //shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
                     onPressed: () {
+                      BlocProvider.of<DirectionBloc>(context)
+                          .add(DirectionChangeToInitialState());
                       Navigator.pushReplacementNamed(
                           context, HomeScreen.routeName,
                           arguments: HomeScreenArgument(isSelected: false));
@@ -92,7 +98,7 @@ class ReviewScreen extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Center(
-                child: Text("130.55",
+                child: Text(arg.price.toString(),
                     style: Theme.of(context).textTheme.titleLarge)),
           ),
           const Divider(),

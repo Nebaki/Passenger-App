@@ -10,6 +10,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:passengerapp/bloc/bloc.dart';
+import 'package:passengerapp/bloc/category/category.dart';
 import 'package:passengerapp/bloc/database/location_history_bloc.dart';
 import 'package:passengerapp/bloc/notificationrequest/notification_request_bloc.dart';
 import 'package:passengerapp/bloc/savedlocation/saved_location_bloc.dart';
@@ -22,7 +23,7 @@ import 'package:http/http.dart' as http;
 import 'package:wakelock/wakelock.dart';
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  // If you're going to use other Firebase services in the background, such as Firestore,
+  // If you're going to use other Firebase services in the background, such as Firestore,http
   // make sure you call `initializeApp` before using other Firebase services.
   await Firebase.initializeApp();
 
@@ -80,6 +81,9 @@ void main() async {
   final EmergencyReportRepository emergencyReportRepository =
       EmergencyReportRepository(
           dataProvider: EmergencyReportDataProvider(httpClient: http.Client()));
+
+  final CategoryRepository categoryRepository = CategoryRepository(
+      categoryDataProvider: CategoryDataProvider(httpClient: http.Client()));
   runApp(MyApp(
     notificationRequestRepository: notificationRequestRepository,
     rideRequestRepository: rideRequestRepository,
@@ -94,6 +98,7 @@ void main() async {
     reviewRepository: reviewRepository,
     savedLocationRepository: savedLocationRepository,
     emergencyReportRepository: emergencyReportRepository,
+    categoryRepository: categoryRepository,
   ));
 }
 
@@ -134,16 +139,14 @@ class MyApp extends StatelessWidget {
   final DirectionRepository directionRepository;
   final UserRepository userRepository;
   final DriverRepository driverRepository;
-
   final AuthRepository authRepository;
   final RideRequestRepository rideRequestRepository;
   final NotificationRequestRepository notificationRequestRepository;
   final DataBaseHelperRepository dataBaseHelperRepository;
-
   final ReviewRepository reviewRepository;
-
   final SavedLocationRepository savedLocationRepository;
   final EmergencyReportRepository emergencyReportRepository;
+  final CategoryRepository categoryRepository;
 
   const MyApp(
       {Key? key,
@@ -159,7 +162,8 @@ class MyApp extends StatelessWidget {
       required this.dataBaseHelperRepository,
       required this.reviewRepository,
       required this.savedLocationRepository,
-      required this.emergencyReportRepository})
+      required this.emergencyReportRepository,
+      required this.categoryRepository})
       : super(key: key);
   @override
   Widget build(BuildContext context) {
@@ -180,7 +184,8 @@ class MyApp extends StatelessWidget {
           RepositoryProvider.value(value: dataBaseHelperRepository),
           RepositoryProvider.value(value: reviewRepository),
           RepositoryProvider.value(value: savedLocationRepository),
-          RepositoryProvider.value(value: emergencyReportRepository)
+          RepositoryProvider.value(value: emergencyReportRepository),
+          RepositoryProvider.value(value: categoryRepository)
         ],
         child: MultiBlocProvider(
             providers: [
@@ -229,6 +234,10 @@ class MyApp extends StatelessWidget {
               BlocProvider(
                   create: (context) => EmergencyReportBloc(
                       emergencyReportRepository: emergencyReportRepository)),
+              BlocProvider(
+                  create: ((context) =>
+                      CategoryBloc(categoryRepository: categoryRepository)
+                        ..add(CategoryLoad())))
             ],
             child: MaterialApp(
               title: 'SafeWay',

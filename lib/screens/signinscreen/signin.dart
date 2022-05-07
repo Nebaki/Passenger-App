@@ -209,11 +209,7 @@ class _SigninScreenState extends State<SigninScreen> {
                       child: InkWell(
                           onTap: () {
                             Navigator.pushNamed(
-                                context, CreateProfileScreen.routeName,
-                                arguments: CreateProfileScreenArgument(
-                                    phoneNumber: 'args.phoneNumber'));
-                            // Navigator.pushNamed(
-                            //     context, MobileVerification.routeName);
+                                context, MobileVerification.routeName);
                           },
                           child: const Text(
                             "Forgot Password",

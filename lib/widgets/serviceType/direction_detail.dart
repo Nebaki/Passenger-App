@@ -4,13 +4,11 @@ import 'package:passengerapp/bloc/bloc.dart';
 import 'package:passengerapp/helper/constants.dart';
 
 class DirectionDetail extends StatefulWidget {
-  final double priceMultiplier;
-  final double durationMultiplier;
+  final int? initialFare;
+  final int? costPerKilloMeter;
 
   const DirectionDetail(
-      {Key? key,
-      required this.priceMultiplier,
-      required this.durationMultiplier})
+      {Key? key, required this.initialFare, required this.costPerKilloMeter})
       : super(key: key);
   @override
   _DirectionDetailState createState() => _DirectionDetailState();
@@ -21,31 +19,28 @@ class _DirectionDetailState extends State<DirectionDetail> {
   final _blackTextStyle = TextStyle(color: Colors.black);
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<DirectionBloc, DirectionState>(
-      listener: (context, state) {
+    return BlocBuilder<DirectionBloc, DirectionState>(
+      builder: (_, state) {
         if (state is DirectionLoadSuccess) {
-          price = (75 +
-                  (12 * (state.direction.distanceValue / 1000)) +
-                  (2 * ((state.direction.durationValue / 60) / 10)))
-              .truncate()
-              .toString();
-          double timeTraveledFare = (state.direction.durationValue / 60) * 0.20;
-          double distanceTraveldFare =
-              (state.direction.distanceValue / 1000) * 0.20;
-          double totalFareAmount = timeTraveledFare + distanceTraveldFare;
+          price = widget.initialFare != null
+              ? (widget.initialFare! +
+                      (12 * (state.direction.distanceValue / 1000)) +
+                      (2 * ((state.direction.durationValue / 60) / 10)))
+                  .truncate()
+                  .toString()
+              : 'Loading ';
+          // double timeTraveledFare = (state.direction.durationValue / 60) * 0.20;
+          // double distanceTraveldFare =
+          //     (state.direction.distanceValue / 1000) * 0.20;
+          // double totalFareAmount = timeTraveledFare + distanceTraveldFare;
 
-          double localFareAmount = totalFareAmount * 48;
+          // double localFareAmount = totalFareAmount * 48;
           // price =
           //     (localFareAmount * widget.priceMultiplier).truncate().toString();
           distance =
               (state.direction.distanceValue / 1000).truncate().toString();
-          duration =
-              ((state.direction.durationValue / 60) * widget.durationMultiplier)
-                  .truncate()
-                  .toString();
+          duration = (state.direction.durationValue / 60).truncate().toString();
         }
-      },
-      builder: (_, state) {
         return Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
@@ -56,7 +51,7 @@ class _DirectionDetailState extends State<DirectionDetail> {
                     text: "Price:      ",
                     style: _greyTextStyle,
                     children: [
-                      TextSpan(text: "\$ $price", style: _blackTextStyle)
+                      TextSpan(text: "\$ $price ", style: _blackTextStyle)
                     ])),
                 SizedBox(
                   height: 5,

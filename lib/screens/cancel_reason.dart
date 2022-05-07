@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:passengerapp/bloc/bloc.dart';
 import 'package:passengerapp/bloc/riderequest/bloc.dart';
 import 'package:passengerapp/helper/constants.dart';
 import 'package:passengerapp/rout.dart';
@@ -130,6 +131,9 @@ class _CancelReasonState extends State<CancelReason> {
             listener: (context, state) {
               if (state is RideRequestCancelled) {
                 isLoading = false;
+                BlocProvider.of<DirectionBloc>(context)
+                    .add(DirectionChangeToInitialState());
+
                 Navigator.pushReplacementNamed(context, HomeScreen.routeName,
                     arguments: HomeScreenArgument(isSelected: false));
               }

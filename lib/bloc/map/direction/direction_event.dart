@@ -12,3 +12,8 @@ class DirectionLoad extends DirectionEvent {
   @override
   List<Object> get props => [];
 }
+
+class DirectionChangeToInitialState extends DirectionEvent {
+  @override
+  List<Object?> get props => [];
+}

@@ -6,6 +6,8 @@ import 'package:geolocator/geolocator.dart';
 import 'package:passengerapp/bloc/bloc.dart';
 import 'package:passengerapp/models/models.dart';
 import 'package:passengerapp/repository/repositories.dart';
+import 'package:passengerapp/rout.dart';
+import 'package:passengerapp/screens/home/assistant/home_screen_assistant.dart';
 import 'package:passengerapp/screens/screens.dart';
 
 import '../helper/constants.dart';
@@ -26,7 +28,9 @@ class PushNotificationService {
         case 'Accepted':
           BlocProvider.of<DriverBloc>(context)
               .add(DriverLoad(message.data['myId']));
+          driverId = message.data['myId'];
           callback(DriverOnTheWay(callback));
+          requestAccepted();
           break;
         case 'Arrived':
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -42,7 +46,8 @@ class PushNotificationService {
           callback(Service(callback, searchNearbyDriver));
           break;
         case 'Completed':
-          Navigator.pushNamed(context, ReviewScreen.routeName);
+          Navigator.pushReplacementNamed(context, ReviewScreen.routeName,
+              arguments: ReviewScreenArgument(price: message.data['price']));
           break;
         case "TimeOut":
           callback(Service(callback, searchNearbyDriver));

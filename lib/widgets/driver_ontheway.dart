@@ -4,6 +4,7 @@ import 'package:passengerapp/bloc/bloc.dart';
 import 'package:passengerapp/helper/constants.dart';
 import 'package:passengerapp/helper/url_launcher.dart';
 import 'package:passengerapp/rout.dart';
+import 'package:passengerapp/screens/home/assistant/home_screen_assistant.dart';
 import 'package:passengerapp/screens/screens.dart';
 import 'package:passengerapp/widgets/canceltrip.dart';
 import 'package:passengerapp/widgets/widgets.dart';
@@ -44,15 +45,23 @@ class _DriverOnTheWayState extends State<DriverOnTheWay> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  DriverProfile(assetImage: 'assets/icons/economyCarIcon.png'),
+                  Flexible(
+                      flex: 3,
+                      child: DriverProfile(
+                          assetImage: 'assets/icons/economyCarIcon.png')),
 
                   //CarDetail()
-                  SizedBox(
+                  const SizedBox(
                     height: 10,
                   ),
-                  Divider(),
+                  const Divider(),
 
-                  DirectionDetail(priceMultiplier: 1, durationMultiplier: 1),
+                  Flexible(
+                      flex: 2,
+                      child: DirectionDetail(
+                        costPerKilloMeter: costPerKilloMeterAssistant,
+                        initialFare: initialFareAssistant,
+                      )),
                   // Row(
                   //   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   //   children: [
@@ -105,21 +114,24 @@ class _DriverOnTheWayState extends State<DriverOnTheWay> {
                     height: 30,
                   ),
 
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: SizedBox(
-                        height: 50,
-                        width: MediaQuery.of(context).size.width,
-                        child: ElevatedButton(
-                            onPressed: () {
-                              Navigator.pushNamed(
-                                  context, CancelReason.routeName,
-                                  arguments:
-                                      CancelReasonArgument(sendRequest: true));
-                              // widget.callback!(CancelTrip(widget.callback,
-                              //     DriverOnTheWay(widget.callback)));
-                            },
-                            child: const Text("Cancel"))),
+                  Flexible(
+                    flex: 1,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: SizedBox(
+                          height: 50,
+                          width: MediaQuery.of(context).size.width,
+                          child: ElevatedButton(
+                              onPressed: () {
+                                Navigator.pushNamed(
+                                    context, CancelReason.routeName,
+                                    arguments: CancelReasonArgument(
+                                        sendRequest: true));
+                                // widget.callback!(CancelTrip(widget.callback,
+                                //     DriverOnTheWay(widget.callback)));
+                              },
+                              child: const Text("Cancel"))),
+                    ),
                   ),
                 ],
               )),

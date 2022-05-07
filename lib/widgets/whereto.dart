@@ -67,7 +67,8 @@ class _WhereToState extends State<WhereTo> {
                           builder: (context, state) {
                         if (state is ReverseLocationLoadSuccess) {
                           List addresses = state.location.address1.split(",");
-                          currentLocation = addresses[1];
+                          currentLocation =
+                              state.location.address1; //addresses[1];
                           widget.setPickUpAdress(currentLocation);
 
                           // return Text(addresses[0]);
@@ -216,15 +217,18 @@ class _WhereToState extends State<WhereTo> {
           width: MediaQuery.of(context).size.width,
           child: Row(
             children: [
-              const Icon(
-                Icons.arrow_forward_ios,
-                color: Colors.black,
-                size: 12,
+              const Flexible(
+                flex: 1,
+                child: Icon(
+                  Icons.arrow_forward_ios,
+                  color: Colors.black,
+                  size: 12,
+                ),
               ),
               const SizedBox(
                 width: 10,
               ),
-              Text(prediction.mainText),
+              Flexible(flex: 5, child: Text(prediction.mainText)),
             ],
           ),
         ),

@@ -9,7 +9,9 @@ import 'package:passengerapp/helper/constants.dart';
 import 'package:passengerapp/models/models.dart';
 import 'package:passengerapp/repository/nearby_driver.dart';
 import 'package:passengerapp/rout.dart';
+import 'package:passengerapp/screens/home/assistant/home_screen_assistant.dart';
 import 'package:passengerapp/screens/screens.dart';
+import 'package:passengerapp/widgets/serviceType/category_list.dart';
 import 'package:passengerapp/widgets/widgets.dart';
 
 class Service extends StatefulWidget {
@@ -23,9 +25,8 @@ class Service extends StatefulWidget {
 }
 
 class _ServiceState extends State<Service> {
-  double priceMultiplier = 1;
-  double durationMultiplier = 1;
-  int _isSelected = 1;
+  int? initialFare;
+  int? costPerKilloMeter;
   bool _isLoading = false;
   late LatLng currentLatlng;
 
@@ -68,7 +69,9 @@ class _ServiceState extends State<Service> {
 
   void sendNotification(String fcmToken, String id) async {
     print(' driver fcm $fcmToken');
-    // _isLoading = true;
+    setState(() {
+      _isLoading = true;
+    });
     RideRequestEvent riderequestEvent = RideRequestCreate(RideRequest(
         driverFcm: fcmToken,
         driverId: id,
@@ -81,9 +84,18 @@ class _ServiceState extends State<Service> {
     BlocProvider.of<RideRequestBloc>(context).add(riderequestEvent);
   }
 
+  void changeCost(int intialFare, int costPerKilloeter) {
+    initialFareAssistant = intialFare;
+    costPerKilloMeterAssistant = costPerKilloeter;
+    setState(() {
+      initialFare = intialFare;
+      costPerKilloMeter = costPerKilloeter;
+    });
+  }
+
   Widget serviceTypeWidget() {
-    DriverEvent event = DriverLoad(widget.searchNeabyDriver());
-    BlocProvider.of<DriverBloc>(context).add(event);
+    // DriverEvent event = DriverLoad(widget.searchNeabyDriver());
+    // BlocProvider.of<DriverBloc>(context).add(event);
     return Positioned(
       bottom: 0.0,
       left: 8.0,
@@ -101,131 +113,17 @@ class _ServiceState extends State<Service> {
                 padding: EdgeInsets.symmetric(vertical: 10),
                 child: Text("Choose a taxi"),
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        _isSelected = 1;
-                      });
-                    },
-                    child: Column(
-                      children: [
-                        Container(
-                          decoration: _isSelected == 1
-                              ? BoxDecoration(
-                                  boxShadow: const [
-                                      BoxShadow(
-                                          color:
-                                              Color.fromRGBO(244, 201, 60, 1)),
-                                    ],
-                                  borderRadius: BorderRadius.circular(10),
-                                  border: Border.all(
-                                      width: 0.5, color: Colors.black))
-                              : null,
-                          child: const Image(
-                              height: 50,
-                              image: AssetImage(
-                                  "assets/icons/economyCarIcon.png")),
-                        ),
-                        const SizedBox(
-                          height: 5,
-                        ),
-                        const Text("Standart")
-                      ],
-                    ),
-                  ),
-                  const SizedBox(
-                    width: 20,
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        _isSelected = 2;
-                        priceMultiplier = 2;
-                        durationMultiplier = 2;
-
-                        DriverEvent event =
-                            DriverLoad(widget.searchNeabyDriver());
-                        BlocProvider.of<DriverBloc>(context).add(event);
-                      });
-                    },
-                    child: Column(
-                      children: [
-                        Container(
-                          decoration: _isSelected == 2
-                              ? BoxDecoration(
-                                  boxShadow: const [
-                                      BoxShadow(
-                                          color:
-                                              Color.fromRGBO(244, 201, 60, 1)),
-                                    ],
-                                  borderRadius: BorderRadius.circular(10),
-                                  border: Border.all(
-                                      width: 0.5, color: Colors.black))
-                              : null,
-                          child: const Image(
-                              height: 50,
-                              image:
-                                  AssetImage("assets/icons/lexuryCarIcon.png")),
-                        ),
-                        const SizedBox(
-                          height: 5,
-                        ),
-                        const Text("XL")
-                      ],
-                    ),
-                  ),
-                  const SizedBox(
-                    width: 20,
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        _isSelected = 3;
-                        priceMultiplier = 2.5;
-                        durationMultiplier = 2.5;
-                        DriverEvent event =
-                            DriverLoad(widget.searchNeabyDriver());
-                        BlocProvider.of<DriverBloc>(context).add(event);
-                      });
-                    },
-                    child: Column(
-                      children: [
-                        Container(
-                          decoration: _isSelected == 3
-                              ? BoxDecoration(
-                                  boxShadow: const [
-                                      BoxShadow(
-                                          color:
-                                              Color.fromRGBO(244, 201, 60, 1)),
-                                    ],
-                                  borderRadius: BorderRadius.circular(10),
-                                  border: Border.all(
-                                      width: 0.5, color: Colors.black))
-                              : null,
-                          child: const Image(
-                              height: 50,
-                              image:
-                                  AssetImage("assets/icons/familyCarIcon.png")),
-                        ),
-                        const SizedBox(
-                          height: 5,
-                        ),
-                        const Text("Family")
-                      ],
-                    ),
-                  ),
-                ],
-              ),
+              CategoryList(
+                  changeCost: changeCost,
+                  searchNearbyDriver: widget.searchNeabyDriver),
               const Divider(),
               const SizedBox(
                 height: 10,
               ),
               DirectionDetail(
-                  priceMultiplier: priceMultiplier,
-                  durationMultiplier: durationMultiplier),
+                costPerKilloMeter: costPerKilloMeter,
+                initialFare: initialFare,
+              ),
               const SizedBox(
                 height: 15,
               ),
@@ -347,3 +245,125 @@ class _ServiceState extends State<Service> {
     );
   }
 }
+
+// Row(
+//                 mainAxisAlignment: MainAxisAlignment.center,
+//                 children: [
+//                   GestureDetector(
+//                     onTap: () {
+//                       setState(() {
+//                         _isSelected = 1;
+//                       });
+//                     },
+//                     child: Column(
+//                       children: [
+//                         Container(
+//                           decoration: _isSelected == 1
+//                               ? BoxDecoration(
+//                                   boxShadow: const [
+//                                       BoxShadow(
+//                                           color:
+//                                               Color.fromRGBO(244, 201, 60, 1)),
+//                                     ],
+//                                   borderRadius: BorderRadius.circular(10),
+//                                   border: Border.all(
+//                                       width: 0.5, color: Colors.black))
+//                               : null,
+//                           child: const Image(
+//                               height: 50,
+//                               image: AssetImage(
+//                                   "assets/icons/economyCarIcon.png")),
+//                         ),
+//                         const SizedBox(
+//                           height: 5,
+//                         ),
+//                         const Text("Standart")
+//                       ],
+//                     ),
+//                   ),
+//                   const SizedBox(
+//                     width: 20,
+//                   ),
+//                   GestureDetector(
+//                     onTap: () {
+//                       setState(() {
+//                         _isSelected = 2;
+//                         priceMultiplier = 2;
+//                         durationMultiplier = 2;
+
+//                         DriverEvent event =
+//                             DriverLoad(widget.searchNeabyDriver());
+//                         BlocProvider.of<DriverBloc>(context).add(event);
+//                       });
+//                     },
+//                     child: Column(
+//                       children: [
+//                         Container(
+//                           decoration: _isSelected == 2
+//                               ? BoxDecoration(
+//                                   boxShadow: const [
+//                                       BoxShadow(
+//                                           color:
+//                                               Color.fromRGBO(244, 201, 60, 1)),
+//                                     ],
+//                                   borderRadius: BorderRadius.circular(10),
+//                                   border: Border.all(
+//                                       width: 0.5, color: Colors.black))
+//                               : null,
+//                           child: const Image(
+//                               height: 50,
+//                               image:
+//                                   AssetImage("assets/icons/lexuryCarIcon.png")),
+//                         ),
+//                         const SizedBox(
+//                           height: 5,
+//                         ),
+//                         const Text("XL")
+//                       ],
+//                     ),
+//                   ),
+//                   const SizedBox(
+//                     width: 20,
+//                   ),
+//                   GestureDetector(
+//                     onTap: () {
+//                       setState(() {
+//                         _isSelected = 3;
+//                         priceMultiplier = 2.5;
+//                         durationMultiplier = 2.5;
+//                         DriverEvent event =
+//                             DriverLoad(widget.searchNeabyDriver());
+//                         BlocProvider.of<DriverBloc>(context).add(event);
+//                       });
+//                     },
+//                     child: Column(
+//                       children: [
+//                         Container(
+//                           decoration: _isSelected == 3
+//                               ? BoxDecoration(
+//                                   boxShadow: const [
+//                                       BoxShadow(
+//                                           color:
+//                                               Color.fromRGBO(244, 201, 60, 1)),
+//                                     ],
+//                                   borderRadius: BorderRadius.circular(10),
+//                                   border: Border.all(
+//                                       width: 0.5, color: Colors.black))
+//                               : null,
+//                           child: const Image(
+//                               height: 50,
+//                               image:
+//                                   AssetImage("assets/icons/familyCarIcon.png")),
+//                         ),
+//                         const SizedBox(
+//                           height: 5,
+//                         ),
+//                         const Text("Family")
+//                       ],
+//                     ),
+//                   ),
+//                 ],
+//               ),
+
+
+

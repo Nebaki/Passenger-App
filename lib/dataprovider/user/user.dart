@@ -2,6 +2,7 @@ import 'dart:convert';
 
 // import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:meta/meta.dart';
 import 'dart:io';
@@ -209,6 +210,37 @@ class UserDataProvider {
       return false;
     } else {
       throw 'Unable to check the phonenumber';
+    }
+  }
+
+  Future forgetPassword(Map<String, String> forgetPasswordInfo) async {
+    print(' Pasdre ${forgetPasswordInfo['new_passsword']}o');
+    final http.Response response =
+        await http.post(Uri.parse('$_baseUrl/forget-password'),
+            headers: <String, String>{
+              'Content-Type': 'application/json',
+            },
+            body: json.encode({
+              'phone_number': forgetPasswordInfo['phone_number'],
+              'newPassword': forgetPasswordInfo['new_password']
+            }));
+    print('response ${response.statusCode}, ${response.body}');
+    if (response.statusCode != 200) {
+      throw 'Unable to rest password';
+    }
+  }
+
+  Future setPassengerAvailablity(List location) async {
+    final http.Response response =
+        await http.post(Uri.parse('$_baseUrl/set-passenger-availability'),
+            headers: <String, String>{
+              'Content-Type': 'application/json',
+              'x-access-token': '${await authDataProvider.getToken()}',
+            },
+            body: json.encode({'location': location}));
+
+    if (response.statusCode != 200) {
+      throw 'Operation Failure';
     }
   }
 }

@@ -79,6 +79,7 @@ class _SignupScreenState extends State<SignupScreen> {
           });
           Navigator.pushNamed(context, PhoneVerification.routeName,
               arguments: VerificationArgument(
+                  from: 'SignUp',
                   phoneNumber: phoneController,
                   resendingToken: resendingToken,
                   verificationId: verificationId));

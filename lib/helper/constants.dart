@@ -211,3 +211,5 @@ late Function setWillScreenPop;
 
 String portName = 'PASSENGER_BACKGROUND_LISTENER';
 const maintenanceUrl = 'https://mobiletaxi-api.herokuapp.com/api';
+String baseUrl = 'https://safeway-api.herokuapp.com/api';
+String pictureUrl = 'https://safeway-api.herokuapp.com';

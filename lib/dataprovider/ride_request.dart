@@ -81,7 +81,7 @@ class RideRequestDataProvider {
         ],
         'droppoff_address': request.droppOffAddress,
         'direction': direction,
-        'price': int.parse(price),
+        // 'price': int.parse(price),
         'duration': duration,
         'distance': int.parse(distance)
       }),

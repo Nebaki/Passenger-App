@@ -35,4 +35,8 @@ class UserRepository {
   Future<bool> checkPhoneNumber(String phoneNumber) async {
     return await dataProvider.checkPhoneNumber(phoneNumber);
   }
+
+  Future forgetPassword(Map<String, String> forgetPasswordInfo) async {
+    await dataProvider.forgetPassword(forgetPasswordInfo);
+  }
 }

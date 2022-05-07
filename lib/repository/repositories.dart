@@ -12,3 +12,4 @@ export 'database/database.dart';
 export 'review/review.dart';
 export 'saved_location.dart';
 export 'emergency_report.dart';
+export 'category.dart';
