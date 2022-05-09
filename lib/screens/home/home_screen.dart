@@ -167,14 +167,23 @@ class _HomeScreenState extends State<HomeScreen> {
     widget.args.isSelected ? _getPolyline(widget.args.encodedPts!) : null;
 
     _determinePosition().then((value) {
-      if (widget.args.carType == 'Truck') {
-        Geofire.initialize('availableTrucks');
-      } else {
-        Geofire.initialize('availableDrivers');
+      debugPrint('determining the current position ${widget.args.carType}');
+      switch (widget.args.carType) {
+        case 'truck':
+          debugPrint('we are in truck type');
+
+          Geofire.initialize('availableTrucks');
+          geofireListener(value.latitude, value.longitude, 'Truck', 2);
+          geofireListener(value.latitude, value.longitude, 'Truck', 2);
+
+          break;
+        default:
+          debugPrint('we are in taxi type');
+
+          Geofire.initialize('availableDrivers');
+          geofireListener(value.latitude, value.longitude, 'Taxi', 1);
+          geofireListener(value.latitude, value.longitude, 'Taxi', 1);
       }
-      geofireListener(value.latitude, value.longitude);
-      Geofire.stopListener();
-      geofireListener(value.latitude, value.longitude);
     });
   }
 
@@ -500,12 +509,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 alignment: Alignment.topRight,
                 child: ElevatedButton(
                     onPressed: () async {
-                      setState(() {
-                        markers.clear();
-                      });
-                      debugPrint('Noww');
-                      showBookedDriver();
-
                       //  databaseReference.set(value)
                     },
                     child: Text("Maintenance")),
@@ -695,111 +698,180 @@ class _HomeScreenState extends State<HomeScreen> {
     //Future.delayed(Duration(seconds: 1), () {});
   }
 
-  void geofireListener(double lat, double lng) async {
+  void geofireListener(
+      double lat, double lng, String type, double radius) async {
     repo.resetList();
     print("Mapppppppppppppppppppppppppppppppppppppppppppppppppppppppaaa");
 
     try {
+      switch (type) {
+        case 'Taxi':
+          Geofire.queryAtLocation(lat, lng, radius)!.listen((data) {
+            if (data != null) {
+              var callback = data['callBack'];
+              switch (callback) {
+                case Geofire.onKeyEntered:
+                  debugPrint('Added');
+
+                  repo.addDriver(NearbyDriver(
+                      id: data['key'],
+                      latitude: data['latitude'],
+                      longitude: data['longitude']));
+                  showDriversOnMap();
+                  break;
+                case Geofire.onKeyExited:
+                  debugPrint('Removed');
+                  repo.removeDriver(data['key']);
+                  setState(() {
+                    markers.remove(MarkerId(data['key']));
+                  });
+                  break;
+                case Geofire.onKeyMoved:
+                  debugPrint('Moved');
+                  repo.updateDriver(NearbyDriver(
+                      id: data['key'],
+                      latitude: data['latitude'],
+                      longitude: data['longitude']));
+                  showDriversOnMap();
+                  break;
+                case Geofire.onGeoQueryReady:
+                  break;
+              }
+            }
+          });
+
+          break;
+        case 'Truck':
+          Geofire.queryAtLocation(lat, lng, radius)!.listen((data) {
+            if (data != null) {
+              var callback = data['callBack'];
+              switch (callback) {
+                case Geofire.onKeyEntered:
+                  debugPrint('Added');
+                  truckRepo.addDriver(NearbyDriver(
+                      id: data['key'],
+                      latitude: data['latitude'],
+                      longitude: data['longitude']));
+                  showTrucksOnMap();
+                  break;
+                case Geofire.onKeyExited:
+                  debugPrint('Removed');
+                  truckRepo.removeDriver(data['key']);
+                  setState(() {
+                    markers.remove(MarkerId(data['key']));
+                  });
+                  break;
+                case Geofire.onKeyMoved:
+                  debugPrint('Moved');
+                  truckRepo.updateDriver(NearbyDriver(
+                      id: data['key'],
+                      latitude: data['latitude'],
+                      longitude: data['longitude']));
+                  showTrucksOnMap();
+                  break;
+                case Geofire.onGeoQueryReady:
+                  break;
+              }
+            }
+          });
+          break;
+      }
       //print(await Geofire.queryAtLocation(lat, lng, 1));
 
-      await Geofire.queryAtLocation(lat, lng, 1)?.listen((map) {
-        print("Mapppppppppppppppppppppppppppppppppppppppppppppppppppppppsss");
-        print("adeddd ${repo.getIdList()}");
+      // await Geofire.queryAtLocation(lat, lng, 1)?.listen((map) {
+      //   print("Mapppppppppppppppppppppppppppppppppppppppppppppppppppppppsss");
+      //   print("adeddd ${repo.getIdList()}");
 
-        print('herer is your length ${repo.getNearbyDrivers().length}');
+      //   print('herer is your length ${repo.getNearbyDrivers().length}');
 
-        print(map);
-        print("Mappppppppppppppppppppppppppppppppppppppppppppppppppppppp");
-        if (map != null) {
-          var callBack = map['callBack'];
-          print('callBack = $callBack');
-          switch (callBack) {
-            case Geofire.onKeyEntered:
-              String driver = map['key'];
+      //   print(map);
+      //   print("Mappppppppppppppppppppppppppppppppppppppppppppppppppppppp");
+      //   if (map != null) {
+      //     var callBack = map['callBack'];
+      //     print('callBack = $callBack');
+      //     switch (callBack) {
+      //       case Geofire.onKeyEntered:
+      //         String driver = map['key'];
 
-              final cat = driver.split(',')[1];
-              final id = driver.split(',')[0];
-              if (cat == "Truck") {
-                print("Truckkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk");
-                truckRepo.addDriver(NearbyDriver(
-                    id: id,
-                    latitude: map['latitude'],
-                    longitude: map['longitude']));
-                showTrucksOnMap();
-              } else {
-                print("driverrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr");
+      //         final cat = driver.split(',')[1];
+      //         final id = driver.split(',')[0];
+      //         if (cat == "Truck") {
+      //           print("Truckkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk");
+      //           truckRepo.addDriver(NearbyDriver(
+      //               id: id,
+      //               latitude: map['latitude'],
+      //               longitude: map['longitude']));
+      //           showTrucksOnMap();
+      //         } else {
+      //           print("driverrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr");
 
-                repo.addDriver(NearbyDriver(
-                    id: id,
-                    latitude: map['latitude'],
-                    longitude: map['longitude']));
-                showDriversOnMap();
-              }
+      //           repo.addDriver(NearbyDriver(
+      //               id: id,
+      //               latitude: map['latitude'],
+      //               longitude: map['longitude']));
+      //           showDriversOnMap();
+      //         }
 
-              print("adeddd ${repo.getIdList()}");
+      //         print("adeddd ${repo.getIdList()}");
 
-              break;
+      //         break;
 
-            case Geofire.onKeyExited:
-              String driver = map['key'];
+      //       case Geofire.onKeyExited:
+      //         String driver = map['key'];
 
-              final cat = driver.split(',')[1];
-              final id = driver.split(',')[0];
-              if (cat == "Truck") {
-                truckRepo.removeDriver(id);
-                setState(() {
-                  markers.remove(MarkerId(id));
-                });
-                // showTrucksOnMap();
-              } else {
-                repo.removeDriver(id);
-                setState(() {
-                  markers.remove(MarkerId(id));
-                });
-                // showDriversOnMap();
-              }
+      //         final cat = driver.split(',')[1];
+      //         final id = driver.split(',')[0];
+      //         if (cat == "Truck") {
+      //           truckRepo.removeDriver(id);
+      //           setState(() {
+      //             markers.remove(MarkerId(id));
+      //           });
+      //           // showTrucksOnMap();
+      //         } else {
+      //           // showDriversOnMap();
+      //         }
 
-              print("now");
+      //         print("now");
 
-              break;
+      //         break;
 
-            case Geofire.onKeyMoved:
-              String driver = map['key'];
+      //       case Geofire.onKeyMoved:
+      //         String driver = map['key'];
 
-              final cat = driver.split(',')[1];
-              final id = driver.split(',')[0];
-              if (cat == "Truck") {
-                repo.updateDriver(NearbyDriver(
-                    id: id,
-                    latitude: map['latitude'],
-                    longitude: map['longitude']));
-                showTrucksOnMap();
-              } else {
-                print("moved");
-                print(map['key']);
+      //         final cat = driver.split(',')[1];
+      //         final id = driver.split(',')[0];
+      //         if (cat == "Truck") {
+      //           repo.updateDriver(NearbyDriver(
+      //               id: id,
+      //               latitude: map['latitude'],
+      //               longitude: map['longitude']));
+      //           showTrucksOnMap();
+      //         } else {
+      //           print("moved");
+      //           print(map['key']);
 
-                repo.updateDriver(NearbyDriver(
-                    id: id,
-                    latitude: map['latitude'],
-                    longitude: map['longitude']));
-                showDriversOnMap();
-              }
+      //           repo.updateDriver(NearbyDriver(
+      //               id: id,
+      //               latitude: map['latitude'],
+      //               longitude: map['longitude']));
+      //           showDriversOnMap();
+      //         }
 
-              print("Yeah Moved");
-              break;
+      //         print("Yeah Moved");
+      //         break;
 
-            case Geofire.onGeoQueryReady:
-              // showTrucksOnMap();
-              // showDriversOnMap();
-              print(map['result']);
+      //       case Geofire.onGeoQueryReady:
+      //         // showTrucksOnMap();
+      //         // showDriversOnMap();
+      //         print(map['result']);
 
-              break;
-          }
-          if (!mounted) {
-            return;
-          }
-        }
-      });
+      //         break;
+      //     }
+      //     if (!mounted) {
+      //       return;
+      //     }
+      //   }
+      // });
     } on PlatformException {
       print("platform exceprionnnnnnnnnnnnnnnnnnnnnnnnnnnnnn");
     } catch (_) {
@@ -859,16 +931,21 @@ class _HomeScreenState extends State<HomeScreen> {
     // });
   }
 
-  String? searchNearbyDriver() {
+  String? searchNearbyDriver(String category) {
     if (repo.getNearbyDrivers().isEmpty) {
       return null;
     }
+
+    List a = repo
+        .getNearbyDrivers()
+        .where((element) => element.id.contains(category))
+        .toList();
     var nearest;
     var nearestDriver;
 
-    for (NearbyDriver driver in repo.getNearbyDrivers()) {
+    for (NearbyDriver driver in a) {
       print("drivers ::");
-      print(driver.id);
+      print(driver.id.split(',')[0]);
       double distance = Geolocator.distanceBetween(
           8.9966827, 38.7675547, driver.latitude, driver.longitude);
 
@@ -882,9 +959,7 @@ class _HomeScreenState extends State<HomeScreen> {
       }
     }
 
-    print(nearestDriver.id);
-
-    return nearestDriver.id;
+    return nearestDriver != null ? nearestDriver.id.split(',')[0] : null;
   }
 
   void changeCameraView() {

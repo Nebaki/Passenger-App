@@ -18,12 +18,13 @@ class CategoryList extends StatefulWidget {
 
 class _CategoryListState extends State<CategoryList> {
   int _selectedIndex = 1;
+  String category = 'ax';
 
   @override
   Widget build(BuildContext context) {
-    print("Now");
+    print("Now we are listening the typr $category");
 
-    DriverEvent event = DriverLoad(widget.searchNearbyDriver());
+    DriverEvent event = DriverLoad(widget.searchNearbyDriver(category));
     BlocProvider.of<DriverBloc>(context).add(event);
     return BlocConsumer<CategoryBloc, CategoryState>(
       listener: (context, state) {
@@ -43,6 +44,8 @@ class _CategoryListState extends State<CategoryList> {
                       state.categories.length,
                       (index) => GestureDetector(
                           onTap: () {
+                            category = state.categories[index].type;
+
                             widget.changeCost(
                                 state.categories[index].initialFare,
                                 state.categories[index].perKiloMeterCost);

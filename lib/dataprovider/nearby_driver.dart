@@ -5,8 +5,8 @@ class NearbyDriversData {
   static List ids = [];
 
   static void addDriver(NearbyDriver driver) {
-    if (!ids.contains(driver.id)) {
-      ids.add(driver.id);
+    if (!ids.contains(driver.id.split(',')[0])) {
+      ids.add(driver.id.split(',')[0]);
 
       nearbyDrivers.add(driver);
     }
@@ -27,9 +27,6 @@ class NearbyDriversData {
   }
 
   static void updateDriver(NearbyDriver driver) {
-    print(
-        "Yow this is the id $ids , ${nearbyDrivers.map((e) => (e.id)).toList()}");
-
     if (ids.contains(driver.id)) {
       int ind = ids.indexWhere((element) => element == driver.id);
       ids.removeAt(ind);
@@ -83,9 +80,6 @@ class NerbyTrucksData {
   }
 
   static void updateDriver(NearbyDriver driver) {
-    print(
-        "Yow this is the id $ids , ${nearbyTrucks.map((e) => (e.id)).toList()}");
-
     if (ids.contains(driver.id)) {
       int ind = ids.indexWhere((element) => element == driver.id);
       ids.removeAt(ind);

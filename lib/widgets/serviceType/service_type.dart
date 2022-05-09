@@ -32,10 +32,10 @@ class _ServiceState extends State<Service> {
 
   @override
   void initState() {
-    // TODO: implement initState
     GeolocatorPlatform.instance.getCurrentPosition().then((value) {
       currentLatlng = LatLng(value.latitude, value.longitude);
     });
+    super.initState();
   }
 
   @override
