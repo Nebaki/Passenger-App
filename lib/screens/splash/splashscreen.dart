@@ -232,8 +232,6 @@ class _CustomSplashScreenState extends State<CustomSplashScreen> {
                     print("data is is is is ${st.rideRequest.pickUpAddress}");
 
                     if (st.rideRequest.pickUpAddress == null) {
-                      BlocProvider.of<RideRequestBloc>(context)
-                          .add(RideRequestLoad());
                       Navigator.pushReplacementNamed(
                           context, CarTypeSelector.routName);
 
@@ -266,15 +264,3 @@ class _CustomSplashScreenState extends State<CustomSplashScreen> {
     BlocProvider.of<RideRequestBloc>(context).add(RideRequestLoad());
   }
 }
-
-
-
-//  _connectionStatus == ConnectivityResult.none
-//             ? const Center(
-//                 child: Image(
-//                   height: 150,
-//                   image: AssetImage("assets/icons/logo.png"),
-//                 ),
-//               )
-//             // ScaffoldMessenger.of(context).showSnackBar(_snackBar);
-//             : 

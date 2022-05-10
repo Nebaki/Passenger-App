@@ -445,7 +445,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       BitmapDescriptor.defaultMarkerWithHue(
                           BitmapDescriptor.hueRed));
                   _addMarker(
-                      LatLng(currentLatLng.latitude, currentLatLng.longitude),
+                      LatLng(pickupLatLng.latitude, pickupLatLng.longitude),
                       "pickup",
                       BitmapDescriptor.defaultMarkerWithHue(
                           BitmapDescriptor.hueGreen));

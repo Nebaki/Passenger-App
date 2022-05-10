@@ -84,6 +84,7 @@ void main() async {
 
   final CategoryRepository categoryRepository = CategoryRepository(
       categoryDataProvider: CategoryDataProvider(httpClient: http.Client()));
+
   runApp(MyApp(
     notificationRequestRepository: notificationRequestRepository,
     rideRequestRepository: rideRequestRepository,
@@ -191,8 +192,7 @@ class MyApp extends StatelessWidget {
             providers: [
               BlocProvider(
                   create: (context) => LocationBloc(
-                      reverseLocationRepository: reverseLocationRepository)
-                    ..add(const ReverseLocationLoad())),
+                      reverseLocationRepository: reverseLocationRepository)),
               BlocProvider(
                   create: (context) => LocationPredictionBloc(
                       locationPredictionRepository:
@@ -237,7 +237,11 @@ class MyApp extends StatelessWidget {
               BlocProvider(
                   create: ((context) =>
                       CategoryBloc(categoryRepository: categoryRepository)
-                        ..add(CategoryLoad())))
+                        ..add(CategoryLoad()))),
+              BlocProvider(
+                  create: ((context) => TripHistoryBloc(
+                      rideRequestRepository: rideRequestRepository)
+                    ..add(TripHistoryLoad())))
             ],
             child: MaterialApp(
               title: 'SafeWay',

@@ -25,12 +25,17 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
   String? name;
   String? address;
   PickResult? selectedPlace;
+  bool _isLoading = false;
+  final locationController = TextEditingController();
   GlobalKey<FormState> _formState = GlobalKey<FormState>();
 
   @override
   void initState() {
     widget.args.edit ? placeId = widget.args.savedLocation!.placeId : null;
     widget.args.edit ? address = widget.args.savedLocation!.address : null;
+    widget.args.edit
+        ? locationController.text = widget.args.savedLocation!.address
+        : null;
 
     super.initState();
   }
@@ -42,9 +47,10 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
             builder: (context, state) => _buildScreen(),
             listener: (context, state) {
               if (state is SavedLocationsSuccess) {
+                _isLoading = false;
                 BlocProvider.of<SavedLocationBloc>(context)
                     .add(SavedLocationsLoad());
-                Navigator.pushReplacementNamed(context, SavedAddress.routeName);
+                Navigator.pop(context);
               }
             }));
   }
@@ -100,19 +106,12 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
                 onChanged: (value) {
                   findPlace(value);
                 },
-                initialValue: widget.args.edit
-                    ? widget.args.savedLocation!.address
-                    : selectedPlace != null
-                        ? selectedPlace!.formattedAddress ?? ""
-                        : "",
+                controller: locationController,
                 decoration: const InputDecoration(
                   label: Text('Search Location'),
-
-                  // hintText: "Name",
                   hintStyle: TextStyle(
                       fontWeight: FontWeight.bold, color: Colors.black45),
                   fillColor: Colors.white,
-                  // filled: true,
                 ),
                 validator: (value) {
                   if (value!.isEmpty) {
@@ -142,44 +141,11 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
                                   placeId = result.placeId;
                                   address = result.formattedAddress;
                                   selectedPlace = result;
+                                  locationController.text =
+                                      result.formattedAddress!;
                                   Navigator.of(context).pop();
                                   setState(() {});
                                 },
-                                //forceSearchOnZoomChanged: true,
-                                //automaticallyImplyAppBarLeading: false,
-                                //autocompleteLanguage: "ko",
-                                //region: 'au',
-                                //selectInitialPosition: true,
-                                // selectedPlaceWidgetBuilder: (_, selectedPlace, state, isSearchBarFocused) {
-                                //   print("state: $state, isSearchBarFocused: $isSearchBarFocused");
-                                //   return isSearchBarFocused
-                                //       ? Container()
-                                //       : FloatingCard(
-                                //           bottomPosition: 0.0, // MediaQuery.of(context) will cause rebuild. See MediaQuery document for the information.
-                                //           leftPosition: 0.0,
-                                //           rightPosition: 0.0,
-                                //           width: 500,
-                                //           borderRadius: BorderRadius.circular(12.0),
-                                //           child: state == SearchingState.Searching
-                                //               ? Center(child: CircularProgressIndicator())
-                                //               : RaisedButton(
-                                //                   child: Text("Pick Here"),
-                                //                   onPressed: () {
-                                //                     // IMPORTANT: You MUST manage selectedPlace data yourself as using this build will not invoke onPlacePicker as
-                                //                     //            this will override default 'Select here' Button.
-                                //                     print("do something with [selectedPlace] data");
-                                //                     Navigator.of(context).pop();
-                                //                   },
-                                //                 ),
-                                //         );
-                                // },
-                                // pinBuilder: (context, state) {
-                                //   if (state == PinState.Idle) {
-                                //     return Icon(Icons.favorite_border);
-                                //   } else {
-                                //     return Icon(Icons.favorite);
-                                //   }
-                                // },
                               );
                             },
                           ),
@@ -253,12 +219,15 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
         CustomeBackArrow(),
         Align(
           alignment: Alignment.bottomCenter,
-          child: ElevatedButton(
+          child: SizedBox(
+            height: 50,
+            child: ElevatedButton(
               onPressed: placeId != null
                   ? () {
                       final form = _formState.currentState;
                       if (form!.validate()) {
                         form.save();
+                        _isLoading = true;
                         print(placeId);
                         print(name);
                         print(address);
@@ -277,7 +246,32 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
                       }
                     }
                   : null,
-              child: Text("Save")),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Spacer(),
+                  const Text(
+                    "Save",
+                  ),
+                  const Spacer(),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: _isLoading
+                        ? const SizedBox(
+                            height: 20,
+                            width: 20,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: Colors.black,
+                            ),
+                          )
+                        : Container(),
+                  )
+                ],
+              ),
+            ),
+          ),
         )
       ],
     );
@@ -288,6 +282,7 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: GestureDetector(
         onTap: () {
+          locationController.text = prediction.mainText;
           getPlaceDetail(prediction.placeId);
           // settingDropOffDialog(con);
           // LocationHistoryEvent event = LocationHistoryAdd(location: prediction);

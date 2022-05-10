@@ -23,43 +23,19 @@ class _HistoryPageState extends State<HistoryPage> {
 
   @override
   Widget build(BuildContext context) {
-    BlocListener<RideRequestBloc, RideRequestState>(
-      listener: (context, state) {
-        print('staaate $state');
-      },
-    );
     return Scaffold(
-        // appBar: AppBar(
-        //   elevation: 0,
-        //   iconTheme: const IconThemeData(color: Colors.black),
-        //   backgroundColor: Colors.grey.shade100,
-        //   title: const Text(
-        //     "Trips",
-        //     style: TextStyle(color: Colors.black),
-        //   ),
-        //   centerTitle: true,
-        // ),
         body: Stack(
       children: [
-        BlocBuilder<RideRequestBloc, RideRequestState>(
-          buildWhen: (previous, current) {
-            bool build = false;
-            if (current is RideRequestLoadSuccess) {
-              build = true;
-            }
-            return build;
-          },
+        BlocBuilder<TripHistoryBloc, TripHistoryState>(
           builder: (context, state) {
-            if (state is RideRequestLoadSuccess) {
+            if (state is TripHstoriesLoadSuccess) {
               return Padding(
                 padding: const EdgeInsets.only(top: 80),
                 child: ListView.builder(
-                  itemCount: state.rideRequests.length,
+                  itemCount: state.requestes.length,
                   itemBuilder: (context, index) {
-                    return _builHistoryCard(
-                        context,
-                        state.rideRequests[index].status!,
-                        state.rideRequests[index]);
+                    return _builHistoryCard(context,
+                        state.requestes[index].status!, state.requestes[index]);
                   },
                   padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
                 ),
@@ -68,12 +44,14 @@ class _HistoryPageState extends State<HistoryPage> {
             if (state is RideRequestOperationFailur) {
               print("Yeah Filedddddddd");
             }
-            return const SizedBox(
-                height: 50,
-                width: 50,
-                child: CircularProgressIndicator(
-                  strokeWidth: 1,
-                ));
+            return const Center(
+              child: SizedBox(
+                  height: 50,
+                  width: 50,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 1,
+                  )),
+            );
           },
         ),
         CustomeBackArrow(),

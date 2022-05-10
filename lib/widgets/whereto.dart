@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_geofire/flutter_geofire.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:passengerapp/bloc/bloc.dart';
 import 'package:passengerapp/bloc/database/location_history_bloc.dart';
@@ -31,6 +32,15 @@ class WhereTo extends StatefulWidget {
 class _WhereToState extends State<WhereTo> {
   late String currentLocation = "Loading current location..";
   late LatLng destinationLtlng;
+  final pickupController = TextEditingController();
+  FocusNode pickupLocationNode = FocusNode();
+  FocusNode droppOffLocationNode = FocusNode();
+  @override
+  void dispose() {
+    pickupLocationNode.dispose();
+    droppOffLocationNode.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -59,32 +69,6 @@ class _WhereToState extends State<WhereTo> {
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.only(left: 0),
-                    child: InkWell(
-                      onTap: () {},
-                      child: BlocBuilder<LocationBloc, ReverseLocationState>(
-                          builder: (context, state) {
-                        if (state is ReverseLocationLoadSuccess) {
-                          List addresses = state.location.address1.split(",");
-                          currentLocation =
-                              state.location.address1; //addresses[1];
-                          widget.setPickUpAdress(currentLocation);
-
-                          // return Text(addresses[0]);
-                        }
-
-                        return Container();
-                      }),
-                      // const Text(
-                      //   "Meskel Flower,Addis Ababa",
-                      //   style: TextStyle(
-                      //       color: Colors.white,
-                      //       fontWeight: FontWeight.bold,
-                      //       fontSize: 16),
-                      // ),
-                    ),
-                  ),
                   Icon(
                     Icons.location_on,
                     color: Colors.blue.shade600,
@@ -92,27 +76,67 @@ class _WhereToState extends State<WhereTo> {
                   const SizedBox(
                     width: 10,
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 15),
-                    child: InkWell(
-                      onTap: () {
-                        buttomSheet();
-                        print("ddffdfffffffffffffffffffffffffff");
+                  BlocConsumer<LocationBloc, ReverseLocationState>(
+                      listener: (context, state) {
+                    if (state is ReverseLocationLoading) {
+                      showDialog(
+                          barrierDismissible: false,
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              content: Row(
+                                children: const [
+                                  SizedBox(
+                                    height: 20,
+                                    width: 20,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 1,
+                                      color: Colors.red,
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    width: 5,
+                                  ),
+                                  Text("Loading current Location."),
+                                ],
+                              ),
+                            );
+                          });
+                    }
+                    if (state is ReverseLocationLoadSuccess) {
+                      Navigator.pop(context);
+                      buttomSheet();
+                      // List addresses = state.location.address1.split(",");
+                      currentLocation = state.location.address1;
+                      pickupController.text = state.location.address1;
+                      // addresses[1];
+                      widget.setPickUpAdress(currentLocation);
 
-                        // Navigator.pushNamed(context, SearchScreen.routeName,
-                        //     arguments: SearchScreenArgument(
-                        //         currentLocation: currentLocation));
-                      },
-                      child: SizedBox(
-                        height: 35,
-                        width: 150,
-                        child: Text(
-                          "Where To?",
-                          style: Theme.of(context).textTheme.titleLarge,
+                      // return Text(addresses[0]);
+                    }
+                  }, builder: (context, state) {
+                    return Padding(
+                      padding: const EdgeInsets.only(top: 15),
+                      child: InkWell(
+                        onTap: () {
+                          BlocProvider.of<LocationBloc>(context)
+                              .add(const ReverseLocationLoad());
+
+                          // Navigator.pushNamed(context, SearchScreen.routeName,
+                          //     arguments: SearchScreenArgument(
+                          //         currentLocation: currentLocation));
+                        },
+                        child: SizedBox(
+                          height: 35,
+                          width: 150,
+                          child: Text(
+                            "Where To?",
+                            style: Theme.of(context).textTheme.titleLarge,
+                          ),
                         ),
                       ),
-                    ),
-                  ),
+                    );
+                  }),
                 ],
               ),
             ),
@@ -205,12 +229,28 @@ class _WhereToState extends State<WhereTo> {
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: GestureDetector(
         onTap: () {
+          if (droppOffLocationNode.hasFocus) {
+            getPlaceDetail(prediction.placeId);
+            LocationHistoryEvent event =
+                LocationHistoryAdd(location: prediction);
+            BlocProvider.of<LocationHistoryBloc>(context).add(event);
+            settingDropOffDialog(con);
+          } else if (pickupLocationNode.hasFocus) {
+            getPlaceDetail(prediction.placeId);
+            settingPickupDialog(con);
+
+            pickupLocationNode.nextFocus();
+
+            pickupController.text = prediction.mainText;
+
+            pickupAddress = prediction.mainText;
+          }
           // Navigator.pop(con);
 
-          getPlaceDetail(prediction.placeId);
-          LocationHistoryEvent event = LocationHistoryAdd(location: prediction);
-          BlocProvider.of<LocationHistoryBloc>(context).add(event);
-          settingDropOffDialog(con);
+          // getPlaceDetail(prediction.placeId);
+          // LocationHistoryEvent event = LocationHistoryAdd(location: prediction);
+          // BlocProvider.of<LocationHistoryBloc>(context).add(event);
+          // settingDropOffDialog(con);
         },
         child: Container(
           color: Colors.black.withOpacity(0),
@@ -241,6 +281,47 @@ class _WhereToState extends State<WhereTo> {
     BlocProvider.of<PlaceDetailBloc>(context).add(event);
   }
 
+  void settingPickupDialog(BuildContext? con) {
+    showDialog(
+        context: context,
+        builder: (BuildContext cont) {
+          return BlocBuilder<PlaceDetailBloc, PlaceDetailState>(
+              builder: (_, state) {
+            if (state is PlaceDetailLoadSuccess) {
+              pickupLatLng =
+                  LatLng(state.placeDetail.lat, state.placeDetail.lng);
+              Future.delayed(Duration(seconds: 1), () {
+                Navigator.pop(context);
+              });
+            }
+
+            if (state is PlaceDetailOperationFailure) {
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                  backgroundColor: Colors.red.shade900,
+                  content: const Text("Unable To set the Pickup.")));
+            }
+            return AlertDialog(
+              content: Row(
+                children: const [
+                  SizedBox(
+                    height: 20,
+                    width: 20,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 1,
+                      color: Colors.black,
+                    ),
+                  ),
+                  SizedBox(
+                    width: 5,
+                  ),
+                  Text("Setting up Pickup. Please wait.."),
+                ],
+              ),
+            );
+          });
+        });
+  }
+
   void settingDropOffDialog(BuildContext? con) {
     showDialog(
         context: context,
@@ -250,7 +331,8 @@ class _WhereToState extends State<WhereTo> {
             if (state is PlaceDetailLoadSuccess) {
               widget.setDroppOffAdress(state.placeDetail.placeName);
 
-              DirectionEvent event = DirectionLoad(
+              DirectionEvent event = DirectionLoadFromDiffrentPickupLocation(
+                  pickup: pickupLatLng,
                   destination:
                       LatLng(state.placeDetail.lat, state.placeDetail.lng));
               BlocProvider.of<DirectionBloc>(context).add(event);
@@ -258,7 +340,10 @@ class _WhereToState extends State<WhereTo> {
               destinationLtlng =
                   LatLng(state.placeDetail.lat, state.placeDetail.lng);
               droppOffLatLng = destinationLtlng;
+
               WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
+                Geofire.stopListener();
+
                 widget.setIsSelected(destinationLtlng);
                 widget.callback(widget.service);
                 // Navigator.pop(cont);
@@ -350,34 +435,6 @@ class _WhereToState extends State<WhereTo> {
                       ),
                     ),
                   );
-
-                  // SizedBox(
-                  //   height:
-                  //       MediaQuery.of(context).size.height -
-                  //           260,
-                  //   child: Container(
-                  //     color: Colors.white,
-                  //     child: ListView.separated(
-                  //         physics:
-                  //             const ClampingScrollPhysics(),
-                  //         shrinkWrap: true,
-                  //         itemBuilder: (context, index) {
-                  //           return _buildPredictedItem(
-                  //               state.placeList[index]);
-                  //         },
-                  //         separatorBuilder: (context,
-                  //                 index) =>
-                  //             const Padding(
-                  //               padding:
-                  //                   EdgeInsets.symmetric(
-                  //                       horizontal: 40),
-                  //               child: Divider(
-                  //                   color: Colors.black38),
-                  //             ),
-                  //         itemCount:
-                  //             state.placeList.length),
-                  //   ),
-                  // );
                 }
 
                 if (state is LocationPredictionOperationFailure) {}
@@ -393,10 +450,24 @@ class _WhereToState extends State<WhereTo> {
                   child: Column(
                     children: [
                       SizedBox(
-                        height: 50,
-                        child: TextField(
+                        height: 60,
+                        child: TextFormField(
+                          onChanged: (value) {
+                            findPlace(value);
+                          },
+                          focusNode: pickupLocationNode,
+                          controller: pickupController,
                           decoration: InputDecoration(
-                              label: Text(currentLocation),
+                              suffixIcon: IconButton(
+                                  onPressed: () {
+                                    pickupController.clear();
+                                    debugPrint("TATAT");
+                                  },
+                                  icon: const Icon(
+                                    Icons.clear,
+                                    color: Colors.black,
+                                    size: 15,
+                                  )),
                               hintText: "PickUp Address",
                               prefixIcon: const Padding(
                                 padding: EdgeInsets.only(left: 20, right: 10),
@@ -426,7 +497,8 @@ class _WhereToState extends State<WhereTo> {
                                   offset: Offset(0, 4))
                             ]),
                         height: 50,
-                        child: TextField(
+                        child: TextFormField(
+                          focusNode: droppOffLocationNode,
                           onChanged: (value) {
                             findPlace(value);
                           },

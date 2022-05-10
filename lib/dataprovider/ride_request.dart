@@ -55,7 +55,7 @@ class RideRequestDataProvider {
     if (response.statusCode == 200) {
       final data = json.decode(response.body)['items'] as List;
       print("e is $data");
-      return data.map((e) => RideRequest.fromJson(e)).toList();
+      return data.reversed.map((e) => RideRequest.fromJson(e)).toList();
     } else {
       throw 'Unable to fetch RideRequests';
     }

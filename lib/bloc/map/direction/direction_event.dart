@@ -17,3 +17,13 @@ class DirectionChangeToInitialState extends DirectionEvent {
   @override
   List<Object?> get props => [];
 }
+
+class DirectionLoadFromDiffrentPickupLocation extends DirectionEvent {
+  final LatLng destination;
+  final LatLng pickup;
+  const DirectionLoadFromDiffrentPickupLocation(
+      {required this.pickup, required this.destination});
+
+  @override
+  List<Object> get props => [];
+}
