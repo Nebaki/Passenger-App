@@ -25,11 +25,11 @@ class _CarTypeSelectorState extends State<CarTypeSelector> {
                 children: [
                   GestureDetector(
                     onTap: () {
-                      Navigator.pushNamed(context, HomeScreen.routeName,
-                          arguments: HomeScreenArgument(
-                            isSelected: false,
-                            carType: 'Taxi',
-                          ));
+                      // Navigator.pushNamed(context, HomeScreen.routeName,
+                      //     arguments: HomeScreenArgument(
+                      //       isSelected: false,
+                      //       carType: 'Taxi',
+                      //     ));
                     },
                     child: Container(
                       height: 80,
@@ -52,11 +52,11 @@ class _CarTypeSelectorState extends State<CarTypeSelector> {
                   const Text('Or'),
                   GestureDetector(
                     onTap: () {
-                      Navigator.pushNamed(context, HomeScreen.routeName,
-                          arguments: HomeScreenArgument(
-                            isSelected: false,
-                            carType: 'Truck',
-                          ));
+                      // Navigator.pushNamed(context, HomeScreen.routeName,
+                      //     arguments: HomeScreenArgument(
+                      //       isSelected: false,
+                      //       carType: 'Truck',
+                      //     ));
                     },
                     child: Container(
                       height: 80,

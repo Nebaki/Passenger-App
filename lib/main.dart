@@ -192,7 +192,8 @@ class MyApp extends StatelessWidget {
             providers: [
               BlocProvider(
                   create: (context) => LocationBloc(
-                      reverseLocationRepository: reverseLocationRepository)),
+                      reverseLocationRepository: reverseLocationRepository)
+                    ..add(const ReverseLocationLoad())),
               BlocProvider(
                   create: (context) => LocationPredictionBloc(
                       locationPredictionRepository:

@@ -94,7 +94,8 @@ class NavDrawer extends StatelessWidget {
                     onTap: () {
                       Navigator.pushReplacementNamed(
                           context, HomeScreen.routeName,
-                          arguments: HomeScreenArgument(isSelected: false));
+                          arguments: HomeScreenArgument(
+                              isFromSplash: false, isSelected: false));
                     },
                     child: _menuItem(
                         divider: true,

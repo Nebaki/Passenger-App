@@ -51,7 +51,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     }
 
     if (event is UploadProfile) {
-      yield UserLoading();
+      yield UserImageLoading();
 
       try {
         await userRepository.uploadProfilePicture(event.file);

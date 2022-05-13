@@ -24,7 +24,7 @@ class UserDataProvider {
   final secure_storage = new FlutterSecureStorage();
 
   Future<User> createPassenger(User user) async {
-    print(user.firstName);
+    print(user.name);
     print(user.email);
     print(user.gender);
     print(user.password);
@@ -34,7 +34,7 @@ class UserDataProvider {
       Uri.parse('$_baseUrl/create-passenger'),
       headers: <String, String>{'Content-Type': 'application/json'},
       body: json.encode({
-        'name': user.firstName,
+        'name': user.name,
         'gender': user.gender,
         'password': user.password,
         'phone_number': user.phoneNumber,
@@ -128,7 +128,7 @@ class UserDataProvider {
         'x-access-token': '${await authDataProvider.getToken()}'
       },
       body: jsonEncode(<String, dynamic>{
-        'name': '${user.firstName} ${user.lastName}',
+        'name': '${user.name} ',
         'email': user.email,
         'gender': user.gender,
         'phone_number': user.phoneNumber,

@@ -5,7 +5,7 @@ import '../../models/models.dart';
 
 class DriverBloc extends Bloc<DriverEvent, DriverState> {
   final DriverRepository driverRepository;
-  DriverBloc({required this.driverRepository}) : super(DriverLoading());
+  DriverBloc({required this.driverRepository}) : super(DriverInitialState());
 
   @override
   Stream<DriverState> mapEventToState(DriverEvent event) async* {
@@ -19,6 +19,10 @@ class DriverBloc extends Bloc<DriverEvent, DriverState> {
         yield DriverOperationFailure();
       }
     }
+
+    if (event is DriverSetNotFound) {
+      yield DriverNotFoundState();
+    }
   }
 }
 
@@ -31,6 +35,11 @@ class DriverLoad extends DriverEvent {
   const DriverLoad(this.id);
   @override
   List<Object?> get props => [id];
+}
+
+class DriverSetNotFound extends DriverEvent {
+  @override
+  List<Object?> get props => [];
 }
 
 class DriverState extends Equatable {
@@ -51,3 +60,7 @@ class DriverLoadSuccess extends DriverState {
 }
 
 class DriverOperationFailure extends DriverState {}
+
+class DriverInitialState extends DriverState {}
+
+class DriverNotFoundState extends DriverState {}

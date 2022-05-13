@@ -7,6 +7,8 @@ class Category extends Equatable {
   final String name;
   final String type;
   final int perKiloMeterCost;
+  final int perMinuteCost;
+  final String capacity;
   final int initialFare;
   final String icon;
   final String description;
@@ -18,6 +20,8 @@ class Category extends Equatable {
       required this.name,
       required this.type,
       required this.perKiloMeterCost,
+      required this.perMinuteCost,
+      required this.capacity,
       required this.initialFare,
       required this.icon,
       required this.description,
@@ -29,6 +33,8 @@ class Category extends Equatable {
         name,
         type,
         perKiloMeterCost,
+        perMinuteCost,
+        capacity,
         initialFare,
         icon,
         description,
@@ -42,6 +48,8 @@ class Category extends Equatable {
         name: json['name'],
         type: json['type'],
         perKiloMeterCost: json['per_kilometer_cost'],
+        perMinuteCost: json['per_minute_cost'],
+        capacity: json['capacity'],
         initialFare: json['initial_fare'],
         icon: json['icon'],
         description: json['description'],

@@ -44,3 +44,5 @@ class UserPhoneNumbeChecked extends UserState {
 }
 
 class UserPasswordChanged extends UserState {}
+
+class UserImageLoading extends UserState {}

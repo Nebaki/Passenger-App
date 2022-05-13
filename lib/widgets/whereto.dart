@@ -6,6 +6,7 @@ import 'package:passengerapp/bloc/bloc.dart';
 import 'package:passengerapp/bloc/database/location_history_bloc.dart';
 import 'package:passengerapp/helper/constants.dart';
 import 'package:passengerapp/rout.dart';
+import 'package:passengerapp/screens/home/assistant/home_screen_assistant.dart';
 import 'package:passengerapp/screens/screens.dart';
 
 import '../models/models.dart';
@@ -16,8 +17,10 @@ class WhereTo extends StatefulWidget {
   final Widget service;
   final Function setPickUpAdress;
   final Function setDroppOffAdress;
+  final Function dontShowCarIcons;
   WhereTo(
       {Key? key,
+      required this.dontShowCarIcons,
       required this.setPickUpAdress,
       required this.setDroppOffAdress,
       required this.setIsSelected,
@@ -64,6 +67,13 @@ class _WhereToState extends State<WhereTo> {
                 topLeft: Radius.circular(20), topRight: Radius.circular(20))),
         child: Column(
           children: [
+            BlocConsumer<LocationBloc, ReverseLocationState>(
+                builder: (context, state) => Container(),
+                listener: (context, state) {
+                  if (state is ReverseLocationLoadSuccess) {
+                    pickupAddress = state.location.address1;
+                  }
+                }),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 50),
               child: Row(
@@ -77,66 +87,70 @@ class _WhereToState extends State<WhereTo> {
                     width: 10,
                   ),
                   BlocConsumer<LocationBloc, ReverseLocationState>(
+                      listenWhen: (previous, current) => whereToClicked,
                       listener: (context, state) {
-                    if (state is ReverseLocationLoading) {
-                      showDialog(
-                          barrierDismissible: false,
-                          context: context,
-                          builder: (BuildContext context) {
-                            return AlertDialog(
-                              content: Row(
-                                children: const [
-                                  SizedBox(
-                                    height: 20,
-                                    width: 20,
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 1,
-                                      color: Colors.red,
-                                    ),
+                        if (state is ReverseLocationLoading) {
+                          showDialog(
+                              barrierDismissible: false,
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  content: Row(
+                                    children: const [
+                                      SizedBox(
+                                        height: 20,
+                                        width: 20,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 1,
+                                          color: Colors.red,
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        width: 5,
+                                      ),
+                                      Text("Loading current Location."),
+                                    ],
                                   ),
-                                  SizedBox(
-                                    width: 5,
-                                  ),
-                                  Text("Loading current Location."),
-                                ],
+                                );
+                              });
+                        }
+                        if (state is ReverseLocationLoadSuccess) {
+                          Navigator.pop(context);
+                          buttomSheet();
+                          // List addresses = state.location.address1.split(",");
+                          pickupAddress = state.location.address1;
+                          currentLocation = state.location.address1;
+                          pickupController.text = state.location.address1;
+                          // addresses[1];
+                          widget.setPickUpAdress(currentLocation);
+
+                          // return Text(addresses[0]);
+                        }
+                      },
+                      builder: (context, state) {
+                        return Padding(
+                          padding: const EdgeInsets.only(top: 15),
+                          child: InkWell(
+                            onTap: () {
+                              whereToClicked = true;
+                              BlocProvider.of<LocationBloc>(context)
+                                  .add(const ReverseLocationLoad());
+
+                              // Navigator.pushNamed(context, SearchScreen.routeName,
+                              //     arguments: SearchScreenArgument(
+                              //         currentLocation: currentLocation));
+                            },
+                            child: SizedBox(
+                              height: 35,
+                              width: 150,
+                              child: Text(
+                                "Where To?",
+                                style: Theme.of(context).textTheme.titleLarge,
                               ),
-                            );
-                          });
-                    }
-                    if (state is ReverseLocationLoadSuccess) {
-                      Navigator.pop(context);
-                      buttomSheet();
-                      // List addresses = state.location.address1.split(",");
-                      currentLocation = state.location.address1;
-                      pickupController.text = state.location.address1;
-                      // addresses[1];
-                      widget.setPickUpAdress(currentLocation);
-
-                      // return Text(addresses[0]);
-                    }
-                  }, builder: (context, state) {
-                    return Padding(
-                      padding: const EdgeInsets.only(top: 15),
-                      child: InkWell(
-                        onTap: () {
-                          BlocProvider.of<LocationBloc>(context)
-                              .add(const ReverseLocationLoad());
-
-                          // Navigator.pushNamed(context, SearchScreen.routeName,
-                          //     arguments: SearchScreenArgument(
-                          //         currentLocation: currentLocation));
-                        },
-                        child: SizedBox(
-                          height: 35,
-                          width: 150,
-                          child: Text(
-                            "Where To?",
-                            style: Theme.of(context).textTheme.titleLarge,
+                            ),
                           ),
-                        ),
-                      ),
-                    );
-                  }),
+                        );
+                      }),
                 ],
               ),
             ),
@@ -342,7 +356,8 @@ class _WhereToState extends State<WhereTo> {
               droppOffLatLng = destinationLtlng;
 
               WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
-                Geofire.stopListener();
+                widget.dontShowCarIcons();
+                // Geofire.stopListener();
 
                 widget.setIsSelected(destinationLtlng);
                 widget.callback(widget.service);

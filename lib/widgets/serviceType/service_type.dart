@@ -27,8 +27,10 @@ class Service extends StatefulWidget {
 class _ServiceState extends State<Service> {
   int? initialFare;
   int? costPerKilloMeter;
+  int? costPerMinute;
   bool _isLoading = false;
   late LatLng currentLatlng;
+  String capacity = 'loading';
 
   @override
   void initState() {
@@ -84,12 +86,20 @@ class _ServiceState extends State<Service> {
     BlocProvider.of<RideRequestBloc>(context).add(riderequestEvent);
   }
 
-  void changeCost(int intialFare, int costPerKilloeter) {
-    initialFareAssistant = intialFare;
-    costPerKilloMeterAssistant = costPerKilloeter;
+  void changeCost(int initial, int perKillometed, int perminute) {
+    initialFareAssistant = initial;
+    costPerKilloMeterAssistant = perKillometed;
+    costPerKilloMeterAssistant = perminute;
     setState(() {
-      initialFare = intialFare;
-      costPerKilloMeter = costPerKilloeter;
+      initialFare = initial;
+      costPerKilloMeter = perKillometed;
+      costPerMinute = perminute;
+    });
+  }
+
+  void changeCapacity(String cap) {
+    setState(() {
+      capacity = cap;
     });
   }
 
@@ -115,7 +125,8 @@ class _ServiceState extends State<Service> {
               ),
               CategoryList(
                   changeCost: changeCost,
-                  searchNearbyDriver: widget.searchNeabyDriver),
+                  searchNearbyDriver: widget.searchNeabyDriver,
+                  changeCapacity: changeCapacity),
               const Divider(),
               const SizedBox(
                 height: 10,
@@ -123,6 +134,8 @@ class _ServiceState extends State<Service> {
               DirectionDetail(
                 costPerKilloMeter: costPerKilloMeter,
                 initialFare: initialFare,
+                costPerMinute: costPerMinute,
+                capacity: capacity,
               ),
               const SizedBox(
                 height: 15,
@@ -204,6 +217,24 @@ class _ServiceState extends State<Service> {
                       );
                     }
                     if (state is DriverOperationFailure) {
+                      return ElevatedButton(
+                        style: ButtonStyle(
+                            backgroundColor: MaterialStateProperty.all<Color>(
+                                const Color.fromRGBO(244, 201, 60, 1)),
+                            shape: MaterialStateProperty.all<
+                                    RoundedRectangleBorder>(
+                                RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10)))),
+                        onPressed: null,
+                        child: const Text(
+                          "No driver Found",
+                          style: TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.normal),
+                        ),
+                      );
+                    }
+                    if (state is DriverNotFoundState) {
                       return ElevatedButton(
                         style: ButtonStyle(
                             backgroundColor: MaterialStateProperty.all<Color>(

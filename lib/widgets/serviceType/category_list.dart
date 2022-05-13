@@ -8,8 +8,12 @@ import 'package:shimmer/shimmer.dart';
 class CategoryList extends StatefulWidget {
   final Function changeCost;
   final Function searchNearbyDriver;
+  final Function changeCapacity;
   const CategoryList(
-      {Key? key, required this.changeCost, required this.searchNearbyDriver})
+      {Key? key,
+      required this.changeCost,
+      required this.searchNearbyDriver,
+      required this.changeCapacity})
       : super(key: key);
 
   @override
@@ -24,14 +28,23 @@ class _CategoryListState extends State<CategoryList> {
   Widget build(BuildContext context) {
     print("Now we are listening the typr $category");
 
-    DriverEvent event = DriverLoad(widget.searchNearbyDriver(category));
-    BlocProvider.of<DriverBloc>(context).add(event);
+    if (widget.searchNearbyDriver(category) != null) {
+      DriverEvent event = DriverLoad(widget.searchNearbyDriver(category));
+      BlocProvider.of<DriverBloc>(context).add(event);
+    } else {
+      BlocProvider.of<DriverBloc>(context).add(DriverSetNotFound());
+    }
+
     return BlocConsumer<CategoryBloc, CategoryState>(
       listener: (context, state) {
         if (state is CategoryLoadSuccess) {
           WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
-            widget.changeCost(state.categories[_selectedIndex].initialFare,
-                state.categories[_selectedIndex].perKiloMeterCost);
+            widget.changeCost(
+                state.categories[_selectedIndex].initialFare,
+                state.categories[_selectedIndex].perKiloMeterCost,
+                state.categories[_selectedIndex].perMinuteCost);
+
+            widget.changeCapacity(state.categories[_selectedIndex].capacity);
           });
         }
       },
@@ -48,7 +61,10 @@ class _CategoryListState extends State<CategoryList> {
 
                             widget.changeCost(
                                 state.categories[index].initialFare,
-                                state.categories[index].perKiloMeterCost);
+                                state.categories[index].perKiloMeterCost,
+                                state.categories[index].perMinuteCost);
+                            widget.changeCapacity(
+                                state.categories[index].capacity);
 
                             setState(() {
                               _selectedIndex = index;

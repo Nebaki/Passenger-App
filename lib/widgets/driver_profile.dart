@@ -21,6 +21,7 @@ class DriverProfile extends StatelessWidget {
         driverId = state.driver.id;
         vehicle = state.driver.vehicle;
         driverRating = state.driver.rating;
+        driverFcm = state.driver.fcmId;
 
         ///////////////////////////////////
         return Container(

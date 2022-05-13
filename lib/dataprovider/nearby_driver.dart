@@ -17,8 +17,8 @@ class NearbyDriversData {
   }
 
   static void removeDriver(String id) {
-    if (ids.contains(id)) {
-      int ind = ids.indexWhere((element) => element == id);
+    if (ids.contains(id.split(',')[0])) {
+      int ind = ids.indexWhere((element) => element == id.split(',')[0]);
       ids.removeAt(ind);
 
       int index = nearbyDrivers.indexWhere((element) => element.id == id);

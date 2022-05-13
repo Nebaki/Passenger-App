@@ -199,7 +199,7 @@ class RideRequestDataProvider {
       body: json.encode({
         "data": {
           "nextDrivers": nextDrivers,
-          "response": "Cancelled",
+          "response": "Searching",
           "requestId": requestId,
           "passengerFcm": fcmtoken,
           "pickupLocation": [

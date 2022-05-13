@@ -6,9 +6,15 @@ import 'package:passengerapp/helper/constants.dart';
 class DirectionDetail extends StatefulWidget {
   final int? initialFare;
   final int? costPerKilloMeter;
+  final int? costPerMinute;
+  final String capacity;
 
   const DirectionDetail(
-      {Key? key, required this.initialFare, required this.costPerKilloMeter})
+      {Key? key,
+      required this.initialFare,
+      required this.costPerKilloMeter,
+      required this.costPerMinute,
+      required this.capacity})
       : super(key: key);
   @override
   _DirectionDetailState createState() => _DirectionDetailState();
@@ -24,8 +30,10 @@ class _DirectionDetailState extends State<DirectionDetail> {
         if (state is DirectionLoadSuccess) {
           price = widget.initialFare != null
               ? (widget.initialFare! +
-                      (12 * (state.direction.distanceValue / 1000)) +
-                      (2 * ((state.direction.durationValue / 60) / 10)))
+                      (widget.costPerKilloMeter! *
+                          (state.direction.distanceValue / 1000)) +
+                      (widget.costPerMinute! *
+                          ((state.direction.durationValue / 60) / 10)))
                   .truncate()
                   .toString()
               : 'Loading ';
@@ -51,7 +59,7 @@ class _DirectionDetailState extends State<DirectionDetail> {
                     text: "Price:      ",
                     style: _greyTextStyle,
                     children: [
-                      TextSpan(text: "\$ $price ", style: _blackTextStyle)
+                      TextSpan(text: "$price ETB", style: _blackTextStyle)
                     ])),
                 SizedBox(
                   height: 5,
@@ -59,7 +67,9 @@ class _DirectionDetailState extends State<DirectionDetail> {
                 Text.rich(TextSpan(
                     text: "Member: ",
                     style: _greyTextStyle,
-                    children: [TextSpan(text: "1-4", style: _blackTextStyle)]))
+                    children: [
+                      TextSpan(text: widget.capacity, style: _blackTextStyle)
+                    ]))
               ],
             ),
             SizedBox(height: 35, child: VerticalDivider()),

@@ -40,8 +40,13 @@ class _SigninScreenState extends State<SigninScreen> {
             _isLoading = true;
           }
           if (state is AuthLoginSuccess) {
-            Navigator.pushReplacementNamed(context, HomeScreen.routeName,
-                arguments: HomeScreenArgument(isSelected: false));
+            Navigator.pushNamedAndRemoveUntil(context, HomeScreen.routeName,
+                ((Route<dynamic> route) => false),
+                arguments:
+                    HomeScreenArgument(isSelected: false, isFromSplash: true));
+            // Navigator.pushReplacementNamed(context, HomeScreen.routeName,
+            //     arguments:
+            //         HomeScreenArgument(isFromSplash: false, isSelected: false));
           }
           if (state is AuthOperationFailure) {
             _isLoading = false;

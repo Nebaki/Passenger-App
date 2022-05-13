@@ -232,12 +232,13 @@ class _CustomSplashScreenState extends State<CustomSplashScreen> {
                     print("data is is is is ${st.rideRequest.pickUpAddress}");
 
                     if (st.rideRequest.pickUpAddress == null) {
-                      Navigator.pushReplacementNamed(
-                          context, CarTypeSelector.routName);
-
                       // Navigator.pushReplacementNamed(
-                      //     context, HomeScreen.routeName,
-                      //     arguments: HomeScreenArgument(isSelected: false));
+                      //     context, CarTypeSelector.routName);
+
+                      Navigator.pushReplacementNamed(
+                          context, HomeScreen.routeName,
+                          arguments: HomeScreenArgument(
+                              isFromSplash: true, isSelected: false));
                     } else {
                       DriverEvent event = DriverLoad(st.rideRequest.driver!.id);
                       BlocProvider.of<DriverBloc>(context).add(event);
@@ -247,6 +248,7 @@ class _CustomSplashScreenState extends State<CustomSplashScreen> {
                       Navigator.pushReplacementNamed(
                           context, HomeScreen.routeName,
                           arguments: HomeScreenArgument(
+                              isFromSplash: false,
                               isSelected: true,
                               encodedPts: st.rideRequest.direction));
                     }

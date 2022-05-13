@@ -56,9 +56,6 @@ class _WaitingDriverResponseState extends State<WaitingDriverResponse> {
 
   @override
   Widget build(BuildContext context) {
-    WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
-      setWillScreenPop();
-    });
     return Positioned(
       bottom: 0,
       right: 0,

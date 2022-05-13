@@ -210,6 +210,7 @@ class _SearchScreenState extends State<SearchScreen> {
 
                 return Navigator.pushNamed(context, HomeScreen.routeName,
                     arguments: HomeScreenArgument(
+                        isFromSplash: false,
                         isSelected: true,
                         destinationlatlang: destinationLtlng));
               });

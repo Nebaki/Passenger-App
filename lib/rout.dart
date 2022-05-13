@@ -133,13 +133,26 @@ class AppRoute {
     if (settings.name == CarTypeSelector.routName) {
       return MaterialPageRoute(builder: (context) => CarTypeSelector());
     }
+
+    if (settings.name == CarTypeSelector.routName) {
+      return MaterialPageRoute(builder: (context) => CarTypeSelector());
+    }
+
+    if (settings.name == LocationChanger.routName) {
+      LocationChangerArgument argument =
+          settings.arguments as LocationChangerArgument;
+      return MaterialPageRoute(
+          builder: (context) => LocationChanger(
+                args: argument,
+              ));
+    }
     return MaterialPageRoute(builder: (context) => CustomSplashScreen());
   }
 }
 
 class HomeScreenArgument {
   //String widgetName;
-  String? carType;
+  final bool isFromSplash;
   bool isSelected = false;
   LatLng? destinationlatlang;
   String? encodedPts;
@@ -148,7 +161,7 @@ class HomeScreenArgument {
       {required this.isSelected,
       this.destinationlatlang,
       this.encodedPts,
-      this.carType});
+      required this.isFromSplash});
 }
 
 class VerificationArgument {
@@ -213,4 +226,24 @@ class ResetPasswordArgument {
 class ReviewScreenArgument {
   final String price;
   ReviewScreenArgument({required this.price});
+}
+
+class LocationChangerArgument {
+  final String droppOffLocationAddressName;
+  final String pickupLocationAddressName;
+  final LatLng pickupLocationLatLng;
+  final LatLng droppOffLocationLatLng;
+  final String fromWhere;
+  final Function? setAddress;
+  final Function? setLocation;
+
+  LocationChangerArgument({
+    required this.droppOffLocationAddressName,
+    required this.droppOffLocationLatLng,
+    required this.pickupLocationAddressName,
+    required this.pickupLocationLatLng,
+    required this.fromWhere,
+    this.setAddress,
+    this.setLocation,
+  });
 }

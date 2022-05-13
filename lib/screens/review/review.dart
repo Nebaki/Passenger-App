@@ -30,7 +30,8 @@ class ReviewScreen extends StatelessWidget {
                 BlocProvider.of<DirectionBloc>(context)
                     .add(DirectionChangeToInitialState());
                 Navigator.pushReplacementNamed(context, HomeScreen.routeName,
-                    arguments: HomeScreenArgument(isSelected: false));
+                    arguments: HomeScreenArgument(
+                        isFromSplash: false, isSelected: false));
               }
               if (state is ReviewSendingFailure) {
                 _isLoading = false;
@@ -65,7 +66,8 @@ class ReviewScreen extends StatelessWidget {
                           .add(DirectionChangeToInitialState());
                       Navigator.pushReplacementNamed(
                           context, HomeScreen.routeName,
-                          arguments: HomeScreenArgument(isSelected: false));
+                          arguments: HomeScreenArgument(
+                              isFromSplash: false, isSelected: false));
                     },
                     child: const Icon(
                       Icons.clear,

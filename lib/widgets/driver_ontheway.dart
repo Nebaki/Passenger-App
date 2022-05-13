@@ -59,9 +59,10 @@ class _DriverOnTheWayState extends State<DriverOnTheWay> {
                   Flexible(
                       flex: 2,
                       child: DirectionDetail(
-                        costPerKilloMeter: costPerKilloMeterAssistant,
-                        initialFare: initialFareAssistant,
-                      )),
+                          costPerKilloMeter: costPerKilloMeterAssistant,
+                          initialFare: initialFareAssistant,
+                          costPerMinute: costPerKilloMeterAssistant,
+                          capacity: '1-3')),
                   // Row(
                   //   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   //   children: [

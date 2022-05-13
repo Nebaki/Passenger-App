@@ -86,9 +86,15 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                             BlocProvider.of<AuthBloc>(context)
                               ..add(AuthDataLoad());
                             Navigator.pop(con);
-                            Navigator.pushNamed(context, HomeScreen.routeName,
-                                arguments:
-                                    HomeScreenArgument(isSelected: false));
+                            Navigator.pushNamedAndRemoveUntil(
+                                context,
+                                HomeScreen.routeName,
+                                ((Route<dynamic> route) => false),
+                                arguments: HomeScreenArgument(
+                                    isSelected: false, isFromSplash: false));
+                            // Navigator.pushNamed(context, HomeScreen.routeName,
+                            //     arguments: HomeScreenArgument(
+                            //         isFromSplash: false, isSelected: false));
                           },
                           child: const Text("Okay")),
                     ],
@@ -117,12 +123,9 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
       _isLoading = true;
     });
     UserEvent event = UserCreate(User(
-        firstName: _user["first_name"],
+        name: _user["name"],
         password: _user["password"],
         phoneNumber: widget.args.phoneNumber,
-        //phoneNumber: "+251986099831",
-
-        //lastName: _user["last_name"],
         gender: "Male",
         email: _user["email"],
         emergencyContact: _user["phone_number"]));
@@ -265,8 +268,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                           onSaved: (value) {
                             //final val = value!.split("")[0];
                             //print();
-                            _user["first_name"] = value!.split(" ")[0];
-                            _user["last_name"] = value.split(" ")[1];
+                            _user['name'] = value;
                           },
                         ),
                         const SizedBox(
