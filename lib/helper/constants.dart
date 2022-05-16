@@ -212,3 +212,23 @@ String portName = 'PASSENGER_BACKGROUND_LISTENER';
 const maintenanceUrl = 'https://mobiletaxi-api.herokuapp.com/api';
 String baseUrl = 'https://safeway-api.herokuapp.com/api';
 String pictureUrl = 'https://safeway-api.herokuapp.com';
+
+class Strings {
+  static const String noIntertConnection = 'No Internet Connection';
+  static const String tryAgain = 'Try Again';
+  static const String signInIncorrectTrialMessage =
+      "Incorrect Phone Number or Password";
+
+  static const String signInTitle = "Sign In";
+  static const String phoneNumberHintText = "Phone Number";
+  static const String passwordHintText = "Password";
+  static const String signInEmptyPasswordErrorText =
+      'Please enter Your Password';
+  static const String signInPasswordShortLengthErrorText =
+      'Password length must not be less than 4';
+  static const String signInPasswordLongLengthErrorText =
+      'Password length must not be greater than 25';
+  static const String forgotPasswordButtonText = "Forgot Password";
+  static const String dontHaveAnAccount = "don't have an account? ";
+  static const String signUpInkWell = "SIGN UP";
+}

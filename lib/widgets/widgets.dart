@@ -10,3 +10,4 @@ export 'driver_ontheway.dart';
 export 'nearby_taxi_list.dart';
 export 'serviceType/direction_detail.dart';
 export 'waiting_driver_reponse.dart';
+export 'startedtrippanel/started_trip_panel.dart';

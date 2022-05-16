@@ -200,7 +200,15 @@ class DriverProfile extends StatelessWidget {
           ),
         );
       }
-      return const Text("Loading");
+      return const Center(
+        child: SizedBox(
+          height: 60,
+          width: 60,
+          child: CircularProgressIndicator(
+            strokeWidth: 1,
+          ),
+        ),
+      );
     });
   }
 }

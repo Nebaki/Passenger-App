@@ -37,7 +37,6 @@ class DriverModel extends Equatable {
       ];
 
   factory DriverModel.fromJson(Map<String, dynamic> json) {
-    print('jsjsjjs $json');
     return DriverModel(
         id: json["id"],
         firstName: json["first_name"],

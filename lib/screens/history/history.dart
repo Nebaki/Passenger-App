@@ -84,7 +84,7 @@ class _HistoryPageState extends State<HistoryPage> {
           ),
           //leading: Icon(Icons.history, color: color.shade700),
           title: Text(text, style: _textStyle),
-          subtitle: Text(
+          subtitle: const Text(
             "25 Trips",
           ),
           hoverColor: hoverColor,
@@ -112,7 +112,7 @@ class _HistoryPageState extends State<HistoryPage> {
               arguments: DetailHistoryArgument(request: request!));
         },
         child: Container(
-          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
           decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(20),
               color: Colors.white,
@@ -164,7 +164,7 @@ class _HistoryPageState extends State<HistoryPage> {
                 ],
               ),
               const Divider(),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -173,14 +173,14 @@ class _HistoryPageState extends State<HistoryPage> {
                     children: [
                       Text(
                         request.date!,
-                        style: TextStyle(color: Colors.black38),
+                        style: const TextStyle(color: Colors.black38),
                       ),
                       const SizedBox(
                         width: 10,
                       ),
                       Text(
                         request.time!,
-                        style: TextStyle(color: Colors.black38),
+                        style: const TextStyle(color: Colors.black38),
                       ),
                       Text(status),
                       const SizedBox(
@@ -188,9 +188,9 @@ class _HistoryPageState extends State<HistoryPage> {
                       ),
                     ],
                   ),
-                  const Text(
-                    "\$15",
-                    style: TextStyle(color: Colors.black),
+                  Text(
+                    "${request.price != 'null' ? double.parse(request.price!).truncate() : 0} ETB",
+                    style: const TextStyle(color: Colors.black),
                   )
                 ],
               )

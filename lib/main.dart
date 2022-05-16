@@ -242,7 +242,10 @@ class MyApp extends StatelessWidget {
               BlocProvider(
                   create: ((context) => TripHistoryBloc(
                       rideRequestRepository: rideRequestRepository)
-                    ..add(TripHistoryLoad())))
+                    ..add(TripHistoryLoad()))),
+              BlocProvider(
+                  create: ((context) =>
+                      SelectedCategoryBloc(SelectedCategoryLoading())))
             ],
             child: MaterialApp(
               title: 'SafeWay',

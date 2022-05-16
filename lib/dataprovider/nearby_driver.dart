@@ -20,15 +20,16 @@ class NearbyDriversData {
     if (ids.contains(id.split(',')[0])) {
       int ind = ids.indexWhere((element) => element == id.split(',')[0]);
       ids.removeAt(ind);
-
       int index = nearbyDrivers.indexWhere((element) => element.id == id);
       nearbyDrivers.removeAt(index);
     }
   }
 
   static void updateDriver(NearbyDriver driver) {
-    if (ids.contains(driver.id)) {
-      int ind = ids.indexWhere((element) => element == driver.id);
+    if (ids.contains(driver.id.split(',')[0])) {
+      int ind = ids.indexWhere((element) => element == driver.id.split(',')[0]);
+
+      print('index iss   ${ids[ind]}');
       ids.removeAt(ind);
       int index =
           nearbyDrivers.indexWhere((element) => element.id == driver.id);

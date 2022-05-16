@@ -2,24 +2,20 @@ import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_geofire/flutter_geofire.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:passengerapp/bloc/bloc.dart';
-import 'package:passengerapp/models/models.dart';
 import 'package:passengerapp/repository/repositories.dart';
 import 'package:passengerapp/rout.dart';
 import 'package:passengerapp/screens/home/assistant/home_screen_assistant.dart';
 import 'package:passengerapp/screens/screens.dart';
-
 import '../helper/constants.dart';
-import '../models/nearby_driver.dart';
 import '../widgets/widgets.dart';
 
 class PushNotificationService {
   NearbyDriverRepository repo = NearbyDriverRepository();
   final player = AssetsAudioPlayer();
 
-  Future initialize(context, callback, searchNearbyDriver) async {
+  Future initialize(
+      context, callback, searchNearbyDriver, nearbyDriversList) async {
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       RemoteNotification? notification = message.notification;
       AndroidNotification? android = message.notification?.android;
@@ -44,14 +40,21 @@ class PushNotificationService {
             content: const Text(" Request cancelled"),
             backgroundColor: Colors.indigo.shade900,
           ));
-          callback(Service(callback, searchNearbyDriver));
+          callback(Service(callback, searchNearbyDriver, nearbyDriversList));
+          break;
+        case 'Started':
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: const Text(" Trip Started"),
+            backgroundColor: Colors.indigo.shade900,
+          ));
+          callback(const StartedTripPannel());
           break;
         case 'Completed':
           Navigator.pushReplacementNamed(context, ReviewScreen.routeName,
               arguments: ReviewScreenArgument(price: message.data['price']));
           break;
         case "TimeOut":
-          callback(Service(callback, searchNearbyDriver));
+          callback(Service(callback, searchNearbyDriver, nearbyDriversList));
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
             content: const Text("Time out"),
             backgroundColor: Colors.indigo.shade900,
@@ -63,11 +66,6 @@ class PushNotificationService {
 
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
       print('A new onMessageOpenedApp event was published!');
-      // Navigator.pushNamed(
-      //   context,
-      //   '/message',
-      //   arguments: MessageArguments(message, true),
-      // );
     });
   }
 

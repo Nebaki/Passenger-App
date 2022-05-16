@@ -17,8 +17,9 @@ import 'package:passengerapp/widgets/widgets.dart';
 class Service extends StatefulWidget {
   Function? callback;
   Function searchNeabyDriver;
+  Function searchNearbyDriversList;
 
-  Service(this.callback, this.searchNeabyDriver);
+  Service(this.callback, this.searchNeabyDriver, this.searchNearbyDriversList);
 
   @override
   State<Service> createState() => _ServiceState();
@@ -131,15 +132,20 @@ class _ServiceState extends State<Service> {
               const SizedBox(
                 height: 10,
               ),
-              DirectionDetail(
-                costPerKilloMeter: costPerKilloMeter,
-                initialFare: initialFare,
-                costPerMinute: costPerMinute,
-                capacity: capacity,
-              ),
+              DirectionDetail(),
               const SizedBox(
                 height: 15,
               ),
+              BlocConsumer<DriverBloc, DriverState>(
+                  builder: (context, state) => Container(),
+                  listener: (context, state) {
+                    if (state is DriverLoadSuccess) {
+                      // widget.searchNearbyDriversList('lada').take();
+                      // nextDrivers.remove(state.driver.id);
+                      driverFcm = state.driver.fcmId;
+                      sendNotification(state.driver.fcmId, state.driver.id);
+                    }
+                  }),
               // Text("${nextDrivers}"),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -148,56 +154,78 @@ class _ServiceState extends State<Service> {
                   width: MediaQuery.of(context).size.width,
                   child:
                       BlocBuilder<DriverBloc, DriverState>(builder: (_, state) {
-                    if (state is DriverLoadSuccess) {
-                      //  FirebaseMessaging.onMessage.listen((event) {
+                    if (state is DriverFoundState) {
+                      return BlocBuilder<SelectedCategoryBloc,
+                              SelectedCategoryState>(
+                          builder: (context, categoryState) {
+                        if (categoryState is CategoryChanged) {
+                          return ElevatedButton(
+                            style: ButtonStyle(
+                                backgroundColor:
+                                    MaterialStateProperty.all<Color>(
+                                        const Color.fromRGBO(244, 201, 60, 1)),
+                                shape: MaterialStateProperty.all<
+                                        RoundedRectangleBorder>(
+                                    RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(10)))),
+                            onPressed: () {
+                              final l = widget.searchNearbyDriversList(
+                                  categoryState.category.name);
+                              if (l.length > 3) {
+                                nextDrivers = l.take(3);
+                              } else {
+                                nextDrivers = l;
+                              }
 
-                      //   });
-                      return ElevatedButton(
-                        style: ButtonStyle(
-                            backgroundColor: MaterialStateProperty.all<Color>(
-                                const Color.fromRGBO(244, 201, 60, 1)),
-                            shape: MaterialStateProperty.all<
-                                    RoundedRectangleBorder>(
-                                RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10)))),
-                        onPressed: () {
-                          nextDrivers = repo.getIdList();
-                          nextDrivers.remove(state.driver.id);
-                          driverFcm = state.driver.fcmId;
-                          sendNotification(state.driver.fcmId, state.driver.id);
-                          // print(name);
+                              final newD = nextDrivers
+                                  .toSet()
+                                  .difference(l.toSet())
+                                  .toList();
 
-                          // print(widget.searchNeabyDriver());
-                          //callback!(NearbyTaxy(callback));
-                        },
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const Spacer(),
-                            Text(
-                              _isLoading ? "Sending...." : "Send Request",
-                              style: const TextStyle(
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.normal),
+                              print('nexenexe $nextDrivers');
+
+                              DriverEvent event = DriverLoad(
+                                  nextDrivers.first.toString().split(',')[0]);
+                              BlocProvider.of<DriverBloc>(context).add(event);
+                            },
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                const Spacer(),
+                                Text(
+                                  _isLoading ? "Sending...." : "Send Request",
+                                  style: const TextStyle(
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.normal),
+                                ),
+                                const Spacer(),
+                                Align(
+                                  alignment: Alignment.centerRight,
+                                  child: _isLoading
+                                      ? const SizedBox(
+                                          height: 20,
+                                          width: 20,
+                                          child: CircularProgressIndicator(
+                                            strokeWidth: 2,
+                                            color: Colors.black,
+                                          ),
+                                        )
+                                      : Container(),
+                                )
+                              ],
                             ),
-                            const Spacer(),
-                            Align(
-                              alignment: Alignment.centerRight,
-                              child: _isLoading
-                                  ? const SizedBox(
-                                      height: 20,
-                                      width: 20,
-                                      child: CircularProgressIndicator(
-                                        strokeWidth: 2,
-                                        color: Colors.black,
-                                      ),
-                                    )
-                                  : Container(),
-                            )
-                          ],
-                        ),
-                      );
+                          );
+                        }
+                        return Container();
+                      });
                     }
+                    // if (state is DriverLoadSuccess) {
+                    //   //  FirebaseMessaging.onMessage.listen((event) {
+
+                    //   //   });
+
+                    // }
                     if (state is DriverLoading) {
                       return ElevatedButton(
                         style: ButtonStyle(

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:passengerapp/bloc/bloc.dart';
+import 'package:passengerapp/helper/constants.dart';
 import 'package:passengerapp/models/models.dart';
 import 'package:passengerapp/rout.dart';
 import 'package:passengerapp/screens/screens.dart';
@@ -17,8 +18,6 @@ class SigninScreen extends StatefulWidget {
 }
 
 class _SigninScreenState extends State<SigninScreen> {
-  String number = "+251934540217";
-  String password = "1111";
   late String phoneNumber;
   late String pass;
   final Connectivity _connectivity = Connectivity();
@@ -52,7 +51,7 @@ class _SigninScreenState extends State<SigninScreen> {
             _isLoading = false;
 
             ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              content: const Text("Incorrect Phone Number or Password"),
+              content: const Text(Strings.signInIncorrectTrialMessage),
               backgroundColor: Colors.red.shade900,
             ));
           }
@@ -63,7 +62,7 @@ class _SigninScreenState extends State<SigninScreen> {
     result = await _connectivity.checkConnectivity();
     if (result == ConnectivityResult.none) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: const Text("No Internet Connection"),
+        content: const Text(Strings.noIntertConnection),
         backgroundColor: Colors.red.shade900,
       ));
       return;
@@ -89,7 +88,7 @@ class _SigninScreenState extends State<SigninScreen> {
               child: ListView(
                 children: [
                   const Text(
-                    "Sign In",
+                    Strings.signInTitle,
                     style: TextStyle(fontSize: 25),
                   ),
                   Padding(
@@ -114,7 +113,7 @@ class _SigninScreenState extends State<SigninScreen> {
                           const OutlineInputBorder(borderSide: BorderSide.none),
                       spaceBetweenSelectorAndTextField: 0,
                       inputDecoration: const InputDecoration(
-                          hintText: "Phone Number",
+                          hintText: Strings.phoneNumberHintText,
                           hintStyle: TextStyle(
                               fontWeight: FontWeight.bold,
                               color: Colors.black45),
@@ -127,19 +126,10 @@ class _SigninScreenState extends State<SigninScreen> {
                   Padding(
                     padding: const EdgeInsets.all(10),
                     child: Container(
-                      decoration: BoxDecoration(
-                          // boxShadow: [
-                          // BoxShadow(
-                          //     color: Colors.grey.shade300,
-                          //     blurRadius: 4,
-                          //     spreadRadius: 2,
-                          //     blurStyle: BlurStyle.normal)
-                          // ]
-                          ),
                       child: TextFormField(
                         decoration: const InputDecoration(
                             alignLabelWithHint: true,
-                            hintText: "Password",
+                            hintText: Strings.passwordHintText,
                             hintStyle: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 color: Colors.black45),
@@ -153,11 +143,11 @@ class _SigninScreenState extends State<SigninScreen> {
                                 borderSide: BorderSide.none)),
                         validator: (value) {
                           if (value!.isEmpty) {
-                            return 'Please enter Your Password';
+                            return Strings.signInEmptyPasswordErrorText;
                           } else if (value.length < 4) {
-                            return 'Password length must not be less than 4';
+                            return Strings.signInPasswordShortLengthErrorText;
                           } else if (value.length > 25) {
-                            return 'Password length must not be greater than 25';
+                            return Strings.signInPasswordLongLengthErrorText;
                           }
                           return null;
                         },
@@ -187,7 +177,7 @@ class _SigninScreenState extends State<SigninScreen> {
                           children: [
                             const Spacer(),
                             const Text(
-                              "Sign In",
+                              Strings.signInTitle,
                             ),
                             const Spacer(),
                             Align(
@@ -217,7 +207,7 @@ class _SigninScreenState extends State<SigninScreen> {
                                 context, MobileVerification.routeName);
                           },
                           child: const Text(
-                            "Forgot Password",
+                            Strings.forgotPasswordButtonText,
                             style: TextStyle(
                                 color: Color.fromRGBO(39, 49, 110, 1),
                                 fontWeight: FontWeight.bold),
@@ -229,7 +219,7 @@ class _SigninScreenState extends State<SigninScreen> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Text("don't have an account? ",
+                        const Text(Strings.dontHaveAnAccount,
                             style:
                                 TextStyle(fontSize: 16, color: Colors.black54)),
                         InkWell(
@@ -238,7 +228,7 @@ class _SigninScreenState extends State<SigninScreen> {
                                   context, SignupScreen.routeName);
                             },
                             child: const Text(
-                              "SIGN UP",
+                              Strings.signUpInkWell,
                               style: TextStyle(
                                   color: Color.fromRGBO(39, 49, 110, 1),
                                   fontWeight: FontWeight.bold),

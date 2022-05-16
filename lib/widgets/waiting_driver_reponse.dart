@@ -135,19 +135,19 @@ class _WaitingDriverResponseState extends State<WaitingDriverResponse> {
     );
   }
 
-  void sendNotification(BuildContext context, String fcm, String id) {
-    RideRequestEvent event = RideRequestSendNotification(
-        RideRequest(
-            driverFcm: fcm,
-            driverId: id,
-            passengerName: name,
-            passengerPhoneNumber: number,
-            pickUpAddress: pickupAddress,
-            droppOffAddress: droppOffAddress,
-            pickupLocation: pickupLatLng,
-            dropOffLocation: droppOffLatLng),
-        rideRequestId);
+  // void sendNotification(BuildContext context, String fcm, String id) {
+  //   RideRequestEvent event = RideRequestSendNotification(
+  //       RideRequest(
+  //           driverFcm: fcm,
+  //           driverId: id,
+  //           passengerName: name,
+  //           passengerPhoneNumber: number,
+  //           pickUpAddress: pickupAddress,
+  //           droppOffAddress: droppOffAddress,
+  //           pickupLocation: pickupLatLng,
+  //           dropOffLocation: droppOffLatLng),
+  //       rideRequestId);
 
-    BlocProvider.of<RideRequestBloc>(context).add(event);
-  }
+  //   BlocProvider.of<RideRequestBloc>(context).add(event);
+  // }
 }

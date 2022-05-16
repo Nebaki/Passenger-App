@@ -23,6 +23,9 @@ class DriverBloc extends Bloc<DriverEvent, DriverState> {
     if (event is DriverSetNotFound) {
       yield DriverNotFoundState();
     }
+    if (event is DriverSetFound) {
+      yield DriverFoundState();
+    }
   }
 }
 
@@ -38,6 +41,11 @@ class DriverLoad extends DriverEvent {
 }
 
 class DriverSetNotFound extends DriverEvent {
+  @override
+  List<Object?> get props => [];
+}
+
+class DriverSetFound extends DriverEvent {
   @override
   List<Object?> get props => [];
 }
@@ -64,3 +72,5 @@ class DriverOperationFailure extends DriverState {}
 class DriverInitialState extends DriverState {}
 
 class DriverNotFoundState extends DriverState {}
+
+class DriverFoundState extends DriverState {}

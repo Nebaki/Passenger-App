@@ -82,10 +82,10 @@ class _CustomSplashScreenState extends State<CustomSplashScreen> {
   @override
   Widget build(BuildContext context) {
     final _snackBar = SnackBar(
-      content: const Text("No Internet Connection"),
+      content: const Text(Strings.noIntertConnection),
       duration: const Duration(seconds: 3),
       action: SnackBarAction(
-        label: "Try Again",
+        label: Strings.tryAgain,
         onPressed: () {
           initConnectivity();
         },
@@ -152,7 +152,7 @@ class _CustomSplashScreenState extends State<CustomSplashScreen> {
                                 width: 5,
                               ),
                               Text(
-                                "No Internet Connection",
+                                Strings.noIntertConnection,
                                 style: TextStyle(
                                     fontSize: 13,
                                     color: Colors.white,

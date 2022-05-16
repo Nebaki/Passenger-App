@@ -56,13 +56,7 @@ class _DriverOnTheWayState extends State<DriverOnTheWay> {
                   ),
                   const Divider(),
 
-                  Flexible(
-                      flex: 2,
-                      child: DirectionDetail(
-                          costPerKilloMeter: costPerKilloMeterAssistant,
-                          initialFare: initialFareAssistant,
-                          costPerMinute: costPerKilloMeterAssistant,
-                          capacity: '1-3')),
+                  const Flexible(flex: 2, child: DirectionDetail()),
                   // Row(
                   //   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   //   children: [
