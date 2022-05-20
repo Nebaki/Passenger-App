@@ -1,6 +1,7 @@
 import 'dart:isolate';
 import 'dart:ui';
 
+import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 
@@ -11,22 +12,25 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:passengerapp/bloc/bloc.dart';
 import 'package:passengerapp/bloc/category/category.dart';
+import 'package:passengerapp/bloc/currentwidget/current_widget_bloc.dart';
 import 'package:passengerapp/bloc/database/location_history_bloc.dart';
 import 'package:passengerapp/bloc/notificationrequest/notification_request_bloc.dart';
 import 'package:passengerapp/bloc/savedlocation/saved_location_bloc.dart';
+import 'package:passengerapp/bloc/thememode/theme_mode_bloc.dart';
 import 'package:passengerapp/bloc_observer.dart';
 import 'package:passengerapp/dataprovider/dataproviders.dart';
 import 'package:passengerapp/helper/constants.dart';
 import 'package:passengerapp/repository/repositories.dart';
 import 'package:passengerapp/rout.dart';
 import 'package:http/http.dart' as http;
+import 'package:passengerapp/theme_data.dart';
 import 'package:wakelock/wakelock.dart';
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   // If you're going to use other Firebase services in the background, such as Firestore,http
   // make sure you call `initializeApp` before using other Firebase services.
-  await Firebase.initializeApp();
-
+  // await Firebase.initializeApp();
+  AssetsAudioPlayer().open(Audio("assets/sounds/announcement-sound.mp3"));
   final SendPort? send = IsolateNameServer.lookupPortByName(portName);
   send!.send(message);
 
@@ -212,8 +216,7 @@ class MyApp extends StatelessWidget {
                     ..add(AuthDataLoad())),
               BlocProvider(
                   create: (context) => RideRequestBloc(
-                      rideRequestRepository: rideRequestRepository)
-                    ..add(RideRequestCheckStartedTrip())),
+                      rideRequestRepository: rideRequestRepository)),
               BlocProvider(
                   create: (context) => NotificationRequestBloc(
                       notificationRequestRepository:
@@ -245,59 +248,19 @@ class MyApp extends StatelessWidget {
                     ..add(TripHistoryLoad()))),
               BlocProvider(
                   create: ((context) =>
-                      SelectedCategoryBloc(SelectedCategoryLoading())))
+                      SelectedCategoryBloc(SelectedCategoryLoading()))),
+              BlocProvider(
+                  create: ((context) => ThemeModeCubit(ThemeMode.light))),
+              BlocProvider(create: (context) => CurrentWidgetCubit())
             ],
-            child: MaterialApp(
-              title: 'SafeWay',
-              theme: ThemeData(
-                  //F48221
-                  scaffoldBackgroundColor: backGroundColor,
-                  primaryColor: const Color.fromRGBO(254, 79, 5, 1),
-                  textTheme: TextTheme(
-                      button: const TextStyle(
-                        color: Color.fromRGBO(254, 79, 5, 1),
-                      ),
-                      subtitle1:
-                          const TextStyle(color: Colors.black38, fontSize: 14),
-                      headline5: const TextStyle(fontWeight: FontWeight.bold),
-                      bodyText2: TextStyle(color: Colors.grey.shade700)),
-                  iconTheme: const IconThemeData(
-                    color: Colors.white,
-                  ),
-                  textButtonTheme: TextButtonThemeData(
-                      style: ButtonStyle(
-                    foregroundColor:
-                        MaterialStateProperty.all<Color>(Colors.red),
-                    textStyle: MaterialStateProperty.all<TextStyle>(
-                        const TextStyle(color: Colors.black)),
-                  )),
-                  elevatedButtonTheme: ElevatedButtonThemeData(
-                    style: ButtonStyle(
-                      backgroundColor: MaterialStateProperty.all<Color>(
-                          const Color.fromRGBO(244, 201, 60, 1)),
-                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                          RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10))),
-                      foregroundColor:
-                          MaterialStateProperty.all<Color>(Colors.black),
-                      textStyle: MaterialStateProperty.all<TextStyle>(
-                          const TextStyle(
-                              color: Colors.black,
-                              fontWeight: FontWeight.w300,
-                              fontSize: 20)),
-                      // backgroundColor: MaterialStateProperty.all<Color>(
-                      //     const Color.fromRGBO(254, 79, 5, 1)),
-                      // shape:
-                      //     MaterialStateProperty.all<RoundedRectangleBorder>(
-                      //         RoundedRectangleBorder(
-                      //   borderRadius: BorderRadius.circular(80),
-                      // ))
-                    ),
-                  ),
-                  colorScheme: ColorScheme.fromSwatch(
-                    primarySwatch: Colors.green,
-                  ).copyWith(secondary: Colors.grey.shade600)),
-              onGenerateRoute: AppRoute.generateRoute,
+            child: BlocBuilder<ThemeModeCubit, ThemeMode>(
+              builder: (context, state) => MaterialApp(
+                title: 'SafeWay',
+                themeMode: state,
+                darkTheme: ThemesData.darkTheme,
+                theme: ThemesData.lightTheme,
+                onGenerateRoute: AppRoute.generateRoute,
+              ),
             )));
   }
 }

@@ -56,7 +56,9 @@ class Driver extends StatelessWidget {
                                         borderRadius:
                                             BorderRadius.circular(20)))),
                             onPressed: () {
-                              this.callback!(DriverOnTheWay(this.callback));
+                              this.callback!(DriverOnTheWay(
+                                fromBackGround: false,
+                              ));
                             },
                             child: const Text("Confirm"))),
                   ),

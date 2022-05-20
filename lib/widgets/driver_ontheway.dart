@@ -10,8 +10,8 @@ import 'package:passengerapp/widgets/canceltrip.dart';
 import 'package:passengerapp/widgets/widgets.dart';
 
 class DriverOnTheWay extends StatefulWidget {
-  Function? callback;
-  DriverOnTheWay(this.callback);
+  final bool fromBackGround;
+  DriverOnTheWay({required this.fromBackGround});
 
   @override
   State<DriverOnTheWay> createState() => _DriverOnTheWayState();
@@ -24,6 +24,9 @@ class _DriverOnTheWayState extends State<DriverOnTheWay> {
 
   @override
   void initState() {
+    widget.fromBackGround
+        ? BlocProvider.of<DriverBloc>(context).add(DriverLoad(driverId!))
+        : null;
     super.initState();
   }
 
@@ -37,9 +40,10 @@ class _DriverOnTheWayState extends State<DriverOnTheWay> {
         children: [
           Container(
               height: 280,
-              padding: EdgeInsets.only(top: 10, left: 20, right: 20, bottom: 0),
+              padding: const EdgeInsets.only(
+                  top: 10, left: 20, right: 20, bottom: 0),
               decoration: BoxDecoration(
-                  color: const Color.fromRGBO(240, 241, 241, 1),
+                  color: Theme.of(context).backgroundColor,
                   borderRadius: BorderRadius.circular(20)),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,

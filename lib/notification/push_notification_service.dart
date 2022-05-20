@@ -14,8 +14,7 @@ class PushNotificationService {
   NearbyDriverRepository repo = NearbyDriverRepository();
   final player = AssetsAudioPlayer();
 
-  Future initialize(
-      context, callback, searchNearbyDriver, nearbyDriversList) async {
+  Future initialize(context) async {
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       RemoteNotification? notification = message.notification;
       AndroidNotification? android = message.notification?.android;
@@ -26,7 +25,12 @@ class PushNotificationService {
           BlocProvider.of<DriverBloc>(context)
               .add(DriverLoad(message.data['myId']));
           driverId = message.data['myId'];
-          callback(DriverOnTheWay(callback));
+          BlocProvider.of<CurrentWidgetCubit>(context)
+              .changeWidget(DriverOnTheWay(
+            fromBackGround: false,
+          ));
+          // context.read<CurrentWidgetCubit>().changeWidget(DriverOnTheWay());
+
           requestAccepted();
           break;
         case 'Arrived':
@@ -40,21 +44,34 @@ class PushNotificationService {
             content: const Text(" Request cancelled"),
             backgroundColor: Colors.indigo.shade900,
           ));
-          callback(Service(callback, searchNearbyDriver, nearbyDriversList));
+          BlocProvider.of<CurrentWidgetCubit>(context)
+              .changeWidget(Service(true, false));
+          // context.read<CurrentWidgetCubit>().changeWidget(Service(true,false));
+
           break;
         case 'Started':
+          BlocProvider.of<CurrentWidgetCubit>(context)
+              .changeWidget(StartedTripPannel());
+          // context
+          //     .read<CurrentWidgetCubit>()
+          //     .changeWidget(const StartedTripPannel());
+
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
             content: const Text(" Trip Started"),
             backgroundColor: Colors.indigo.shade900,
           ));
-          callback(const StartedTripPannel());
           break;
         case 'Completed':
-          Navigator.pushReplacementNamed(context, ReviewScreen.routeName,
+          BlocProvider.of<DirectionBloc>(context)
+              .add(DirectionChangeToInitialState());
+          // resetScreen();
+          Navigator.pushNamed(context, ReviewScreen.routeName,
               arguments: ReviewScreenArgument(price: message.data['price']));
           break;
         case "TimeOut":
-          callback(Service(callback, searchNearbyDriver, nearbyDriversList));
+          BlocProvider.of<CurrentWidgetCubit>(context)
+              .changeWidget(Service(true, false));
+
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
             content: const Text("Time out"),
             backgroundColor: Colors.indigo.shade900,

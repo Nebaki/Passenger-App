@@ -12,3 +12,5 @@ export 'emergencyReport/emergency_report_bloc.dart';
 export 'category/category.dart';
 export 'tripHistory/trip_history.dart';
 export 'servicetype/service_type.dart';
+export 'thememode/theme_mode_bloc.dart';
+export 'currentwidget/current_widget_bloc.dart';

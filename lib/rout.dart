@@ -234,8 +234,6 @@ class LocationChangerArgument {
   final LatLng pickupLocationLatLng;
   final LatLng droppOffLocationLatLng;
   final String fromWhere;
-  final Function? setAddress;
-  final Function? setLocation;
 
   LocationChangerArgument({
     required this.droppOffLocationAddressName,
@@ -243,7 +241,5 @@ class LocationChangerArgument {
     required this.pickupLocationAddressName,
     required this.pickupLocationLatLng,
     required this.fromWhere,
-    this.setAddress,
-    this.setLocation,
   });
 }

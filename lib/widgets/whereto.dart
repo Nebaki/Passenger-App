@@ -8,25 +8,12 @@ import 'package:passengerapp/helper/constants.dart';
 import 'package:passengerapp/rout.dart';
 import 'package:passengerapp/screens/home/assistant/home_screen_assistant.dart';
 import 'package:passengerapp/screens/screens.dart';
+import 'package:passengerapp/widgets/serviceType/service_type.dart';
 
 import '../models/models.dart';
 
 class WhereTo extends StatefulWidget {
-  final Function setIsSelected;
-  final Function callback;
-  final Widget service;
-  final Function setPickUpAdress;
-  final Function setDroppOffAdress;
-  final Function dontShowCarIcons;
-  WhereTo(
-      {Key? key,
-      required this.dontShowCarIcons,
-      required this.setPickUpAdress,
-      required this.setDroppOffAdress,
-      required this.setIsSelected,
-      required this.callback,
-      required this.service})
-      : super(key: key);
+  WhereTo({Key? key}) : super(key: key);
 
   @override
   _WhereToState createState() => _WhereToState();
@@ -48,22 +35,22 @@ class _WhereToState extends State<WhereTo> {
   @override
   Widget build(BuildContext context) {
     return Positioned(
-      bottom: 3.0,
-      left: 2.0,
-      right: 2.0,
+      bottom: 0.0,
+      left: 0.0,
+      right: 0.0,
       child: Container(
         height: MediaQuery.of(context).size.height * 0.22,
         padding: const EdgeInsets.only(top: 10, bottom: 10),
-        decoration: const BoxDecoration(
-            boxShadow: [
+        decoration: BoxDecoration(
+            boxShadow: const [
               BoxShadow(
                   blurRadius: 6,
                   spreadRadius: 1,
                   offset: Offset(0, -4),
                   color: Colors.grey)
             ],
-            color: Color.fromRGBO(240, 241, 241, 1),
-            borderRadius: BorderRadius.only(
+            color: Theme.of(context).backgroundColor,
+            borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(20), topRight: Radius.circular(20))),
         child: Column(
           children: [
@@ -122,7 +109,7 @@ class _WhereToState extends State<WhereTo> {
                           currentLocation = state.location.address1;
                           pickupController.text = state.location.address1;
                           // addresses[1];
-                          widget.setPickUpAdress(currentLocation);
+                          pickupAddress = currentLocation;
 
                           // return Text(addresses[0]);
                         }
@@ -156,7 +143,7 @@ class _WhereToState extends State<WhereTo> {
             ),
             const Divider(),
             BlocBuilder<LocationHistoryBloc, LocationHistoryState>(
-                builder: (_, state) {
+                builder: (context, state) {
               print("hey i'm trying $state");
               if (state is LocationHistoryLoadSuccess) {
                 print("Succccccccccccccccccccccccccccesssssss");
@@ -169,15 +156,22 @@ class _WhereToState extends State<WhereTo> {
                     itemBuilder: (context, index) {
                       return GestureDetector(
                         onTap: () {
-                          getPlaceDetail(state.locationHistory[index].placeId);
-                          settingDropOffDialog(null);
+                          if (selectedCar != SelectedCar.none) {
+                            getPlaceDetail(
+                                state.locationHistory[index].placeId);
+                            settingDropOffDialog(true);
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                    content: Text(
+                                        "Your current location isn't determined yet")));
+                          }
                         },
                         child: Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: Container(
                               decoration: BoxDecoration(
-                                  color:
-                                      const Color.fromARGB(255, 221, 218, 218),
+                                  color: Theme.of(context).backgroundColor,
                                   borderRadius: BorderRadius.circular(10),
                                   boxShadow: const [
                                     BoxShadow(
@@ -230,7 +224,7 @@ class _WhereToState extends State<WhereTo> {
                   ],
                 );
               }
-              return Center(child: Text("No recent history"));
+              return const Center(child: Text("No recent history"));
             }),
           ],
         ),
@@ -238,7 +232,7 @@ class _WhereToState extends State<WhereTo> {
     );
   }
 
-  Widget _buildPredictedItem(LocationPrediction prediction, BuildContext con) {
+  Widget _buildPredictedItem(LocationPrediction prediction) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: GestureDetector(
@@ -248,10 +242,10 @@ class _WhereToState extends State<WhereTo> {
             LocationHistoryEvent event =
                 LocationHistoryAdd(location: prediction);
             BlocProvider.of<LocationHistoryBloc>(context).add(event);
-            settingDropOffDialog(con);
+            settingDropOffDialog(false);
           } else if (pickupLocationNode.hasFocus) {
             getPlaceDetail(prediction.placeId);
-            settingPickupDialog(con);
+            settingPickupDialog();
 
             pickupLocationNode.nextFocus();
 
@@ -295,24 +289,24 @@ class _WhereToState extends State<WhereTo> {
     BlocProvider.of<PlaceDetailBloc>(context).add(event);
   }
 
-  void settingPickupDialog(BuildContext? con) {
+  void settingPickupDialog() {
     showDialog(
         context: context,
         builder: (BuildContext cont) {
           return BlocBuilder<PlaceDetailBloc, PlaceDetailState>(
-              builder: (_, state) {
+              builder: (context, state) {
             if (state is PlaceDetailLoadSuccess) {
               pickupLatLng =
                   LatLng(state.placeDetail.lat, state.placeDetail.lng);
-              Future.delayed(Duration(seconds: 1), () {
-                Navigator.pop(context);
-              });
+              Navigator.pop(context);
             }
 
             if (state is PlaceDetailOperationFailure) {
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                  backgroundColor: Colors.red.shade900,
-                  content: const Text("Unable To set the Pickup.")));
+              WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    backgroundColor: Colors.red.shade900,
+                    content: const Text("Unable To set the Pickup.")));
+              });
             }
             return AlertDialog(
               content: Row(
@@ -336,14 +330,14 @@ class _WhereToState extends State<WhereTo> {
         });
   }
 
-  void settingDropOffDialog(BuildContext? con) {
+  void settingDropOffDialog(bool isFromResentHisotry) {
     showDialog(
         context: context,
         builder: (BuildContext cont) {
           return BlocBuilder<PlaceDetailBloc, PlaceDetailState>(
-              builder: (_, state) {
+              builder: (context, state) {
             if (state is PlaceDetailLoadSuccess) {
-              widget.setDroppOffAdress(state.placeDetail.placeName);
+              droppOffAddress = state.placeDetail.placeName;
 
               DirectionEvent event = DirectionLoadFromDiffrentPickupLocation(
                   pickup: pickupLatLng,
@@ -356,43 +350,43 @@ class _WhereToState extends State<WhereTo> {
               droppOffLatLng = destinationLtlng;
 
               WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
-                widget.dontShowCarIcons();
-                // Geofire.stopListener();
+                showCarIcons = false;
+                droppOffLatLng = destinationLtlng;
+                context
+                    .read<CurrentWidgetCubit>()
+                    .changeWidget(Service(false, false));
 
-                widget.setIsSelected(destinationLtlng);
-                widget.callback(widget.service);
-                // Navigator.pop(cont);
-                Navigator.pop(_);
-
-                if (con != null) {
-                  Navigator.pop(con);
-                }
+                Navigator.pop(cont);
+                !isFromResentHisotry ? Navigator.pop(context) : null;
               });
             }
 
             if (state is PlaceDetailOperationFailure) {
-              // print(state);
-              // print("Errorrrrrrrrrrrrrrrrr");
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                  backgroundColor: Colors.red.shade900,
-                  content: const Text("Unable To set the Dropoff.")));
+              WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    backgroundColor: Colors.red.shade900,
+                    content: const Text("Unable To set the Dropoff.")));
+              });
             }
-            return AlertDialog(
-              content: Row(
-                children: const [
-                  SizedBox(
-                    height: 20,
-                    width: 20,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 1,
-                      color: Colors.black,
+            return WillPopScope(
+              onWillPop: () async => false,
+              child: AlertDialog(
+                content: Row(
+                  children: const [
+                    SizedBox(
+                      height: 20,
+                      width: 20,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 1,
+                        color: Colors.black,
+                      ),
                     ),
-                  ),
-                  SizedBox(
-                    width: 5,
-                  ),
-                  Text("Setting up Drop Off. Please wait.."),
-                ],
+                    SizedBox(
+                      width: 5,
+                    ),
+                    Text("Setting up Drop Off. Please wait.."),
+                  ],
+                ),
               ),
             );
           });
@@ -417,7 +411,7 @@ class _WhereToState extends State<WhereTo> {
           return Stack(
             children: [
               BlocBuilder<LocationPredictionBloc, LocationPredictionState>(
-                  builder: (_, state) {
+                  builder: (context, state) {
                 if (state is LocationPredictionLoading) {
                   return const Center(child: CircularProgressIndicator());
                 }
@@ -438,9 +432,9 @@ class _WhereToState extends State<WhereTo> {
                         child: ListView.separated(
                             physics: const ClampingScrollPhysics(),
                             shrinkWrap: true,
-                            itemBuilder: (_, index) {
+                            itemBuilder: (context, index) {
                               return _buildPredictedItem(
-                                  state.placeList[index], context);
+                                  state.placeList[index]);
                             },
                             separatorBuilder: (context, index) => const Padding(
                                   padding: EdgeInsets.symmetric(horizontal: 20),

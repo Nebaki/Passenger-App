@@ -30,7 +30,7 @@ class LocationChanger extends StatelessWidget {
       default:
     }
     return Scaffold(
-      backgroundColor: backGroundColor,
+      // backgroundColor: backGroundColor,
       body: Column(
         children: [
           Padding(
@@ -88,7 +88,7 @@ class LocationChanger extends StatelessWidget {
                             onPlacePicked: (result) {
                               switch (args.fromWhere) {
                                 case "DroppOff":
-                                  args.setAddress!(result.formattedAddress);
+                                  droppOffAddress = result.formattedAddress!;
                                   DirectionEvent event =
                                       DirectionLoadFromDiffrentPickupLocation(
                                           pickup: args.pickupLocationLatLng,
@@ -97,17 +97,16 @@ class LocationChanger extends StatelessWidget {
                                               result.geometry!.location.lng));
                                   BlocProvider.of<DirectionBloc>(context)
                                       .add(event);
-                                  args.setLocation!(LatLng(
+                                  droppOffLatLng = LatLng(
                                       result.geometry!.location.lat,
-                                      result.geometry!.location.lng));
+                                      result.geometry!.location.lng);
                                   break;
                                 case "PickUp":
-                                  args.setAddress!(result.formattedAddress);
-                                  args.setLocation!(LatLng(
+                                  pickupAddress = result.formattedAddress!;
+                                  pickupLatLng = LatLng(
                                       result.geometry!.location.lat,
-                                      result.geometry!.location.lng));
-                                  // pickupLatLng =
-                                  //     LatLng(state.placeDetail.lat, state.placeDetail.lng);
+                                      result.geometry!.location.lng);
+
                                   DirectionEvent event =
                                       DirectionLoadFromDiffrentPickupLocation(
                                           pickup: LatLng(

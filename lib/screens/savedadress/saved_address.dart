@@ -119,7 +119,7 @@ class SavedAddress extends StatelessWidget {
       child: Column(
         children: [
           Container(
-              padding: EdgeInsets.symmetric(horizontal: 20),
+              padding: const EdgeInsets.symmetric(horizontal: 20),
               height: MediaQuery.of(context).size.height - 80,
               child: ListView.builder(
                   itemCount: 10,
@@ -128,8 +128,8 @@ class SavedAddress extends StatelessWidget {
                         child: Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Container(
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 20, vertical: 10),
                         decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(20),
                             color: Colors.white,
@@ -242,13 +242,13 @@ class SavedAddress extends StatelessWidget {
           padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
           decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(20),
-              color: Colors.white,
+              color: Theme.of(context).backgroundColor,
               boxShadow: [
                 BoxShadow(
                     blurStyle: BlurStyle.normal,
                     color: Colors.grey.shade300,
-                    blurRadius: 8,
-                    spreadRadius: 5)
+                    blurRadius: 5,
+                    spreadRadius: 2)
               ]),
           child: Column(
             children: [
@@ -260,11 +260,11 @@ class SavedAddress extends StatelessWidget {
                     children: [
                       Text(
                         location.name,
-                        style: TextStyle(color: Colors.black),
+                        style: Theme.of(context).textTheme.overline,
                       ),
                       Text(
                         location.address,
-                        style: TextStyle(color: Colors.black38),
+                        style: Theme.of(context).textTheme.subtitle1,
                       )
                     ],
                   ),
@@ -284,7 +284,7 @@ class SavedAddress extends StatelessWidget {
                 ],
               ),
               const Divider(),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
             ],
           ),
         ),

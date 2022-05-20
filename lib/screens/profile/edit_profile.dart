@@ -149,7 +149,7 @@ class _EditProfileState extends State<EditProfile> {
         key: _formKey,
         child: SingleChildScrollView(
           child: Container(
-            color: const Color.fromRGBO(240, 241, 241, 1),
+            // color: const Color.fromRGBO(240, 241, 241, 1),
             height: MediaQuery.of(context).size.height,
             width: MediaQuery.of(context).size.width,
             child: Stack(

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:passengerapp/bloc/bloc.dart';
+import 'package:passengerapp/bloc/thememode/theme_mode_bloc.dart';
 import 'package:passengerapp/dataprovider/auth/auth.dart';
 import 'package:passengerapp/drawer/custome_paint.dart';
 import 'package:passengerapp/rout.dart';
@@ -17,13 +18,14 @@ class NavDrawer extends StatelessWidget {
     return await authDataProvider.getImageUrl();
   }
 
+  late bool isDarkModeOn;
   @override
   Widget build(BuildContext context) {
     return Drawer(
         child: Material(
       color: const Color.fromRGBO(240, 241, 241, 1),
       child: CustomPaint(
-        painter: DrawerBackGround(),
+        painter: DrawerBackGround(context),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -33,40 +35,59 @@ class NavDrawer extends StatelessWidget {
                 builder: (_, state) {
                   if (state is AuthDataLoadSuccess) {
                     return Column(
-                      // mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        CircleAvatar(
-                            radius: 40,
-                            backgroundColor: Colors.grey.shade300,
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(100),
-                              child: CachedNetworkImage(
-                                  imageUrl: state.auth.profilePicture!,
-                                  imageBuilder: (context, imageProvider) =>
-                                      Container(
-                                        decoration: BoxDecoration(
-                                          image: DecorationImage(
-                                            image: imageProvider,
-                                            fit: BoxFit.cover,
-                                            //colorFilter:
-                                            //     const ColorFilter.mode(
-                                            //   Colors.red,
-                                            //   BlendMode.colorBurn,
-                                            // ),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            CircleAvatar(
+                                radius: 40,
+                                backgroundColor: Colors.grey.shade300,
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(100),
+                                  child: CachedNetworkImage(
+                                      imageUrl: state.auth.profilePicture!,
+                                      imageBuilder: (context, imageProvider) =>
+                                          Container(
+                                            decoration: BoxDecoration(
+                                              image: DecorationImage(
+                                                image: imageProvider,
+                                                fit: BoxFit.cover,
+                                              ),
+                                            ),
                                           ),
-                                        ),
-                                      ),
-                                  placeholder: (context, url) =>
-                                      const CircularProgressIndicator(),
-                                  errorWidget: (context, url, error) {
-                                    return const Icon(
-                                      Icons.person,
-                                      color: Colors.black,
-                                      size: 50,
-                                    );
-                                  }),
-                            )),
+                                      placeholder: (context, url) =>
+                                          const CircularProgressIndicator(),
+                                      errorWidget: (context, url, error) {
+                                        return const Icon(
+                                          Icons.person,
+                                          color: Colors.black,
+                                          size: 50,
+                                        );
+                                      }),
+                                )),
+                            BlocBuilder<ThemeModeCubit, ThemeMode>(
+                              builder: (context, state) => IconButton(
+                                  onPressed: () {
+                                    state == ThemeMode.light
+                                        ? context
+                                            .read<ThemeModeCubit>()
+                                            .ActivateDarkTheme()
+                                        : context
+                                            .read<ThemeModeCubit>()
+                                            .ActivateLightTheme();
+                                  },
+                                  iconSize: 30,
+                                  color: state == ThemeMode.light
+                                      ? Colors.black
+                                      : Colors.white,
+                                  icon: Icon(state == ThemeMode.light
+                                      ? Icons.dark_mode
+                                      : Icons.light_mode)),
+                            ),
+                          ],
+                        ),
                         const SizedBox(
                           height: 15,
                         ),
@@ -81,7 +102,7 @@ class NavDrawer extends StatelessWidget {
                 },
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 20,
             ),
             Container(
@@ -92,10 +113,10 @@ class NavDrawer extends StatelessWidget {
                 children: [
                   GestureDetector(
                     onTap: () {
-                      Navigator.pushReplacementNamed(
-                          context, HomeScreen.routeName,
+                      Navigator.pushNamedAndRemoveUntil(
+                          context, HomeScreen.routeName, (route) => false,
                           arguments: HomeScreenArgument(
-                              isFromSplash: false, isSelected: false));
+                              isSelected: false, isFromSplash: false));
                     },
                     child: _menuItem(
                         divider: true,
@@ -105,7 +126,8 @@ class NavDrawer extends StatelessWidget {
                   ),
                   GestureDetector(
                     onTap: () {
-                      Navigator.pushNamed(context, SavedAddress.routeName);
+                      Navigator.popAndPushNamed(
+                          context, SavedAddress.routeName);
                     },
                     child: _menuItem(
                         divider: true,
@@ -115,7 +137,7 @@ class NavDrawer extends StatelessWidget {
                   ),
                   GestureDetector(
                     onTap: () {
-                      Navigator.pushNamed(context, HistoryPage.routeName);
+                      Navigator.popAndPushNamed(context, HistoryPage.routeName);
                     },
                     child: _menuItem(
                         divider: true,
@@ -125,7 +147,7 @@ class NavDrawer extends StatelessWidget {
                   ),
                   GestureDetector(
                     onTap: () {
-                      Navigator.pushNamed(
+                      Navigator.popAndPushNamed(
                           context, OrderForOtherScreen.routeName);
                     },
                     child: _menuItem(
@@ -134,30 +156,10 @@ class NavDrawer extends StatelessWidget {
                         icon: Icons.border_outer_rounded,
                         text: "Order for other"),
                   ),
-                  // GestureDetector(
-                  //   onTap: () {
-                  //     Navigator.pushNamed(context, ReviewScreen.routeName);
-                  //   },
-                  //   child: _menuItem(
-                  //       divider: true,
-                  //       context: context,
-                  //       icon: Icons.person,
-                  //       text: "Award"),
-                  // ),
-                  // GestureDetector(
-                  //   onTap: () {
-                  //     // BlocProvider.of<AuthBloc>(context).add(AuthDataLoad());
-                  //     Navigator.pushNamed(context, PlacePickerScreen.routeName);
-                  //   },
-                  //   child: _menuItem(
-                  //       divider: true,
-                  //       context: context,
-                  //       icon: Icons.person,
-                  //       text: "Contact us"),
-                  // ),
                   GestureDetector(
                     onTap: () {
-                      Navigator.pushNamed(context, SettingScreen.routeName);
+                      Navigator.popAndPushNamed(
+                          context, SettingScreen.routeName);
                     },
                     child: _menuItem(
                         divider: true,
@@ -169,8 +171,12 @@ class NavDrawer extends StatelessWidget {
                   GestureDetector(
                     onTap: () {
                       BlocProvider.of<AuthBloc>(context).add(LogOut());
-                      Navigator.pushReplacementNamed(
-                          context, SigninScreen.routeName);
+
+                      Navigator.pushNamedAndRemoveUntil(
+                        context,
+                        SigninScreen.routeName,
+                        ((Route<dynamic> route) => false),
+                      );
                     },
                     child: _menuItem(
                         divider: false,
@@ -181,14 +187,6 @@ class NavDrawer extends StatelessWidget {
                 ],
               ),
             ),
-            // const SizedBox(
-            //   height: 15,
-            //   child: Center(
-            //     child: Text("Safe Way By Vintage Technologies",
-            //         style: TextStyle(
-            //             fontWeight: FontWeight.w100, color: Colors.black45)),
-            //   ),
-            // ),
           ],
         ),
       ),

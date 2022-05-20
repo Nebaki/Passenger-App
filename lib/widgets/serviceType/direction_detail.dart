@@ -47,18 +47,22 @@ class _DirectionDetailState extends State<DirectionDetail> {
                   children: [
                     Text.rich(TextSpan(
                         text: "Price:      ",
-                        style: _greyTextStyle,
+                        style: Theme.of(context).textTheme.subtitle1,
                         children: [
-                          TextSpan(text: "$price ETB", style: _blackTextStyle)
+                          TextSpan(
+                              text: "$price ETB",
+                              style: Theme.of(context).textTheme.labelMedium)
                         ])),
                     const SizedBox(
                       height: 5,
                     ),
                     Text.rich(TextSpan(
                         text: "Member: ",
-                        style: _greyTextStyle,
+                        style: Theme.of(context).textTheme.subtitle1,
                         children: [
-                          TextSpan(text: capacity, style: _blackTextStyle)
+                          TextSpan(
+                              text: capacity,
+                              style: Theme.of(context).textTheme.labelMedium)
                         ]))
                   ],
                 ),
@@ -68,19 +72,22 @@ class _DirectionDetailState extends State<DirectionDetail> {
                   children: [
                     Text.rich(TextSpan(
                         text: "Distance: ",
-                        style: _greyTextStyle,
+                        style: Theme.of(context).textTheme.subtitle1,
                         children: [
-                          TextSpan(text: "$distance km", style: _blackTextStyle)
+                          TextSpan(
+                              text: "$distance km",
+                              style: Theme.of(context).textTheme.labelMedium)
                         ])),
                     const SizedBox(
                       height: 5,
                     ),
                     Text.rich(TextSpan(
                         text: "Time:      ",
-                        style: _greyTextStyle,
+                        style: Theme.of(context).textTheme.subtitle1,
                         children: [
                           TextSpan(
-                              text: "$duration min", style: _blackTextStyle)
+                              text: "$duration min",
+                              style: Theme.of(context).textTheme.labelMedium)
                         ]))
                   ],
                 )

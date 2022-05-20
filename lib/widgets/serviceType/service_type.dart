@@ -1,6 +1,6 @@
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_geofire/flutter_geofire.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:passengerapp/bloc/bloc.dart';
@@ -8,18 +8,16 @@ import 'package:passengerapp/bloc/notificationrequest/notification_request_bloc.
 import 'package:passengerapp/helper/constants.dart';
 import 'package:passengerapp/models/models.dart';
 import 'package:passengerapp/repository/nearby_driver.dart';
-import 'package:passengerapp/rout.dart';
 import 'package:passengerapp/screens/home/assistant/home_screen_assistant.dart';
-import 'package:passengerapp/screens/screens.dart';
 import 'package:passengerapp/widgets/serviceType/category_list.dart';
 import 'package:passengerapp/widgets/widgets.dart';
 
 class Service extends StatefulWidget {
-  Function? callback;
-  Function searchNeabyDriver;
-  Function searchNearbyDriversList;
+  final bool ignoreLastDrivers;
+  final bool fromOrderForOthers;
 
-  Service(this.callback, this.searchNeabyDriver, this.searchNearbyDriversList);
+  Service(this.ignoreLastDrivers, this.fromOrderForOthers, {Key? key})
+      : super(key: key);
 
   @override
   State<Service> createState() => _ServiceState();
@@ -50,7 +48,11 @@ class _ServiceState extends State<Service> {
     }, listener: (_, state) {
       if (state is RideRequestSuccess) {
         _isLoading = false;
-        widget.callback!(WaitingDriverResponse(widget.callback));
+        Geofire.stopListener();
+        context
+            .read<CurrentWidgetCubit>()
+            .changeWidget(WaitingDriverResponse());
+        // widget.callback!(WaitingDriverResponse(widget.callback));
         // widget.callback!(DriverOnTheWay(this.widget.callback));
       }
       if (state is NotificationRequestSending) {}
@@ -69,6 +71,16 @@ class _ServiceState extends State<Service> {
   final _greyTextStyle = TextStyle(color: Colors.black26, fontSize: 14);
 
   final _blackTextStyle = TextStyle(color: Colors.black);
+  void orderForOthers(String fcmToken) {
+    RideRequestEvent event = RideRequestOrderForOther(RideRequest(
+        driverFcm: fcmToken,
+        pickUpAddress: pickupAddress,
+        droppOffAddress: droppOffAddress,
+        pickupLocation: pickupLatLng,
+        dropOffLocation: droppOffLatLng,
+        passengerPhoneNumber: number));
+    BlocProvider.of<RideRequestBloc>(context).add(event);
+  }
 
   void sendNotification(String fcmToken, String id) async {
     print(' driver fcm $fcmToken');
@@ -108,7 +120,7 @@ class _ServiceState extends State<Service> {
     // DriverEvent event = DriverLoad(widget.searchNeabyDriver());
     // BlocProvider.of<DriverBloc>(context).add(event);
     return Positioned(
-      bottom: 0.0,
+      bottom: 3.0,
       left: 8.0,
       right: 8.0,
       child: Container(
@@ -116,8 +128,9 @@ class _ServiceState extends State<Service> {
           padding:
               const EdgeInsets.only(top: 10, left: 10, right: 20, bottom: 0),
           decoration: BoxDecoration(
-              color: const Color.fromRGBO(240, 241, 241, 1),
-              borderRadius: BorderRadius.circular(20)),
+              color: Theme.of(context).backgroundColor,
+              borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(20), topRight: Radius.circular(20))),
           child: Column(
             children: [
               const Padding(
@@ -126,13 +139,13 @@ class _ServiceState extends State<Service> {
               ),
               CategoryList(
                   changeCost: changeCost,
-                  searchNearbyDriver: widget.searchNeabyDriver,
+                  searchNearbyDriver: searchNearbyDriver,
                   changeCapacity: changeCapacity),
               const Divider(),
               const SizedBox(
                 height: 10,
               ),
-              DirectionDetail(),
+              const DirectionDetail(),
               const SizedBox(
                 height: 15,
               ),
@@ -143,7 +156,13 @@ class _ServiceState extends State<Service> {
                       // widget.searchNearbyDriversList('lada').take();
                       // nextDrivers.remove(state.driver.id);
                       driverFcm = state.driver.fcmId;
-                      sendNotification(state.driver.fcmId, state.driver.id);
+                      if (widget.fromOrderForOthers) {
+                        orderForOthers(driverFcm);
+                        print("For others");
+                      } else {
+                        print("For mine");
+                        sendNotification(state.driver.fcmId, state.driver.id);
+                      }
                     }
                   }),
               // Text("${nextDrivers}"),
@@ -170,24 +189,32 @@ class _ServiceState extends State<Service> {
                                         borderRadius:
                                             BorderRadius.circular(10)))),
                             onPressed: () {
-                              final l = widget.searchNearbyDriversList(
+                              final l = searchNearbyDriversList(
                                   categoryState.category.name);
-                              if (l.length > 3) {
-                                nextDrivers = l.take(3);
+                              if (widget.ignoreLastDrivers) {
+                                nextDrivers = nextDrivers!
+                                    .toSet()
+                                    .difference(l!.toSet())
+                                    .toList()
+                                    .take(3)
+                                    .toList();
                               } else {
-                                nextDrivers = l;
+                                if (l!.length > 3) {
+                                  nextDrivers = l.take(3).toList();
+                                } else {
+                                  nextDrivers = l;
+                                }
                               }
-
-                              final newD = nextDrivers
-                                  .toSet()
-                                  .difference(l.toSet())
-                                  .toList();
-
                               print('nexenexe $nextDrivers');
 
-                              DriverEvent event = DriverLoad(
-                                  nextDrivers.first.toString().split(',')[0]);
-                              BlocProvider.of<DriverBloc>(context).add(event);
+                              if (nextDrivers!.isNotEmpty) {
+                                DriverEvent event =
+                                    DriverLoad(nextDrivers!.first);
+                                BlocProvider.of<DriverBloc>(context).add(event);
+                              } else {
+                                BlocProvider.of<DriverBloc>(context)
+                                    .add(DriverSetNotFound());
+                              }
                             },
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,

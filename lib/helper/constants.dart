@@ -186,7 +186,7 @@ late LatLng pickupLatLng;
 late LatLng droppOffLatLng;
 late String name;
 late String number;
-late List<dynamic> nextDrivers;
+List<dynamic>? nextDrivers;
 String price = 'Loading';
 String duration = 'Loading';
 String distance = 'Loading';

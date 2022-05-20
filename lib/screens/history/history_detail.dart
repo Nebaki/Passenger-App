@@ -34,7 +34,7 @@ class DetailHistoryScreen extends StatelessWidget {
             Card(
               child: Container(
                 padding: const EdgeInsets.fromLTRB(20, 10, 20, 5),
-                color: Colors.white,
+                color: Theme.of(context).backgroundColor,
                 child: Column(
                   children: [
                     Row(
@@ -72,7 +72,7 @@ class DetailHistoryScreen extends StatelessWidget {
                           args.request.status == "Completed"
                               ? 'Payment made sucessfully by Cash'
                               : "Not Paid Yet",
-                          style: _greyTextStyle),
+                          style: Theme.of(context).textTheme.overline),
                     ),
                     const SizedBox(
                       height: 10,
@@ -86,7 +86,7 @@ class DetailHistoryScreen extends StatelessWidget {
                             const Text("15 min"),
                             Text(
                               "Time",
-                              style: _greyTextStyle,
+                              style: Theme.of(context).textTheme.overline,
                             )
                           ],
                         ),
@@ -94,7 +94,8 @@ class DetailHistoryScreen extends StatelessWidget {
                         Column(
                           children: [
                             Text('${args.request.distance} Km'),
-                            Text("Distance", style: _greyTextStyle)
+                            Text("Distance",
+                                style: Theme.of(context).textTheme.overline)
                           ],
                         )
                       ],
@@ -118,7 +119,10 @@ class DetailHistoryScreen extends StatelessWidget {
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: const [Text("Service Type"), Text("Sedan")],
+                      children: [
+                        const Text("Status"),
+                        Text('${args.request.status}')
+                      ],
                     ),
                     const SizedBox(
                       height: 10,
@@ -161,7 +165,7 @@ class DetailHistoryScreen extends StatelessWidget {
                 ? Card(
                     child: Container(
                       padding: const EdgeInsets.fromLTRB(20, 10, 20, 5),
-                      color: Colors.white,
+                      color: Theme.of(context).backgroundColor,
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -204,14 +208,14 @@ class DetailHistoryScreen extends StatelessWidget {
                           const SizedBox(
                             height: 20,
                           ),
-                          const Text(
-                            "This trip was towards your destination you recieved Guaranted fare",
-                            style: TextStyle(
-                                fontSize: 9,
-                                color: Colors.black26,
-                                fontWeight: FontWeight.bold),
-                            textAlign: TextAlign.start,
-                          )
+                          // const Text(
+                          //   "This trip was towards your destination you recieved Guaranted fare",
+                          //   style: TextStyle(
+                          //       fontSize: 9,
+                          //       color: Colors.black26,
+                          //       fontWeight: FontWeight.bold),
+                          //   textAlign: TextAlign.start,
+                          // )
                         ],
                       ),
                     ),
@@ -240,9 +244,11 @@ class DetailHistoryScreen extends StatelessWidget {
       children: [
         Text(
           title,
-          style: _greyTextStyle,
+          // style: _greyTextStyle,
         ),
-        Text("$value", style: _greyTextStyle)
+        Text(
+          "$value",
+        )
       ],
     );
   }

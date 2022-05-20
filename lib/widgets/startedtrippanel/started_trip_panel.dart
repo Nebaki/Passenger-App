@@ -19,7 +19,7 @@ class StartedTripPannel extends StatelessWidget {
               padding: const EdgeInsets.only(
                   top: 10, left: 20, right: 20, bottom: 0),
               decoration: BoxDecoration(
-                  color: const Color.fromRGBO(240, 241, 241, 1),
+                  color: Theme.of(context).backgroundColor,
                   borderRadius: BorderRadius.circular(20)),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -52,9 +52,10 @@ class _CounterState extends State<Counter> {
   int min = 0;
 
   int hrs = 0;
-
+  Timer? timer;
   void startTimer() {
     Timer.periodic(const Duration(seconds: 1), (time) {
+      timer = time;
       if (sec <= 59) {
         setState(() {
           sec++;
@@ -72,6 +73,14 @@ class _CounterState extends State<Counter> {
   void initState() {
     startTimer();
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    print("Disposed");
+    timer!.cancel();
+    // TODO: implement dispose
+    super.dispose();
   }
 
   @override

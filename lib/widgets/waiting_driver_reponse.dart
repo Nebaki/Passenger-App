@@ -11,9 +11,7 @@ import 'package:passengerapp/widgets/canceltrip.dart';
 import 'package:passengerapp/widgets/widgets.dart';
 
 class WaitingDriverResponse extends StatefulWidget {
-  Function? callback;
-
-  WaitingDriverResponse(this.callback);
+  WaitingDriverResponse();
 
   @override
   State<WaitingDriverResponse> createState() => _WaitingDriverResponseState();
@@ -64,16 +62,16 @@ class _WaitingDriverResponseState extends State<WaitingDriverResponse> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            decoration: const BoxDecoration(
-                color: Colors.white,
-                boxShadow: [
+            decoration: BoxDecoration(
+                color: Theme.of(context).backgroundColor,
+                boxShadow: const [
                   BoxShadow(
                       blurRadius: 3,
                       color: Colors.grey,
                       blurStyle: BlurStyle.outer,
                       spreadRadius: 2)
                 ],
-                borderRadius: BorderRadius.only(
+                borderRadius: const BorderRadius.only(
                     topLeft: Radius.circular(20),
                     topRight: Radius.circular(20))),
             child: Column(
@@ -81,13 +79,13 @@ class _WaitingDriverResponseState extends State<WaitingDriverResponse> {
                 Center(
                   child: Stack(
                     children: [
-                      const Align(
+                      Align(
                         alignment: Alignment.center,
                         child: Padding(
-                          padding: EdgeInsets.symmetric(vertical: 20),
+                          padding: const EdgeInsets.symmetric(vertical: 20),
                           child: Text(
                             "Looking for nearby providers...",
-                            style: TextStyle(fontSize: 20),
+                            style: Theme.of(context).textTheme.titleLarge,
                           ),
                         ),
                       ),
@@ -120,7 +118,7 @@ class _WaitingDriverResponseState extends State<WaitingDriverResponse> {
                   height: 90,
                   // padding: const EdgeInsets.only(left: 20, top: 15, bottom: 15),
                   width: MediaQuery.of(context).size.width,
-                  color: Colors.black26.withOpacity(0.05),
+                  color: Theme.of(context).backgroundColor.withOpacity(0.05),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.end,
                     crossAxisAlignment: CrossAxisAlignment.start,

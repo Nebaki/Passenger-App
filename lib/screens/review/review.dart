@@ -21,17 +21,22 @@ class ReviewScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: const Color.fromRGBO(240, 241, 241, 1),
+        backgroundColor: Theme.of(context).backgroundColor,
         body: BlocConsumer<ReviewBloc, ReviewState>(
             builder: ((context, state) => buildScreen(context)),
             listener: (context, state) {
               if (state is ReviewSent) {
                 _isLoading = false;
-                BlocProvider.of<DirectionBloc>(context)
-                    .add(DirectionChangeToInitialState());
-                Navigator.pushReplacementNamed(context, HomeScreen.routeName,
-                    arguments: HomeScreenArgument(
-                        isFromSplash: false, isSelected: false));
+                // BlocProvider.of<DirectionBloc>(context)
+                //     .add(DirectionChangeToInitialState());
+                Navigator.pop(context);
+                //     Navigator.pushNamedAndRemoveUntil(context, HomeScreen.routeName,
+                //     ((Route<dynamic> route) => false),
+                //     arguments: HomeScreenArgument(
+                //         isSelected: false, isFromSplash: false));
+                // Navigator.pushReplacementNamed(context, HomeScreen.routeName,
+                //     arguments: HomeScreenArgument(
+                //         isFromSplash: false, isSelected: false));
               }
               if (state is ReviewSendingFailure) {
                 _isLoading = false;
@@ -62,12 +67,21 @@ class ReviewScreen extends StatelessWidget {
                     //color: Colors.white,
                     //shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
                     onPressed: () {
-                      BlocProvider.of<DirectionBloc>(context)
-                          .add(DirectionChangeToInitialState());
-                      Navigator.pushReplacementNamed(
-                          context, HomeScreen.routeName,
-                          arguments: HomeScreenArgument(
-                              isFromSplash: false, isSelected: false));
+                      // BlocProvider.of<DirectionBloc>(context)
+                      //     .add(DirectionChangeToInitialState());
+                      // BlocProvider.of<DirectionBloc>(context)
+                      //     .add(DirectionChangeToInitialState());
+                      Navigator.pop(context);
+                      // Navigator.pushNamedAndRemoveUntil(
+                      //     context,
+                      //     HomeScreen.routeName,
+                      //     ((Route<dynamic> route) => false),
+                      //     arguments: HomeScreenArgument(
+                      //         isSelected: false, isFromSplash: false));
+                      // Navigator.pushReplacementNamed(
+                      //     context, HomeScreen.routeName,
+                      //     arguments: HomeScreenArgument(
+                      //         isFromSplash: false, isSelected: false));
                     },
                     child: const Icon(
                       Icons.clear,
@@ -80,7 +94,7 @@ class ReviewScreen extends StatelessWidget {
               // CustomeBackArrow(),
             ],
           ),
-          SizedBox(
+          const SizedBox(
             height: 60,
           ),
           Center(

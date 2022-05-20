@@ -33,6 +33,7 @@ import 'package:geolocator_platform_interface/src/enums/location_accuracy.dart'
 import 'package:passengerapp/screens/home/assistant/home_screen_assistant.dart';
 import 'package:passengerapp/screens/home/test.dart';
 import 'package:passengerapp/screens/screens.dart';
+import 'package:flutter/services.dart' show rootBundle;
 
 import 'package:passengerapp/widgets/widgets.dart';
 
@@ -50,8 +51,6 @@ class _HomeScreenState extends State<HomeScreen> {
   //Location location = new Location();
   late Widget _currentWidget;
   BitmapDescriptor? carMarkerIcon;
-  double currentLat = 3;
-  late double currentLng = 4;
   final Completer<GoogleMapController> _controller = Completer();
   late GoogleMapController outerController;
   NearbyDriverRepository repo = NearbyDriverRepository();
@@ -62,51 +61,26 @@ class _HomeScreenState extends State<HomeScreen> {
   Map<PolylineId, Polyline> polylines = {};
   Map<MarkerId, Marker> markers = {};
   Map<MarkerId, Marker> carMarker = {};
-  Map<MarkerId, Marker> driverMarkers = {};
-  late List<NearbyDriver> drivers;
-  LatLng currentLatLng = _addissAbaba.target;
-  bool isSelectedd = false;
-  late LatLng dtn;
-  late LatLng pickUp;
+  late LatLng currentLatLng;
   PushNotificationService pushNotificationService = PushNotificationService();
   final GeolocatorPlatform _geolocatorPlatform = GeolocatorPlatform.instance;
   StreamSubscription<ServiceStatus>? _serviceStatusStreamSubscription;
-  late StreamSubscription<ConnectivityResult> _connectivitySubscription;
-  ConnectivityResult _connectionStatus = ConnectivityResult.bluetooth;
+  StreamSubscription<ConnectivityResult>? _connectivitySubscription;
   final Connectivity _connectivity = Connectivity();
   final ReceivePort _port = ReceivePort();
   DatabaseReference databaseReference =
       FirebaseDatabase.instance.ref('bookedDrivers');
-  bool? isLocationOn;
-  bool isModal = false;
-  bool isConModal = false;
-  bool _showCarIcons = true;
   static const CameraPosition _addissAbaba = CameraPosition(
     target: LatLng(8.9806, 38.7578),
     zoom: 16.4746,
   );
+  late String _darkMapStyle;
+  late String serviceStatusValue;
+  late bool isFirstTime;
 
-  void dontShowCarIcons() {
-    _showCarIcons = false;
-  }
-
-  Future<void> initConnectivity() async {
-    late ConnectivityResult result;
-    try {
-      result = await _connectivity.checkConnectivity();
-    } on PlatformException catch (e) {
-      return;
-    }
-    if (!mounted) {
-      return Future.value(null);
-    }
-    return _updateConnectionStatus(result);
-  }
-
-  Future<void> _updateConnectionStatus(ConnectivityResult result) async {
-    setState(() {
-      _connectionStatus = result;
-    });
+  Future _loadMapStyles() async {
+    _darkMapStyle =
+        await rootBundle.loadString('assets/map_styles/aubergine.json');
   }
 
   Future<Position> _determinePosition() async {
@@ -115,11 +89,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
     serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
-      //serviceEnabled = await location.requestService();
       if (!serviceEnabled) {
-        setState(() {
-          isLocationOn = false;
-        });
         return Future.error("NoLocation Enabled");
       }
 
@@ -146,120 +116,42 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void initState() {
-    super.initState();
-    listenBackGroundMessage();
-    initConnectivity();
-    _connectivitySubscription =
-        _connectivity.onConnectivityChanged.listen(_updateConnectionStatus);
-    _toggleServiceStatusStream();
-    pushNotificationService.initialize(
-        context, callback, searchNearbyDriver, searchNearbyDriversList);
+    _loadMapStyles();
+    _checkLocationServiceOnInit();
+    _toggleLocationServiceStatusStream();
+    _toggleInternetServiceStatusStream();
+    _listenBackGroundMessage();
+    pushNotificationService.initialize(context);
     pushNotificationService.seubscribeTopic();
-    widget.args.isSelected
-        ? _currentWidget = DriverOnTheWay(callback)
-        : _currentWidget = WhereTo(
-            dontShowCarIcons: dontShowCarIcons,
-            setPickUpAdress: setPickUpAddress,
-            setDroppOffAdress: setDroppOffAddress,
-            setIsSelected: setIsSelected,
-            callback: callback,
-            service:
-                Service(callback, searchNearbyDriver, searchNearbyDriversList));
-
-    widget.args.isSelected ? _getPolyline(widget.args.encodedPts!) : null;
-    _determinePosition().then((value) {
-      if (widget.args.isFromSplash) {
-        carTypeSelectorDialog(value);
-      } else {
-        switch (selectedCar) {
-          case SelectedCar.taxi:
-            listenTaxi(value);
-            break;
-          case SelectedCar.truck:
-            listenTruck(value);
-            break;
+    WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
+      setState(() {
+        if (widget.args.isSelected) {
+          _getPolyline(widget.args.encodedPts!);
+          showBookedDriver();
         }
-      }
+        ;
+      });
     });
+    _currentWidget = widget.args.isSelected
+        ? DriverOnTheWay(
+            fromBackGround: false,
+          )
+        : WhereTo();
+
+    super.initState();
   }
 
   @override
   void dispose() {
     IsolateNameServer.removePortNameMapping(portName);
     _serviceStatusStreamSubscription!.cancel();
-    _connectivitySubscription.cancel();
+    _connectivitySubscription!.cancel();
     Geofire.stopListener();
-
     super.dispose();
-  }
-
-  void setIsSelected(LatLng destination) {
-    setState(() {
-      dtn = destination;
-      droppOffLatLng = destination;
-    });
-  }
-
-  void setPickupLocation(LatLng pickup) {
-    setState(() {
-      pickUp = pickup;
-      pickupLatLng = pickup;
-    });
-  }
-
-  void setPickUpAddress(String address) {
-    pickupAddress = address;
-  }
-
-  void setDroppOffAddress(String address) {
-    droppOffAddress = address;
-  }
-
-  void callback(Widget nextwidget) {
-    setState(() {
-      _currentWidget = nextwidget;
-    });
   }
 
   @override
   Widget build(BuildContext context) {
-    if (isLocationOn != null) {
-      if (isLocationOn! && isModal) {
-        setState(() {
-          isModal = false;
-        });
-
-        Navigator.pop(context);
-      }
-    }
-    if (isLocationOn != null) {
-      if (isLocationOn == false && isModal == false) {
-        WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
-          setState(() {
-            isModal = true;
-          });
-          locationServiceButtomSheet();
-        });
-      }
-    }
-
-    if (_connectionStatus == ConnectivityResult.wifi && isConModal == true ||
-        _connectionStatus == ConnectivityResult.mobile && isConModal == true) {
-      // setState(() {
-      isConModal = false;
-      // });
-      Navigator.pop(context);
-    }
-
-    if (_connectionStatus == ConnectivityResult.none && isConModal == false) {
-      WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
-        // setState(() {
-        isConModal = true;
-        // });
-        internetServiceButtomSheet();
-      });
-    }
-
     createMarkerIcon();
     requestAccepted = showBookedDriver;
     return Scaffold(
@@ -274,21 +166,10 @@ class _HomeScreenState extends State<HomeScreen> {
             case 'Service':
               polylines.clear();
               markers.clear();
-              _showCarIcons = true;
+              showCarIcons = true;
               outerController.animateCamera(CameraUpdate.newCameraPosition(
-                  CameraPosition(
-                      zoom: 16.4746,
-                      target: LatLng(
-                          currentLatLng.latitude, currentLatLng.longitude))));
-
-              callback(WhereTo(
-                  dontShowCarIcons: dontShowCarIcons,
-                  setPickUpAdress: setPickUpAddress,
-                  setDroppOffAdress: setDroppOffAddress,
-                  setIsSelected: setIsSelected,
-                  callback: callback,
-                  service: Service(
-                      callback, searchNearbyDriver, searchNearbyDriversList)));
+                  CameraPosition(zoom: 16.4746, target: currentLatLng)));
+              context.read<CurrentWidgetCubit>().changeWidget(WhereTo());
               return false;
             case 'WaitingDriverResponse':
               return false;
@@ -300,114 +181,138 @@ class _HomeScreenState extends State<HomeScreen> {
         },
         child: Stack(
           children: [
-            BlocConsumer<DirectionBloc, DirectionState>(builder: (_, state) {
-              return Animarker(
-                mapId: _controller.future.then((value) => value.mapId),
-                curve: Curves.ease,
-                markers: Set<Marker>.of(carMarker.values),
-                shouldAnimateCamera: true,
-                child: GoogleMap(
-                  padding:
-                      const EdgeInsets.only(top: 100, right: 10, bottom: 250),
-                  zoomControlsEnabled: false,
-                  mapType: MapType.normal,
-                  myLocationButtonEnabled: false,
-                  initialCameraPosition: _addissAbaba,
-                  myLocationEnabled: true,
-                  polylines: Set<Polyline>.of(polylines.values),
-                  markers: Set<Marker>.of(markers.values),
-                  onMapCreated: (GoogleMapController controller) {
-                    _controller.complete(controller);
-                    outerController = controller;
-                    // controller.setMapStyle(mapStyle);
-                    _determinePosition().then((value) {
-                      pickUp = LatLng(value.latitude, value.longitude);
-                      pickupLatLng = pickUp;
-                      currentLatLng = LatLng(value.latitude, value.longitude);
-                      controller.animateCamera(CameraUpdate.newCameraPosition(
-                          CameraPosition(
-                              zoom: 16.1746,
-                              target: LatLng(currentLatLng.latitude,
-                                  currentLatLng.longitude))));
-                    });
-                  },
-                ),
-              );
-            }, listener: (_, state) {
-              if (state is DirectionLoading) {
-                showDialog(
-                    // barrierDismissible: false,
-                    context: context,
-                    builder: (BuildContext context) {
-                      return const Dialog(
-                          elevation: 0,
-                          insetPadding: EdgeInsets.all(0),
-                          backgroundColor: Colors.transparent,
-                          child: Center(
-                            child: SizedBox(
-                                height: 40,
-                                width: 40,
-                                child:
-                                    CircularProgressIndicator(strokeWidth: 1)),
-                          ));
-                    });
-              }
-              if (state is DirectionLoadSuccess) {
-                direction = state.direction.encodedPoints;
+            BlocConsumer<ThemeModeCubit, ThemeMode>(
+                builder: (context, themeModeState) =>
+                    BlocConsumer<DirectionBloc, DirectionState>(
+                        builder: (_, state) {
+                      return Animarker(
+                        mapId: _controller.future.then((value) => value.mapId),
+                        curve: Curves.ease,
+                        markers: Set<Marker>.of(carMarker.values),
+                        shouldAnimateCamera: true,
+                        child: GoogleMap(
+                          padding: const EdgeInsets.only(
+                              top: 100, right: 10, bottom: 250),
+                          zoomControlsEnabled: false,
+                          mapType: MapType.normal,
+                          myLocationButtonEnabled: false,
+                          initialCameraPosition: _addissAbaba,
+                          myLocationEnabled: true,
+                          polylines: Set<Polyline>.of(polylines.values),
+                          markers: Set<Marker>.of(markers.values),
+                          onMapCreated: (GoogleMapController controller) {
+                            _controller.complete(controller);
+                            outerController = controller;
+                            _determinePosition().then((value) {
+                              if (widget.args.isFromSplash) {
+                                carTypeSelectorDialog(value);
+                              }
+                              MediaQuery.of(context).platformBrightness ==
+                                      Brightness.dark
+                                  ? controller.setMapStyle(_darkMapStyle)
+                                  : null;
+                              currentLatLng =
+                                  LatLng(value.latitude, value.longitude);
+                              pickupLatLng = currentLatLng;
+                              controller.animateCamera(
+                                  CameraUpdate.newCameraPosition(CameraPosition(
+                                      zoom: 16.1746, target: currentLatLng)));
+                            });
+                          },
+                        ),
+                      );
+                    }, listener: (_, state) {
+                      if (state is DirectionInitialState) {
+                        print("Herer on the state");
+                        resetScreen();
+                      }
+                      if (state is DirectionLoading) {
+                        showDialog(
+                            // barrierDismissible: false,
+                            context: context,
+                            builder: (BuildContext context) {
+                              return WillPopScope(
+                                onWillPop: () async => false,
+                                child: const Dialog(
+                                    elevation: 0,
+                                    insetPadding: EdgeInsets.all(0),
+                                    backgroundColor: Colors.transparent,
+                                    child: Center(
+                                      child: SizedBox(
+                                          height: 40,
+                                          width: 40,
+                                          child: CircularProgressIndicator(
+                                              strokeWidth: 1)),
+                                    )),
+                              );
+                            });
+                      }
+                      if (state is DirectionLoadSuccess) {
+                        direction = state.direction.encodedPoints;
+                        //tre
 
-                markers.clear();
-                setState(() {
-                  _getPolyline(state.direction.encodedPoints);
-                  _addMarker(
-                      dtn,
-                      "destination",
-                      BitmapDescriptor.defaultMarkerWithHue(
-                          BitmapDescriptor.hueRed),
-                      InfoWindow(
-                          title: droppOffAddress,
-                          onTap: () {
-                            Navigator.pushNamed(
-                                context, LocationChanger.routName,
-                                arguments: LocationChangerArgument(
-                                    droppOffLocationAddressName:
-                                        droppOffAddress,
-                                    droppOffLocationLatLng: dtn,
-                                    pickupLocationAddressName: pickupAddress,
-                                    pickupLocationLatLng: pickupLatLng,
-                                    fromWhere: 'DroppOff',
-                                    setAddress: setDroppOffAddress,
-                                    setLocation: setIsSelected));
-                          }));
-                  _addMarker(
-                      LatLng(pickupLatLng.latitude, pickupLatLng.longitude),
-                      "pickup",
-                      BitmapDescriptor.defaultMarkerWithHue(
-                          BitmapDescriptor.hueGreen),
-                      InfoWindow(
-                          title: pickupAddress,
-                          onTap: () {
-                            Navigator.pushNamed(
-                                context, LocationChanger.routName,
-                                arguments: LocationChangerArgument(
-                                    droppOffLocationAddressName:
-                                        droppOffAddress,
-                                    droppOffLocationLatLng: dtn,
-                                    pickupLocationAddressName: pickupAddress,
-                                    pickupLocationLatLng: pickUp,
-                                    fromWhere: 'PickUp',
-                                    setAddress: setPickUpAddress,
-                                    setLocation: setPickupLocation));
-                          }));
-                });
+                        markers.clear();
+                        setState(() {
+                          _getPolyline(state.direction.encodedPoints);
+                          _addMarker(
+                              droppOffLatLng,
+                              "destination",
+                              BitmapDescriptor.defaultMarkerWithHue(
+                                  BitmapDescriptor.hueRed),
+                              InfoWindow(
+                                  title: droppOffAddress,
+                                  onTap: () {
+                                    Navigator.pushNamed(
+                                        context, LocationChanger.routName,
+                                        arguments: LocationChangerArgument(
+                                          droppOffLocationAddressName:
+                                              droppOffAddress,
+                                          droppOffLocationLatLng:
+                                              droppOffLatLng,
+                                          pickupLocationAddressName:
+                                              pickupAddress,
+                                          pickupLocationLatLng: pickupLatLng,
+                                          fromWhere: 'DroppOff',
+                                        ));
+                                  }));
+                          _addMarker(
+                              LatLng(pickupLatLng.latitude,
+                                  pickupLatLng.longitude),
+                              "pickup",
+                              BitmapDescriptor.defaultMarkerWithHue(
+                                  BitmapDescriptor.hueGreen),
+                              InfoWindow(
+                                  title: pickupAddress,
+                                  onTap: () {
+                                    Navigator.pushNamed(
+                                        context, LocationChanger.routName,
+                                        arguments: LocationChangerArgument(
+                                          droppOffLocationAddressName:
+                                              droppOffAddress,
+                                          droppOffLocationLatLng:
+                                              droppOffLatLng,
+                                          pickupLocationAddressName:
+                                              pickupAddress,
+                                          pickupLocationLatLng: pickupLatLng,
+                                          fromWhere: 'PickUp',
+                                        ));
+                                  }));
+                        });
 
-                changeCameraView();
-                Navigator.pop(context);
-              }
+                        changeCameraView();
+                        Navigator.pop(context);
+                      }
 
-              if (state is DirectionOperationFailure) {
-                Navigator.pop(context);
-              }
-            }),
+                      if (state is DirectionOperationFailure) {
+                        Navigator.pop(context);
+                      }
+                    }),
+                listener: (context, themeModeState) {
+                  print("Yeahhh i ama listenninh");
+                  themeModeState == ThemeMode.dark
+                      ? outerController.setMapStyle(_darkMapStyle)
+                      : outerController.setMapStyle('[]');
+                }),
             Padding(
               padding: const EdgeInsets.only(top: 40, left: 10),
               child: ClipRRect(
@@ -425,7 +330,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
             ),
-            _currentWidget,
             Align(
               alignment: Alignment.centerLeft,
               child: Text(repo.getNearbyDrivers().length.toString()),
@@ -436,8 +340,11 @@ class _HomeScreenState extends State<HomeScreen> {
                 alignment: Alignment.topRight,
                 child: ElevatedButton(
                     onPressed: () async {
+                      print(driverId);
+
                       debugPrint(repo.getNearbyDrivers().length.toString());
-                      print(searchNearbyDriversList('Lad')!.take(1));
+                      // print(searchNearbyDriversList('Lad')!.take(1));
+
                       // setState(() {
                       //   _currentWidget = const StartedTripPannel();
                       // });
@@ -458,13 +365,11 @@ class _HomeScreenState extends State<HomeScreen> {
                         height: 45,
                         child: FloatingActionButton(
                             heroTag: 'Mylocation',
-                            backgroundColor: Colors.grey.shade300,
+                            // backgroundColor: Colors.grey.shade300,
                             onPressed: () {
                               outerController.animateCamera(
                                   CameraUpdate.newCameraPosition(CameraPosition(
-                                      zoom: 16.4746,
-                                      target: LatLng(currentLatLng.latitude,
-                                          currentLatLng.longitude))));
+                                      zoom: 16.4746, target: pickupLatLng)));
                             },
                             child: Icon(Icons.gps_fixed,
                                 color: Colors.indigo.shade900, size: 30)),
@@ -495,7 +400,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 height: 45,
                                 child: FloatingActionButton(
                                     heroTag: 'sos',
-                                    backgroundColor: Colors.grey.shade300,
+                                    // backgroundColor: Colors.grey.shade300,
                                     onPressed: () {
                                       EmergencyReportEvent event =
                                           EmergencyReportCreate(EmergencyReport(
@@ -586,10 +491,38 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
             ),
+            BlocConsumer<CurrentWidgetCubit, Widget>(
+                builder: (context, state) => _currentWidget,
+                listener: (context, state) {
+                  _currentWidget = state;
+                })
           ],
         ),
       ),
     );
+  }
+
+  void resetScreen() {
+    _determinePosition().then((value) {
+      switch (selectedCar) {
+        case SelectedCar.taxi:
+          listenTaxi(value);
+          break;
+        case SelectedCar.truck:
+          listenTruck(value);
+          break;
+        case SelectedCar.none:
+          break;
+      }
+    });
+
+    setState(() {
+      _currentWidget = WhereTo();
+      markers.clear();
+      polylines.clear();
+      carMarker.clear();
+      showCarIcons = true;
+    });
   }
 
   _addMarker(LatLng position, String id, BitmapDescriptor descriptor,
@@ -624,7 +557,7 @@ class _HomeScreenState extends State<HomeScreen> {
         jointType: JointType.round,
         startCap: Cap.roundCap,
         endCap: Cap.roundCap,
-        color: Colors.indigo,
+        color: Theme.of(context).canvasColor,
         geodesic: true,
         points: polylineCoordinates);
 
@@ -652,7 +585,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       id: data['key'],
                       latitude: data['latitude'],
                       longitude: data['longitude']));
-                  if (_showCarIcons) {
+                  if (showCarIcons) {
                     showDriversOnMap();
                   }
                   break;
@@ -669,7 +602,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       id: data['key'],
                       latitude: data['latitude'],
                       longitude: data['longitude']));
-                  if (_showCarIcons) {
+                  if (showCarIcons) {
                     showDriversOnMap();
                   }
                   break;
@@ -691,7 +624,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       id: data['key'],
                       latitude: data['latitude'],
                       longitude: data['longitude']));
-                  if (_showCarIcons) {
+                  if (showCarIcons) {
                     showTrucksOnMap();
                   }
                   break;
@@ -708,7 +641,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       id: data['key'],
                       latitude: data['latitude'],
                       longitude: data['longitude']));
-                  if (_showCarIcons) {
+                  if (showCarIcons) {
                     showTrucksOnMap();
                   }
                   break;
@@ -735,7 +668,7 @@ class _HomeScreenState extends State<HomeScreen> {
       MarkerId markerId = MarkerId(driver.id);
 
       BitmapDescriptor.fromAssetImage(
-              imageConfiguration, 'assets/icons/luxury.png')
+              imageConfiguration, 'assets/icons/standard.png')
           .then((value) {
         Marker marker =
             Marker(markerId: markerId, position: driverPosition, icon: value);
@@ -778,67 +711,10 @@ class _HomeScreenState extends State<HomeScreen> {
     // });
   }
 
-  String? searchNearbyDriver(String category) {
-    if (repo.getNearbyDrivers().isEmpty) {
-      return null;
-    }
-
-    List a = repo
-        .getNearbyDrivers()
-        .where((element) => element.id.contains(category))
-        .toList();
-    var nearest;
-    var nearestDriver;
-
-    Map<String, double> distanceList = {};
-    for (NearbyDriver driver in a) {
-      print("drivers ::");
-      print(driver.id.split(',')[0]);
-      double distance = Geolocator.distanceBetween(pickupLatLng.latitude,
-          pickupLatLng.longitude, driver.latitude, driver.longitude);
-
-      nearest ??= distance;
-      distanceList[driver.id] = distance;
-
-      print(distance);
-
-      if (distance <= nearest) {
-        nearest = distance;
-        nearestDriver = driver;
-      }
-    }
-
-    return nearestDriver != null ? nearestDriver.id.split(',')[0] : null;
-  }
-
-  List? searchNearbyDriversList(String category) {
-    if (repo.getNearbyDrivers().isEmpty) {
-      return null;
-    }
-
-    List a = repo
-        .getNearbyDrivers()
-        .where((element) => element.id.contains(category))
-        .toList();
-    Map<String, double> distanceList = {};
-    for (NearbyDriver driver in a) {
-      double distance = Geolocator.distanceBetween(pickupLatLng.latitude,
-          pickupLatLng.longitude, driver.latitude, driver.longitude);
-      distanceList[driver.id] = distance;
-    }
-    SplayTreeMap.from(distanceList,
-        (key1, key2) => distanceList[key1]!.compareTo(distanceList[key2]!));
-    distanceList.values.toList();
-    return SplayTreeMap.from(distanceList,
-            (key1, key2) => distanceList[key1]!.compareTo(distanceList[key2]!))
-        .keys
-        .toList();
-  }
-
   void changeCameraView() {
     LatLngBounds latLngBounds;
 
-    final destinationLatLng = dtn;
+    final destinationLatLng = droppOffLatLng;
     // final pickupLatLng = pickUp;
     // pickupLatLng = LatLng(currentLatLng.latitude, currentLatLng.longitude);
     if (pickupLatLng.latitude > destinationLatLng.latitude &&
@@ -864,47 +740,51 @@ class _HomeScreenState extends State<HomeScreen> {
         .animateCamera(CameraUpdate.newLatLngBounds(latLngBounds, 100));
   }
 
-  void _toggleServiceStatusStream() {
+  void _toggleLocationServiceStatusStream() {
     if (_serviceStatusStreamSubscription == null) {
-      print("yeah it's enabled");
-
       final serviceStatusStream = _geolocatorPlatform.getServiceStatusStream();
       _serviceStatusStreamSubscription =
           serviceStatusStream.handleError((error) {
-        print("yeah it's the error bruhh $error");
-
         _serviceStatusStreamSubscription?.cancel();
         _serviceStatusStreamSubscription = null;
       }).listen((serviceStatus) {
-        String serviceStatusValue;
         if (serviceStatus == ServiceStatus.enabled) {
-          print("yeah it's enabled");
-          setState(() {
-            isLocationOn = true;
-          });
-          _determinePosition().then((value) {
-            pickupLatLng = LatLng(value.latitude, value.longitude);
-
-            currentLatLng = LatLng(value.latitude, value.longitude);
-
-            outerController.animateCamera(CameraUpdate.newCameraPosition(
-                CameraPosition(
-                    zoom: 16.1746,
-                    target: LatLng(
-                        currentLatLng.latitude, currentLatLng.longitude))));
-          });
-          // if (positionStreamStarted) {
-          //   _toggleListening();
-          // }
+          if (serviceStatusValue == "disabled") {
+            Navigator.pop(context);
+            if (isFirstTime) {
+              Geolocator.getCurrentPosition().then((value) {
+                carTypeSelectorDialog(value);
+                currentLatLng = LatLng(value.latitude, value.longitude);
+                pickupLatLng = currentLatLng;
+                outerController.animateCamera(CameraUpdate.newCameraPosition(
+                    CameraPosition(zoom: 16.1746, target: currentLatLng)));
+              });
+            }
+            isFirstTime = false;
+          }
           serviceStatusValue = 'enabled';
         } else {
-          setState(() {
-            isLocationOn = false;
-          });
-
-          print("nope ist's disabled");
+          print("Disableddddd");
+          locationServiceButtomSheet();
 
           serviceStatusValue = 'disabled';
+        }
+      });
+    }
+  }
+
+  void _toggleInternetServiceStatusStream() {
+    if (_connectivitySubscription == null) {
+      _connectivity.onConnectivityChanged.listen((event) {
+        print("event:  $event");
+        if (event == ConnectivityResult.none) {
+          internetServiceButtomSheet();
+        } else if (event == ConnectivityResult.wifi) {
+          Navigator.pop(context);
+        } else if (event == ConnectivityResult.mobile) {
+          print("Noohhhh");
+
+          Navigator.pop(context);
         }
       });
     }
@@ -919,15 +799,16 @@ class _HomeScreenState extends State<HomeScreen> {
     print(response);
   }
 
-  void listenBackGroundMessage() {
+  void _listenBackGroundMessage() {
     IsolateNameServer.registerPortWithName(_port.sendPort, portName);
     _port.listen((message) {
       switch (message.data['response']) {
         case "Accepted":
-          BlocProvider.of<DriverBloc>(context)
-              .add(DriverLoad(message.data['myId']));
           driverId = message.data['myId'];
-          callback(DriverOnTheWay(callback));
+          BlocProvider.of<CurrentWidgetCubit>(context)
+              .changeWidget(DriverOnTheWay(
+            fromBackGround: true,
+          ));
           requestAccepted();
           break;
         case "Arrived":
@@ -937,7 +818,9 @@ class _HomeScreenState extends State<HomeScreen> {
           ));
           break;
         case "Completed":
-          Navigator.pushReplacementNamed(context, ReviewScreen.routeName,
+          BlocProvider.of<DirectionBloc>(context)
+              .add(DirectionChangeToInitialState());
+          Navigator.pushNamed(context, ReviewScreen.routeName,
               arguments: ReviewScreenArgument(price: message.data['price']));
           break;
         case 'Started':
@@ -945,11 +828,12 @@ class _HomeScreenState extends State<HomeScreen> {
             content: const Text(" Trip Started"),
             backgroundColor: Colors.indigo.shade900,
           ));
-          callback(const StartedTripPannel());
+          BlocProvider.of<CurrentWidgetCubit>(context)
+              .changeWidget(StartedTripPannel());
           break;
         case "TimeOut":
-          callback(
-              Service(callback, searchNearbyDriver, searchNearbyDriversList));
+          BlocProvider.of<CurrentWidgetCubit>(context)
+              .changeWidget(Service(true, false));
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
             content: const Text("Time out"),
             backgroundColor: Colors.indigo.shade900,
@@ -968,16 +852,20 @@ class _HomeScreenState extends State<HomeScreen> {
     databaseReference.onValue.listen((event) {
       print(" NOW nOw ${event.snapshot.child('lng').value}");
       debugPrint(event.snapshot.value.toString());
-
-      final position = LatLng(
-          double.parse(event.snapshot.child('$driverId/lat').value.toString()),
-          double.parse(event.snapshot.child('$driverId/lng').value.toString()));
-      MarkerId markerId = MarkerId('value');
-      Marker marker =
-          Marker(markerId: markerId, position: position, icon: carMarkerIcon!);
-      setState(() {
-        carMarker[markerId] = marker;
-      });
+      // print("Data ${event.snapshot.child('$driverId/lat').value != null}");
+      if (event.snapshot.child('$driverId/lat').value != null) {
+        final position = LatLng(
+            double.parse(
+                event.snapshot.child('$driverId/lat').value.toString()),
+            double.parse(
+                event.snapshot.child('$driverId/lng').value.toString()));
+        MarkerId markerId = MarkerId('value');
+        Marker marker = Marker(
+            markerId: markerId, position: position, icon: carMarkerIcon!);
+        setState(() {
+          carMarker[markerId] = marker;
+        });
+      }
     });
   }
 
@@ -998,29 +886,32 @@ class _HomeScreenState extends State<HomeScreen> {
         barrierDismissible: false,
         context: context,
         builder: (BuildContext context) {
-          return Dialog(
-            elevation: 0,
-            insetPadding:
-                EdgeInsets.only(top: MediaQuery.of(context).size.height * 0.3),
-            backgroundColor: Colors.transparent,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                ElevatedButton(
-                    onPressed: () {
-                      selectedCar = SelectedCar.truck;
-                      listenTruck(value);
-                      Navigator.pop(context);
-                    },
-                    child: const Text('Truck')),
-                ElevatedButton(
-                    onPressed: () {
-                      selectedCar = SelectedCar.taxi;
-                      listenTaxi(value);
-                      Navigator.pop(context);
-                    },
-                    child: const Text('Taxi')),
-              ],
+          return WillPopScope(
+            onWillPop: () async => false,
+            child: Dialog(
+              elevation: 0,
+              insetPadding: EdgeInsets.only(
+                  top: MediaQuery.of(context).size.height * 0.3),
+              backgroundColor: Colors.transparent,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  ElevatedButton(
+                      onPressed: () {
+                        selectedCar = SelectedCar.truck;
+                        listenTruck(value);
+                        Navigator.pop(context);
+                      },
+                      child: const Text('Truck')),
+                  ElevatedButton(
+                      onPressed: () {
+                        selectedCar = SelectedCar.taxi;
+                        listenTaxi(value);
+                        Navigator.pop(context);
+                      },
+                      child: const Text('Taxi')),
+                ],
+              ),
             ),
           );
         });
@@ -1159,253 +1050,35 @@ class _HomeScreenState extends State<HomeScreen> {
     geofireListener(value.latitude, value.longitude, 'Truck', 2);
     geofireListener(value.latitude, value.longitude, 'Truck', 2);
   }
+
+  void _checkLocationServiceOnInit() async {
+    bool serviceEnabled;
+
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      //serviceEnabled = await location.requestService();
+      if (!serviceEnabled) {
+        isFirstTime = true;
+
+        locationServiceButtomSheet();
+        serviceStatusValue = 'disabled';
+
+        return Future.error("NoLocation Enabled");
+      }
+
+      return Future.error('Location services are disabled.');
+    } else {
+      isFirstTime = false;
+    }
+  }
+
+  void checkInterNetServiceOnInit() async {
+    ConnectivityResult result;
+    result = await _connectivity.checkConnectivity();
+
+    if (result != ConnectivityResult.wifi ||
+        result != ConnectivityResult.wifi) {
+      internetServiceButtomSheet();
+    }
+  }
 }
-
-//for maintenance
-
-//           isSelectedd
-//               ? BlocBuilder<DirectionBloc, DirectionState>(
-//                   builder: (context, state) {
-//                   bool isDialog = true;
-
-//                   if (state is DirectionLoadSuccess) {
-//                     isDialog = false;
-
-//                     print("Welcome");
-
-//                     _getPolyline(state.direction.encodedPoints);
-//                     _addMarker(
-//                         dtn,
-//                         "destination",
-//                         BitmapDescriptor.defaultMarkerWithHue(
-//                             BitmapDescriptor.hueGreen));
-
-//                     return GoogleMap(
-//                       mapType: MapType.normal,
-//                       myLocationButtonEnabled: true,
-//                       initialCameraPosition: _addissAbaba,
-//                       myLocationEnabled: true,
-//                       polylines: Set<Polyline>.of(polylines.values),
-//                       markers: Set<Marker>.of(markers.values),
-//                       onMapCreated: (GoogleMapController controller) {
-//                         // _controller.complete(controller);
-
-//                         _determinePosition().then((value) {
-//                           currentLatLng =
-//                               LatLng(value.latitude, value.longitude);
-//                           setState(() {
-//                             _addMarker(
-//                                 LatLng(value.latitude, value.longitude),
-//                                 "pickup",
-//                                 BitmapDescriptor.defaultMarkerWithHue(
-//                                     BitmapDescriptor.hueRed));
-//                           });
-
-//                           LatLngBounds latLngBounds;
-
-//                           final destinationLatLng = dtn;
-//                           final pickupLatLng =
-//                               LatLng(value.latitude, value.longitude);
-//                           if (pickupLatLng.latitude >
-//                                   destinationLatLng.latitude &&
-//                               pickupLatLng.longitude >
-//                                   destinationLatLng.longitude) {
-//                             latLngBounds = LatLngBounds(
-//                                 southwest: destinationLatLng,
-//                                 northeast: pickupLatLng);
-//                           } else if (pickupLatLng.longitude >
-//                               destinationLatLng.longitude) {
-//                             latLngBounds = LatLngBounds(
-//                                 southwest: LatLng(pickupLatLng.latitude,
-//                                     destinationLatLng.longitude),
-//                                 northeast: LatLng(destinationLatLng.latitude,
-//                                     pickupLatLng.longitude));
-//                           } else if (pickupLatLng.latitude >
-//                               destinationLatLng.latitude) {
-//                             latLngBounds = LatLngBounds(
-//                                 southwest: LatLng(destinationLatLng.latitude,
-//                                     pickupLatLng.longitude),
-//                                 northeast: LatLng(pickupLatLng.latitude,
-//                                     destinationLatLng.longitude));
-//                           } else {
-//                             latLngBounds = LatLngBounds(
-//                                 southwest: pickupLatLng,
-//                                 northeast: destinationLatLng);
-//                           }
-
-//                           controller.animateCamera(
-//                               CameraUpdate.newLatLngBounds(latLngBounds, 70));
-//                         });
-//                       },
-//                     );
-//                   }
-//                   if (state is DirectionOperationFailure) {
-//                     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-//                       content: const Text("Unable to find direction"),
-//                       backgroundColor: Colors.red.shade900,
-//                     ));
-//                     return GoogleMap(
-//                       mapType: MapType.terrain,
-//                       buildingsEnabled: false,
-//                       indoorViewEnabled: true,
-//                       tiltGesturesEnabled: false,
-//                       trafficEnabled: false,
-//                       myLocationButtonEnabled: true,
-//                       initialCameraPosition: _addissAbaba,
-//                       myLocationEnabled: true,
-//                       onMapCreated: (GoogleMapController controller) {
-//                         _controller.complete(controller);
-
-//                         _determinePosition().then((value) {
-//                           currentLatLng =
-//                               LatLng(value.latitude, value.longitude);
-//                           controller.animateCamera(
-//                               CameraUpdate.newCameraPosition(CameraPosition(
-//                                   zoom: 14.4746,
-//                                   target: LatLng(
-//                                       value.latitude, value.longitude))));
-//                         });
-//                       },
-//                     );
-//                   }
-//                   return isDialog
-//                       ? AlertDialog(
-//                           content: Row(
-//                             children: const [
-//                               CircularProgressIndicator(),
-//                               Text("finding direction")
-//                             ],
-//                           ),
-//                         )
-//                       : Container();
-//                 })
-//               : GoogleMap(
-//                   mapType: MapType.terrain,
-//                   buildingsEnabled: false,
-//                   indoorViewEnabled: true,
-//                   tiltGesturesEnabled: false,
-//                   trafficEnabled: false,
-//                   myLocationButtonEnabled: true,
-//                   initialCameraPosition: _addissAbaba,
-//                   markers: Set<Marker>.of(driverMarkers.values),
-//                   myLocationEnabled: true,
-//                   onMapCreated: (GoogleMapController controller) {
-//                     print(driverMarkers);
-//                     _controller.complete(controller);
-
-//                     _determinePosition().then((value) async {
-//                       currentLatLng = LatLng(value.latitude, value.longitude);
-//                       geofireListener(value.latitude, value.longitude);
-
-//                       WidgetsBinding.instance!
-//                           .addPostFrameCallback((timeStamp) {
-//                         geofireListener(value.latitude, value.longitude);
-//                       });
-
-//                       controller.animateCamera(CameraUpdate.newCameraPosition(
-//                           CameraPosition(
-//                               zoom: 14.4746,
-//                               target:
-//                                   LatLng(value.latitude, value.longitude))));
-//                     });
-//                   },
-//                 ),
-
-
-
-    //print(await Geofire.queryAtLocation(lat, lng, 1));
-
-      // await Geofire.queryAtLocation(lat, lng, 1)?.listen((map) {
-      //   print("Mapppppppppppppppppppppppppppppppppppppppppppppppppppppppsss");
-      //   print("adeddd ${repo.getIdList()}");
-
-      //   print('herer is your length ${repo.getNearbyDrivers().length}');
-
-      //   print(map);
-      //   print("Mappppppppppppppppppppppppppppppppppppppppppppppppppppppp");
-      //   if (map != null) {
-      //     var callBack = map['callBack'];
-      //     print('callBack = $callBack');
-      //     switch (callBack) {
-      //       case Geofire.onKeyEntered:
-      //         String driver = map['key'];
-
-      //         final cat = driver.split(',')[1];
-      //         final id = driver.split(',')[0];
-      //         if (cat == "Truck") {
-      //           print("Truckkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk");
-      //           truckRepo.addDriver(NearbyDriver(
-      //               id: id,
-      //               latitude: map['latitude'],
-      //               longitude: map['longitude']));
-      //           showTrucksOnMap();
-      //         } else {
-      //           print("driverrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr");
-
-      //           repo.addDriver(NearbyDriver(
-      //               id: id,
-      //               latitude: map['latitude'],
-      //               longitude: map['longitude']));
-      //           showDriversOnMap();
-      //         }
-
-      //         print("adeddd ${repo.getIdList()}");
-
-      //         break;
-
-      //       case Geofire.onKeyExited:
-      //         String driver = map['key'];
-
-      //         final cat = driver.split(',')[1];
-      //         final id = driver.split(',')[0];
-      //         if (cat == "Truck") {
-      //           truckRepo.removeDriver(id);
-      //           setState(() {
-      //             markers.remove(MarkerId(id));
-      //           });
-      //           // showTrucksOnMap();
-      //         } else {
-      //           // showDriversOnMap();
-      //         }
-
-      //         print("now");
-
-      //         break;
-
-      //       case Geofire.onKeyMoved:
-      //         String driver = map['key'];
-
-      //         final cat = driver.split(',')[1];
-      //         final id = driver.split(',')[0];
-      //         if (cat == "Truck") {
-      //           repo.updateDriver(NearbyDriver(
-      //               id: id,
-      //               latitude: map['latitude'],
-      //               longitude: map['longitude']));
-      //           showTrucksOnMap();
-      //         } else {
-      //           print("moved");
-      //           print(map['key']);
-
-      //           repo.updateDriver(NearbyDriver(
-      //               id: id,
-      //               latitude: map['latitude'],
-      //               longitude: map['longitude']));
-      //           showDriversOnMap();
-      //         }
-
-      //         print("Yeah Moved");
-      //         break;
-
-      //       case Geofire.onGeoQueryReady:
-      //         // showTrucksOnMap();
-      //         // showDriversOnMap();
-      //         print(map['result']);
-
-      //         break;
-      //     }
-      //     if (!mounted) {
-      //       return;
-      //     }
-      //   }
-      // });

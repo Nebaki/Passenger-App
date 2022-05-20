@@ -45,11 +45,11 @@ class SettingScreen extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Padding(
-                      padding: const EdgeInsets.only(top: 8, left: 5),
+                    const Padding(
+                      padding: EdgeInsets.only(top: 8, left: 5),
                       child: Text(
                         "Profile",
-                        style: _textStyle,
+                        // style: _textStyle,
                       ),
                     ),
                     const Divider(
@@ -102,15 +102,15 @@ class SettingScreen extends StatelessWidget {
                         children: [
                           Text(
                             state.auth.phoneNumber,
-                            style: _textStyle,
+                            // style: _textStyle,
                           ),
                           Text(
                             state.auth.email!,
-                            style: _textStyle,
+                            // style: _textStyle,
                           ),
                           Text(
                             state.auth.emergencyContact!,
-                            style: _textStyle,
+                            // style: _textStyle,
                           ),
                         ],
                       ),
@@ -146,11 +146,11 @@ class SettingScreen extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Padding(
-                      padding: const EdgeInsets.only(top: 8, left: 5),
+                    const Padding(
+                      padding: EdgeInsets.only(top: 8, left: 5),
                       child: Text(
                         "Legal",
-                        style: _textStyle,
+                        // style: _textStyle,
                       ),
                     ),
                     const Divider(
@@ -256,11 +256,11 @@ class SettingScreen extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Padding(
-                      padding: const EdgeInsets.only(top: 8, left: 5),
+                    const Padding(
+                      padding: EdgeInsets.only(top: 8, left: 5),
                       child: Text(
                         "App Info",
-                        style: _textStyle,
+                        // style: _textStyle,
                       ),
                     ),
                     const Divider(

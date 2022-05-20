@@ -115,13 +115,13 @@ class _HistoryPageState extends State<HistoryPage> {
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
           decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(20),
-              color: Colors.white,
+              color: Theme.of(context).backgroundColor,
               boxShadow: [
                 BoxShadow(
                     blurStyle: BlurStyle.normal,
                     color: Colors.grey.shade300,
-                    blurRadius: 8,
-                    spreadRadius: 5)
+                    blurRadius: 5,
+                    spreadRadius: 2)
               ]),
           child: Column(
             children: [
@@ -153,11 +153,9 @@ class _HistoryPageState extends State<HistoryPage> {
                     children: [
                       Text(
                         request!.droppOffAddress!,
-                        style: TextStyle(color: Colors.black),
                       ),
                       Text(
                         request.pickUpAddress!,
-                        style: TextStyle(color: Colors.black38),
                       )
                     ],
                   )
@@ -173,14 +171,14 @@ class _HistoryPageState extends State<HistoryPage> {
                     children: [
                       Text(
                         request.date!,
-                        style: const TextStyle(color: Colors.black38),
+                        // style: const TextStyle(color: Colors.black38),
                       ),
                       const SizedBox(
                         width: 10,
                       ),
                       Text(
                         request.time!,
-                        style: const TextStyle(color: Colors.black38),
+                        // style: const TextStyle(color: Colors.black38),
                       ),
                       Text(status),
                       const SizedBox(
@@ -190,7 +188,7 @@ class _HistoryPageState extends State<HistoryPage> {
                   ),
                   Text(
                     "${request.price != 'null' ? double.parse(request.price!).truncate() : 0} ETB",
-                    style: const TextStyle(color: Colors.black),
+                    // style: const TextStyle(color: Colors.black),
                   )
                 ],
               )

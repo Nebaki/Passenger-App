@@ -40,7 +40,7 @@ class ChangePassword extends StatelessWidget {
     return Form(
         key: _formkey,
         child: Container(
-          color: const Color.fromRGBO(240, 241, 241, 1),
+          // color: const Color.fromRGBO(240, 241, 241, 1),
           height: MediaQuery.of(context).size.height,
           width: MediaQuery.of(context).size.width,
           child: Stack(

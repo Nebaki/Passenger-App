@@ -1,8 +1,20 @@
 import 'package:passengerapp/helper/constants.dart';
+import 'package:passengerapp/screens/home/assistant/home_screen_assistant.dart';
 
 class CategoryEndPoints {
   static String getCategoriesEndPoint() {
-    return '$baseUrl/categories/get-categories';
+    String type;
+    switch (selectedCar) {
+      case SelectedCar.taxi:
+        type = "Taxi";
+        break;
+      case SelectedCar.truck:
+        type = "Truck";
+        break;
+      default:
+        type = 'Taxi';
+    }
+    return '$baseUrl/categories/get-categories-by-type?type=$type';
   }
 }
 

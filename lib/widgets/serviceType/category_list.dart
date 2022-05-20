@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:passengerapp/bloc/bloc.dart';
-import 'package:passengerapp/helper/constants.dart';
 import 'package:passengerapp/models/models.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -21,32 +20,15 @@ class CategoryList extends StatefulWidget {
 }
 
 class _CategoryListState extends State<CategoryList> {
-  int _selectedIndex = 1;
-  // String category = 'ax';
+  int _selectedIndex = 0;
 
   @override
   Widget build(BuildContext context) {
-    // print("Now we are listening the typr $category");
-
-    // if (widget.searchNearbyDriver(category) != null) {
-    // } else {
-    //   BlocProvider.of<DriverBloc>(context).add(DriverSetNotFound());
-    // }
-
     return BlocConsumer<CategoryBloc, CategoryState>(
       listener: (context, state) {
         if (state is CategoryLoadSuccess) {
           BlocProvider.of<SelectedCategoryBloc>(context)
               .add(SelectCategory(state.categories[_selectedIndex]));
-          // WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
-          //   widget.changeCost(
-          //       state.categories[_selectedIndex].initialFare,
-          //       state.categories[_selectedIndex].perKiloMeterCost,
-          //       state.categories[_selectedIndex].perMinuteCost);
-
-          //   widget.changeCapacity(state.categories[_selectedIndex].capacity);
-          //   loadDriver(state.categories[_selectedIndex].name);
-          // });
         }
       },
       builder: (context, state) {
@@ -61,17 +43,6 @@ class _CategoryListState extends State<CategoryList> {
                       state.categories.length,
                       (index) => GestureDetector(
                           onTap: () {
-                            // BlocProvider.of<SelectedCategoryBloc>(context)
-                            //     .add(SelectCategory(state.categories[index]));
-                            // category = state.categories[index].name;
-                            // loadDriver(state.categories[index].name);
-                            // widget.changeCost(
-                            //     state.categories[index].initialFare,
-                            //     state.categories[index].perKiloMeterCost,
-                            //     state.categories[index].perMinuteCost);
-                            // widget.changeCapacity(
-                            //     state.categories[index].capacity);
-
                             setState(() {
                               _selectedIndex = index;
                             });
