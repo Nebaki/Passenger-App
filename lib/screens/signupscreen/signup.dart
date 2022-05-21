@@ -120,7 +120,9 @@ class _SignupScreenState extends State<SignupScreen> {
                     child: Text(
                       "Enter mobile number",
                       style: TextStyle(
-                          fontWeight: FontWeight.bold, fontSize: 24.0),
+                          fontWeight: FontWeight.bold,
+                          fontSize: 24.0,
+                          color: Colors.black),
                     ),
                   ),
                   Padding(

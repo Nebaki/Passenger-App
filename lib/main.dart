@@ -250,7 +250,7 @@ class MyApp extends StatelessWidget {
                   create: ((context) =>
                       SelectedCategoryBloc(SelectedCategoryLoading()))),
               BlocProvider(
-                  create: ((context) => ThemeModeCubit(ThemeMode.light))),
+                  create: ((context) => ThemeModeCubit(ThemeMode.system))),
               BlocProvider(create: (context) => CurrentWidgetCubit())
             ],
             child: BlocBuilder<ThemeModeCubit, ThemeMode>(

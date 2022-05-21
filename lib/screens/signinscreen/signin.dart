@@ -89,7 +89,7 @@ class _SigninScreenState extends State<SigninScreen> {
                 children: [
                   const Text(
                     Strings.signInTitle,
-                    style: TextStyle(fontSize: 25),
+                    style: TextStyle(fontSize: 25, color: Colors.black),
                   ),
                   Padding(
                     padding: const EdgeInsets.all(10),

@@ -410,13 +410,21 @@ class _PhoneVerificationState extends State<PhoneVerification> {
                                           .signInWithCredential(credential)
                                           .then((value) {
                                         if (widget.args.from == 'SignUp') {
-                                          Navigator.pushReplacementNamed(
+                                          Navigator.pushNamedAndRemoveUntil(
                                               context,
                                               CreateProfileScreen.routeName,
+                                              ((Route<dynamic> route) => false),
                                               arguments:
                                                   CreateProfileScreenArgument(
                                                       phoneNumber: widget
                                                           .args.phoneNumber));
+                                          // Navigator.pushReplacementNamed(
+                                          //     context,
+                                          //     CreateProfileScreen.routeName,
+                                          //     arguments:
+                                          //         CreateProfileScreenArgument(
+                                          //             phoneNumber: widget
+                                          //                 .args.phoneNumber));
                                         } else if (widget.args.from ==
                                             'ForgetPassword') {
                                           Navigator.pushReplacementNamed(

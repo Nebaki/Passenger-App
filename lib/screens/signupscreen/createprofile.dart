@@ -53,6 +53,9 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                 setState(() {
                   _image = image;
                 });
+                UserEvent event = UploadProfile(image!);
+
+                BlocProvider.of<UserBloc>(ctx).add(event);
                 Navigator.pop(context);
               },
             ),
@@ -73,31 +76,34 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
           showDialog(
               barrierDismissible: false,
               context: context,
-              builder: (BuildContext con) => AlertDialog(
-                    title: const Text("Thankyou"),
-                    content: const Text.rich(TextSpan(
-                      text:
-                          "Thank you for registering with SafeWay. Please complete your registration and be activated by visiting our office.",
-                    )),
-                    actions: [
-                      TextButton(
-                          onPressed: () {
-                            // ignore: avoid_single_cascade_in_expression_statements
-                            BlocProvider.of<AuthBloc>(context)
-                              ..add(AuthDataLoad());
-                            Navigator.pop(con);
-                            Navigator.pushNamedAndRemoveUntil(
-                                context,
-                                HomeScreen.routeName,
-                                ((Route<dynamic> route) => false),
-                                arguments: HomeScreenArgument(
-                                    isSelected: false, isFromSplash: false));
-                            // Navigator.pushNamed(context, HomeScreen.routeName,
-                            //     arguments: HomeScreenArgument(
-                            //         isFromSplash: false, isSelected: false));
-                          },
-                          child: const Text("Okay")),
-                    ],
+              builder: (BuildContext con) => WillPopScope(
+                    onWillPop: () async => false,
+                    child: AlertDialog(
+                      title: const Text("Thankyou"),
+                      content: const Text.rich(TextSpan(
+                        text:
+                            "Thank you for registering with SafeWay. Please complete your registration and be activated by visiting our office.",
+                      )),
+                      actions: [
+                        TextButton(
+                            onPressed: () {
+                              // ignore: avoid_single_cascade_in_expression_statements
+                              BlocProvider.of<AuthBloc>(context)
+                                ..add(AuthDataLoad());
+                              Navigator.pop(con);
+                              Navigator.pushNamedAndRemoveUntil(
+                                  context,
+                                  HomeScreen.routeName,
+                                  ((Route<dynamic> route) => false),
+                                  arguments: HomeScreenArgument(
+                                      isSelected: false, isFromSplash: false));
+                              // Navigator.pushNamed(context, HomeScreen.routeName,
+                              //     arguments: HomeScreenArgument(
+                              //         isFromSplash: false, isSelected: false));
+                            },
+                            child: const Text("Okay")),
+                      ],
+                    ),
                   ));
         }
         if (state is UserOperationFailure) {
@@ -260,8 +266,6 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                               return 'Full name must not be longer than 25 charachters';
                             } else if (value.length < 4) {
                               return 'Full name must not be shorter than 4 charachters';
-                            } else if (value.split(" ").length == 1) {
-                              return ' Last Name required';
                             }
                             return null;
                           },

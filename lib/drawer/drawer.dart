@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:passengerapp/bloc/bloc.dart';
+import 'package:passengerapp/bloc/database/location_history_bloc.dart';
 import 'package:passengerapp/bloc/thememode/theme_mode_bloc.dart';
 import 'package:passengerapp/dataprovider/auth/auth.dart';
 import 'package:passengerapp/drawer/custome_paint.dart';
@@ -171,6 +172,8 @@ class NavDrawer extends StatelessWidget {
                   GestureDetector(
                     onTap: () {
                       BlocProvider.of<AuthBloc>(context).add(LogOut());
+                      BlocProvider.of<LocationHistoryBloc>(context)
+                          .add(LocationHistoryClear());
 
                       Navigator.pushNamedAndRemoveUntil(
                         context,

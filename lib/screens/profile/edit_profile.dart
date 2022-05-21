@@ -55,11 +55,10 @@ class _EditProfileState extends State<EditProfile> {
                 setState(() {
                   _image = image;
                 });
-                Navigator.pop(context);
-
                 UserEvent event = UploadProfile(image!);
 
                 BlocProvider.of<UserBloc>(ctx).add(event);
+                Navigator.pop(context);
               },
             ),
           );

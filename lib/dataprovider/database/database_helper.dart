@@ -66,4 +66,10 @@ class DatabaseHelper {
       throw "";
     }
   }
+
+  Future clearLocations() async {
+    print("yow yow yows clearingg");
+    Database db = await database;
+    await db.delete("LocationHistory");
+  }
 }

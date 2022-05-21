@@ -30,8 +30,14 @@ class _OrderForOtherScreenState extends State<OrderForOtherScreen> {
   FocusNode droppOffLocationNode = FocusNode();
   final pickupController = TextEditingController();
   final droppOffController = TextEditingController();
+  bool pickupSetted = false;
+  bool droppOffSetted = false;
 
   late LatLng destinationLtlng;
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   void dispose() {
@@ -173,7 +179,10 @@ class _OrderForOtherScreenState extends State<OrderForOtherScreen> {
         child: Stack(
           children: [
             Padding(
-              padding: const EdgeInsets.only(top: 100),
+              padding: EdgeInsets.only(
+                top: 100,
+                bottom: MediaQuery.of(context).viewInsets.bottom,
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -186,6 +195,7 @@ class _OrderForOtherScreenState extends State<OrderForOtherScreen> {
                   ),
                   // 0996635512
                   Stepper(
+                      physics: ScrollPhysics(parent: ClampingScrollPhysics()),
                       controlsBuilder: ((context, details) {
                         if (_currentStep == 0) {
                           return Row(
@@ -211,27 +221,40 @@ class _OrderForOtherScreenState extends State<OrderForOtherScreen> {
                           return Row(
                             children: [
                               ElevatedButton(
-                                  onPressed: () {
-                                    if (droppOffController.text.isNotEmpty &&
-                                        pickupController.text.isNotEmpty) {
-                                      BlocProvider.of<DirectionBloc>(context)
-                                          .add(DirectionLoad(
-                                              destination: droppOffLatLng));
-                                      DirectionEvent event =
-                                          DirectionLoadFromDiffrentPickupLocation(
-                                              pickup: pickupLatLng,
-                                              destination: destinationLtlng);
-                                      BlocProvider.of<DirectionBloc>(context)
-                                          .add(event);
+                                  style: ButtonStyle(
+                                    backgroundColor:
+                                        // MaterialStateProperty.all<Color>(
+                                        //     Colors.black),
+                                        MaterialStateProperty.resolveWith<
+                                                Color?>(
+                                            (Set<MaterialState> state) =>
+                                                state.contains(
+                                                        MaterialState.disabled)
+                                                    ? Colors.grey
+                                                    : null),
+                                  ),
+                                  onPressed: pickupSetted && droppOffSetted
+                                      ? () {
+                                          BlocProvider.of<DirectionBloc>(
+                                                  context)
+                                              .add(DirectionLoad(
+                                                  destination: droppOffLatLng));
+                                          DirectionEvent event =
+                                              DirectionLoadFromDiffrentPickupLocation(
+                                                  pickup: pickupLatLng,
+                                                  destination:
+                                                      destinationLtlng);
+                                          BlocProvider.of<DirectionBloc>(
+                                                  context)
+                                              .add(event);
 
-                                      context
-                                          .read<CurrentWidgetCubit>()
-                                          .changeWidget(Service(false, true));
-                                      Navigator.pop(context);
-                                    } else {
-                                      print("empity");
-                                    }
-                                  },
+                                          context
+                                              .read<CurrentWidgetCubit>()
+                                              .changeWidget(
+                                                  Service(false, true));
+                                          Navigator.pop(context);
+                                        }
+                                      : null,
                                   child: const Text(
                                     "Next",
                                     style: TextStyle(color: Colors.black),
@@ -276,15 +299,17 @@ class _OrderForOtherScreenState extends State<OrderForOtherScreen> {
       child: GestureDetector(
         onTap: () {
           if (droppOffLocationNode.hasFocus) {
+            FocusScope.of(context).requestFocus(pickupLocationNode);
+
             getPlaceDetail(prediction.placeId);
 
             settingDropOffDialog();
             droppOffController.text = prediction.mainText;
           } else if (pickupLocationNode.hasFocus) {
+            FocusScope.of(context).requestFocus(droppOffLocationNode);
+
             getPlaceDetail(prediction.placeId);
             settingPickupDialog();
-
-            pickupLocationNode.nextFocus();
 
             pickupController.text = prediction.mainText;
 
@@ -327,6 +352,13 @@ class _OrderForOtherScreenState extends State<OrderForOtherScreen> {
           return BlocBuilder<PlaceDetailBloc, PlaceDetailState>(
               builder: (context, state) {
             if (state is PlaceDetailLoadSuccess) {
+              // FocusScope.of(context).requestFocus(droppOffLocationNode);
+              WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
+                setState(() {
+                  pickupSetted = true;
+                });
+              });
+
               pickupAddress = state.placeDetail.placeName;
               pickupLatLng =
                   LatLng(state.placeDetail.lat, state.placeDetail.lng);
@@ -369,6 +401,14 @@ class _OrderForOtherScreenState extends State<OrderForOtherScreen> {
           return BlocBuilder<PlaceDetailBloc, PlaceDetailState>(
               builder: (context, state) {
             if (state is PlaceDetailLoadSuccess) {
+              WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
+                setState(() {
+                  droppOffSetted = true;
+                });
+              });
+
+              droppOffLocationNode.nextFocus();
+
               droppOffAddress = state.placeDetail.placeName;
               // widget.setDroppOffAdress(state.placeDetail.placeName);
 

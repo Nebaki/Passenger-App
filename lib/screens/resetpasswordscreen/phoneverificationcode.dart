@@ -100,7 +100,9 @@ class _MobileVerificationState extends State<MobileVerification> {
                     child: Text(
                       "Enter mobile number",
                       style: TextStyle(
-                          fontWeight: FontWeight.bold, fontSize: 24.0),
+                          fontWeight: FontWeight.bold,
+                          fontSize: 24.0,
+                          color: Colors.black),
                     ),
                   ),
                   Padding(

@@ -1,5 +1,6 @@
 import 'dart:collection';
 import 'dart:isolate';
+import 'dart:math';
 import 'dart:ui';
 import 'package:app_settings/app_settings.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
@@ -14,6 +15,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:passengerapp/bloc/bloc.dart';
+import 'package:passengerapp/bloc/database/location_history_bloc.dart';
 import 'package:passengerapp/bloc/driver/driver_bloc.dart';
 import 'package:passengerapp/drawer/drawer.dart';
 import 'package:passengerapp/helper/constants.dart';
@@ -77,6 +79,7 @@ class _HomeScreenState extends State<HomeScreen> {
   late String _darkMapStyle;
   late String serviceStatusValue;
   late bool isFirstTime;
+  late String brightness;
 
   Future _loadMapStyles() async {
     _darkMapStyle =
@@ -129,9 +132,18 @@ class _HomeScreenState extends State<HomeScreen> {
           _getPolyline(widget.args.encodedPts!);
           showBookedDriver();
         }
-        ;
       });
     });
+    var window = WidgetsBinding.instance!.window;
+    window.onPlatformBrightnessChanged = () {
+      if (window.platformBrightness == Brightness.dark) {
+        outerController.setMapStyle(_darkMapStyle);
+        BlocProvider.of<ThemeModeCubit>(context).ActivateDarkTheme();
+      } else {
+        outerController.setMapStyle('[]');
+        BlocProvider.of<ThemeModeCubit>(context).ActivateLightTheme();
+      }
+    };
     _currentWidget = widget.args.isSelected
         ? DriverOnTheWay(
             fromBackGround: false,
@@ -164,9 +176,12 @@ class _HomeScreenState extends State<HomeScreen> {
             case 'WhereTo':
               return true;
             case 'Service':
-              polylines.clear();
-              markers.clear();
-              showCarIcons = true;
+              setState(() {
+                polylines.clear();
+                markers.clear();
+                showCarIcons = true;
+              });
+
               outerController.animateCamera(CameraUpdate.newCameraPosition(
                   CameraPosition(zoom: 16.4746, target: currentLatLng)));
               context.read<CurrentWidgetCubit>().changeWidget(WhereTo());
@@ -223,7 +238,6 @@ class _HomeScreenState extends State<HomeScreen> {
                       );
                     }, listener: (_, state) {
                       if (state is DirectionInitialState) {
-                        print("Herer on the state");
                         resetScreen();
                       }
                       if (state is DirectionLoading) {
@@ -308,7 +322,6 @@ class _HomeScreenState extends State<HomeScreen> {
                       }
                     }),
                 listener: (context, themeModeState) {
-                  print("Yeahhh i ama listenninh");
                   themeModeState == ThemeMode.dark
                       ? outerController.setMapStyle(_darkMapStyle)
                       : outerController.setMapStyle('[]');
@@ -340,14 +353,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 alignment: Alignment.topRight,
                 child: ElevatedButton(
                     onPressed: () async {
-                      print(driverId);
+                      BlocProvider.of<LocationHistoryBloc>(context)
+                          .add(LocationHistoryClear());
 
                       debugPrint(repo.getNearbyDrivers().length.toString());
-                      // print(searchNearbyDriversList('Lad')!.take(1));
-
-                      // setState(() {
-                      //   _currentWidget = const StartedTripPannel();
-                      // });
                     },
                     child: const Text("Maintenance")),
               ),
@@ -502,8 +511,17 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  String generateRandomId() {
+    var r = Random();
+    final list = List.generate(3, (index) => r.nextInt(33) + 89);
+    return String.fromCharCodes(list);
+  }
+
   void resetScreen() {
     _determinePosition().then((value) {
+      outerController.animateCamera(CameraUpdate.newCameraPosition(
+          CameraPosition(
+              zoom: 16.1746, target: LatLng(value.latitude, value.longitude))));
       switch (selectedCar) {
         case SelectedCar.taxi:
           listenTaxi(value);
@@ -569,7 +587,6 @@ class _HomeScreenState extends State<HomeScreen> {
   void geofireListener(
       double lat, double lng, String type, double radius) async {
     repo.resetList();
-    print("Mapppppppppppppppppppppppppppppppppppppppppppppppppppppppaaa");
 
     try {
       switch (type) {
@@ -653,9 +670,9 @@ class _HomeScreenState extends State<HomeScreen> {
           break;
       }
     } on PlatformException {
-      print("platform exceprionnnnnnnnnnnnnnnnnnnnnnnnnnnnnn");
+      throw Exception('platform Eceprion');
     } catch (_) {
-      print("here");
+      throw Exception(_);
     }
   }
 
@@ -790,20 +807,12 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  void removeQueryListener() async {
-    bool? response = await Geofire.stopListener();
-
-    repo.resetList();
-    setState(() {});
-
-    print(response);
-  }
-
   void _listenBackGroundMessage() {
     IsolateNameServer.registerPortWithName(_port.sendPort, portName);
     _port.listen((message) {
       switch (message.data['response']) {
         case "Accepted":
+          Geofire.stopListener();
           driverId = message.data['myId'];
           BlocProvider.of<CurrentWidgetCubit>(context)
               .changeWidget(DriverOnTheWay(
@@ -840,26 +849,22 @@ class _HomeScreenState extends State<HomeScreen> {
           ));
           break;
         default:
-          print(message);
       }
     });
   }
 
   void showBookedDriver() {
-    debugPrint("TET");
     ImageConfiguration imageConfiguration =
         createLocalImageConfiguration(context, size: Size(1, 2));
     databaseReference.onValue.listen((event) {
-      print(" NOW nOw ${event.snapshot.child('lng').value}");
       debugPrint(event.snapshot.value.toString());
-      // print("Data ${event.snapshot.child('$driverId/lat').value != null}");
       if (event.snapshot.child('$driverId/lat').value != null) {
         final position = LatLng(
             double.parse(
                 event.snapshot.child('$driverId/lat').value.toString()),
             double.parse(
                 event.snapshot.child('$driverId/lng').value.toString()));
-        MarkerId markerId = MarkerId('value');
+        MarkerId markerId = MarkerId(generateRandomId());
         Marker marker = Marker(
             markerId: markerId, position: position, icon: carMarkerIcon!);
         setState(() {

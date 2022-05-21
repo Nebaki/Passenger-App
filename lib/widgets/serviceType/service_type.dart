@@ -48,7 +48,6 @@ class _ServiceState extends State<Service> {
     }, listener: (_, state) {
       if (state is RideRequestSuccess) {
         _isLoading = false;
-        Geofire.stopListener();
         context
             .read<CurrentWidgetCubit>()
             .changeWidget(WaitingDriverResponse());

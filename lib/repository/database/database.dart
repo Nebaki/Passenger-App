@@ -14,4 +14,8 @@ class DataBaseHelperRepository {
   Future<List<LocationPrediction>> getData() async {
     return await dataProvider.queryLocation();
   }
+
+  Future clearHistory() async {
+    await dataProvider.clearLocations();
+  }
 }

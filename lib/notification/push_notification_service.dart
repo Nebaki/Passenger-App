@@ -2,6 +2,7 @@ import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_geofire/flutter_geofire.dart';
 import 'package:passengerapp/bloc/bloc.dart';
 import 'package:passengerapp/repository/repositories.dart';
 import 'package:passengerapp/rout.dart';
@@ -19,9 +20,10 @@ class PushNotificationService {
       RemoteNotification? notification = message.notification;
       AndroidNotification? android = message.notification?.android;
       print('this is the respomse : ${message.data['response']}');
-      player.open(Audio("assets/sounds/announcement-sound.mp3"));
+      // player.open(Audio("assets/sounds/announcement-sound.mp3"));
       switch (message.data['response']) {
         case 'Accepted':
+          Geofire.stopListener();
           BlocProvider.of<DriverBloc>(context)
               .add(DriverLoad(message.data['myId']));
           driverId = message.data['myId'];
@@ -40,12 +42,14 @@ class PushNotificationService {
           ));
           break;
         case 'Cancelled':
+          BlocProvider.of<CurrentWidgetCubit>(context).changeWidget(WhereTo());
+
+          BlocProvider.of<DirectionBloc>(context)
+              .add(DirectionChangeToInitialState());
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
             content: const Text(" Request cancelled"),
             backgroundColor: Colors.indigo.shade900,
           ));
-          BlocProvider.of<CurrentWidgetCubit>(context)
-              .changeWidget(Service(true, false));
           // context.read<CurrentWidgetCubit>().changeWidget(Service(true,false));
 
           break;

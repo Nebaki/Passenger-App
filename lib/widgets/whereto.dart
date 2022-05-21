@@ -9,7 +9,6 @@ import 'package:passengerapp/rout.dart';
 import 'package:passengerapp/screens/home/assistant/home_screen_assistant.dart';
 import 'package:passengerapp/screens/screens.dart';
 import 'package:passengerapp/widgets/serviceType/service_type.dart';
-
 import '../models/models.dart';
 
 class WhereTo extends StatefulWidget {
@@ -42,13 +41,13 @@ class _WhereToState extends State<WhereTo> {
         height: MediaQuery.of(context).size.height * 0.22,
         padding: const EdgeInsets.only(top: 10, bottom: 10),
         decoration: BoxDecoration(
-            boxShadow: const [
-              BoxShadow(
-                  blurRadius: 6,
-                  spreadRadius: 1,
-                  offset: Offset(0, -4),
-                  color: Colors.grey)
-            ],
+            // boxShadow: const [
+            //   BoxShadow(
+            //       blurRadius: 6,
+            //       spreadRadius: 1,
+            //       offset: Offset(0, -4),
+            //       color: Colors.grey)
+            // ],
             color: Theme.of(context).backgroundColor,
             borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(20), topRight: Radius.circular(20))),
