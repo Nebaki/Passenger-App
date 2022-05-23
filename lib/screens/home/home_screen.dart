@@ -78,6 +78,7 @@ class _HomeScreenState extends State<HomeScreen> {
   );
   late String _darkMapStyle;
   late String serviceStatusValue;
+  bool? internetServiceStatus;
   late bool isFirstTime;
   late String brightness;
 
@@ -706,7 +707,7 @@ class _HomeScreenState extends State<HomeScreen> {
     ImageConfiguration imageConfiguration =
         createLocalImageConfiguration(context, size: Size(1, 2));
     Map<MarkerId, Marker> newMarker = {};
-    for (NearbyDriver driver in truckRepo.getNearbyDrivers()) {
+    for (NearbyDriver driver in repo.getNearbyDrivers()) {
       LatLng driverPosition = LatLng(driver.latitude, driver.longitude);
       MarkerId markerId = MarkerId(driver.id);
 
@@ -781,7 +782,7 @@ class _HomeScreenState extends State<HomeScreen> {
           }
           serviceStatusValue = 'enabled';
         } else {
-          print("Disableddddd");
+          debugPrint("Disableddddd");
           locationServiceButtomSheet();
 
           serviceStatusValue = 'disabled';
@@ -792,18 +793,18 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void _toggleInternetServiceStatusStream() {
     if (_connectivitySubscription == null) {
-      _connectivity.onConnectivityChanged.listen((event) {
-        print("event:  $event");
-        if (event == ConnectivityResult.none) {
-          internetServiceButtomSheet();
-        } else if (event == ConnectivityResult.wifi) {
-          Navigator.pop(context);
-        } else if (event == ConnectivityResult.mobile) {
-          print("Noohhhh");
-
-          Navigator.pop(context);
-        }
-      });
+      _connectivitySubscription ==
+          _connectivity.onConnectivityChanged.listen((event) {
+            if (event == ConnectivityResult.none) {
+              internetServiceButtomSheet();
+            } else if (event == ConnectivityResult.wifi) {
+              if (internetServiceStatus != null) {
+                internetServiceStatus! ? Navigator.pop(context) : null;
+              }
+            } else if (event == ConnectivityResult.mobile) {
+              Navigator.pop(context);
+            }
+          });
     }
   }
 
@@ -987,6 +988,7 @@ class _HomeScreenState extends State<HomeScreen> {
         isDismissible: false,
         context: context,
         builder: (BuildContext context) {
+          internetServiceStatus = true;
           return WillPopScope(
             onWillPop: () async => false,
             child: Container(
@@ -1081,8 +1083,7 @@ class _HomeScreenState extends State<HomeScreen> {
     ConnectivityResult result;
     result = await _connectivity.checkConnectivity();
 
-    if (result != ConnectivityResult.wifi ||
-        result != ConnectivityResult.wifi) {
+    if (result == ConnectivityResult.none) {
       internetServiceButtomSheet();
     }
   }

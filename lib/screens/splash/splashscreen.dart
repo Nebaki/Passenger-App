@@ -119,14 +119,17 @@ class _CustomSplashScreenState extends State<CustomSplashScreen> {
     ConnectivityResult result;
     result = await _connectivity.checkConnectivity();
 
-    if (result != ConnectivityResult.wifi ||
-        result != ConnectivityResult.wifi) {
+    if (result == ConnectivityResult.none) {
+      print("Showing the banner from here");
       isFirstTime = true;
 
       ScaffoldMessenger.of(context).showMaterialBanner(MaterialBanner(
           content: const Text(Strings.noIntertConnection),
           actions: [TextButton(onPressed: () {}, child: Text("Try Again"))]));
     } else {
+      print("We are all around here");
+      ScaffoldMessenger.of(context).hideCurrentMaterialBanner();
+
       _checkStartedTrip();
     }
   }
@@ -142,11 +145,12 @@ class _CustomSplashScreenState extends State<CustomSplashScreen> {
               TextButton(onPressed: () {}, child: const Text("Try again"))
             ]));
       } else if (event == ConnectivityResult.wifi) {
+        ScaffoldMessenger.of(context).hideCurrentMaterialBanner();
+
         if (isFirstTime) {
           _checkStartedTrip();
         }
         isFirstTime = false;
-        ScaffoldMessenger.of(context).hideCurrentMaterialBanner();
       } else if (event == ConnectivityResult.mobile) {
         if (isFirstTime) {
           _checkStartedTrip();
