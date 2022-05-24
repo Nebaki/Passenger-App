@@ -32,109 +32,112 @@ class _DriverOnTheWayState extends State<DriverOnTheWay> {
 
   @override
   Widget build(BuildContext context) {
-    return Positioned(
-      bottom: 3.0,
-      left: 8.0,
-      right: 8.0,
-      child: Column(
-        children: [
-          Container(
-              height: 280,
-              padding: const EdgeInsets.only(
-                  top: 10, left: 20, right: 20, bottom: 0),
-              decoration: BoxDecoration(
-                  color: Theme.of(context).backgroundColor,
-                  borderRadius: BorderRadius.circular(20)),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Flexible(
-                      flex: 3,
-                      child: DriverProfile(
-                          assetImage: 'assets/icons/economyCarIcon.png')),
+    return WillPopScope(
+      onWillPop: () async => false,
+      child: Positioned(
+        bottom: 3.0,
+        left: 8.0,
+        right: 8.0,
+        child: Column(
+          children: [
+            Container(
+                height: 280,
+                padding: const EdgeInsets.only(
+                    top: 10, left: 20, right: 20, bottom: 0),
+                decoration: BoxDecoration(
+                    color: Theme.of(context).backgroundColor,
+                    borderRadius: BorderRadius.circular(20)),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Flexible(
+                        flex: 3,
+                        child: DriverProfile(
+                            assetImage: 'assets/icons/economyCarIcon.png')),
 
-                  //CarDetail()
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  const Divider(),
-
-                  const Flexible(flex: 2, child: DirectionDetail()),
-                  // Row(
-                  //   mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  //   children: [
-                  //     Column(
-                  //       crossAxisAlignment: CrossAxisAlignment.start,
-                  //       children: [
-                  //         Text.rich(TextSpan(
-                  //             text: "Price:      ",
-                  //             style: _greyTextStyle,
-                  //             children: [
-                  //               TextSpan(
-                  //                   text: "\$ ${40}", style: _blackTextStyle)
-                  //             ])),
-                  //         SizedBox(
-                  //           height: 5,
-                  //         ),
-                  //         Text.rich(TextSpan(
-                  //             text: "Member: ",
-                  //             style: _greyTextStyle,
-                  //             children: [
-                  //               TextSpan(text: "1-4", style: _blackTextStyle)
-                  //             ]))
-                  //       ],
-                  //     ),
-                  //     SizedBox(height: 35, child: VerticalDivider()),
-                  //     Column(
-                  //       crossAxisAlignment: CrossAxisAlignment.start,
-                  //       children: [
-                  //         Text.rich(TextSpan(
-                  //             text: "Distance: ",
-                  //             style: _greyTextStyle,
-                  //             children: [
-                  //               TextSpan(text: "5 km", style: _blackTextStyle)
-                  //             ])),
-                  //         SizedBox(
-                  //           height: 5,
-                  //         ),
-                  //         Text.rich(TextSpan(
-                  //             text: "Time:      ",
-                  //             style: _greyTextStyle,
-                  //             children: [
-                  //               TextSpan(text: "10 min", style: _blackTextStyle)
-                  //             ]))
-                  //       ],
-                  //     )
-                  //   ],
-                  // ),
-
-                  SizedBox(
-                    height: 30,
-                  ),
-
-                  Flexible(
-                    flex: 1,
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child: SizedBox(
-                          height: 50,
-                          width: MediaQuery.of(context).size.width,
-                          child: ElevatedButton(
-                              onPressed: () {
-                                Navigator.pushNamed(
-                                    context, CancelReason.routeName,
-                                    arguments: CancelReasonArgument(
-                                        sendRequest: true));
-                                // widget.callback!(CancelTrip(widget.callback,
-                                //     DriverOnTheWay(widget.callback)));
-                              },
-                              child: const Text("Cancel"))),
+                    //CarDetail()
+                    const SizedBox(
+                      height: 10,
                     ),
-                  ),
-                ],
-              )),
-        ],
+                    const Divider(),
+
+                    const Flexible(flex: 2, child: DirectionDetail()),
+                    // Row(
+                    //   mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    //   children: [
+                    //     Column(
+                    //       crossAxisAlignment: CrossAxisAlignment.start,
+                    //       children: [
+                    //         Text.rich(TextSpan(
+                    //             text: "Price:      ",
+                    //             style: _greyTextStyle,
+                    //             children: [
+                    //               TextSpan(
+                    //                   text: "\$ ${40}", style: _blackTextStyle)
+                    //             ])),
+                    //         SizedBox(
+                    //           height: 5,
+                    //         ),
+                    //         Text.rich(TextSpan(
+                    //             text: "Member: ",
+                    //             style: _greyTextStyle,
+                    //             children: [
+                    //               TextSpan(text: "1-4", style: _blackTextStyle)
+                    //             ]))
+                    //       ],
+                    //     ),
+                    //     SizedBox(height: 35, child: VerticalDivider()),
+                    //     Column(
+                    //       crossAxisAlignment: CrossAxisAlignment.start,
+                    //       children: [
+                    //         Text.rich(TextSpan(
+                    //             text: "Distance: ",
+                    //             style: _greyTextStyle,
+                    //             children: [
+                    //               TextSpan(text: "5 km", style: _blackTextStyle)
+                    //             ])),
+                    //         SizedBox(
+                    //           height: 5,
+                    //         ),
+                    //         Text.rich(TextSpan(
+                    //             text: "Time:      ",
+                    //             style: _greyTextStyle,
+                    //             children: [
+                    //               TextSpan(text: "10 min", style: _blackTextStyle)
+                    //             ]))
+                    //       ],
+                    //     )
+                    //   ],
+                    // ),
+
+                    SizedBox(
+                      height: 30,
+                    ),
+
+                    Flexible(
+                      flex: 1,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: SizedBox(
+                            height: 50,
+                            width: MediaQuery.of(context).size.width,
+                            child: ElevatedButton(
+                                onPressed: () {
+                                  Navigator.pushNamed(
+                                      context, CancelReason.routeName,
+                                      arguments: CancelReasonArgument(
+                                          sendRequest: true));
+                                  // widget.callback!(CancelTrip(widget.callback,
+                                  //     DriverOnTheWay(widget.callback)));
+                                },
+                                child: const Text("Cancel"))),
+                      ),
+                    ),
+                  ],
+                )),
+          ],
+        ),
       ),
     );
   }

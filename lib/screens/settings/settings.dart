@@ -36,7 +36,7 @@ class SettingScreen extends StatelessWidget {
         String phoneNumber;
         if (state is AuthDataLoadSuccess) {
           name = state.auth.name!;
-          phoneNumber = state.auth.phoneNumber;
+          phoneNumber = state.auth.phoneNumber!;
           return ListView(
             padding: const EdgeInsets.only(top: 20, left: 5, right: 5),
             children: [
@@ -101,7 +101,7 @@ class SettingScreen extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            state.auth.phoneNumber,
+                            state.auth.phoneNumber!,
                             // style: _textStyle,
                           ),
                           Text(

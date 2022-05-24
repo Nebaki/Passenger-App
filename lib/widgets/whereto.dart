@@ -80,22 +80,25 @@ class _WhereToState extends State<WhereTo> {
                               barrierDismissible: false,
                               context: context,
                               builder: (BuildContext context) {
-                                return AlertDialog(
-                                  content: Row(
-                                    children: const [
-                                      SizedBox(
-                                        height: 20,
-                                        width: 20,
-                                        child: CircularProgressIndicator(
-                                          strokeWidth: 1,
-                                          color: Colors.red,
+                                return WillPopScope(
+                                  onWillPop: () async => false,
+                                  child: AlertDialog(
+                                    content: Row(
+                                      children: const [
+                                        SizedBox(
+                                          height: 20,
+                                          width: 20,
+                                          child: CircularProgressIndicator(
+                                            strokeWidth: 1,
+                                            color: Colors.red,
+                                          ),
                                         ),
-                                      ),
-                                      SizedBox(
-                                        width: 5,
-                                      ),
-                                      Text("Loading current Location."),
-                                    ],
+                                        SizedBox(
+                                          width: 5,
+                                        ),
+                                        Text("Loading current Location."),
+                                      ],
+                                    ),
                                   ),
                                 );
                               });
@@ -111,6 +114,9 @@ class _WhereToState extends State<WhereTo> {
                           pickupAddress = currentLocation;
 
                           // return Text(addresses[0]);
+                        }
+                        if (state is ReverseLocationOperationFailure) {
+                          Navigator.pop(context);
                         }
                       },
                       builder: (context, state) {
@@ -292,84 +298,26 @@ class _WhereToState extends State<WhereTo> {
     showDialog(
         context: context,
         builder: (BuildContext cont) {
-          return BlocBuilder<PlaceDetailBloc, PlaceDetailState>(
-              builder: (context, state) {
-            if (state is PlaceDetailLoadSuccess) {
-              pickupLatLng =
-                  LatLng(state.placeDetail.lat, state.placeDetail.lng);
-              Navigator.pop(context);
-            }
+          return WillPopScope(
+            onWillPop: () async => false,
+            child: BlocBuilder<PlaceDetailBloc, PlaceDetailState>(
+                builder: (context, state) {
+              if (state is PlaceDetailLoadSuccess) {
+                pickupLatLng =
+                    LatLng(state.placeDetail.lat, state.placeDetail.lng);
+                Navigator.pop(context);
+              }
 
-            if (state is PlaceDetailOperationFailure) {
-              WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
-                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                    backgroundColor: Colors.red.shade900,
-                    content: const Text("Unable To set the Pickup.")));
-              });
-            }
-            return AlertDialog(
-              content: Row(
-                children: const [
-                  SizedBox(
-                    height: 20,
-                    width: 20,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 1,
-                      color: Colors.black,
-                    ),
-                  ),
-                  SizedBox(
-                    width: 5,
-                  ),
-                  Text("Setting up Pickup. Please wait.."),
-                ],
-              ),
-            );
-          });
-        });
-  }
+              if (state is PlaceDetailOperationFailure) {
+                Navigator.pop(context);
 
-  void settingDropOffDialog(bool isFromResentHisotry) {
-    showDialog(
-        context: context,
-        builder: (BuildContext cont) {
-          return BlocBuilder<PlaceDetailBloc, PlaceDetailState>(
-              builder: (context, state) {
-            if (state is PlaceDetailLoadSuccess) {
-              droppOffAddress = state.placeDetail.placeName;
-
-              DirectionEvent event = DirectionLoadFromDiffrentPickupLocation(
-                  pickup: pickupLatLng,
-                  destination:
-                      LatLng(state.placeDetail.lat, state.placeDetail.lng));
-              BlocProvider.of<DirectionBloc>(context).add(event);
-
-              destinationLtlng =
-                  LatLng(state.placeDetail.lat, state.placeDetail.lng);
-              droppOffLatLng = destinationLtlng;
-
-              WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
-                showCarIcons = false;
-                droppOffLatLng = destinationLtlng;
-                context
-                    .read<CurrentWidgetCubit>()
-                    .changeWidget(Service(false, false));
-
-                Navigator.pop(cont);
-                !isFromResentHisotry ? Navigator.pop(context) : null;
-              });
-            }
-
-            if (state is PlaceDetailOperationFailure) {
-              WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
-                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                    backgroundColor: Colors.red.shade900,
-                    content: const Text("Unable To set the Dropoff.")));
-              });
-            }
-            return WillPopScope(
-              onWillPop: () async => false,
-              child: AlertDialog(
+                WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                      backgroundColor: Colors.red.shade900,
+                      content: const Text("Unable To set the Pickup.")));
+                });
+              }
+              return AlertDialog(
                 content: Row(
                   children: const [
                     SizedBox(
@@ -383,12 +331,80 @@ class _WhereToState extends State<WhereTo> {
                     SizedBox(
                       width: 5,
                     ),
-                    Text("Setting up Drop Off. Please wait.."),
+                    Text("Setting up Pickup. Please wait.."),
                   ],
                 ),
-              ),
-            );
-          });
+              );
+            }),
+          );
+        });
+  }
+
+  void settingDropOffDialog(bool isFromResentHisotry) {
+    showDialog(
+        context: context,
+        builder: (BuildContext cont) {
+          return WillPopScope(
+            onWillPop: () async => false,
+            child: BlocBuilder<PlaceDetailBloc, PlaceDetailState>(
+                builder: (context, state) {
+              if (state is PlaceDetailLoadSuccess) {
+                droppOffAddress = state.placeDetail.placeName;
+
+                DirectionEvent event = DirectionLoadFromDiffrentPickupLocation(
+                    pickup: pickupLatLng,
+                    destination:
+                        LatLng(state.placeDetail.lat, state.placeDetail.lng));
+                BlocProvider.of<DirectionBloc>(context).add(event);
+
+                destinationLtlng =
+                    LatLng(state.placeDetail.lat, state.placeDetail.lng);
+                droppOffLatLng = destinationLtlng;
+
+                WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
+                  showCarIcons = false;
+                  droppOffLatLng = destinationLtlng;
+                  context
+                      .read<CurrentWidgetCubit>()
+                      .changeWidget(Service(false, false));
+
+                  Navigator.pop(cont);
+                  !isFromResentHisotry ? Navigator.pop(context) : null;
+                });
+              }
+
+              if (state is PlaceDetailOperationFailure) {
+                Navigator.pop(context);
+
+                WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                      backgroundColor: Colors.red.shade900,
+                      content: const Text("Unable To set the Dropoff.")));
+                });
+              }
+              return WillPopScope(
+                onWillPop: () async => false,
+                child: AlertDialog(
+                  content: Row(
+                    children: const [
+                      SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 1,
+                          color: Colors.black,
+                        ),
+                      ),
+                      SizedBox(
+                        width: 5,
+                      ),
+                      Text("Setting up Drop Off. Please wait.."),
+                    ],
+                  ),
+                ),
+              );
+            }),
+          );
         });
   }
 

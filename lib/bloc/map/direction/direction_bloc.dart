@@ -34,7 +34,10 @@ class DirectionBloc extends Bloc<DirectionEvent, DirectionState> {
     }
 
     if (event is DirectionChangeToInitialState) {
-      yield DirectionInitialState();
+      yield DirectionLoading();
+      try {
+        yield DirectionInitialState();
+      } catch (_) {}
     }
   }
 }

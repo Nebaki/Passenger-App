@@ -48,7 +48,7 @@ dependencies:
   dio: ^4.0.4
   flutter_bloc: 
   flutter_polyline_points: ^1.0.0
-  email_validator: '^1.0.6'
+  # email_validator: '^1.0.6'
   flutter_secure_storage: ^5.0.2
   flutter_rating_bar: ^4.0.0
   flutter_geofire: ^2.0.1

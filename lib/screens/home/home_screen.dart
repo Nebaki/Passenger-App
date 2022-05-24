@@ -171,343 +171,316 @@ class _HomeScreenState extends State<HomeScreen> {
       backgroundColor: backGroundColor,
       key: _scaffoldKey,
       drawer: NavDrawer(),
-      body: WillPopScope(
-        onWillPop: () async {
-          switch (_currentWidget.toString()) {
-            case 'WhereTo':
-              return true;
-            case 'Service':
-              setState(() {
-                polylines.clear();
-                markers.clear();
-                showCarIcons = true;
-              });
+      body: Stack(
+        children: [
+          BlocConsumer<ThemeModeCubit, ThemeMode>(
+              builder: (context, themeModeState) =>
+                  BlocConsumer<DirectionBloc, DirectionState>(
+                      builder: (_, state) {
+                    return Animarker(
+                      mapId: _controller.future.then((value) => value.mapId),
+                      curve: Curves.ease,
+                      markers: Set<Marker>.of(carMarker.values),
+                      shouldAnimateCamera: true,
+                      child: GoogleMap(
+                        padding: const EdgeInsets.only(
+                            top: 100, right: 10, bottom: 250),
+                        zoomControlsEnabled: false,
+                        mapType: MapType.normal,
+                        myLocationButtonEnabled: false,
+                        initialCameraPosition: _addissAbaba,
+                        myLocationEnabled: true,
+                        polylines: Set<Polyline>.of(polylines.values),
+                        markers: Set<Marker>.of(markers.values),
+                        onMapCreated: (GoogleMapController controller) {
+                          _controller.complete(controller);
+                          outerController = controller;
+                          _determinePosition().then((value) {
+                            if (widget.args.isFromSplash) {
+                              carTypeSelectorDialog(value);
+                            }
+                            MediaQuery.of(context).platformBrightness ==
+                                    Brightness.dark
+                                ? controller.setMapStyle(_darkMapStyle)
+                                : null;
+                            currentLatLng =
+                                LatLng(value.latitude, value.longitude);
+                            pickupLatLng = currentLatLng;
+                            controller.animateCamera(
+                                CameraUpdate.newCameraPosition(CameraPosition(
+                                    zoom: 16.1746, target: currentLatLng)));
+                          });
+                        },
+                      ),
+                    );
+                  }, listener: (_, state) {
+                    if (state is DirectionInitialState) {
+                      resetScreen();
+                    }
+                    if (state is DirectionLoading) {
+                      showDialog(
+                          // barrierDismissible: false,
+                          context: context,
+                          builder: (BuildContext context) {
+                            return WillPopScope(
+                              onWillPop: () async => false,
+                              child: const Dialog(
+                                  elevation: 0,
+                                  insetPadding: EdgeInsets.all(0),
+                                  backgroundColor: Colors.transparent,
+                                  child: Center(
+                                    child: SizedBox(
+                                        height: 40,
+                                        width: 40,
+                                        child: CircularProgressIndicator(
+                                            strokeWidth: 1)),
+                                  )),
+                            );
+                          });
+                    }
+                    if (state is DirectionLoadSuccess) {
+                      direction = state.direction.encodedPoints;
+                      //tre
 
-              outerController.animateCamera(CameraUpdate.newCameraPosition(
-                  CameraPosition(zoom: 16.4746, target: currentLatLng)));
-              context.read<CurrentWidgetCubit>().changeWidget(WhereTo());
-              return false;
-            case 'WaitingDriverResponse':
-              return false;
-            case 'DriverOnTheWay(callback)':
-              return false;
-            default:
-              return true;
-          }
-        },
-        child: Stack(
-          children: [
-            BlocConsumer<ThemeModeCubit, ThemeMode>(
-                builder: (context, themeModeState) =>
-                    BlocConsumer<DirectionBloc, DirectionState>(
-                        builder: (_, state) {
-                      return Animarker(
-                        mapId: _controller.future.then((value) => value.mapId),
-                        curve: Curves.ease,
-                        markers: Set<Marker>.of(carMarker.values),
-                        shouldAnimateCamera: true,
-                        child: GoogleMap(
-                          padding: const EdgeInsets.only(
-                              top: 100, right: 10, bottom: 250),
-                          zoomControlsEnabled: false,
-                          mapType: MapType.normal,
-                          myLocationButtonEnabled: false,
-                          initialCameraPosition: _addissAbaba,
-                          myLocationEnabled: true,
-                          polylines: Set<Polyline>.of(polylines.values),
-                          markers: Set<Marker>.of(markers.values),
-                          onMapCreated: (GoogleMapController controller) {
-                            _controller.complete(controller);
-                            outerController = controller;
-                            _determinePosition().then((value) {
-                              if (widget.args.isFromSplash) {
-                                carTypeSelectorDialog(value);
-                              }
-                              MediaQuery.of(context).platformBrightness ==
-                                      Brightness.dark
-                                  ? controller.setMapStyle(_darkMapStyle)
-                                  : null;
-                              currentLatLng =
-                                  LatLng(value.latitude, value.longitude);
-                              pickupLatLng = currentLatLng;
-                              controller.animateCamera(
-                                  CameraUpdate.newCameraPosition(CameraPosition(
-                                      zoom: 16.1746, target: currentLatLng)));
-                            });
-                          },
-                        ),
-                      );
-                    }, listener: (_, state) {
-                      if (state is DirectionInitialState) {
-                        resetScreen();
-                      }
-                      if (state is DirectionLoading) {
-                        showDialog(
-                            // barrierDismissible: false,
-                            context: context,
-                            builder: (BuildContext context) {
-                              return WillPopScope(
-                                onWillPop: () async => false,
-                                child: const Dialog(
-                                    elevation: 0,
-                                    insetPadding: EdgeInsets.all(0),
-                                    backgroundColor: Colors.transparent,
-                                    child: Center(
-                                      child: SizedBox(
-                                          height: 40,
-                                          width: 40,
-                                          child: CircularProgressIndicator(
-                                              strokeWidth: 1)),
-                                    )),
-                              );
-                            });
-                      }
-                      if (state is DirectionLoadSuccess) {
-                        direction = state.direction.encodedPoints;
-                        //tre
+                      markers.clear();
+                      setState(() {
+                        _getPolyline(state.direction.encodedPoints);
+                        _addMarker(
+                            droppOffLatLng,
+                            "destination",
+                            BitmapDescriptor.defaultMarkerWithHue(
+                                BitmapDescriptor.hueRed),
+                            InfoWindow(
+                                title: droppOffAddress,
+                                onTap: () {
+                                  Navigator.pushNamed(
+                                      context, LocationChanger.routName,
+                                      arguments: LocationChangerArgument(
+                                        droppOffLocationAddressName:
+                                            droppOffAddress,
+                                        droppOffLocationLatLng: droppOffLatLng,
+                                        pickupLocationAddressName:
+                                            pickupAddress,
+                                        pickupLocationLatLng: pickupLatLng,
+                                        fromWhere: 'DroppOff',
+                                      ));
+                                }));
+                        _addMarker(
+                            LatLng(
+                                pickupLatLng.latitude, pickupLatLng.longitude),
+                            "pickup",
+                            BitmapDescriptor.defaultMarkerWithHue(
+                                BitmapDescriptor.hueGreen),
+                            InfoWindow(
+                                title: pickupAddress,
+                                onTap: () {
+                                  Navigator.pushNamed(
+                                      context, LocationChanger.routName,
+                                      arguments: LocationChangerArgument(
+                                        droppOffLocationAddressName:
+                                            droppOffAddress,
+                                        droppOffLocationLatLng: droppOffLatLng,
+                                        pickupLocationAddressName:
+                                            pickupAddress,
+                                        pickupLocationLatLng: pickupLatLng,
+                                        fromWhere: 'PickUp',
+                                      ));
+                                }));
+                      });
 
-                        markers.clear();
-                        setState(() {
-                          _getPolyline(state.direction.encodedPoints);
-                          _addMarker(
-                              droppOffLatLng,
-                              "destination",
-                              BitmapDescriptor.defaultMarkerWithHue(
-                                  BitmapDescriptor.hueRed),
-                              InfoWindow(
-                                  title: droppOffAddress,
-                                  onTap: () {
-                                    Navigator.pushNamed(
-                                        context, LocationChanger.routName,
-                                        arguments: LocationChangerArgument(
-                                          droppOffLocationAddressName:
-                                              droppOffAddress,
-                                          droppOffLocationLatLng:
-                                              droppOffLatLng,
-                                          pickupLocationAddressName:
-                                              pickupAddress,
-                                          pickupLocationLatLng: pickupLatLng,
-                                          fromWhere: 'DroppOff',
-                                        ));
-                                  }));
-                          _addMarker(
-                              LatLng(pickupLatLng.latitude,
-                                  pickupLatLng.longitude),
-                              "pickup",
-                              BitmapDescriptor.defaultMarkerWithHue(
-                                  BitmapDescriptor.hueGreen),
-                              InfoWindow(
-                                  title: pickupAddress,
-                                  onTap: () {
-                                    Navigator.pushNamed(
-                                        context, LocationChanger.routName,
-                                        arguments: LocationChangerArgument(
-                                          droppOffLocationAddressName:
-                                              droppOffAddress,
-                                          droppOffLocationLatLng:
-                                              droppOffLatLng,
-                                          pickupLocationAddressName:
-                                              pickupAddress,
-                                          pickupLocationLatLng: pickupLatLng,
-                                          fromWhere: 'PickUp',
-                                        ));
-                                  }));
-                        });
+                      changeCameraView();
+                      Navigator.pop(context);
+                    }
 
-                        changeCameraView();
-                        Navigator.pop(context);
-                      }
-
-                      if (state is DirectionOperationFailure) {
-                        Navigator.pop(context);
-                      }
-                    }),
-                listener: (context, themeModeState) {
-                  themeModeState == ThemeMode.dark
-                      ? outerController.setMapStyle(_darkMapStyle)
-                      : outerController.setMapStyle('[]');
-                }),
-            Padding(
-              padding: const EdgeInsets.only(top: 40, left: 10),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(100),
-                child: Container(
-                  color: Colors.black,
-                  child: IconButton(
-                    onPressed: () => _scaffoldKey.currentState!.openDrawer(),
-                    icon: const Icon(
-                      Icons.format_align_center,
-                      size: 20,
-                      color: Colors.white,
-                    ),
+                    if (state is DirectionOperationFailure) {
+                      Navigator.pop(context);
+                    }
+                  }),
+              listener: (context, themeModeState) {
+                themeModeState == ThemeMode.dark
+                    ? outerController.setMapStyle(_darkMapStyle)
+                    : outerController.setMapStyle('[]');
+              }),
+          Padding(
+            padding: const EdgeInsets.only(top: 40, left: 10),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(100),
+              child: Container(
+                color: Colors.black,
+                child: IconButton(
+                  onPressed: () => _scaffoldKey.currentState!.openDrawer(),
+                  icon: const Icon(
+                    Icons.format_align_center,
+                    size: 20,
+                    color: Colors.white,
                   ),
                 ),
               ),
             ),
-            Align(
-              alignment: Alignment.centerLeft,
-              child: Text(repo.getNearbyDrivers().length.toString()),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(top: 60),
-              child: Align(
-                alignment: Alignment.topRight,
-                child: ElevatedButton(
-                    onPressed: () async {
-                      BlocProvider.of<LocationHistoryBloc>(context)
-                          .add(LocationHistoryClear());
+          ),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: Text(repo.getNearbyDrivers().length.toString()),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(top: 60),
+            child: Align(
+              alignment: Alignment.topRight,
+              child: ElevatedButton(
+                  onPressed: () async {
+                    BlocProvider.of<LocationHistoryBloc>(context)
+                        .add(LocationHistoryClear());
 
-                      debugPrint(repo.getNearbyDrivers().length.toString());
-                    },
-                    child: const Text("Maintenance")),
-              ),
+                    debugPrint(repo.getNearbyDrivers().length.toString());
+                  },
+                  child: const Text("Maintenance")),
             ),
-            Align(
-              alignment: Alignment.centerRight,
-              child: SizedBox(
-                height: 300,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: SizedBox(
-                        height: 45,
-                        child: FloatingActionButton(
-                            heroTag: 'Mylocation',
-                            // backgroundColor: Colors.grey.shade300,
+          ),
+          Align(
+            alignment: Alignment.centerRight,
+            child: SizedBox(
+              height: 300,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: SizedBox(
+                      height: 45,
+                      child: FloatingActionButton(
+                          heroTag: 'Mylocation',
+                          // backgroundColor: Colors.grey.shade300,
+                          onPressed: () {
+                            outerController.animateCamera(
+                                CameraUpdate.newCameraPosition(CameraPosition(
+                                    zoom: 16.4746, target: pickupLatLng)));
+                          },
+                          child: Icon(Icons.gps_fixed,
+                              color: Colors.indigo.shade900, size: 30)),
+                    ),
+                  ),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(100),
+                      child: Container(
+                        color: Colors.grey.shade300,
+                        child: IconButton(
                             onPressed: () {
-                              outerController.animateCamera(
-                                  CameraUpdate.newCameraPosition(CameraPosition(
-                                      zoom: 16.4746, target: pickupLatLng)));
+                              makePhoneCall('9495');
                             },
-                            child: Icon(Icons.gps_fixed,
-                                color: Colors.indigo.shade900, size: 30)),
+                            icon: Icon(
+                              Icons.call,
+                              color: Colors.indigo.shade900,
+                              size: 30,
+                            )),
                       ),
                     ),
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(100),
-                        child: Container(
-                          color: Colors.grey.shade300,
-                          child: IconButton(
-                              onPressed: () {
-                                makePhoneCall('9495');
-                              },
-                              icon: Icon(
-                                Icons.call,
-                                color: Colors.indigo.shade900,
-                                size: 30,
-                              )),
-                        ),
-                      ),
-                    ),
-                    BlocConsumer<EmergencyReportBloc, EmergencyReportState>(
-                        builder: (context, state) => Align(
-                              alignment: Alignment.centerRight,
-                              child: SizedBox(
-                                height: 45,
-                                child: FloatingActionButton(
-                                    heroTag: 'sos',
-                                    // backgroundColor: Colors.grey.shade300,
-                                    onPressed: () {
-                                      EmergencyReportEvent event =
-                                          EmergencyReportCreate(EmergencyReport(
-                                              location: [
-                                            currentLatLng.latitude,
-                                            currentLatLng.longitude
-                                          ]));
+                  ),
+                  BlocConsumer<EmergencyReportBloc, EmergencyReportState>(
+                      builder: (context, state) => Align(
+                            alignment: Alignment.centerRight,
+                            child: SizedBox(
+                              height: 45,
+                              child: FloatingActionButton(
+                                  heroTag: 'sos',
+                                  // backgroundColor: Colors.grey.shade300,
+                                  onPressed: () {
+                                    EmergencyReportEvent event =
+                                        EmergencyReportCreate(EmergencyReport(
+                                            location: [
+                                          currentLatLng.latitude,
+                                          currentLatLng.longitude
+                                        ]));
 
-                                      BlocProvider.of<EmergencyReportBloc>(
-                                              context)
-                                          .add(event);
-                                    },
-                                    child: Text(
-                                      'SOS',
-                                      style: TextStyle(
-                                          color: Colors.indigo.shade900,
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 18),
+                                    BlocProvider.of<EmergencyReportBloc>(
+                                            context)
+                                        .add(event);
+                                  },
+                                  child: Text(
+                                    'SOS',
+                                    style: TextStyle(
+                                        color: Colors.indigo.shade900,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 18),
 
-                                      // color: Colors.indigo.shade900,
-                                      // size: 35,
-                                    )),
-                              ),
+                                    // color: Colors.indigo.shade900,
+                                    // size: 35,
+                                  )),
                             ),
-                        listener: (context, state) {
-                          if (state is EmergencyReportCreating) {
-                            showDialog(
-                                context: context,
-                                builder: (BuildContext context) {
-                                  return AlertDialog(
-                                    content: Row(
-                                      children: const [
-                                        SizedBox(
+                          ),
+                      listener: (context, state) {
+                        if (state is EmergencyReportCreating) {
+                          showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  content: Row(
+                                    children: const [
+                                      SizedBox(
+                                        height: 20,
+                                        width: 20,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 1,
+                                          color: Colors.red,
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        width: 5,
+                                      ),
+                                      Text("Reporting.."),
+                                    ],
+                                  ),
+                                );
+                              });
+                        }
+                        if (state is EmergencyReportCreated) {
+                          Navigator.pop(context);
+
+                          showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  content: Row(
+                                    children: const [
+                                      SizedBox(
                                           height: 20,
                                           width: 20,
-                                          child: CircularProgressIndicator(
-                                            strokeWidth: 1,
-                                            color: Colors.red,
-                                          ),
-                                        ),
-                                        SizedBox(
-                                          width: 5,
-                                        ),
-                                        Text("Reporting.."),
-                                      ],
-                                    ),
-                                  );
-                                });
-                          }
-                          if (state is EmergencyReportCreated) {
-                            Navigator.pop(context);
-
-                            showDialog(
-                                context: context,
-                                builder: (BuildContext context) {
-                                  return AlertDialog(
-                                    content: Row(
-                                      children: const [
-                                        SizedBox(
-                                            height: 20,
-                                            width: 20,
-                                            child: Icon(Icons.done,
-                                                color: Colors.green)),
-                                        SizedBox(
-                                          width: 5,
-                                        ),
-                                        Text("Emergency report has been sent"),
-                                      ],
-                                    ),
-                                    actions: [
-                                      TextButton(
-                                          onPressed: () {
-                                            Navigator.pop(context);
-                                          },
-                                          child: const Text('Okay'))
+                                          child: Icon(Icons.done,
+                                              color: Colors.green)),
+                                      SizedBox(
+                                        width: 5,
+                                      ),
+                                      Text("Emergency report has been sent"),
                                     ],
-                                  );
-                                });
-                          }
-                          if (state is EmergencyReportOperationFailur) {
-                            Navigator.pop(context);
-                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                                content: const Text("Reporting Failed."),
-                                backgroundColor: Colors.red.shade900));
-                          }
-                        }),
-                  ],
-                ),
+                                  ),
+                                  actions: [
+                                    TextButton(
+                                        onPressed: () {
+                                          Navigator.pop(context);
+                                        },
+                                        child: const Text('Okay'))
+                                  ],
+                                );
+                              });
+                        }
+                        if (state is EmergencyReportOperationFailur) {
+                          Navigator.pop(context);
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                              content: const Text("Reporting Failed."),
+                              backgroundColor: Colors.red.shade900));
+                        }
+                      }),
+                ],
               ),
             ),
-            BlocConsumer<CurrentWidgetCubit, Widget>(
-                builder: (context, state) => _currentWidget,
-                listener: (context, state) {
-                  _currentWidget = state;
-                })
-          ],
-        ),
+          ),
+          BlocConsumer<CurrentWidgetCubit, Widget>(
+              builder: (context, state) => _currentWidget,
+              listener: (context, state) {
+                _currentWidget = state;
+              })
+        ],
       ),
     );
   }
@@ -857,6 +830,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void showBookedDriver() {
     ImageConfiguration imageConfiguration =
         createLocalImageConfiguration(context, size: Size(1, 2));
+                MarkerId markerId = MarkerId(generateRandomId());
     databaseReference.onValue.listen((event) {
       debugPrint(event.snapshot.value.toString());
       if (event.snapshot.child('$driverId/lat').value != null) {
@@ -865,7 +839,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 event.snapshot.child('$driverId/lat').value.toString()),
             double.parse(
                 event.snapshot.child('$driverId/lng').value.toString()));
-        MarkerId markerId = MarkerId(generateRandomId());
+
         Marker marker = Marker(
             markerId: markerId, position: position, icon: carMarkerIcon!);
         setState(() {
@@ -1088,3 +1062,29 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 }
+
+
+
+// onWillPop: () async {
+//           switch (_currentWidget.toString()) {
+//             case 'WhereTo':
+//               return true;
+//             case 'Service':
+//               setState(() {
+//                 polylines.clear();
+//                 markers.clear();
+//                 showCarIcons = true;
+//               });
+
+//               outerController.animateCamera(CameraUpdate.newCameraPosition(
+//                   CameraPosition(zoom: 16.4746, target: currentLatLng)));
+//               context.read<CurrentWidgetCubit>().changeWidget(WhereTo());
+//               return false;
+//             case 'WaitingDriverResponse':
+//               return false;
+//             case 'DriverOnTheWay(callback)':
+//               return false;
+//             default:
+//               return true;
+//           }
+//         },

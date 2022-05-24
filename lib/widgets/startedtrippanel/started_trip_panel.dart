@@ -8,32 +8,35 @@ class StartedTripPannel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Positioned(
-      bottom: 3.0,
-      left: 8.0,
-      right: 8.0,
-      child: Column(
-        children: [
-          Container(
-              height: 250,
-              padding: const EdgeInsets.only(
-                  top: 10, left: 20, right: 20, bottom: 0),
-              decoration: BoxDecoration(
-                  color: Theme.of(context).backgroundColor,
-                  borderRadius: BorderRadius.circular(20)),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Flexible(
-                      flex: 1,
-                      child: DriverProfile(
-                          assetImage: 'assets/icons/economyCarIcon.png')),
-                  const Divider(),
-                  const Flexible(flex: 1, child: Counter()),
-                ],
-              )),
-        ],
+    return WillPopScope(
+      onWillPop: () async => false,
+      child: Positioned(
+        bottom: 3.0,
+        left: 8.0,
+        right: 8.0,
+        child: Column(
+          children: [
+            Container(
+                height: 250,
+                padding: const EdgeInsets.only(
+                    top: 10, left: 20, right: 20, bottom: 0),
+                decoration: BoxDecoration(
+                    color: Theme.of(context).backgroundColor,
+                    borderRadius: BorderRadius.circular(20)),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Flexible(
+                        flex: 1,
+                        child: DriverProfile(
+                            assetImage: 'assets/icons/economyCarIcon.png')),
+                    const Divider(),
+                    const Flexible(flex: 1, child: Counter()),
+                  ],
+                )),
+          ],
+        ),
       ),
     );
   }

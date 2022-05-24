@@ -6,7 +6,7 @@ class Auth extends Equatable {
   String? token;
   String? id;
   String? name;
-  String phoneNumber;
+  String? phoneNumber;
   String? password;
   String? email;
   String? emergencyContact;
@@ -19,7 +19,7 @@ class Auth extends Equatable {
       this.email,
       this.emergencyContact,
       this.name,
-      required this.phoneNumber,
+      this.phoneNumber,
       this.password,
       this.pref,
       this.profilePicture});

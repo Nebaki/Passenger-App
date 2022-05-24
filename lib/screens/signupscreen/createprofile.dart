@@ -11,7 +11,6 @@ import 'package:passengerapp/rout.dart';
 import 'package:passengerapp/screens/screens.dart';
 import 'package:passengerapp/widgets/widgets.dart';
 // ignore: import_of_legacy_library_into_null_safe
-import 'package:email_validator/email_validator.dart';
 
 class CreateProfileScreen extends StatefulWidget {
   static const routeName = "/createprofile";

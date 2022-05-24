@@ -25,7 +25,7 @@ class CustomSplashScreen extends StatefulWidget {
 class _CustomSplashScreenState extends State<CustomSplashScreen> {
   final Connectivity _connectivity = Connectivity();
   StreamSubscription<ConnectivityResult>? _connectivitySubscription;
-  bool isFirstTime = true;
+  bool isFirstTime = false;
 
   @override
   void initState() {
@@ -56,12 +56,15 @@ class _CustomSplashScreenState extends State<CustomSplashScreen> {
             if (state is AuthDataLoadSuccess) {
               if (state.auth.token != null) {
                 name = state.auth.name!;
-                number = state.auth.phoneNumber;
+                number = state.auth.phoneNumber!;
                 myId = state.auth.id!;
                 checkInterNetServiceOnInit();
               } else {
                 Navigator.pushReplacementNamed(context, SigninScreen.routeName);
               }
+            }
+            if (state is AuthOperationFailure) {
+              Navigator.pushReplacementNamed(context, SigninScreen.routeName);
             }
           }),
           BlocConsumer<RideRequestBloc, RideRequestState>(
