@@ -5,6 +5,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:passengerapp/dataprovider/user/user.dart';
+import 'package:passengerapp/helper/constants.dart';
 import 'package:passengerapp/models/models.dart';
 
 String geolocator =
@@ -53,6 +54,7 @@ class ReverseGocoding {
 
   Future<ReverseLocation> getLocationByLtlng() async {
     Position p = await _determinePosition();
+    pickupLatLng = LatLng(p.latitude, p.longitude);
 
     final _baseUrl =
         "https://maps.googleapis.com/maps/api/geocode/json?latlng=${p.latitude},${p.longitude}&key=AIzaSyB8z8UeyROt2-ay24jiHrrcMXaEAlPUvdQ";

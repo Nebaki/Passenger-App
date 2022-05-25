@@ -215,7 +215,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     );
                   }, listener: (_, state) {
                     if (state is DirectionInitialState) {
-                      resetScreen();
+                      Navigator.pop(context);
+
+                      resetScreen(state.loadCurrentLocation);
                     }
                     if (state is DirectionLoading) {
                       showDialog(
@@ -491,22 +493,28 @@ class _HomeScreenState extends State<HomeScreen> {
     return String.fromCharCodes(list);
   }
 
-  void resetScreen() {
-    _determinePosition().then((value) {
+  void resetScreen(bool determinePosition) {
+    if (determinePosition) {
+      _determinePosition().then((value) {
+        outerController.animateCamera(CameraUpdate.newCameraPosition(
+            CameraPosition(
+                zoom: 16.1746,
+                target: LatLng(value.latitude, value.longitude))));
+        switch (selectedCar) {
+          case SelectedCar.taxi:
+            listenTaxi(value);
+            break;
+          case SelectedCar.truck:
+            listenTruck(value);
+            break;
+          case SelectedCar.none:
+            break;
+        }
+      });
+    } else {
       outerController.animateCamera(CameraUpdate.newCameraPosition(
-          CameraPosition(
-              zoom: 16.1746, target: LatLng(value.latitude, value.longitude))));
-      switch (selectedCar) {
-        case SelectedCar.taxi:
-          listenTaxi(value);
-          break;
-        case SelectedCar.truck:
-          listenTruck(value);
-          break;
-        case SelectedCar.none:
-          break;
-      }
-    });
+          CameraPosition(zoom: 16.1746, target: currentLatLng)));
+    }
 
     setState(() {
       _currentWidget = WhereTo();
@@ -775,7 +783,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 internetServiceStatus! ? Navigator.pop(context) : null;
               }
             } else if (event == ConnectivityResult.mobile) {
-              Navigator.pop(context);
+              if (internetServiceStatus != null) {
+                internetServiceStatus! ? Navigator.pop(context) : null;
+              }
             }
           });
     }
@@ -801,8 +811,8 @@ class _HomeScreenState extends State<HomeScreen> {
           ));
           break;
         case "Completed":
-          BlocProvider.of<DirectionBloc>(context)
-              .add(DirectionChangeToInitialState());
+          BlocProvider.of<DirectionBloc>(context).add(
+              const DirectionChangeToInitialState(loadCurrentLocation: true));
           Navigator.pushNamed(context, ReviewScreen.routeName,
               arguments: ReviewScreenArgument(price: message.data['price']));
           break;
@@ -830,7 +840,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void showBookedDriver() {
     ImageConfiguration imageConfiguration =
         createLocalImageConfiguration(context, size: Size(1, 2));
-                MarkerId markerId = MarkerId(generateRandomId());
+    MarkerId markerId = MarkerId(generateRandomId());
     databaseReference.onValue.listen((event) {
       debugPrint(event.snapshot.value.toString());
       if (event.snapshot.child('$driverId/lat').value != null) {

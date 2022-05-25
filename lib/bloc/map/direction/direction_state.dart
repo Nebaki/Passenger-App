@@ -8,8 +8,13 @@ class DirectionState extends Equatable {
   List<Object> get props => [];
 }
 
+class DirectionInitialState extends DirectionState {
+  final bool loadCurrentLocation;
+  const DirectionInitialState({required this.loadCurrentLocation});
+  @override
+  List<Object> get props => [loadCurrentLocation];
+}
 
-class DirectionInitialState extends DirectionState {}
 class DirectionLoading extends DirectionState {}
 
 class DirectionLoadSuccess extends DirectionState {

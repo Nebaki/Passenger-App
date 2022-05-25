@@ -132,8 +132,9 @@ class _CancelReasonState extends State<CancelReason> {
               if (state is RideRequestCancelled) {
                 isLoading = false;
                 // Navigator.pop(context);
-                BlocProvider.of<DirectionBloc>(context)
-                    .add(DirectionChangeToInitialState());
+                BlocProvider.of<DirectionBloc>(context).add(
+                    const DirectionChangeToInitialState(
+                        loadCurrentLocation: false));
                 Navigator.pop(context);
 
                 // Navigator.pushNamedAndRemoveUntil(context, HomeScreen.routeName,

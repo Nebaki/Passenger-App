@@ -4,6 +4,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:passengerapp/models/models.dart';
+import 'package:passengerapp/helper/constants.dart';
 
 class DirectionDataProvider {
   final String _api_key = "AIzaSyB8z8UeyROt2-ay24jiHrrcMXaEAlPUvdQ";
@@ -20,6 +21,7 @@ class DirectionDataProvider {
   Future<Direction> getDirection(LatLng destination) async {
     Position p = await _determinePosition();
     final initialPosition = LatLng(p.latitude, p.longitude);
+    pickupLatLng = initialPosition;
 
     final _directionUrl =
         "https://maps.googleapis.com/maps/api/directions/json?origin=${initialPosition.latitude},${initialPosition.longitude}&destination=${destination.latitude},${destination.longitude}&key=$_api_key";

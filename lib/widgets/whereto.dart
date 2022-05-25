@@ -350,12 +350,19 @@ class _WhereToState extends State<WhereTo> {
                 builder: (context, state) {
               if (state is PlaceDetailLoadSuccess) {
                 droppOffAddress = state.placeDetail.placeName;
-
-                DirectionEvent event = DirectionLoadFromDiffrentPickupLocation(
-                    pickup: pickupLatLng,
-                    destination:
-                        LatLng(state.placeDetail.lat, state.placeDetail.lng));
-                BlocProvider.of<DirectionBloc>(context).add(event);
+                if (isFromResentHisotry) {
+                  DirectionEvent event = DirectionLoad(
+                      destination:
+                          LatLng(state.placeDetail.lat, state.placeDetail.lng));
+                  BlocProvider.of<DirectionBloc>(context).add(event);
+                } else {
+                  DirectionEvent event =
+                      DirectionLoadFromDiffrentPickupLocation(
+                          pickup: pickupLatLng,
+                          destination: LatLng(
+                              state.placeDetail.lat, state.placeDetail.lng));
+                  BlocProvider.of<DirectionBloc>(context).add(event);
+                }
 
                 destinationLtlng =
                     LatLng(state.placeDetail.lat, state.placeDetail.lng);
