@@ -52,6 +52,12 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
                     .add(SavedLocationsLoad());
                 Navigator.pop(context);
               }
+              if (state is SavedLocationOperationFailure) {
+                _isLoading = false;
+                BlocProvider.of<SavedLocationBloc>(context)
+                    .add(SavedLocationsLoad());
+                Navigator.pop(context);
+              }
             }));
   }
 

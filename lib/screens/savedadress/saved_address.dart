@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:passengerapp/bloc/bloc.dart';
 import 'package:passengerapp/bloc/savedlocation/saved_location_bloc.dart';
+import 'package:passengerapp/helper/constants.dart';
 import 'package:passengerapp/models/savedlocation/saved_location.dart';
 import 'package:passengerapp/rout.dart';
 import 'package:passengerapp/screens/screens.dart';
 import 'package:passengerapp/widgets/widgets.dart';
 import 'package:shimmer/shimmer.dart';
+
+import '../home/assistant/home_screen_assistant.dart';
 
 class SavedAddress extends StatelessWidget {
   static const routeName = "/savedadresses";
@@ -234,9 +239,7 @@ class SavedAddress extends StatelessWidget {
       padding: const EdgeInsets.all(8.0),
       child: GestureDetector(
         onTap: () {
-          Navigator.pushNamed(context, AddAddressScreen.routeName,
-              arguments:
-                  AddAdressScreenArgument(edit: true, savedLocation: location));
+          _showModaLButtomSheet(context, location);
         },
         child: Container(
           padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
@@ -255,31 +258,37 @@ class SavedAddress extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        location.name,
-                        style: Theme.of(context).textTheme.overline,
-                      ),
-                      Text(
-                        location.address,
-                        style: Theme.of(context).textTheme.subtitle1,
-                      )
-                    ],
+                  Flexible(
+                    flex: 4,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          location.name,
+                          style: Theme.of(context).textTheme.overline,
+                        ),
+                        Text(
+                          location.address,
+                          style: Theme.of(context).textTheme.subtitle1,
+                        )
+                      ],
+                    ),
                   ),
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(10),
-                    child: Container(
-                        height: 30,
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 2),
-                        color: const Color.fromRGBO(244, 201, 60, 1),
-                        child: const Icon(
-                          Icons.star,
-                          color: Colors.white,
-                          size: 15,
-                        )),
+                  Flexible(
+                    flex: 2,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(10),
+                      child: Container(
+                          height: 30,
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8, vertical: 2),
+                          color: const Color.fromRGBO(244, 201, 60, 1),
+                          child: const Icon(
+                            Icons.star,
+                            color: Colors.white,
+                            size: 15,
+                          )),
+                    ),
                   ),
                 ],
               ),
@@ -290,5 +299,123 @@ class SavedAddress extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  void _showModaLButtomSheet(BuildContext context, SavedLocation location) {
+    showModalBottomSheet(
+        constraints: BoxConstraints(
+            maxHeight: MediaQuery.of(context).size.height * 0.4,
+            minWidth: MediaQuery.of(context).size.width,
+            maxWidth: MediaQuery.of(context).size.width),
+        shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(30), topRight: Radius.circular(30))),
+        context: context,
+        builder: (BuildContext context) {
+          return Padding(
+            padding: const EdgeInsets.only(top: 30, left: 20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text("SavedLocations",
+                    style: Theme.of(context).textTheme.titleLarge),
+                const Divider(),
+                SizedBox(
+                    width: double.infinity,
+                    child: TextButton(
+                        onPressed: () {
+                          getPlaceDetail(location.placeId, context);
+                          settingDropOffDialog(context);
+                        },
+                        child: Row(
+                          children: const [
+                            Text("Ride To"),
+                          ],
+                        ))),
+                TextButton(
+                    onPressed: () {
+                      Navigator.pushNamed(context, AddAddressScreen.routeName,
+                          arguments: AddAdressScreenArgument(
+                              edit: true, savedLocation: location));
+                    },
+                    child: Row(
+                      children: const [
+                        Text("Edit"),
+                      ],
+                    )),
+              ],
+            ),
+          );
+        });
+  }
+
+  void getPlaceDetail(String placeId, BuildContext context) {
+    PlaceDetailEvent event = PlaceDetailLoad(placeId: placeId);
+    BlocProvider.of<PlaceDetailBloc>(context).add(event);
+  }
+
+  void settingDropOffDialog(BuildContext context) {
+    showDialog(
+        context: context,
+        builder: (BuildContext cont) {
+          return WillPopScope(
+            onWillPop: () async => false,
+            child: BlocBuilder<PlaceDetailBloc, PlaceDetailState>(
+                builder: (context, state) {
+              if (state is PlaceDetailLoadSuccess) {
+                droppOffAddress = state.placeDetail.placeName;
+                DirectionEvent event = DirectionLoad(
+                    destination:
+                        LatLng(state.placeDetail.lat, state.placeDetail.lng));
+                BlocProvider.of<DirectionBloc>(context).add(event);
+
+                droppOffLatLng =
+                    LatLng(state.placeDetail.lat, state.placeDetail.lng);
+
+                WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
+                  showCarIcons = false;
+                  context
+                      .read<CurrentWidgetCubit>()
+                      .changeWidget(Service(false, false));
+
+                  Navigator.pop(cont);
+                  Navigator.pop(context);
+                  Navigator.pop(context);
+                });
+              }
+
+              if (state is PlaceDetailOperationFailure) {
+                Navigator.pop(context);
+
+                WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                      backgroundColor: Colors.red.shade900,
+                      content: const Text("Unable To set the Dropoff.")));
+                });
+              }
+              return WillPopScope(
+                onWillPop: () async => false,
+                child: AlertDialog(
+                  content: Row(
+                    children: const [
+                      SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 1,
+                          color: Colors.black,
+                        ),
+                      ),
+                      SizedBox(
+                        width: 5,
+                      ),
+                      Text("Setting up Drop Off. Please wait.."),
+                    ],
+                  ),
+                ),
+              );
+            }),
+          );
+        });
   }
 }

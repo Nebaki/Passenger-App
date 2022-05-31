@@ -38,19 +38,20 @@ class DriverModel extends Equatable {
 
   factory DriverModel.fromJson(Map<String, dynamic> json) {
     return DriverModel(
-        id: json["id"],
-        firstName: json["first_name"],
-        lastName: json["last_name"],
-        gender: json["gender"],
-        phoneNumber: json["phone_number"],
-        profileImage: json["profile_image"] ?? '',
-        fcmId: json['fcm_id'],
-        rating: double.parse(json['avg_rate']['score'].toString()),
-        vehicle: {
-          'model': json['vehicle']['model'],
-          'plate_number': json['vehicle']['plate_number'],
-          "color": json['vehicle']['color']
-        });
+      id: json["id"],
+      firstName: json["first_name"],
+      lastName: json["last_name"],
+      gender: json["gender"],
+      phoneNumber: json["phone_number"],
+      profileImage: json["profile_image"] ?? '',
+      fcmId: json['fcm_id'],
+      rating: double.parse(json['avg_rate']['score'].toString()),
+      vehicle: json.containsKey('vehicle')?{
+        'model': json['vehicle']['model'],
+        'plate_number': json['vehicle']['plate_number'],
+        "color": json['vehicle']['color']
+      }: null
+    );
   }
 
   @override

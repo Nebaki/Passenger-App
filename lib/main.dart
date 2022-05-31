@@ -244,8 +244,7 @@ class MyApp extends StatelessWidget {
                         ..add(CategoryLoad()))),
               BlocProvider(
                   create: ((context) => TripHistoryBloc(
-                      rideRequestRepository: rideRequestRepository)
-                    ..add(TripHistoryLoad()))),
+                      rideRequestRepository: rideRequestRepository))),
               BlocProvider(
                   create: ((context) =>
                       SelectedCategoryBloc(SelectedCategoryLoading()))),

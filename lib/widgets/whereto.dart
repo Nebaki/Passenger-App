@@ -270,12 +270,17 @@ class _WhereToState extends State<WhereTo> {
           width: MediaQuery.of(context).size.width,
           child: Row(
             children: [
-              const Flexible(
+              Flexible(
                 flex: 1,
-                child: Icon(
-                  Icons.arrow_forward_ios,
-                  color: Colors.black,
-                  size: 12,
+                child: IconButton(
+                  onPressed: () {
+                    addToSavedLocaitons(prediction);
+                    _addingToSavedLocations();
+                  },
+                  icon: const Icon(
+                    Icons.favorite_border_outlined,
+                    size: 20,
+                  ),
                 ),
               ),
               const SizedBox(
@@ -292,6 +297,14 @@ class _WhereToState extends State<WhereTo> {
   void getPlaceDetail(String placeId) {
     PlaceDetailEvent event = PlaceDetailLoad(placeId: placeId);
     BlocProvider.of<PlaceDetailBloc>(context).add(event);
+  }
+
+  void addToSavedLocaitons(LocationPrediction prediction) {
+    BlocProvider.of<SavedLocationBloc>(context).add(SavedLocationCreate(
+        SavedLocation(
+            name: "Fav",
+            address: prediction.mainText,
+            placeId: prediction.placeId)));
   }
 
   void settingPickupDialog() {
@@ -449,7 +462,7 @@ class _WhereToState extends State<WhereTo> {
                         // height: 200,
                         constraints:
                             const BoxConstraints(maxHeight: 400, minHeight: 30),
-                        color: Colors.white,
+                        color: Theme.of(context).backgroundColor,
                         width: double.infinity,
                         child: ListView.separated(
                             physics: const ClampingScrollPhysics(),
@@ -496,7 +509,6 @@ class _WhereToState extends State<WhereTo> {
                                   },
                                   icon: const Icon(
                                     Icons.clear,
-                                    color: Colors.black,
                                     size: 15,
                                   )),
                               hintText: "PickUp Address",
@@ -507,7 +519,7 @@ class _WhereToState extends State<WhereTo> {
                                   color: Colors.blue,
                                 ),
                               ),
-                              fillColor: Colors.white,
+                              // fillColor: Colors.white,
                               filled: true,
                               border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(10),
@@ -540,7 +552,7 @@ class _WhereToState extends State<WhereTo> {
                                 child: Icon(Icons.location_on,
                                     color: Colors.green),
                               ),
-                              fillColor: Colors.white,
+                              // fillColor: Colors.white,
                               filled: true,
                               border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(10),
@@ -555,6 +567,42 @@ class _WhereToState extends State<WhereTo> {
           // SearchScreen(
           //     args: SearchScreenArgument(
           //         currentLocation: currentLocation));
+        });
+  }
+
+  void _addingToSavedLocations() {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return BlocBuilder<SavedLocationBloc, SavedLocationState>(
+            builder: (context, state) {
+              if (state is SavedLocationsSuccess) {
+                Navigator.pop(context);
+              }
+
+              if (state is SavedLocationOperationFailure) {
+                Navigator.pop(context);
+              }
+              return AlertDialog(
+                content: Row(
+                  children: const [
+                    SizedBox(
+                      height: 20,
+                      width: 20,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 1,
+                        color: Colors.black,
+                      ),
+                    ),
+                    SizedBox(
+                      width: 5,
+                    ),
+                    Text("Saving."),
+                  ],
+                ),
+              );
+            },
+          );
         });
   }
 }

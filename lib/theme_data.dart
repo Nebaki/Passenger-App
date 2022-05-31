@@ -3,12 +3,23 @@ import 'package:passengerapp/helper/constants.dart';
 
 class ThemesData {
   static final darkTheme = ThemeData(
+      primaryIconTheme: IconThemeData(color: Colors.white),
+      inputDecorationTheme: InputDecorationTheme(fillColor: Colors.black),
+      bottomSheetTheme:
+          BottomSheetThemeData(backgroundColor: Colors.grey.shade900),
       floatingActionButtonTheme: FloatingActionButtonThemeData(
-        backgroundColor: Colors.grey.shade900,
-      ),
+          backgroundColor: Colors.grey.shade900,
+          foregroundColor: Colors.white,
+          extendedTextStyle: TextStyle(color: Colors.white)),
       progressIndicatorTheme: const ProgressIndicatorThemeData(
           linearTrackColor: Colors.white, color: Colors.green),
       scaffoldBackgroundColor: Colors.grey.shade900,
+      textButtonTheme: TextButtonThemeData(
+          style: ButtonStyle(
+        foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
+        textStyle: MaterialStateProperty.all<TextStyle>(
+            const TextStyle(color: Colors.black)),
+      )),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ButtonStyle(
           backgroundColor: MaterialStateProperty.all<Color>(
@@ -26,9 +37,13 @@ class ThemesData {
       colorScheme: const ColorScheme.dark());
 
   static final lightTheme = ThemeData(
+      primaryIconTheme: IconThemeData(color: Colors.black),
+      inputDecorationTheme: InputDecorationTheme(fillColor: Colors.white),
+      bottomSheetTheme: BottomSheetThemeData(backgroundColor: backGroundColor),
       floatingActionButtonTheme: FloatingActionButtonThemeData(
-        backgroundColor: Colors.grey.shade300,
-      ),
+          backgroundColor: Colors.grey.shade300,
+          foregroundColor: Colors.indigo.shade900,
+          extendedTextStyle: TextStyle(color: Colors.indigo.shade900)),
       backgroundColor: backGroundColor,
       scaffoldBackgroundColor: backGroundColor,
       primaryColor: const Color.fromRGBO(254, 79, 5, 1),
@@ -44,7 +59,7 @@ class ThemesData {
       ),
       textButtonTheme: TextButtonThemeData(
           style: ButtonStyle(
-        foregroundColor: MaterialStateProperty.all<Color>(Colors.red),
+        foregroundColor: MaterialStateProperty.all<Color>(Colors.black),
         textStyle: MaterialStateProperty.all<TextStyle>(
             const TextStyle(color: Colors.black)),
       )),

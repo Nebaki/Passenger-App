@@ -121,7 +121,8 @@ class _ServiceState extends State<Service> {
     return WillPopScope(
       onWillPop: () async {
         BlocProvider.of<DirectionBloc>(context).add(
-            const DirectionChangeToInitialState(loadCurrentLocation: false));
+            const DirectionChangeToInitialState(
+                loadCurrentLocation: false, listenToNearbyDriver: false));
         context.read<CurrentWidgetCubit>().changeWidget(WhereTo());
         return false;
       },

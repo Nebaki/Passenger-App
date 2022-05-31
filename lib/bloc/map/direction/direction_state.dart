@@ -10,7 +10,9 @@ class DirectionState extends Equatable {
 
 class DirectionInitialState extends DirectionState {
   final bool loadCurrentLocation;
-  const DirectionInitialState({required this.loadCurrentLocation});
+  final bool listenToNearbyDriver;
+  const DirectionInitialState(
+      {required this.loadCurrentLocation, required this.listenToNearbyDriver});
   @override
   List<Object> get props => [loadCurrentLocation];
 }

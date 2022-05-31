@@ -105,3 +105,27 @@ class UserEndPoints {
     return '$baseUrl/$middle/set-passenger-availability';
   }
 }
+
+class RideRequestEndPoints {
+  static String middle = 'ride-requests';
+
+  static String checkStartedTripEndPoint() {
+    return '$baseUrl/$middle/check-started-trip';
+  }
+
+  static String getRideRequestsEndPoint(int skip, int top) {
+    return '$baseUrl/$middle/get-ride-requests?includes[0]=driver&skip=$skip&top=$top';
+  }
+
+  static String createRideRequestEndPoint() {
+    return '$baseUrl/$middle/create-ride-request';
+  }
+
+  static String orderForOtherEndPoint() {
+    return '$baseUrl/$middle/order-for-other';
+  }
+
+  static String cancelRideRequestEndPoint() {
+    return '$baseUrl/$middle/cancel-ride-request';
+  }
+}

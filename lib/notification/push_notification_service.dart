@@ -45,7 +45,8 @@ class PushNotificationService {
           BlocProvider.of<CurrentWidgetCubit>(context).changeWidget(WhereTo());
 
           BlocProvider.of<DirectionBloc>(context).add(
-              const DirectionChangeToInitialState(loadCurrentLocation: false));
+              const DirectionChangeToInitialState(
+                  loadCurrentLocation: false, listenToNearbyDriver: false));
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
             content: const Text(" Request cancelled"),
             backgroundColor: Colors.indigo.shade900,
@@ -67,7 +68,8 @@ class PushNotificationService {
           break;
         case 'Completed':
           BlocProvider.of<DirectionBloc>(context).add(
-              const DirectionChangeToInitialState(loadCurrentLocation: true));
+              const DirectionChangeToInitialState(
+                  loadCurrentLocation: true, listenToNearbyDriver: false));
           // resetScreen();
           Navigator.pushNamed(context, ReviewScreen.routeName,
               arguments: ReviewScreenArgument(price: message.data['price']));

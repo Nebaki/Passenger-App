@@ -81,6 +81,7 @@ class _HomeScreenState extends State<HomeScreen> {
   bool? internetServiceStatus;
   late bool isFirstTime;
   late String brightness;
+  late Position currentPostion;
 
   Future _loadMapStyles() async {
     _darkMapStyle =
@@ -196,6 +197,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           _controller.complete(controller);
                           outerController = controller;
                           _determinePosition().then((value) {
+                            currentPostion = value;
                             if (widget.args.isFromSplash) {
                               carTypeSelectorDialog(value);
                             }
@@ -217,7 +219,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     if (state is DirectionInitialState) {
                       Navigator.pop(context);
 
-                      resetScreen(state.loadCurrentLocation);
+                      resetScreen(state.loadCurrentLocation,
+                          state.listenToNearbyDriver);
                     }
                     if (state is DirectionLoading) {
                       showDialog(
@@ -330,8 +333,10 @@ class _HomeScreenState extends State<HomeScreen> {
               alignment: Alignment.topRight,
               child: ElevatedButton(
                   onPressed: () async {
-                    BlocProvider.of<LocationHistoryBloc>(context)
-                        .add(LocationHistoryClear());
+                    BlocProvider.of<TripHistoryBloc>(context)
+                        .add(TripHistoryLoad(skip: 0, top: 5));
+                    // BlocProvider.of<LocationHistoryBloc>(context)
+                    //     .add(LocationHistoryClear());
 
                     debugPrint(repo.getNearbyDrivers().length.toString());
                   },
@@ -357,25 +362,18 @@ class _HomeScreenState extends State<HomeScreen> {
                                 CameraUpdate.newCameraPosition(CameraPosition(
                                     zoom: 16.4746, target: pickupLatLng)));
                           },
-                          child: Icon(Icons.gps_fixed,
-                              color: Colors.indigo.shade900, size: 30)),
+                          child: Icon(Icons.gps_fixed, size: 30)),
                     ),
                   ),
                   Align(
                     alignment: Alignment.centerRight,
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(100),
-                      child: Container(
-                        color: Colors.grey.shade300,
-                        child: IconButton(
-                            onPressed: () {
-                              makePhoneCall('9495');
-                            },
-                            icon: Icon(
-                              Icons.call,
-                              color: Colors.indigo.shade900,
-                              size: 30,
-                            )),
+                    child: SizedBox(
+                      height: 45,
+                      child: FloatingActionButton(
+                        onPressed: () {
+                          makePhoneCall('9495');
+                        },
+                        child: Icon(Icons.call, size: 30),
                       ),
                     ),
                   ),
@@ -402,7 +400,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                   child: Text(
                                     'SOS',
                                     style: TextStyle(
-                                        color: Colors.indigo.shade900,
                                         fontWeight: FontWeight.bold,
                                         fontSize: 18),
 
@@ -493,7 +490,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return String.fromCharCodes(list);
   }
 
-  void resetScreen(bool determinePosition) {
+  void resetScreen(bool determinePosition, bool listenToNearbyTaxi) {
     if (determinePosition) {
       _determinePosition().then((value) {
         outerController.animateCamera(CameraUpdate.newCameraPosition(
@@ -511,9 +508,22 @@ class _HomeScreenState extends State<HomeScreen> {
             break;
         }
       });
-    } else {
+    } else if (!determinePosition && !listenToNearbyTaxi) {
       outerController.animateCamera(CameraUpdate.newCameraPosition(
           CameraPosition(zoom: 16.1746, target: currentLatLng)));
+    } else if (listenToNearbyTaxi) {
+      outerController.animateCamera(CameraUpdate.newCameraPosition(
+          CameraPosition(zoom: 16.1746, target: currentLatLng)));
+      switch (selectedCar) {
+        case SelectedCar.taxi:
+          listenTaxi(currentPostion);
+          break;
+        case SelectedCar.truck:
+          listenTruck(currentPostion);
+          break;
+        case SelectedCar.none:
+          break;
+      }
     }
 
     setState(() {
@@ -812,7 +822,8 @@ class _HomeScreenState extends State<HomeScreen> {
           break;
         case "Completed":
           BlocProvider.of<DirectionBloc>(context).add(
-              const DirectionChangeToInitialState(loadCurrentLocation: true));
+              const DirectionChangeToInitialState(
+                  loadCurrentLocation: true, listenToNearbyDriver: false));
           Navigator.pushNamed(context, ReviewScreen.routeName,
               arguments: ReviewScreenArgument(price: message.data['price']));
           break;

@@ -9,16 +9,46 @@ import 'package:passengerapp/widgets/widgets.dart';
 class HistoryPage extends StatefulWidget {
   static const routeName = "/history";
 
+  const HistoryPage({Key? key}) : super(key: key);
+
   @override
   State<HistoryPage> createState() => _HistoryPageState();
 }
 
 class _HistoryPageState extends State<HistoryPage> {
-  final _textStyle = TextStyle(fontSize: 20);
+  // final _textStyle = TextStyle(fontSize: 20);
+  int _skip = 0;
+  int _top = 5;
+  final List<RideRequest> _history = [];
+  late ScrollController _scrollController;
+  bool _loadMore = true;
+  bool _isFirst = true;
 
   @override
   void initState() {
+    BlocProvider.of<TripHistoryBloc>(context)
+        .add(TripHistoryLoad(skip: 0, top: 5));
+    _scrollController = ScrollController()..addListener(_loadMoreHistories);
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    _scrollController.removeListener(_loadMoreHistories);
+    super.dispose();
+  }
+
+  void _loadMoreHistories() {
+    debugPrint(_scrollController.position.extentAfter.toString());
+    if (_scrollController.position.extentAfter < 300 && _loadMore) {
+      _loadMore = false;
+      _skip = _top + 1;
+      _top += 5;
+      print(
+          "Hereeeeeeeeeeeeeeeeee Called ::::::::::::::::::::::::::::::::::::::::::::::: skip$_skip,Top:$_top");
+      BlocProvider.of<TripHistoryBloc>(context)
+          .add(TripHistoryLoad(skip: _skip, top: _top));
+    }
   }
 
   @override
@@ -26,34 +56,73 @@ class _HistoryPageState extends State<HistoryPage> {
     return Scaffold(
         body: Stack(
       children: [
-        BlocBuilder<TripHistoryBloc, TripHistoryState>(
-          builder: (context, state) {
+        BlocConsumer<TripHistoryBloc, TripHistoryState>(
+          listener: (context, state) {
             if (state is TripHstoriesLoadSuccess) {
-              return Padding(
-                padding: const EdgeInsets.only(top: 80),
-                child: ListView.builder(
-                  itemCount: state.requestes.length,
-                  itemBuilder: (context, index) {
-                    return _builHistoryCard(context,
-                        state.requestes[index].status!, state.requestes[index]);
-                  },
-                  padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
-                ),
-              );
+              _isFirst = false;
+              _loadMore = true;
+              setState(() {
+                _history.addAll(state.requestes);
+              });
             }
-            if (state is RideRequestOperationFailur) {
-              print("Yeah Filedddddddd");
+            if (_history.isNotEmpty) {
+              if (state is TripHistoryOperationFailure) {
+                setState(() {
+                  _loadMore = false;
+                });
+              }
             }
-            return const Center(
-              child: SizedBox(
-                  height: 50,
-                  width: 50,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 1,
-                  )),
-            );
           },
+          builder: (context, state) => _history.isNotEmpty
+              ? Padding(
+                  padding: const EdgeInsets.only(top: 80),
+                  child: SizedBox(
+                    height: MediaQuery.of(context).size.height * 0.75,
+                    child: ListView.builder(
+                      controller: _scrollController,
+                      itemCount: _history.length,
+                      itemBuilder: (context, index) {
+                        return _builHistoryCard(
+                            context, _history[index].status!, _history[index]);
+                      },
+                      padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
+                    ),
+                  ),
+                )
+              : const Center(
+                  child: SizedBox(
+                      height: 50,
+                      width: 50,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 1,
+                      )),
+                ),
         ),
+        !_isFirst
+            ? BlocBuilder<TripHistoryBloc, TripHistoryState>(
+                builder: (context, state) {
+                  if (state is TripHistoriesLoading) {
+                    return const Align(
+                      alignment: Alignment.bottomCenter,
+                      child: Padding(
+                        padding: EdgeInsets.only(top: 10, bottom: 40),
+                        child: CircularProgressIndicator(),
+                      ),
+                    );
+                  }
+                  if (state is TripHistoryOperationFailure) {
+                    return const Align(
+                      alignment: Alignment.bottomCenter,
+                      child: Padding(
+                        padding: EdgeInsets.only(top: 10, bottom: 40),
+                        child: Text("You have riched the limit."),
+                      ),
+                    );
+                  }
+                  return Container();
+                },
+              )
+            : Container(),
         CustomeBackArrow(),
         Padding(
           padding: const EdgeInsets.only(top: 50),
@@ -66,39 +135,6 @@ class _HistoryPageState extends State<HistoryPage> {
         )
       ],
     ));
-  }
-
-  Widget _savedItems({
-    required BuildContext context,
-    required String text,
-  }) {
-    const color = Colors.grey;
-    const hoverColor = Colors.white70;
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [
-        ListTile(
-          trailing: Text(
-            "\$40",
-            style: _textStyle,
-          ),
-          //leading: Icon(Icons.history, color: color.shade700),
-          title: Text(text, style: _textStyle),
-          subtitle: const Text(
-            "25 Trips",
-          ),
-          hoverColor: hoverColor,
-          onLongPress: () {},
-          onTap: () {
-            Navigator.pushNamed(context, DetailHistoryScreen.routeName);
-          },
-        ),
-        Padding(
-          padding: const EdgeInsets.only(right: 20),
-          child: Divider(color: Colors.grey.shade400),
-        )
-      ],
-    );
   }
 
   Widget _builHistoryCard(
@@ -199,3 +235,40 @@ class _HistoryPageState extends State<HistoryPage> {
     );
   }
 }
+
+
+
+
+
+
+
+
+// BlocBuilder<TripHistoryBloc, TripHistoryState>(
+//           builder: (context, state) {
+//             if (state is TripHstoriesLoadSuccess) {
+//               return Padding(
+//                 padding: const EdgeInsets.only(top: 80),
+//                 child: ListView.builder(
+//                   controller: _scrollController,
+//                   itemCount: state.requestes.length,
+//                   itemBuilder: (context, index) {
+//                     return _builHistoryCard(context,
+//                         state.requestes[index].status!, state.requestes[index]);
+//                   },
+//                   padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
+//                 ),
+//               );
+//             }
+//             if (state is RideRequestOperationFailur) {
+//               print("Yeah Filedddddddd");
+//             }
+//             return const Center(
+//               child: SizedBox(
+//                   height: 50,
+//                   width: 50,
+//                   child: CircularProgressIndicator(
+//                     strokeWidth: 1,
+//                   )),
+//             );
+//           },
+//         ),

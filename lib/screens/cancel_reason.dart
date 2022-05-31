@@ -134,7 +134,8 @@ class _CancelReasonState extends State<CancelReason> {
                 // Navigator.pop(context);
                 BlocProvider.of<DirectionBloc>(context).add(
                     const DirectionChangeToInitialState(
-                        loadCurrentLocation: false));
+                        loadCurrentLocation: false,
+                        listenToNearbyDriver: true));
                 Navigator.pop(context);
 
                 // Navigator.pushNamedAndRemoveUntil(context, HomeScreen.routeName,

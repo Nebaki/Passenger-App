@@ -14,8 +14,8 @@ class RideRequestRepository {
     return await dataProvider.changeRequestStatus(id, status, sendRequest);
   }
 
-  Future<List<RideRequest>> getRideRequests() async {
-    return await dataProvider.getRideRequests();
+  Future<List<RideRequest>> getRideRequests(int skip, int top) async {
+    return await dataProvider.getRideRequests(skip, top);
   }
 
   Future<RideRequest> checkStartedTrip() async {

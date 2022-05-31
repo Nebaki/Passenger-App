@@ -124,7 +124,7 @@ class _EditProfileState extends State<EditProfile> {
                         fontWeight: FontWeight.w300, color: Colors.black45),
                     // prefixIcon: Icon(
                     // artist Icon
-                    fillColor: Colors.white,
+                    // fillColor: Colors.white,
 
                     //filled: true,
                     // border:
@@ -221,11 +221,11 @@ class _EditProfileState extends State<EditProfile> {
                         ),
                         Container(
                           decoration: BoxDecoration(boxShadow: [
-                            BoxShadow(
-                                color: Colors.grey.shade300,
-                                blurRadius: 4,
-                                spreadRadius: 2,
-                                blurStyle: BlurStyle.normal)
+                            // BoxShadow(
+                            //     color: Colors.grey.shade300,
+                            //     blurRadius: 4,
+                            //     spreadRadius: 2,
+                            //     blurStyle: BlurStyle.normal)
                           ]),
                           child: TextFormField(
                             initialValue: widget.args.auth.name,
@@ -247,7 +247,7 @@ class _EditProfileState extends State<EditProfile> {
                                   Icons.contact_mail,
                                   size: 19,
                                 ),
-                                fillColor: Colors.white,
+                                // fillColor: Colors.white,
                                 filled: true,
                                 border: OutlineInputBorder(
                                     //borderRadius: BorderRadius.all(Radius.circular(10)),
@@ -272,11 +272,11 @@ class _EditProfileState extends State<EditProfile> {
                         ),
                         Container(
                           decoration: BoxDecoration(boxShadow: [
-                            BoxShadow(
-                                color: Colors.grey.shade300,
-                                blurRadius: 4,
-                                spreadRadius: 2,
-                                blurStyle: BlurStyle.normal)
+                            // BoxShadow(
+                            //     color: Colors.grey.shade300,
+                            //     blurRadius: 4,
+                            //     spreadRadius: 2,
+                            //     blurStyle: BlurStyle.normal)
                           ]),
                           child: TextFormField(
                             initialValue: widget.args.auth.phoneNumber,
@@ -298,7 +298,7 @@ class _EditProfileState extends State<EditProfile> {
                                   Icons.phone_callback_outlined,
                                   size: 19,
                                 ),
-                                fillColor: Colors.white,
+                                // fillColor: Colors.white,
                                 filled: true,
                                 border: OutlineInputBorder(
                                     borderSide: BorderSide.none)),
@@ -322,11 +322,11 @@ class _EditProfileState extends State<EditProfile> {
                         ),
                         Container(
                           decoration: BoxDecoration(boxShadow: [
-                            BoxShadow(
-                                color: Colors.grey.shade300,
-                                blurRadius: 4,
-                                spreadRadius: 2,
-                                blurStyle: BlurStyle.normal)
+                            // BoxShadow(
+                            //     color: Colors.grey.shade300,
+                            //     blurRadius: 4,
+                            //     spreadRadius: 2,
+                            //     blurStyle: BlurStyle.normal)
                           ]),
                           child: TextFormField(
                             initialValue: widget.args.auth.email,
@@ -348,7 +348,7 @@ class _EditProfileState extends State<EditProfile> {
                                   Icons.mail_outline,
                                   size: 19,
                                 ),
-                                fillColor: Colors.white,
+                                // fillColor: Colors.white,
                                 filled: true,
                                 border: OutlineInputBorder(
                                     //borderRadius: BorderRadius.all(Radius.circular(10)),
@@ -367,11 +367,11 @@ class _EditProfileState extends State<EditProfile> {
                         ),
                         Container(
                           decoration: BoxDecoration(boxShadow: [
-                            BoxShadow(
-                                color: Colors.grey.shade300,
-                                blurRadius: 4,
-                                spreadRadius: 2,
-                                blurStyle: BlurStyle.normal)
+                            // BoxShadow(
+                            //     color: Colors.grey.shade300,
+                            //     blurRadius: 4,
+                            //     spreadRadius: 2,
+                            //     blurStyle: BlurStyle.normal)
                           ]),
                           child: TextFormField(
                             initialValue: widget.args.auth.emergencyContact,
@@ -393,7 +393,7 @@ class _EditProfileState extends State<EditProfile> {
                                   Icons.contact_phone_outlined,
                                   size: 19,
                                 ),
-                                fillColor: Colors.white,
+                                // fillColor: Colors.white,
                                 filled: true,
                                 border: OutlineInputBorder(
                                     //borderRadius: BorderRadius.all(Radius.circular(10)),

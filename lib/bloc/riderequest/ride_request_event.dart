@@ -71,5 +71,5 @@ class RideRequestOrderForOther extends RideRequestEvent {
   List<Object> get props => [request];
 
   @override
-  String toString() => 'Request Created {user: $request}';
+  String toString() => 'Request Created {Request: $request}';
 }

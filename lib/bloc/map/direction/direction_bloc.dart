@@ -37,7 +37,8 @@ class DirectionBloc extends Bloc<DirectionEvent, DirectionState> {
       yield DirectionLoading();
       try {
         yield DirectionInitialState(
-            loadCurrentLocation: event.loadCurrentLocation);
+            loadCurrentLocation: event.loadCurrentLocation,
+            listenToNearbyDriver: event.listenToNearbyDriver);
       } catch (_) {}
     }
   }

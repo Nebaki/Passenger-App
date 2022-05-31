@@ -51,33 +51,40 @@ class RideRequest extends Equatable {
 
   factory RideRequest.fromJson(Map<String, dynamic> json) {
     DateTime? now = DateTime.parse(json["created_at"] ?? DateTime.now());
-    print("this is the response data ${json["driver_id"]}");
 
     return RideRequest(
         id: json["id"],
-        driver: json["driver_id"] != null
-            ? DriverModel.fromJson(json["driver_id"])
-            : DriverModel(
-                id: 'id',
-                firstName: 'firstName',
-                lastName: 'lastName',
-                phoneNumber: 'phoneNumber',
-                gender: 'gender',
-                rating: 4,
-                profileImage: 'profileImage',
-                fcmId: 'fcmId'),
-        // pickupLocation: LatLng(json["pickup_location"][0],json["pickup_location"][1]),
-        // dropOffLocation: LatLng(json["droppoff_location"][0],json["droppoff_location"][1]),
+        driver: json.containsKey("driver")
+            ? DriverModel.fromJson(json["driver"])
+            : null,
+        // json["driver"] != null
+        //     ? DriverModel.fromJson(json["driver"])
+        //     : DriverModel(
+        //         id: 'id',
+        //         firstName: 'firstName',
+        //         lastName: 'lastName',
+        //         phoneNumber: 'phoneNumber',
+        //         gender: 'gender',
+        //         rating: 4,
+        //         profileImage: 'profileImage',
+        //         fcmId: 'fcmId'),
+        pickupLocation:
+            LatLng(json["pickup_location"][0], json["pickup_location"][1]),
+        dropOffLocation:
+            LatLng(json["drop_off_location"][0], json["drop_off_location"][1]),
         direction: json['direction'],
         pickUpAddress: json["pickup_address"] ?? '',
-        droppOffAddress: json["droppoff_address"] ?? '',
+        droppOffAddress: json["drop_off_address"] ?? '',
         status: json['status'],
         price: json['price'].toString(),
         distance: json['distance'].toString(),
         date: DateFormat.yMMMMEEEEd().format(now),
         time: DateFormat.jm().format(now));
+
+    print("this is the response data ${json["driver_id"]}");
   }
 
   @override
-  String toString() => 'RideRequest {DriverId: $driverId, $id }';
+  String toString() =>
+      'RideRequest {DriverId: $driverId, $id , PickupLocation: $pickupLocation, DroppOffLocaiton: $dropOffLocation, PickupAddress:$pickUpAddress, DroppOffLocation: $droppOffAddress,Direction:$direction,Status: $status,Price:$price,Distance:$distance,Date:$date,Time:$time}';
 }

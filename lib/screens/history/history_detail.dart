@@ -63,7 +63,8 @@ class DetailHistoryScreen extends StatelessWidget {
                         padding: const EdgeInsets.symmetric(vertical: 15),
                         child: Text(
                           '${args.request.price!} ETB',
-                          style: TextStyle(color: Colors.green, fontSize: 26),
+                          style: const TextStyle(
+                              color: Colors.green, fontSize: 26),
                         ),
                       ),
                     ),
@@ -161,7 +162,7 @@ class DetailHistoryScreen extends StatelessWidget {
               child: Text("Driver & Vehicle"),
             ),
             args.request.status != 'Cancelled' &&
-                    args.request.status != 'Searching'
+                    args.request.status != 'Pending'
                 ? Card(
                     child: Container(
                       padding: const EdgeInsets.fromLTRB(20, 10, 20, 5),
@@ -181,16 +182,16 @@ class DetailHistoryScreen extends StatelessWidget {
                           const SizedBox(
                             height: 15,
                           ),
-                          _buildReciept(
-                              title: "Vehicle ",
-                              value: args.request.driver!.vehicle!['model']),
-                          const SizedBox(
-                            height: 15,
-                          ),
-                          _buildReciept(
-                              title: "Plate Number",
-                              value: args
-                                  .request.driver!.vehicle!['plate_number']),
+                          // _buildReciept(
+                          //     title: "Vehicle ",
+                          //     value: args.request.driver!.vehicle!['model']),
+                          // const SizedBox(
+                          //   height: 15,
+                          // ),
+                          // _buildReciept(
+                          //     title: "Plate Number",
+                          //     value: args
+                          //         .request.driver!.vehicle!['plate_number']),
                           const SizedBox(
                             height: 15,
                           ),

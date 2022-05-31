@@ -15,7 +15,9 @@ class DirectionLoad extends DirectionEvent {
 
 class DirectionChangeToInitialState extends DirectionEvent {
   final bool loadCurrentLocation;
-  const DirectionChangeToInitialState({required this.loadCurrentLocation});
+  final bool listenToNearbyDriver;
+  const DirectionChangeToInitialState(
+      {required this.loadCurrentLocation, required this.listenToNearbyDriver});
   @override
   List<Object?> get props => [];
 }

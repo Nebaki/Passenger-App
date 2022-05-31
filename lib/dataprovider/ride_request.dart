@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:http/http.dart' as http;
 import 'package:passengerapp/dataprovider/auth/auth.dart';
+import 'package:passengerapp/helper/api_end_points.dart';
 import 'package:passengerapp/helper/constants.dart';
 import 'package:passengerapp/models/models.dart';
 
@@ -23,18 +24,13 @@ class RideRequestDataProvider {
 
   Future<RideRequest> checkStartedTrip() async {
     final http.Response response = await http.get(
-        Uri.parse(
-            'https://mobiletaxi-api.herokuapp.com/api/ride-requests/check-started-trip'),
+        Uri.parse(RideRequestEndPoints.checkStartedTripEndPoint()),
         headers: <String, String>{
           'Content-Type': "application/json",
           'x-access-token': '${await authDataProvider.getToken()}'
         });
-
-    print('status code ${response.statusCode}');
-
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
-
       return data['isEmpty'] != true
           ? RideRequest.fromJson(data['ride_Request'])
           : RideRequest(
@@ -44,9 +40,9 @@ class RideRequestDataProvider {
     }
   }
 
-  Future<List<RideRequest>> getRideRequests() async {
+  Future<List<RideRequest>> getRideRequests(int skip, int top) async {
     final http.Response response = await http.get(
-        Uri.parse('$_maintenanceUrl/get-ride-requests'),
+        Uri.parse(RideRequestEndPoints.getRideRequestsEndPoint(skip, top)),
         headers: <String, String>{
           'Content-Type': "application/json",
           'x-access-token': '${await authDataProvider.getToken()}'
@@ -54,7 +50,7 @@ class RideRequestDataProvider {
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body)['items'] as List;
-      print("e is $data");
+      print("e is ${data.first}  ${data.length}");
       return data.reversed.map((e) => RideRequest.fromJson(e)).toList();
     } else {
       throw 'Unable to fetch RideRequests';
@@ -62,9 +58,10 @@ class RideRequestDataProvider {
   }
 
   Future createRequest(RideRequest request) async {
-    print("yow yow  and this is create request");
+    print(
+        "yow yow here is the requestttttt $direction, price:$price,distance:$distance");
     final response = await http.post(
-      Uri.parse('$_secondUrl/create-ride-request'),
+      Uri.parse(RideRequestEndPoints.createRideRequestEndPoint()),
       headers: <String, String>{
         'Content-Type': 'application/json',
         "x-access-token": "${await authDataProvider.getToken()}"
@@ -75,11 +72,11 @@ class RideRequestDataProvider {
           request.pickupLocation!.latitude,
           request.pickupLocation!.longitude
         ],
-        'droppoff_location': [
-          request.dropOffLocation!.longitude,
-          request.dropOffLocation!.latitude
+        'drop_off_location': [
+          request.dropOffLocation!.latitude,
+          request.dropOffLocation!.longitude
         ],
-        'droppoff_address': request.droppOffAddress,
+        'drop_off_address': request.droppOffAddress,
         'direction': direction,
         // 'price': int.parse(price),
         'duration': duration,
@@ -90,10 +87,10 @@ class RideRequestDataProvider {
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
-      rideRequestId = data["rideRequest"]["id"];
+      rideRequestId = data["id"];
       print('my data is this bruhhh $rideRequestId');
 
-      sendNotification(request, data["rideRequest"]["id"]);
+      sendNotification(request, data["id"]);
       // return RideRequest.fromJson(data["rideRequest"]);
     } else {
       throw Exception('Failed to create request.');
@@ -101,9 +98,10 @@ class RideRequestDataProvider {
   }
 
   Future orderForOther(RideRequest request) async {
-    print("yow yow here is the requestttttt");
+    print(
+        "yow yow here is the requestttttt $direction, price:$price,distance:$distance");
     final response = await http.post(
-      Uri.parse('$_secondUrl/order-for-other'),
+      Uri.parse(RideRequestEndPoints.orderForOtherEndPoint()),
       headers: <String, String>{
         'Content-Type': 'application/json',
         "x-access-token": "${await authDataProvider.getToken()}"
@@ -114,11 +112,11 @@ class RideRequestDataProvider {
           request.pickupLocation!.latitude,
           request.pickupLocation!.longitude
         ],
-        'droppoff_location': [
-          request.dropOffLocation!.longitude,
-          request.dropOffLocation!.latitude
+        'drop_off_location': [
+          request.dropOffLocation!.latitude,
+          request.dropOffLocation!.longitude
         ],
-        'droppoff_address': request.droppOffAddress,
+        'drop_off_address': request.droppOffAddress,
         'direction': direction,
         'price': int.parse(price),
         'duration': duration,

@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:passengerapp/bloc/bloc.dart';
 import 'package:passengerapp/models/models.dart';
 import 'package:passengerapp/repository/repositories.dart';
 
@@ -13,10 +14,12 @@ class TripHistoryBloc extends Bloc<TripHistoryEvent, TripHistoryState> {
     if (event is TripHistoryLoad) {
       yield TripHistoriesLoading();
       try {
-        final requestes = await rideRequestRepository.getRideRequests();
+        final requestes =
+            await rideRequestRepository.getRideRequests(event.skip, event.top);
         yield TripHstoriesLoadSuccess(requestes);
       } catch (_) {
-        TripHistoryOperationFailure();
+        print("Errorrr is heree $_");
+        yield TripHistoryOperationFailure();
       }
     }
   }
@@ -27,8 +30,11 @@ abstract class TripHistoryEvent extends Equatable {
 }
 
 class TripHistoryLoad extends TripHistoryEvent {
+  final int skip;
+  final int top;
+  const TripHistoryLoad({required this.skip, required this.top});
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => [skip, top];
 }
 
 class TripHistoryState extends Equatable {

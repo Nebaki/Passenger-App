@@ -66,23 +66,20 @@ class ChangePassword extends StatelessWidget {
                       ),
                       Container(
                         decoration: BoxDecoration(boxShadow: [
-                          BoxShadow(
-                              color: Colors.grey.shade300,
-                              blurRadius: 4,
-                              spreadRadius: 2,
-                              blurStyle: BlurStyle.normal)
+                          // BoxShadow(
+                          //     color: Colors.grey.shade300,
+                          //     blurRadius: 4,
+                          //     spreadRadius: 2,
+                          //     blurStyle: BlurStyle.normal)
                         ]),
                         child: TextFormField(
                           decoration: const InputDecoration(
                               hintText: "Old Password",
-                              hintStyle: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black45),
                               prefixIcon: Icon(
                                 Icons.phone,
                                 size: 19,
                               ),
-                              fillColor: Colors.white,
+                              // fillColor: Colors.white,
                               filled: true,
                               border: OutlineInputBorder(
                                   borderSide: BorderSide.none)),
@@ -102,23 +99,20 @@ class ChangePassword extends StatelessWidget {
                       ),
                       Container(
                         decoration: BoxDecoration(boxShadow: [
-                          BoxShadow(
-                              color: Colors.grey.shade300,
-                              blurRadius: 4,
-                              spreadRadius: 2,
-                              blurStyle: BlurStyle.normal)
+                          // BoxShadow(
+                          //     color: Colors.grey.shade300,
+                          //     blurRadius: 4,
+                          //     spreadRadius: 2,
+                          //     blurStyle: BlurStyle.normal)
                         ]),
                         child: TextFormField(
                           decoration: const InputDecoration(
                               hintText: "New Password",
-                              hintStyle: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black45),
                               prefixIcon: Icon(
                                 Icons.phone,
                                 size: 19,
                               ),
-                              fillColor: Colors.white,
+                              // fillColor: Colors.white,
                               filled: true,
                               border: OutlineInputBorder(
                                   borderSide: BorderSide.none)),
@@ -138,23 +132,20 @@ class ChangePassword extends StatelessWidget {
                       ),
                       Container(
                         decoration: BoxDecoration(boxShadow: [
-                          BoxShadow(
-                              color: Colors.grey.shade300,
-                              blurRadius: 4,
-                              spreadRadius: 2,
-                              blurStyle: BlurStyle.normal)
+                          // BoxShadow(
+                          //     color: Colors.grey.shade300,
+                          //     blurRadius: 4,
+                          //     spreadRadius: 2,
+                          //     blurStyle: BlurStyle.normal)
                         ]),
                         child: TextFormField(
                           decoration: const InputDecoration(
                               hintText: "Confirm Password",
-                              hintStyle: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black45),
                               prefixIcon: Icon(
                                 Icons.vpn_key,
                                 size: 19,
                               ),
-                              fillColor: Colors.white,
+                              // fillColor: Colors.white,
                               filled: true,
                               border: OutlineInputBorder(
                                   borderSide: BorderSide.none)),

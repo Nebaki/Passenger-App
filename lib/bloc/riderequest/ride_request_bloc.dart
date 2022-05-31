@@ -47,16 +47,16 @@ class RideRequestBloc extends Bloc<RideRequestEvent, RideRequestState> {
       }
     }
 
-    if (event is RideRequestLoad) {
-      yield RideRequestLoading();
+    // if (event is RideRequestLoad) {
+    //   yield RideRequestLoading();
 
-      try {
-        final rideRequests = await rideRequestRepository.getRideRequests();
-        yield RideRequestLoadSuccess(rideRequests);
-      } catch (_) {
-        RideRequestOperationFailur();
-      }
-    }
+    //   try {
+    //     final rideRequests = await rideRequestRepository.getRideRequests();
+    //     yield RideRequestLoadSuccess(rideRequests);
+    //   } catch (_) {
+    //     RideRequestOperationFailur();
+    //   }
+    // }
 
     if (event is RideRequestCheckStartedTrip) {
       yield RideRequestLoading();
