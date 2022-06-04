@@ -180,7 +180,7 @@ class UserDataProvider {
 
   Future changePassword(Map<String, String> passwordInfo) async {
     final http.Response response =
-        await http.post(Uri.parse('$maintenanceUrl/passengers/change-password'),
+        await http.post(Uri.parse('$_baseUrl/change-password'),
             headers: <String, String>{
               'Content-Type': 'application/json',
               'x-access-token': '${await authDataProvider.getToken()}',
@@ -230,14 +230,14 @@ class UserDataProvider {
     }
   }
 
-  Future setPassengerAvailablity(List location) async {
-    final http.Response response =
-        await http.post(Uri.parse('$_baseUrl/set-passenger-availability'),
-            headers: <String, String>{
-              'Content-Type': 'application/json',
-              'x-access-token': '${await authDataProvider.getToken()}',
-            },
-            body: json.encode({'location': location}));
+  Future setPassengerAvailablity(List location, bool status) async {
+    final http.Response response = await http.post(
+        Uri.parse('$_baseUrl/set-passenger-availability'),
+        headers: <String, String>{
+          'Content-Type': 'application/json',
+          'x-access-token': '${await authDataProvider.getToken()}',
+        },
+        body: status ? json.encode({'location': location}) : json.encode({}));
 
     if (response.statusCode != 200) {
       throw 'Operation Failure';

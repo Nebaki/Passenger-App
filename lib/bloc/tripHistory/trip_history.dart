@@ -16,6 +16,7 @@ class TripHistoryBloc extends Bloc<TripHistoryEvent, TripHistoryState> {
       try {
         final requestes =
             await rideRequestRepository.getRideRequests(event.skip, event.top);
+
         yield TripHstoriesLoadSuccess(requestes);
       } catch (_) {
         print("Errorrr is heree $_");
@@ -46,7 +47,7 @@ class TripHistoryState extends Equatable {
 class TripHistoriesLoading extends TripHistoryState {}
 
 class TripHstoriesLoadSuccess extends TripHistoryState {
-  final List<RideRequest> requestes;
+  final List<RideRequest?> requestes;
   const TripHstoriesLoadSuccess(this.requestes);
 
   @override

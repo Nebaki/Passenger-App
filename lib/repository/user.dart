@@ -39,4 +39,8 @@ class UserRepository {
   Future forgetPassword(Map<String, String> forgetPasswordInfo) async {
     await dataProvider.forgetPassword(forgetPasswordInfo);
   }
+
+  Future setPassengerAvailablity(List location, bool status) async {
+    await dataProvider.setPassengerAvailablity(location, status);
+  }
 }

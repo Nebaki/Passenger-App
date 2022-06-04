@@ -114,7 +114,7 @@ class ReviewScreen extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Center(
-                child: Text(arg.price.toString(),
+                child: Text("${arg.price.toString()} ETB",
                     style: Theme.of(context).textTheme.titleLarge)),
           ),
           const Divider(),
@@ -162,7 +162,7 @@ class ReviewScreen extends StatelessWidget {
                     Padding(
                       padding: const EdgeInsets.all(5.0),
                       child: Text(
-                        driverName ?? "Miki",
+                        driverName ?? "Driver",
                         style: Theme.of(context).textTheme.bodyLarge,
                       ),
                     ),
@@ -243,7 +243,7 @@ class ReviewScreen extends StatelessWidget {
                   children: [
                     const Spacer(),
                     const Text(
-                      "Finish",
+                      "Submit",
                     ),
                     const Spacer(),
                     Align(

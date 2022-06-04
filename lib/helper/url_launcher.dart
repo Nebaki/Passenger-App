@@ -92,22 +92,22 @@ Future<void> sendTextMessage(String phoneNumber, String message) async {
 }
 
 Future<void> sendTelegramMessage(String driverName, String driverNumber) async {
-  // final Uri launchUri =
-  //   content  Uri(path: "https://t.me/@mikio34", queryParameters: {"body": "message"});
-  // await launch(launchUri.toString());
-
-  print("wait");
-
   String message = ''' Driver Name : $driverName,
-  Driver Number: $driverNumber
+  Driver Phone: $driverNumber
 
   PickUp Location: $pickupAddress ,
 
   DropOff Location: $droppOffAddress,
 
+  Plate Number: ${vehicle!["plate_number"]},
+
+  Color: ${vehicle!["color"]},
+
+  Model: ${vehicle!["model"]}
+
   Time: ${DateTime.now()}
   ''';
-  await FlutterShare.share(title: "Safety Information", text: message);
+  await FlutterShare.share(title: "Trip Detail", text: message);
   // await SocialShare.shareTelegram("content").then((value) {
   //   print("desn't load");
   //   print(value);

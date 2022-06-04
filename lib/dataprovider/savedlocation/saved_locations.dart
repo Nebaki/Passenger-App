@@ -32,7 +32,7 @@ class SavedLocationDataProvider {
       final savedlocation = json.decode(response.body);
       return SavedLocation.fromJson(savedlocation);
     } else {
-      throw '';
+      throw Exception(response.statusCode);
     }
   }
 
@@ -54,7 +54,7 @@ class SavedLocationDataProvider {
           savedlocations.map((e) => SavedLocation.fromJson(e)).toList();
       return list;
     } else {
-      throw '';
+      throw Exception(response.statusCode);
     }
   }
 

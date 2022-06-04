@@ -235,10 +235,6 @@ class _OrderForOtherScreenState extends State<OrderForOtherScreen> {
                                   ),
                                   onPressed: pickupSetted && droppOffSetted
                                       ? () {
-                                          BlocProvider.of<DirectionBloc>(
-                                                  context)
-                                              .add(DirectionLoad(
-                                                  destination: droppOffLatLng));
                                           DirectionEvent event =
                                               DirectionLoadFromDiffrentPickupLocation(
                                                   pickup: pickupLatLng,
@@ -252,6 +248,7 @@ class _OrderForOtherScreenState extends State<OrderForOtherScreen> {
                                               .read<CurrentWidgetCubit>()
                                               .changeWidget(
                                                   Service(false, true));
+
                                           Navigator.pop(context);
                                         }
                                       : null,
@@ -371,6 +368,7 @@ class _OrderForOtherScreenState extends State<OrderForOtherScreen> {
                     backgroundColor: Colors.red.shade900,
                     content: const Text("Unable To set the Pickup.")));
               });
+              _changePlaceDetailBlocToInitialState();
             }
             return AlertDialog(
               content: Row(
@@ -392,6 +390,10 @@ class _OrderForOtherScreenState extends State<OrderForOtherScreen> {
             );
           });
         });
+  }
+
+  void _changePlaceDetailBlocToInitialState() {
+    context.read<PlaceDetailBloc>().add(PlaceDetailChangeToInitialState());
   }
 
   void settingDropOffDialog() {
@@ -421,6 +423,7 @@ class _OrderForOtherScreenState extends State<OrderForOtherScreen> {
 
                 Navigator.pop(context);
               });
+              _changePlaceDetailBlocToInitialState();
             }
 
             if (state is PlaceDetailOperationFailure) {

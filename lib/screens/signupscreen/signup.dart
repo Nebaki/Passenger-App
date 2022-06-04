@@ -30,34 +30,12 @@ class _SignupScreenState extends State<SignupScreen> {
   final Connectivity _connectivity = Connectivity();
   late ConnectivityResult result;
 
-  void signInWithPhoneAuthCredential(
-      PhoneAuthCredential phoneAuthCredential) async {
-    setState(() {
-      showLoading = true;
-    });
-    try {
-      final authCredential =
-          await _auth.signInWithCredential(phoneAuthCredential);
-      setState(() {
-        showLoading = false;
-      });
-      if (authCredential.user != null) {
-        // Navigator.push(
-        //     context, MaterialPageRoute(builder: (context) => Dashboard()));
-      }
-    } on FirebaseAuthException catch (e) {
-      setState(() {
-        showLoading = false;
-      });
-      print(e.message);
-    }
-  }
-
   void sendVerificationCode() async {
     await _auth.verifyPhoneNumber(
+        timeout: const Duration(seconds: 60),
         phoneNumber: phoneController,
         verificationCompleted: (phoneAuthCredential) async {
-          signInWithPhoneAuthCredential(phoneAuthCredential);
+          // signInWithPhoneAuthCredential(phoneAuthCredential);
         },
         verificationFailed: (verificationFailed) async {
           setState(() {
@@ -69,11 +47,11 @@ class _SignupScreenState extends State<SignupScreen> {
               content: Text(verificationFailed.message.toString())));
         },
         codeSent: (verificationId, resendingToken) async {
-          setState(() {
-            showLoading = false;
-            currentState = MobileVerficationState.SHOW_OTP_FORM_STATE;
-            this.verificationId = verificationId;
-          });
+          // setState(() {
+          //   showLoading = false;
+          currentState = MobileVerficationState.SHOW_OTP_FORM_STATE;
+          //   this.verificationId = verificationId;
+          // });
           setState(() {
             _isLoading = false;
           });
@@ -104,7 +82,7 @@ class _SignupScreenState extends State<SignupScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromRGBO(240, 241, 241, 1),
+      // backgroundColor: const Color.fromRGBO(240, 241, 241, 1),
       body: Stack(
         children: [
           CustomeBackArrow(),
@@ -120,9 +98,9 @@ class _SignupScreenState extends State<SignupScreen> {
                     child: Text(
                       "Enter mobile number",
                       style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 24.0,
-                          color: Colors.black),
+                        fontWeight: FontWeight.bold,
+                        fontSize: 24.0,
+                      ),
                     ),
                   ),
                   Padding(
@@ -131,9 +109,10 @@ class _SignupScreenState extends State<SignupScreen> {
                       inputDecoration: const InputDecoration(
                           hintText: "Phone Number",
                           hintStyle: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black45),
-                          fillColor: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            // color: Colors.black45
+                          ),
+                          // fillColor: Colors.white,
                           filled: true,
                           border:
                               OutlineInputBorder(borderSide: BorderSide.none)),
@@ -159,7 +138,7 @@ class _SignupScreenState extends State<SignupScreen> {
                       ignoreBlank: false,
 
                       autoValidateMode: AutovalidateMode.onUserInteraction,
-                      selectorTextStyle: const TextStyle(color: Colors.black),
+                      // selectorTextStyle: const TextStyle(color: Colors.black),
                       //initialValue: number,
                       //textFieldController: phoneController,
                       formatInput: true,
@@ -178,7 +157,7 @@ class _SignupScreenState extends State<SignupScreen> {
                         overflow: TextOverflow.fade,
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                            color: Colors.black54,
+                            // color: Colors.black54,
                             fontWeight: FontWeight.w300,
                             letterSpacing: 0),
                       ),
@@ -265,9 +244,11 @@ class _SignupScreenState extends State<SignupScreen> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text("already have an account? ",
-                            style:
-                                TextStyle(fontSize: 16, color: Colors.black54)),
+                        const Text("already have an account? ",
+                            style: TextStyle(
+                              fontSize: 16,
+                              // color: Colors.black54
+                            )),
                         InkWell(
                             onTap: () {
                               Navigator.pop(context);
@@ -275,9 +256,7 @@ class _SignupScreenState extends State<SignupScreen> {
                             },
                             child: Text(
                               "SIGN IN",
-                              style: TextStyle(
-                                  color: Color.fromRGBO(39, 49, 110, 1),
-                                  fontWeight: FontWeight.bold),
+                              style: Theme.of(context).textTheme.button,
                             ))
                       ],
                     ),

@@ -4,6 +4,8 @@ import 'package:flutter_geofire/flutter_geofire.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:passengerapp/bloc/bloc.dart';
 import 'package:passengerapp/bloc/database/location_history_bloc.dart';
+import 'package:passengerapp/cubit/favorite_location.dart';
+import 'package:passengerapp/cubit/favorite_location_state.dart';
 import 'package:passengerapp/helper/constants.dart';
 import 'package:passengerapp/rout.dart';
 import 'package:passengerapp/screens/home/assistant/home_screen_assistant.dart';
@@ -237,6 +239,47 @@ class _WhereToState extends State<WhereTo> {
     );
   }
 
+  Widget _buildFavoriteLocations(SavedLocation location) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: GestureDetector(
+        onTap: () {
+          getPlaceDetail(location.placeId);
+          settingDropOffDialog(false);
+          LocationHistoryEvent event = LocationHistoryAdd(
+              location: LocationPrediction(
+                  placeId: location.placeId,
+                  mainText: location.name,
+                  secondaryText: location.address));
+          BlocProvider.of<LocationHistoryBloc>(context).add(event);
+        },
+        child: Container(
+          color: Colors.black.withOpacity(0),
+          width: MediaQuery.of(context).size.width,
+          child: Row(
+            children: [
+              Flexible(
+                flex: 1,
+                child: IconButton(
+                  onPressed: () {},
+                  icon: const Icon(
+                    Icons.favorite,
+                    color: Colors.red,
+                    size: 20,
+                  ),
+                ),
+              ),
+              const SizedBox(
+                width: 10,
+              ),
+              Flexible(flex: 5, child: Text(location.address)),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _buildPredictedItem(LocationPrediction prediction) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -271,18 +314,49 @@ class _WhereToState extends State<WhereTo> {
           child: Row(
             children: [
               Flexible(
-                flex: 1,
-                child: IconButton(
-                  onPressed: () {
-                    addToSavedLocaitons(prediction);
-                    _addingToSavedLocations();
-                  },
-                  icon: const Icon(
-                    Icons.favorite_border_outlined,
-                    size: 20,
-                  ),
-                ),
-              ),
+                  flex: 1,
+                  child:
+                      BlocBuilder<FavoriteLocationCubit, FavoriteLocationState>(
+                    builder: ((context, state) {
+                      print("Her is Your state $state");
+                      if (state is FavoriteLocationLoadSuccess) {
+                        bool isFav = false;
+                        if (state.savedLocation.isNotEmpty) {
+                          isFav = state.savedLocation
+                              .where((element) =>
+                                  element!.placeId == prediction.placeId)
+                              .isNotEmpty;
+                        }
+
+                        return IconButton(
+                          onPressed: () {
+                            isFav
+                                ? context
+                                    .read<FavoriteLocationCubit>()
+                                    .deleteFavoriteLocationByPlaceId(
+                                        prediction.placeId)
+                                : addToSavedLocaitons(prediction);
+                          },
+                          icon: Icon(
+                            isFav
+                                ? Icons.favorite
+                                : Icons.favorite_border_outlined,
+                            size: 20,
+                            color: isFav ? Colors.red : null,
+                          ),
+                        );
+                      }
+                      return IconButton(
+                        onPressed: () {
+                          // addToSavedLocaitons(prediction);
+                        },
+                        icon: const Icon(
+                          Icons.favorite_border_outlined,
+                          size: 20,
+                        ),
+                      );
+                    }),
+                  )),
               const SizedBox(
                 width: 10,
               ),
@@ -300,11 +374,14 @@ class _WhereToState extends State<WhereTo> {
   }
 
   void addToSavedLocaitons(LocationPrediction prediction) {
-    BlocProvider.of<SavedLocationBloc>(context).add(SavedLocationCreate(
-        SavedLocation(
-            name: "Fav",
-            address: prediction.mainText,
-            placeId: prediction.placeId)));
+    context.read<FavoriteLocationCubit>().addToFavoriteLocation(SavedLocation(
+        name: "Favorite",
+        address: prediction.mainText,
+        placeId: prediction.placeId));
+  }
+
+  void _changePlaceDetailBlocToInitialState() {
+    context.read<PlaceDetailBloc>().add(PlaceDetailChangeToInitialState());
   }
 
   void settingPickupDialog() {
@@ -318,6 +395,7 @@ class _WhereToState extends State<WhereTo> {
               if (state is PlaceDetailLoadSuccess) {
                 pickupLatLng =
                     LatLng(state.placeDetail.lat, state.placeDetail.lng);
+                _changePlaceDetailBlocToInitialState();
                 Navigator.pop(context);
               }
 
@@ -384,6 +462,7 @@ class _WhereToState extends State<WhereTo> {
                 WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
                   showCarIcons = false;
                   droppOffLatLng = destinationLtlng;
+                  _changePlaceDetailBlocToInitialState();
                   context
                       .read<CurrentWidgetCubit>()
                       .changeWidget(Service(false, false));
@@ -443,166 +522,178 @@ class _WhereToState extends State<WhereTo> {
         enableDrag: true,
         backgroundColor: Colors.white.withOpacity(0),
         builder: (BuildContext context) {
-          return Stack(
-            children: [
-              BlocBuilder<LocationPredictionBloc, LocationPredictionState>(
-                  builder: (context, state) {
-                if (state is LocationPredictionLoading) {
-                  return const Center(child: CircularProgressIndicator());
-                }
-                if (state is LocationPredictionLoadSuccess) {
-                  return Positioned(
-                    top: 180,
-                    left: 70,
-                    right: 70,
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(20),
-                      child: Container(
-                        padding: const EdgeInsets.only(top: 30, bottom: 22),
-                        // height: 200,
-                        constraints:
-                            const BoxConstraints(maxHeight: 400, minHeight: 30),
-                        color: Theme.of(context).backgroundColor,
-                        width: double.infinity,
-                        child: ListView.separated(
-                            physics: const ClampingScrollPhysics(),
-                            shrinkWrap: true,
-                            itemBuilder: (context, index) {
-                              return _buildPredictedItem(
-                                  state.placeList[index]);
+          return WillPopScope(
+            onWillPop: () async {
+              print("YYYYDY");
+              context
+                  .read<PlaceDetailBloc>()
+                  .add(PlaceDetailChangeToInitialState());
+              return true;
+            },
+            child: Stack(
+              children: [
+                BlocBuilder<LocationPredictionBloc, LocationPredictionState>(
+                    builder: (context, state) {
+                  if (state is LocationPredictionLoading) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                  if (state is LocationPredictionLoadSuccess) {
+                    return Positioned(
+                      top: 180,
+                      left: 70,
+                      right: 70,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(20),
+                        child: Container(
+                          padding: const EdgeInsets.only(top: 30, bottom: 22),
+                          // height: 200,
+                          constraints: const BoxConstraints(
+                              maxHeight: 400, minHeight: 30),
+                          color: Theme.of(context).backgroundColor,
+                          width: double.infinity,
+                          child: ListView.separated(
+                              physics: const ClampingScrollPhysics(),
+                              shrinkWrap: true,
+                              itemBuilder: (context, index) {
+                                return _buildPredictedItem(
+                                    state.placeList[index]);
+                              },
+                              separatorBuilder: (context, index) =>
+                                  const Padding(
+                                    padding:
+                                        EdgeInsets.symmetric(horizontal: 20),
+                                    child: Divider(color: Colors.black38),
+                                  ),
+                              itemCount: state.placeList.length),
+                        ),
+                      ),
+                    );
+                  }
+
+                  if (state is LocationPredictionOperationFailure) {}
+
+                  return BlocBuilder<FavoriteLocationCubit,
+                      FavoriteLocationState>(builder: ((context, state) {
+                    if (state is FavoriteLocationLoadSuccess) {
+                      return state.savedLocation.isNotEmpty
+                          ? Positioned(
+                              top: 180,
+                              left: 70,
+                              right: 70,
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(20),
+                                child: Container(
+                                  padding: const EdgeInsets.only(
+                                      top: 30, bottom: 22),
+                                  // height: 200,
+                                  constraints: const BoxConstraints(
+                                      maxHeight: 400, minHeight: 30),
+                                  color: Theme.of(context).backgroundColor,
+                                  width: double.infinity,
+                                  child: ListView.separated(
+                                      physics: const ClampingScrollPhysics(),
+                                      shrinkWrap: true,
+                                      itemBuilder: (context, index) {
+                                        return _buildFavoriteLocations(
+                                            state.savedLocation[index]!);
+                                      },
+                                      separatorBuilder: (context, index) =>
+                                          const Padding(
+                                            padding: EdgeInsets.symmetric(
+                                                horizontal: 20),
+                                            child:
+                                                Divider(color: Colors.black38),
+                                          ),
+                                      itemCount: state.savedLocation.length),
+                                ),
+                              ),
+                            )
+                          : Container();
+                    }
+                    return Container();
+                  }));
+                }),
+                Positioned(
+                    left: 50,
+                    right: 50,
+                    top: 80,
+                    child: Column(
+                      children: [
+                        SizedBox(
+                          height: 60,
+                          child: TextFormField(
+                            onChanged: (value) {
+                              findPlace(value);
                             },
-                            separatorBuilder: (context, index) => const Padding(
-                                  padding: EdgeInsets.symmetric(horizontal: 20),
-                                  child: Divider(color: Colors.black38),
+                            focusNode: pickupLocationNode,
+                            controller: pickupController,
+                            decoration: InputDecoration(
+                                suffixIcon: IconButton(
+                                    onPressed: () {
+                                      pickupController.clear();
+                                      debugPrint("TATAT");
+                                    },
+                                    icon: const Icon(
+                                      Icons.clear,
+                                      size: 15,
+                                    )),
+                                hintText: "PickUp Address",
+                                prefixIcon: const Padding(
+                                  padding: EdgeInsets.only(left: 20, right: 10),
+                                  child: Icon(
+                                    Icons.location_on,
+                                    color: Colors.blue,
+                                  ),
                                 ),
-                            itemCount: state.placeList.length),
-                      ),
-                    ),
-                  );
-                }
-
-                if (state is LocationPredictionOperationFailure) {}
-
-                return const Center(
-                  child: Text("Enter The location"),
-                );
-              }),
-              Positioned(
-                  left: 50,
-                  right: 50,
-                  top: 80,
-                  child: Column(
-                    children: [
-                      SizedBox(
-                        height: 60,
-                        child: TextFormField(
-                          onChanged: (value) {
-                            findPlace(value);
-                          },
-                          focusNode: pickupLocationNode,
-                          controller: pickupController,
-                          decoration: InputDecoration(
-                              suffixIcon: IconButton(
-                                  onPressed: () {
-                                    pickupController.clear();
-                                    debugPrint("TATAT");
-                                  },
-                                  icon: const Icon(
-                                    Icons.clear,
-                                    size: 15,
-                                  )),
-                              hintText: "PickUp Address",
-                              prefixIcon: const Padding(
-                                padding: EdgeInsets.only(left: 20, right: 10),
-                                child: Icon(
-                                  Icons.location_on,
-                                  color: Colors.blue,
+                                // fillColor: Colors.white,
+                                filled: true,
+                                border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                    borderSide: BorderSide.none)),
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        Container(
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(20),
+                              boxShadow: const [
+                                BoxShadow(
+                                    color: Colors.black38,
+                                    blurRadius: 4,
+                                    spreadRadius: 2,
+                                    offset: Offset(0, 4))
+                              ]),
+                          height: 50,
+                          child: TextFormField(
+                            focusNode: droppOffLocationNode,
+                            onChanged: (value) {
+                              findPlace(value);
+                            },
+                            decoration: InputDecoration(
+                                hintText: "DropOff Address",
+                                prefixIcon: const Padding(
+                                  padding: EdgeInsets.only(left: 20, right: 10),
+                                  child: Icon(Icons.location_on,
+                                      color: Colors.green),
                                 ),
-                              ),
-                              // fillColor: Colors.white,
-                              filled: true,
-                              border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                  borderSide: BorderSide.none)),
+                                // fillColor: Colors.white,
+                                filled: true,
+                                border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                    borderSide: BorderSide.none)),
+                          ),
                         ),
-                      ),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      Container(
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(20),
-                            boxShadow: const [
-                              BoxShadow(
-                                  color: Colors.black38,
-                                  blurRadius: 4,
-                                  spreadRadius: 2,
-                                  offset: Offset(0, 4))
-                            ]),
-                        height: 50,
-                        child: TextFormField(
-                          focusNode: droppOffLocationNode,
-                          onChanged: (value) {
-                            findPlace(value);
-                          },
-                          decoration: InputDecoration(
-                              hintText: "DropOff Address",
-                              prefixIcon: const Padding(
-                                padding: EdgeInsets.only(left: 20, right: 10),
-                                child: Icon(Icons.location_on,
-                                    color: Colors.green),
-                              ),
-                              // fillColor: Colors.white,
-                              filled: true,
-                              border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                  borderSide: BorderSide.none)),
-                        ),
-                      ),
-                    ],
-                  )),
-            ],
+                      ],
+                    )),
+              ],
+            ),
           );
 
           // SearchScreen(
           //     args: SearchScreenArgument(
           //         currentLocation: currentLocation));
-        });
-  }
-
-  void _addingToSavedLocations() {
-    showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return BlocBuilder<SavedLocationBloc, SavedLocationState>(
-            builder: (context, state) {
-              if (state is SavedLocationsSuccess) {
-                Navigator.pop(context);
-              }
-
-              if (state is SavedLocationOperationFailure) {
-                Navigator.pop(context);
-              }
-              return AlertDialog(
-                content: Row(
-                  children: const [
-                    SizedBox(
-                      height: 20,
-                      width: 20,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 1,
-                        color: Colors.black,
-                      ),
-                    ),
-                    SizedBox(
-                      width: 5,
-                    ),
-                    Text("Saving."),
-                  ],
-                ),
-              );
-            },
-          );
         });
   }
 }

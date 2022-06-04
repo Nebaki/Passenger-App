@@ -10,9 +10,7 @@ class RideRequestDataProvider {
   final _fcmUrl = 'https://fcm.googleapis.com/fcm/send';
 
   final _baseUrl = 'https://safeway-api.herokuapp.com/api/ride-requests';
-  final _maintenanceUrl =
-      'https://mobiletaxi-api.herokuapp.com/api/ride-requests';
-  final _secondUrl = 'https://mobiletaxi-api.herokuapp.com/api/ride-requests';
+
   final http.Client httpClient;
   AuthDataProvider authDataProvider =
       AuthDataProvider(httpClient: http.Client());
@@ -40,7 +38,7 @@ class RideRequestDataProvider {
     }
   }
 
-  Future<List<RideRequest>> getRideRequests(int skip, int top) async {
+  Future<List<RideRequest?>> getRideRequests(int skip, int top) async {
     final http.Response response = await http.get(
         Uri.parse(RideRequestEndPoints.getRideRequestsEndPoint(skip, top)),
         headers: <String, String>{
@@ -50,8 +48,10 @@ class RideRequestDataProvider {
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body)['items'] as List;
-      print("e is ${data.first}  ${data.length}");
-      return data.reversed.map((e) => RideRequest.fromJson(e)).toList();
+
+      return data.isNotEmpty
+          ? data.map((e) => RideRequest.fromJson(e)).toList()
+          : [];
     } else {
       throw 'Unable to fetch RideRequests';
     }
@@ -78,7 +78,7 @@ class RideRequestDataProvider {
         ],
         'drop_off_address': request.droppOffAddress,
         'direction': direction,
-        // 'price': int.parse(price),
+        'price': int.parse(price),
         'duration': duration,
         'distance': int.parse(distance)
       }),

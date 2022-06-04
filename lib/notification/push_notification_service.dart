@@ -20,7 +20,7 @@ class PushNotificationService {
       RemoteNotification? notification = message.notification;
       AndroidNotification? android = message.notification?.android;
       print('this is the respomse : ${message.data['response']}');
-      // player.open(Audio("assets/sounds/announcement-sound.mp3"));
+      player.open(Audio("assets/sounds/announcement-sound.mp3"));
       switch (message.data['response']) {
         case 'Accepted':
           Geofire.stopListener();

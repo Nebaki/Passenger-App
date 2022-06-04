@@ -46,7 +46,7 @@ class _DirectionDetailState extends State<DirectionDetail> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text.rich(TextSpan(
-                        text: "Price:      ",
+                        text: "Estimated Fare:   ",
                         style: Theme.of(context).textTheme.subtitle1,
                         children: [
                           TextSpan(
@@ -57,11 +57,11 @@ class _DirectionDetailState extends State<DirectionDetail> {
                       height: 5,
                     ),
                     Text.rich(TextSpan(
-                        text: "Member: ",
+                        text: "Estimated Duration:  ",
                         style: Theme.of(context).textTheme.subtitle1,
                         children: [
                           TextSpan(
-                              text: capacity,
+                              text: "$duration min",
                               style: Theme.of(context).textTheme.labelMedium)
                         ]))
                   ],
@@ -82,13 +82,13 @@ class _DirectionDetailState extends State<DirectionDetail> {
                       height: 5,
                     ),
                     Text.rich(TextSpan(
-                        text: "Time:      ",
+                        text: "Capacity: ",
                         style: Theme.of(context).textTheme.subtitle1,
                         children: [
                           TextSpan(
-                              text: "$duration min",
+                              text: capacity,
                               style: Theme.of(context).textTheme.labelMedium)
-                        ]))
+                        ])),
                   ],
                 )
               ],

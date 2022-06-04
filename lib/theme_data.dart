@@ -33,7 +33,14 @@ class ThemesData {
       ),
       canvasColor: Colors.white,
       backgroundColor: Colors.grey.shade900,
-      textTheme: const TextTheme(bodyLarge: TextStyle(color: Colors.black)),
+      textTheme: TextTheme(
+        button: TextStyle(color: Colors.white60),
+        // bodyLarge: TextStyle(color: Colors.black)
+        // subtitle1: const TextStyle(color: Colors.black38, fontSize: 14),
+        // headline5: const TextStyle(fontWeight: FontWeight.bold),
+        // bodyText2: TextStyle(color: Colors.grey.shade700
+        // )
+      ),
       colorScheme: const ColorScheme.dark());
 
   static final lightTheme = ThemeData(
@@ -48,9 +55,7 @@ class ThemesData {
       scaffoldBackgroundColor: backGroundColor,
       primaryColor: const Color.fromRGBO(254, 79, 5, 1),
       textTheme: TextTheme(
-          button: const TextStyle(
-            color: Color.fromRGBO(254, 79, 5, 1),
-          ),
+          button: TextStyle(color: Colors.indigo.shade900),
           subtitle1: const TextStyle(color: Colors.black38, fontSize: 14),
           headline5: const TextStyle(fontWeight: FontWeight.bold),
           bodyText2: TextStyle(color: Colors.grey.shade700)),
@@ -65,11 +70,14 @@ class ThemesData {
       )),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ButtonStyle(
+          foregroundColor: MaterialStateProperty.resolveWith<Color?>(
+              (Set<MaterialState> state) =>
+                  state.contains(MaterialState.disabled) ? Colors.grey : null),
           backgroundColor: MaterialStateProperty.all<Color>(
               const Color.fromRGBO(244, 201, 60, 1)),
           shape: MaterialStateProperty.all<RoundedRectangleBorder>(
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
-          foregroundColor: MaterialStateProperty.all<Color>(Colors.black),
+          // foregroundColor: MaterialStateProperty.all<Color>(Colors.black),
           textStyle: MaterialStateProperty.all<TextStyle>(const TextStyle(
               color: Colors.black, fontWeight: FontWeight.w300, fontSize: 20)),
         ),

@@ -31,31 +31,34 @@ class _SigninScreenState extends State<SigninScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: const Color.fromRGBO(240, 241, 241, 1),
+        // backgroundColor: const Color.fromRGBO(240, 241, 241, 1),
         body: BlocConsumer<AuthBloc, AuthState>(builder: (_, state) {
-          return _buildSigninForm();
-        }, listener: (_, state) {
-          if (state is AuthSigningIn) {
-            _isLoading = true;
-          }
-          if (state is AuthLoginSuccess) {
-            Navigator.pushNamedAndRemoveUntil(context, HomeScreen.routeName,
-                ((Route<dynamic> route) => false),
-                arguments:
-                    HomeScreenArgument(isSelected: false, isFromSplash: true));
-            // Navigator.pushReplacementNamed(context, HomeScreen.routeName,
-            //     arguments:
-            //         HomeScreenArgument(isFromSplash: false, isSelected: false));
-          }
-          if (state is AuthOperationFailure) {
-            _isLoading = false;
+      return _buildSigninForm();
+    }, listener: (_, state) {
+      if (state is AuthDataLoadSuccess) {
+        name = state.auth.name!;
+        number = state.auth.phoneNumber!;
+        myId = state.auth.id!;
+        Navigator.pushNamedAndRemoveUntil(
+            context, HomeScreen.routeName, ((Route<dynamic> route) => false),
+            arguments:
+                HomeScreenArgument(isSelected: false, isFromSplash: true));
+      }
+      if (state is AuthSigningIn) {
+        _isLoading = true;
+      }
+      if (state is AuthLoginSuccess) {
+        context.read<AuthBloc>().add(AuthDataLoad());
+      }
+      if (state is AuthOperationFailure) {
+        _isLoading = false;
 
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              content: const Text(Strings.signInIncorrectTrialMessage),
-              backgroundColor: Colors.red.shade900,
-            ));
-          }
-        }));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: const Text(Strings.signInIncorrectTrialMessage),
+          backgroundColor: Colors.red.shade900,
+        ));
+      }
+    }));
   }
 
   void signIn() async {
@@ -81,7 +84,7 @@ class _SigninScreenState extends State<SigninScreen> {
       Form(
         key: _formkey,
         child: Container(
-          color: const Color.fromRGBO(240, 241, 241, 1),
+          // color: const Color.fromRGBO(240, 241, 241, 1),
           height: 600,
           child: Padding(
               padding: const EdgeInsets.fromLTRB(20, 60, 20, 20),
@@ -89,7 +92,9 @@ class _SigninScreenState extends State<SigninScreen> {
                 children: [
                   const Text(
                     Strings.signInTitle,
-                    style: TextStyle(fontSize: 25, color: Colors.black),
+                    style: TextStyle(
+                      fontSize: 25,
+                    ),
                   ),
                   Padding(
                     padding: const EdgeInsets.all(10),
@@ -104,7 +109,7 @@ class _SigninScreenState extends State<SigninScreen> {
                           trailingSpace: false),
                       ignoreBlank: false,
                       autoValidateMode: AutovalidateMode.onUserInteraction,
-                      selectorTextStyle: const TextStyle(color: Colors.black),
+                      // selectorTextStyle: const TextStyle,
                       initialValue: PhoneNumber(isoCode: "ET"),
                       formatInput: true,
                       keyboardType: const TextInputType.numberWithOptions(
@@ -115,9 +120,10 @@ class _SigninScreenState extends State<SigninScreen> {
                       inputDecoration: const InputDecoration(
                           hintText: Strings.phoneNumberHintText,
                           hintStyle: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black45),
-                          fillColor: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            // color: Colors.black45
+                          ),
+                          // fillColor: Colors.white,
                           filled: true,
                           border:
                               OutlineInputBorder(borderSide: BorderSide.none)),
@@ -131,13 +137,14 @@ class _SigninScreenState extends State<SigninScreen> {
                             alignLabelWithHint: true,
                             hintText: Strings.passwordHintText,
                             hintStyle: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black45),
+                              fontWeight: FontWeight.bold,
+                              // color: Colors.black45
+                            ),
                             prefixIcon: Icon(
                               Icons.vpn_key,
                               size: 19,
                             ),
-                            fillColor: Colors.white,
+                            // fillColor: Colors.white,
                             filled: true,
                             border: OutlineInputBorder(
                                 borderSide: BorderSide.none)),
@@ -203,14 +210,16 @@ class _SigninScreenState extends State<SigninScreen> {
                     child: Center(
                       child: InkWell(
                           onTap: () {
+                            // Navigator.pushNamed(
+                            //     context, CreateProfileScreen.routeName,
+                            //     arguments: CreateProfileScreenArgument(
+                            //         phoneNumber: "+251934540217"));
                             Navigator.pushNamed(
                                 context, MobileVerification.routeName);
                           },
-                          child: const Text(
+                          child: Text(
                             Strings.forgotPasswordButtonText,
-                            style: TextStyle(
-                                color: Color.fromRGBO(39, 49, 110, 1),
-                                fontWeight: FontWeight.bold),
+                            style: Theme.of(context).textTheme.button,
                           )),
                     ),
                   ),
@@ -220,19 +229,18 @@ class _SigninScreenState extends State<SigninScreen> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         const Text(Strings.dontHaveAnAccount,
-                            style:
-                                TextStyle(fontSize: 16, color: Colors.black54)),
+                            style: TextStyle(fontSize: 16)),
                         InkWell(
                             onTap: () {
                               Navigator.pushNamed(
                                   context, SignupScreen.routeName);
                             },
-                            child: const Text(
-                              Strings.signUpInkWell,
-                              style: TextStyle(
-                                  color: Color.fromRGBO(39, 49, 110, 1),
-                                  fontWeight: FontWeight.bold),
-                            ))
+                            child: Text(Strings.signUpInkWell,
+                                style: Theme.of(context).textTheme.button
+                                // TextStyle(
+                                //     color: Color.fromRGBO(39, 49, 110, 1),
+                                //     fontWeight: FontWeight.bold),
+                                ))
                       ],
                     ),
                   )

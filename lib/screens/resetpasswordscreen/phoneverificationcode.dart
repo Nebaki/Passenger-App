@@ -60,6 +60,9 @@ class _MobileVerificationState extends State<MobileVerification> {
           signInWithPhoneAuthCredential(phoneAuthCredential);
         },
         verificationFailed: (verificationFailed) async {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              backgroundColor: Colors.red.shade900,
+              content: Text('Error: $verificationFailed')));
           setState(() {
             showLoading = false;
           });
@@ -84,7 +87,7 @@ class _MobileVerificationState extends State<MobileVerification> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromRGBO(240, 241, 241, 1),
+      // backgroundColor: const Color.fromRGBO(240, 241, 241, 1),
       body: Stack(
         children: [
           CustomeBackArrow(),
@@ -100,9 +103,10 @@ class _MobileVerificationState extends State<MobileVerification> {
                     child: Text(
                       "Enter mobile number",
                       style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 24.0,
-                          color: Colors.black),
+                        fontWeight: FontWeight.bold,
+                        fontSize: 24.0,
+                        // color: Colors.black
+                      ),
                     ),
                   ),
                   Padding(
@@ -111,9 +115,10 @@ class _MobileVerificationState extends State<MobileVerification> {
                       inputDecoration: const InputDecoration(
                           hintText: "Phone Number",
                           hintStyle: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black45),
-                          fillColor: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            // color: Colors.black45
+                          ),
+                          // fillColor: Colors.white,
                           filled: true,
                           border:
                               OutlineInputBorder(borderSide: BorderSide.none)),
@@ -129,7 +134,7 @@ class _MobileVerificationState extends State<MobileVerification> {
                       ignoreBlank: false,
 
                       autoValidateMode: AutovalidateMode.onUserInteraction,
-                      selectorTextStyle: const TextStyle(color: Colors.black),
+                      // selectorTextStyle: const TextStyle(color: Colors.black),
                       initialValue: PhoneNumber(isoCode: "ET"),
                       //textFieldController: phoneController,
                       formatInput: true,
@@ -148,7 +153,7 @@ class _MobileVerificationState extends State<MobileVerification> {
                         overflow: TextOverflow.fade,
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                            color: Colors.black54,
+                            // color: Colors.black54,
                             fontWeight: FontWeight.w300,
                             letterSpacing: 0),
                       ),

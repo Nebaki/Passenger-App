@@ -1,15 +1,18 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:passengerapp/bloc/bloc.dart';
 import 'package:passengerapp/bloc/database/location_history_bloc.dart';
 import 'package:passengerapp/bloc/thememode/theme_mode_bloc.dart';
+import 'package:passengerapp/cubit/favorite_location.dart';
 import 'package:passengerapp/dataprovider/auth/auth.dart';
 import 'package:passengerapp/drawer/custome_paint.dart';
 import 'package:passengerapp/rout.dart';
 import 'package:passengerapp/screens/screens.dart';
 import 'package:http/http.dart' as http;
+import 'package:passengerapp/widgets/widgets.dart';
 
 class NavDrawer extends StatelessWidget {
   AuthDataProvider authDataProvider =
@@ -112,19 +115,19 @@ class NavDrawer extends StatelessWidget {
               child: ListView(
                 padding: const EdgeInsets.symmetric(horizontal: 10),
                 children: [
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.pushNamedAndRemoveUntil(
-                          context, HomeScreen.routeName, (route) => false,
-                          arguments: HomeScreenArgument(
-                              isSelected: false, isFromSplash: false));
-                    },
-                    child: _menuItem(
-                        divider: true,
-                        context: context,
-                        icon: Icons.home_max_outlined,
-                        text: "Home"),
-                  ),
+                  // GestureDetector(
+                  //   onTap: () {
+                  //     Navigator.pushNamedAndRemoveUntil(
+                  //         context, HomeScreen.routeName, (route) => false,
+                  //         arguments: HomeScreenArgument(
+                  //             isSelected: false, isFromSplash: false));
+                  //   },
+                  //   child: _menuItem(
+                  //       divider: true,
+                  //       context: context,
+                  //       icon: Icons.home_max_outlined,
+                  //       text: "Home"),
+                  // ),
                   GestureDetector(
                     onTap: () {
                       Navigator.popAndPushNamed(
@@ -146,17 +149,26 @@ class NavDrawer extends StatelessWidget {
                         icon: Icons.history,
                         text: "History"),
                   ),
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.popAndPushNamed(
-                          context, OrderForOtherScreen.routeName);
+                  BlocBuilder<CurrentWidgetCubit, Widget>(
+                    builder: (context, state) {
+                      print(
+                          "Esat Bewutachew ${state.toString() == WhereTo().toString()}");
+                      return GestureDetector(
+                        onTap: () {
+                          state.toString() == WhereTo().toString()
+                              ? Navigator.popAndPushNamed(
+                                  context, OrderForOtherScreen.routeName)
+                              : null;
+                        },
+                        child: _menuItem(
+                            divider: true,
+                            context: context,
+                            icon: Icons.border_outer_rounded,
+                            text: "Order for other"),
+                      );
                     },
-                    child: _menuItem(
-                        divider: true,
-                        context: context,
-                        icon: Icons.border_outer_rounded,
-                        text: "Order for other"),
                   ),
+
                   GestureDetector(
                     onTap: () {
                       Navigator.popAndPushNamed(
@@ -174,6 +186,8 @@ class NavDrawer extends StatelessWidget {
                       BlocProvider.of<AuthBloc>(context).add(LogOut());
                       BlocProvider.of<LocationHistoryBloc>(context)
                           .add(LocationHistoryClear());
+                      BlocProvider.of<FavoriteLocationCubit>(context)
+                          .clearFavoriteLocations();
 
                       Navigator.pushNamedAndRemoveUntil(
                         context,
@@ -207,7 +221,7 @@ class NavDrawer extends StatelessWidget {
     return ListTile(
       horizontalTitleGap: 0,
       leading: Icon(icon, color: color),
-      title: Text(text, style: Theme.of(context).textTheme.bodyLarge),
+      title: Text(text, style: TextStyle(color: Colors.black)),
       hoverColor: hoverColor,
     );
   }

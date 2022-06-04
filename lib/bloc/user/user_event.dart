@@ -93,3 +93,11 @@ class UserCheckPhoneNumber extends UserEvent {
   @override
   List<Object?> get props => [phoneNumber];
 }
+
+class UserSetAvailability extends UserEvent {
+  final List location;
+  final bool status;
+  const UserSetAvailability(this.location, this.status);
+  @override
+  List<Object?> get props => [location];
+}

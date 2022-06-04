@@ -18,8 +18,8 @@ class HistoryPage extends StatefulWidget {
 class _HistoryPageState extends State<HistoryPage> {
   // final _textStyle = TextStyle(fontSize: 20);
   int _skip = 0;
-  int _top = 5;
-  final List<RideRequest> _history = [];
+  int _top = 15;
+  final List<RideRequest?> _history = [];
   late ScrollController _scrollController;
   bool _loadMore = true;
   bool _isFirst = true;
@@ -27,7 +27,7 @@ class _HistoryPageState extends State<HistoryPage> {
   @override
   void initState() {
     BlocProvider.of<TripHistoryBloc>(context)
-        .add(TripHistoryLoad(skip: 0, top: 5));
+        .add(TripHistoryLoad(skip: 0, top: 15));
     _scrollController = ScrollController()..addListener(_loadMoreHistories);
     super.initState();
   }
@@ -43,7 +43,7 @@ class _HistoryPageState extends State<HistoryPage> {
     if (_scrollController.position.extentAfter < 300 && _loadMore) {
       _loadMore = false;
       _skip = _top + 1;
-      _top += 5;
+      _top += 15;
       print(
           "Hereeeeeeeeeeeeeeeeee Called ::::::::::::::::::::::::::::::::::::::::::::::: skip$_skip,Top:$_top");
       BlocProvider.of<TripHistoryBloc>(context)
@@ -62,7 +62,9 @@ class _HistoryPageState extends State<HistoryPage> {
               _isFirst = false;
               _loadMore = true;
               setState(() {
-                _history.addAll(state.requestes);
+                state.requestes.isNotEmpty
+                    ? _history.addAll(state.requestes)
+                    : _loadMore = false;
               });
             }
             if (_history.isNotEmpty) {
@@ -73,7 +75,7 @@ class _HistoryPageState extends State<HistoryPage> {
               }
             }
           },
-          builder: (context, state) => _history.isNotEmpty
+          builder: (context, state) => !_isFirst
               ? Padding(
                   padding: const EdgeInsets.only(top: 80),
                   child: SizedBox(
@@ -82,8 +84,10 @@ class _HistoryPageState extends State<HistoryPage> {
                       controller: _scrollController,
                       itemCount: _history.length,
                       itemBuilder: (context, index) {
-                        return _builHistoryCard(
-                            context, _history[index].status!, _history[index]);
+                        return _history.isNotEmpty
+                            ? _builHistoryCard(context,
+                                _history[index]!.status!, _history[index])
+                            : Container();
                       },
                       padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
                     ),
@@ -235,40 +239,3 @@ class _HistoryPageState extends State<HistoryPage> {
     );
   }
 }
-
-
-
-
-
-
-
-
-// BlocBuilder<TripHistoryBloc, TripHistoryState>(
-//           builder: (context, state) {
-//             if (state is TripHstoriesLoadSuccess) {
-//               return Padding(
-//                 padding: const EdgeInsets.only(top: 80),
-//                 child: ListView.builder(
-//                   controller: _scrollController,
-//                   itemCount: state.requestes.length,
-//                   itemBuilder: (context, index) {
-//                     return _builHistoryCard(context,
-//                         state.requestes[index].status!, state.requestes[index]);
-//                   },
-//                   padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
-//                 ),
-//               );
-//             }
-//             if (state is RideRequestOperationFailur) {
-//               print("Yeah Filedddddddd");
-//             }
-//             return const Center(
-//               child: SizedBox(
-//                   height: 50,
-//                   width: 50,
-//                   child: CircularProgressIndicator(
-//                     strokeWidth: 1,
-//                   )),
-//             );
-//           },
-//         ),

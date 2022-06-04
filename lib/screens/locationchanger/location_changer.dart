@@ -40,12 +40,12 @@ class LocationChanger extends StatelessWidget {
               child: Container(
                   decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(100),
-                      border: Border.all(color: Colors.black, width: 1)),
+                      border: Border.all(width: 1)),
                   child: IconButton(
                       onPressed: () {
                         Navigator.pop(context);
                       },
-                      color: Colors.black,
+                      // color: Colors.black,
                       icon: const Icon(Icons.clear))),
             ),
           ),
@@ -62,7 +62,7 @@ class LocationChanger extends StatelessWidget {
                       },
                       icon: const Icon(
                         Icons.clear,
-                        color: Colors.black,
+                        // color: Colors.black,
                         size: 15,
                       )),
                   labelText: args.fromWhere == 'DroppOff'
@@ -71,78 +71,68 @@ class LocationChanger extends StatelessWidget {
               controller: _textEdittingController,
             ),
           ),
-          Row(
-            children: [
-              IconButton(
-                  padding: EdgeInsets.zero,
-                  onPressed: () async {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) {
-                          return PlacePicker(
-                            apiKey: apiKey,
-                            initialPosition: initialPosition,
-                            useCurrentLocation: true,
-                            selectInitialPosition: true,
-                            onPlacePicked: (result) {
-                              switch (args.fromWhere) {
-                                case "DroppOff":
-                                  droppOffAddress = result.formattedAddress!;
-                                  DirectionEvent event =
-                                      DirectionLoadFromDiffrentPickupLocation(
-                                          pickup: args.pickupLocationLatLng,
-                                          destination: LatLng(
-                                              result.geometry!.location.lat,
-                                              result.geometry!.location.lng));
-                                  BlocProvider.of<DirectionBloc>(context)
-                                      .add(event);
-                                  droppOffLatLng = LatLng(
-                                      result.geometry!.location.lat,
-                                      result.geometry!.location.lng);
-                                  break;
-                                case "PickUp":
-                                  pickupAddress = result.formattedAddress!;
-                                  pickupLatLng = LatLng(
-                                      result.geometry!.location.lat,
-                                      result.geometry!.location.lng);
+          ListTile(
+            onTap: () async {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) {
+                    return PlacePicker(
+                      apiKey: apiKey,
+                      initialPosition: initialPosition,
+                      useCurrentLocation: true,
+                      selectInitialPosition: true,
+                      onPlacePicked: (result) {
+                        switch (args.fromWhere) {
+                          case "DroppOff":
+                            droppOffAddress = result.formattedAddress!;
+                            DirectionEvent event =
+                                DirectionLoadFromDiffrentPickupLocation(
+                                    pickup: args.pickupLocationLatLng,
+                                    destination: LatLng(
+                                        result.geometry!.location.lat,
+                                        result.geometry!.location.lng));
+                            BlocProvider.of<DirectionBloc>(context).add(event);
+                            droppOffLatLng = LatLng(
+                                result.geometry!.location.lat,
+                                result.geometry!.location.lng);
+                            break;
+                          case "PickUp":
+                            pickupAddress = result.formattedAddress!;
+                            pickupLatLng = LatLng(result.geometry!.location.lat,
+                                result.geometry!.location.lng);
 
-                                  DirectionEvent event =
-                                      DirectionLoadFromDiffrentPickupLocation(
-                                          pickup: LatLng(
-                                              result.geometry!.location.lat,
-                                              result.geometry!.location.lng),
-                                          destination:
-                                              args.droppOffLocationLatLng);
-                                  BlocProvider.of<DirectionBloc>(context)
-                                      .add(event);
+                            DirectionEvent event =
+                                DirectionLoadFromDiffrentPickupLocation(
+                                    pickup: LatLng(
+                                        result.geometry!.location.lat,
+                                        result.geometry!.location.lng),
+                                    destination: args.droppOffLocationLatLng);
+                            BlocProvider.of<DirectionBloc>(context).add(event);
 
-                                  break;
-                              }
+                            break;
+                        }
 
-                              Navigator.of(context).pop();
-                              Navigator.pop(context);
+                        Navigator.of(context).pop();
+                        Navigator.pop(context);
 
-                              // WidgetsBinding.instance!
-                              //     .addPostFrameCallback((timeStamp) {
-                              // });
+                        // WidgetsBinding.instance!
+                        //     .addPostFrameCallback((timeStamp) {
+                        // });
 
-                              // setState(() {});
-                            },
-                          );
-                        },
-                      ),
+                        // setState(() {});
+                      },
                     );
                   },
-                  icon: const Icon(
-                    Icons.location_on,
-                    color: Colors.black,
-                  )),
-              const SizedBox(
-                width: 5,
-              ),
-              const Text("Pick Location from map"),
-            ],
+                ),
+              );
+            },
+            dense: true,
+            horizontalTitleGap: 0,
+            leading: const Icon(
+              Icons.location_on,
+            ),
+            title: const Text("Pick location from map"),
           ),
           const Divider(),
           const PredictedItems(),

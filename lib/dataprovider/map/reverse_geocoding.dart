@@ -63,7 +63,7 @@ class ReverseGocoding {
 
     if (response.statusCode == 200) {
       final location = jsonDecode(response.body);
-      udp.setPassengerAvailablity([p.latitude, p.longitude]);
+      udp.setPassengerAvailablity([p.latitude, p.longitude], true);
       return ReverseLocation.fromJson(location);
     } else {
       throw Exception('Failed to load loaction');

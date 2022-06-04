@@ -3,8 +3,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:passengerapp/bloc/bloc.dart';
+import 'package:passengerapp/bloc/database/location_history_bloc.dart';
 import 'package:passengerapp/bloc/savedlocation/saved_location_bloc.dart';
+import 'package:passengerapp/cubit/favorite_location.dart';
+import 'package:passengerapp/cubit/favorite_location_state.dart';
 import 'package:passengerapp/helper/constants.dart';
+import 'package:passengerapp/models/models.dart';
 import 'package:passengerapp/models/savedlocation/saved_location.dart';
 import 'package:passengerapp/rout.dart';
 import 'package:passengerapp/screens/screens.dart';
@@ -21,71 +25,88 @@ class SavedAddress extends StatelessWidget {
       body: Stack(
         children: [
           Center(
-            child: BlocBuilder<SavedLocationBloc, SavedLocationState>(
+            child: BlocBuilder<FavoriteLocationCubit, FavoriteLocationState>(
                 builder: (context, state) {
-              if (state is SavedLocationsLoadSuccess) {
-                final items = List.generate(state.savedLocation.length,
-                    (index) => state.savedLocation[index].name);
+              if (state is FavoriteLocationLoadSuccess) {
+                final items;
+                print("YAhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh");
+                if (state.savedLocation.isNotEmpty) {
+                  items = List.generate(state.savedLocation.length,
+                      (index) => state.savedLocation[index]!.name);
+                } else {
+                  items = [];
+                }
+
                 // List<String>.generate(10, (i) => 'Item ${i + 1}');
 
-                return Container(
-                  padding: EdgeInsets.only(top: 80),
-                  child: Column(
-                    children: [
-                      // Padding(
-                      //   padding: const EdgeInsets.only(left: 5, right: 5),
-                      //   child: WhereTo(setIsSelected: () {}),
-                      // ),
-                      Container(
-                          padding: EdgeInsets.symmetric(horizontal: 20),
-                          height: MediaQuery.of(context).size.height - 80,
-                          child: ListView.builder(
-                              itemCount: state.savedLocation.length,
-                              itemBuilder: (context, index) {
-                                final item = items[index];
-                                return Dismissible(
-                                    direction: DismissDirection.endToStart,
-                                    background: Container(
-                                      padding:
-                                          EdgeInsets.symmetric(horizontal: 20),
-                                      decoration: BoxDecoration(
-                                        color: Color(0xFFFFE6E6),
-                                        borderRadius: BorderRadius.circular(15),
-                                      ),
-                                      child: Row(
-                                        children: const [
-                                          Spacer(),
-                                          Icon(
-                                            Icons.delete_outlined,
-                                            color: Colors.redAccent,
-                                          )
-                                          //SvgPicture.asset("assets/icons/Trash.svg"),
-                                        ],
-                                      ),
-                                    ),
-                                    onDismissed: (DismissDirection d) {
-                                      if (d == DismissDirection.endToStart) {
-                                        print(
-                                            "hererere ${state.savedLocation[index].id}");
-                                        state.savedLocation.removeAt(index);
-                                        // BlocProvider.of<SavedLocationBloc>(
-                                        //         context)
-                                        //     .add(SavedLocationDelete(state
-                                        //         .savedLocation[index].id!));
-                                      }
-                                    },
-                                    key: Key("item."),
-                                    child: _builHistoryCard(
-                                        context, state.savedLocation[index]));
-                                // _historyItem(
-                                //     context: context,
-                                //     text: state.savedLocation[index].name,
-                                //     routename: "routename"),
-                                // );
-                              }))
-                    ],
-                  ),
-                );
+                return state.savedLocation.isEmpty
+                    ? Container()
+                    : Container(
+                        padding: EdgeInsets.only(top: 80),
+                        child: Column(
+                          children: [
+                            // Padding(
+                            //   padding: const EdgeInsets.only(left: 5, right: 5),
+                            //   child: WhereTo(setIsSelected: () {}),
+                            // ),
+                            Container(
+                                padding: EdgeInsets.symmetric(horizontal: 20),
+                                height: MediaQuery.of(context).size.height - 80,
+                                child: ListView.builder(
+                                    itemCount: state.savedLocation.length,
+                                    itemBuilder: (context, index) {
+                                      final item = items[index];
+                                      return Dismissible(
+                                          direction:
+                                              DismissDirection.endToStart,
+                                          background: Container(
+                                            padding: EdgeInsets.symmetric(
+                                                horizontal: 20),
+                                            decoration: BoxDecoration(
+                                              color: Color(0xFFFFE6E6),
+                                              borderRadius:
+                                                  BorderRadius.circular(15),
+                                            ),
+                                            child: Row(
+                                              children: const [
+                                                Spacer(),
+                                                Icon(
+                                                  Icons.delete_outlined,
+                                                  color: Colors.redAccent,
+                                                )
+                                                //SvgPicture.asset("assets/icons/Trash.svg"),
+                                              ],
+                                            ),
+                                          ),
+                                          onDismissed: (DismissDirection d) {
+                                            if (d ==
+                                                DismissDirection.endToStart) {
+                                              print(
+                                                  "hererere ${state.savedLocation[index]!.id}");
+                                              context
+                                                  .read<FavoriteLocationCubit>()
+                                                  .deleteFavoriteLocation(state
+                                                      .savedLocation[index]!
+                                                      .id!);
+                                              state.savedLocation
+                                                  .removeAt(index);
+                                            }
+                                          },
+                                          key: Key("item."),
+                                          child: _builHistoryCard(context,
+                                              state.savedLocation[index]));
+                                      // _historyItem(
+                                      //     context: context,
+                                      //     text: state.savedLocation[index].name,
+                                      //     routename: "routename"),
+                                      // );
+                                    }))
+                          ],
+                        ),
+                      );
+              }
+              if (state is FavoriteLocationOperationFailure) {
+                return Container();
               }
               return _buildShimmer(context);
             }),
@@ -101,7 +122,7 @@ class SavedAddress extends StatelessWidget {
                 },
                 icon: const Icon(
                   Icons.add,
-                  color: Colors.black,
+                  // color: Colors.black,
                 )),
           ),
           Padding(
@@ -137,13 +158,13 @@ class SavedAddress extends StatelessWidget {
                             horizontal: 20, vertical: 10),
                         decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(20),
-                            color: Colors.white,
+                            color: Theme.of(context).backgroundColor,
                             boxShadow: [
-                              BoxShadow(
-                                  blurStyle: BlurStyle.normal,
-                                  color: Colors.grey.shade300,
-                                  blurRadius: 8,
-                                  spreadRadius: 5)
+                              // BoxShadow(
+                              //     blurStyle: BlurStyle.normal,
+                              //     color: Colors.grey.shade300,
+                              //     blurRadius: 8,
+                              //     spreadRadius: 5)
                             ]),
                         child: Column(
                           children: [
@@ -234,12 +255,12 @@ class SavedAddress extends StatelessWidget {
     );
   }
 
-  Widget _builHistoryCard(BuildContext context, SavedLocation location) {
+  Widget _builHistoryCard(BuildContext context, SavedLocation? location) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: GestureDetector(
         onTap: () {
-          _showModaLButtomSheet(context, location);
+          _showModaLButtomSheet(context, location!);
         },
         child: Container(
           padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
@@ -264,7 +285,7 @@ class SavedAddress extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          location.name,
+                          location!.name,
                           style: Theme.of(context).textTheme.overline,
                         ),
                         Text(
@@ -326,6 +347,14 @@ class SavedAddress extends StatelessWidget {
                         onPressed: () {
                           getPlaceDetail(location.placeId, context);
                           settingDropOffDialog(context);
+
+                          LocationHistoryEvent event = LocationHistoryAdd(
+                              location: LocationPrediction(
+                                  placeId: location.placeId,
+                                  mainText: location.name,
+                                  secondaryText: location.address));
+                          BlocProvider.of<LocationHistoryBloc>(context)
+                              .add(event);
                         },
                         child: Row(
                           children: const [

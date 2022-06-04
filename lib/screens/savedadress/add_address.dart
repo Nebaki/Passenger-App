@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_maps_place_picker/google_maps_place_picker.dart';
+import 'package:passengerapp/cubit/favorite_location.dart';
+import 'package:passengerapp/cubit/favorite_location_state.dart';
 import 'package:passengerapp/helper/constants.dart';
 import 'package:passengerapp/rout.dart';
 import 'package:passengerapp/screens/placepicker/place_picker.dart';
@@ -42,21 +44,29 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // _isLoading = false;
+
     return Scaffold(
-        body: BlocConsumer<SavedLocationBloc, SavedLocationState>(
+        body: BlocConsumer<FavoriteLocationCubit, FavoriteLocationState>(
             builder: (context, state) => _buildScreen(),
             listener: (context, state) {
-              if (state is SavedLocationsSuccess) {
+              print("Favoriteeee Stateeeeeeessssssss $state");
+              if (state is FavoriteLocationLoadSuccess) {
                 _isLoading = false;
-                BlocProvider.of<SavedLocationBloc>(context)
-                    .add(SavedLocationsLoad());
+
                 Navigator.pop(context);
               }
-              if (state is SavedLocationOperationFailure) {
+              if (state is FavoriteLocationOperationSuccess) {
                 _isLoading = false;
-                BlocProvider.of<SavedLocationBloc>(context)
-                    .add(SavedLocationsLoad());
-                Navigator.pop(context);
+
+                context.read<FavoriteLocationCubit>().getFavoriteLocations();
+              }
+              if (state is FavoriteLocationOperationFailure) {
+                _isLoading = false;
+
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    backgroundColor: Colors.red.shade900,
+                    content: const Text("OperationFailure")));
               }
             }));
   }
@@ -113,8 +123,17 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
                   findPlace(value);
                 },
                 controller: locationController,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   label: Text('Search Location'),
+                  suffixIcon: IconButton(
+                      onPressed: () {
+                        locationController.clear();
+                        debugPrint("TATAT");
+                      },
+                      icon: const Icon(
+                        Icons.clear,
+                        size: 15,
+                      )),
                   hintStyle: TextStyle(
                       fontWeight: FontWeight.bold, color: Colors.black45),
                   fillColor: Colors.white,
@@ -234,21 +253,21 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
                       if (form!.validate()) {
                         form.save();
                         _isLoading = true;
-                        print(placeId);
-                        print(name);
-                        print(address);
 
-                        SavedLocationEvent event = widget.args.edit
-                            ? SavedLocationUpdate(SavedLocation(
-                                id: widget.args.savedLocation!.id,
-                                name: name!,
-                                address: address!,
-                                placeId: placeId!))
-                            : SavedLocationCreate(SavedLocation(
-                                name: name!,
-                                address: address!,
-                                placeId: placeId!));
-                        BlocProvider.of<SavedLocationBloc>(context).add(event);
+                        widget.args.edit
+                            ? context
+                                .read<FavoriteLocationCubit>()
+                                .updateFavoriteLocation(SavedLocation(
+                                    id: widget.args.savedLocation!.id,
+                                    name: name!,
+                                    address: address!,
+                                    placeId: placeId!))
+                            : context
+                                .read<FavoriteLocationCubit>()
+                                .addToFavoriteLocation(SavedLocation(
+                                    name: name!,
+                                    address: address!,
+                                    placeId: placeId!));
                       }
                     }
                   : null,

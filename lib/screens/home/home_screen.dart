@@ -17,6 +17,7 @@ import 'package:intl/intl.dart';
 import 'package:passengerapp/bloc/bloc.dart';
 import 'package:passengerapp/bloc/database/location_history_bloc.dart';
 import 'package:passengerapp/bloc/driver/driver_bloc.dart';
+import 'package:passengerapp/cubit/favorite_location.dart';
 import 'package:passengerapp/drawer/drawer.dart';
 import 'package:passengerapp/helper/constants.dart';
 
@@ -28,7 +29,6 @@ import 'package:passengerapp/repository/nearby_driver.dart';
 import 'package:passengerapp/rout.dart';
 import 'dart:async';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
-import 'package:passengerapp/helper/helper_functions.dart';
 import 'package:passengerapp/helper/constants.dart';
 import 'package:geolocator_platform_interface/src/enums/location_accuracy.dart'
     as La;
@@ -157,6 +157,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void dispose() {
+    context.read<UserBloc>().add(UserSetAvailability([], false));
     IsolateNameServer.removePortNameMapping(portName);
     _serviceStatusStreamSubscription!.cancel();
     _connectivitySubscription!.cancel();
@@ -197,6 +198,8 @@ class _HomeScreenState extends State<HomeScreen> {
                           _controller.complete(controller);
                           outerController = controller;
                           _determinePosition().then((value) {
+                            context.read<UserBloc>().add(UserSetAvailability(
+                                [value.longitude, value.latitude], true));
                             currentPostion = value;
                             if (widget.args.isFromSplash) {
                               carTypeSelectorDialog(value);
@@ -333,10 +336,10 @@ class _HomeScreenState extends State<HomeScreen> {
               alignment: Alignment.topRight,
               child: ElevatedButton(
                   onPressed: () async {
-                    BlocProvider.of<TripHistoryBloc>(context)
-                        .add(TripHistoryLoad(skip: 0, top: 5));
-                    // BlocProvider.of<LocationHistoryBloc>(context)
-                    //     .add(LocationHistoryClear());
+                    // BlocProvider.of<TripHistoryBloc>(context)
+                    //     .add(TripHistoryLoad(skip: 0, top: 5));
+
+                    // .add(LocationHistoryClear());
 
                     debugPrint(repo.getNearbyDrivers().length.toString());
                   },
@@ -764,7 +767,7 @@ class _HomeScreenState extends State<HomeScreen> {
               Geolocator.getCurrentPosition().then((value) {
                 carTypeSelectorDialog(value);
                 currentLatLng = LatLng(value.latitude, value.longitude);
-                pickupLatLng = currentLatLng;
+                // pickupLatLng = currentLatLng;
                 outerController.animateCamera(CameraUpdate.newCameraPosition(
                     CameraPosition(zoom: 16.1746, target: currentLatLng)));
               });
@@ -850,7 +853,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void showBookedDriver() {
     ImageConfiguration imageConfiguration =
-        createLocalImageConfiguration(context, size: Size(1, 2));
+        createLocalImageConfiguration(context, size: Size(0.5, 1));
     MarkerId markerId = MarkerId(generateRandomId());
     databaseReference.onValue.listen((event) {
       debugPrint(event.snapshot.value.toString());
@@ -897,20 +900,43 @@ class _HomeScreenState extends State<HomeScreen> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  ElevatedButton(
-                      onPressed: () {
+                  FilterChip(
+                      backgroundColor: Theme.of(context).backgroundColor,
+                      label: Text(
+                        "Truck",
+                        style: Theme.of(context).textTheme.titleMedium,
+                      ),
+                      onSelected: (selexted) {
                         selectedCar = SelectedCar.truck;
                         listenTruck(value);
                         Navigator.pop(context);
-                      },
-                      child: const Text('Truck')),
-                  ElevatedButton(
-                      onPressed: () {
+                      }),
+                  FilterChip(
+                      backgroundColor: Theme.of(context).backgroundColor,
+                      label: Text(
+                        "Taxi ",
+                        style: Theme.of(context).textTheme.titleMedium,
+                      ),
+                      onSelected: (selexted) {
                         selectedCar = SelectedCar.taxi;
                         listenTaxi(value);
                         Navigator.pop(context);
-                      },
-                      child: const Text('Taxi')),
+                      }),
+                  // FilterChip(label: Text("Taxi"), onSelected: (selexted) {}),
+                  // ElevatedButton(
+                  //     onPressed: () {
+                  //       selectedCar = SelectedCar.truck;
+                  //       listenTruck(value);
+                  //       Navigator.pop(context);
+                  //     },
+                  //     child: const Text('Truck')),
+                  // ElevatedButton(
+                  //     onPressed: () {
+                  //       selectedCar = SelectedCar.taxi;
+                  //       listenTaxi(value);
+                  //       Navigator.pop(context);
+                  //     },
+                  //     child: const Text('Taxi')),
                 ],
               ),
             ),

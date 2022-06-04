@@ -18,6 +18,7 @@ import 'package:passengerapp/bloc/notificationrequest/notification_request_bloc.
 import 'package:passengerapp/bloc/savedlocation/saved_location_bloc.dart';
 import 'package:passengerapp/bloc/thememode/theme_mode_bloc.dart';
 import 'package:passengerapp/bloc_observer.dart';
+import 'package:passengerapp/cubit/favorite_location.dart';
 import 'package:passengerapp/dataprovider/dataproviders.dart';
 import 'package:passengerapp/helper/constants.dart';
 import 'package:passengerapp/repository/repositories.dart';
@@ -153,23 +154,23 @@ class MyApp extends StatelessWidget {
   final EmergencyReportRepository emergencyReportRepository;
   final CategoryRepository categoryRepository;
 
-  const MyApp(
-      {Key? key,
-      required this.notificationRequestRepository,
-      required this.rideRequestRepository,
-      required this.userRepository,
-      required this.driverRepository,
-      required this.authRepository,
-      required this.reverseLocationRepository,
-      required this.locationPredictionRepository,
-      required this.placeDetailRepository,
-      required this.directionRepository,
-      required this.dataBaseHelperRepository,
-      required this.reviewRepository,
-      required this.savedLocationRepository,
-      required this.emergencyReportRepository,
-      required this.categoryRepository})
-      : super(key: key);
+  const MyApp({
+    Key? key,
+    required this.notificationRequestRepository,
+    required this.rideRequestRepository,
+    required this.userRepository,
+    required this.driverRepository,
+    required this.authRepository,
+    required this.reverseLocationRepository,
+    required this.locationPredictionRepository,
+    required this.placeDetailRepository,
+    required this.directionRepository,
+    required this.dataBaseHelperRepository,
+    required this.reviewRepository,
+    required this.savedLocationRepository,
+    required this.emergencyReportRepository,
+    required this.categoryRepository,
+  }) : super(key: key);
   @override
   Widget build(BuildContext context) {
     Firebase.initializeApp();
@@ -190,7 +191,7 @@ class MyApp extends StatelessWidget {
           RepositoryProvider.value(value: reviewRepository),
           RepositoryProvider.value(value: savedLocationRepository),
           RepositoryProvider.value(value: emergencyReportRepository),
-          RepositoryProvider.value(value: categoryRepository)
+          RepositoryProvider.value(value: categoryRepository),
         ],
         child: MultiBlocProvider(
             providers: [
@@ -250,7 +251,12 @@ class MyApp extends StatelessWidget {
                       SelectedCategoryBloc(SelectedCategoryLoading()))),
               BlocProvider(
                   create: ((context) => ThemeModeCubit(ThemeMode.system))),
-              BlocProvider(create: (context) => CurrentWidgetCubit())
+              BlocProvider(create: (context) => CurrentWidgetCubit()),
+              BlocProvider(
+                create: (context) => FavoriteLocationCubit(
+                    favoriteLocationRepository: dataBaseHelperRepository)
+                  ..getFavoriteLocations(),
+              )
             ],
             child: BlocBuilder<ThemeModeCubit, ThemeMode>(
               builder: (context, state) => MaterialApp(

@@ -94,5 +94,17 @@ class UserBloc extends Bloc<UserEvent, UserState> {
         yield UserOperationFailure();
       }
     }
+
+    if (event is UserSetAvailability) {
+      yield UserLoading();
+
+      try {
+        await userRepository.setPassengerAvailablity(
+            event.location, event.status);
+        yield UserAvailablitySuccess();
+      } catch (_) {
+        yield UserOperationFailure();
+      }
+    }
   }
 }
