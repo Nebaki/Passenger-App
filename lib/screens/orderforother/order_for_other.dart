@@ -393,7 +393,9 @@ class _OrderForOtherScreenState extends State<OrderForOtherScreen> {
   }
 
   void _changePlaceDetailBlocToInitialState() {
-    context.read<PlaceDetailBloc>().add(PlaceDetailChangeToInitialState());
+    context
+        .read<LocationPredictionBloc>()
+        .add(LocationPredicationChangeToInitalState());
   }
 
   void settingDropOffDialog() {

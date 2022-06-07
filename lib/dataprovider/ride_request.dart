@@ -21,6 +21,7 @@ class RideRequestDataProvider {
   RideRequestDataProvider({required this.httpClient});
 
   Future<RideRequest> checkStartedTrip() async {
+    print("CheckingGGGGGGGGGGGGGGG");
     final http.Response response = await http.get(
         Uri.parse(RideRequestEndPoints.checkStartedTripEndPoint()),
         headers: <String, String>{
@@ -34,7 +35,7 @@ class RideRequestDataProvider {
           : RideRequest(
               pickUpAddress: null, droppOffAddress: null, driverId: null);
     } else {
-      throw 'Unable to get Started Trips';
+      throw Exception(response.statusCode);
     }
   }
 

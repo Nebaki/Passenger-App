@@ -11,3 +11,8 @@ class LocationPredictionLoad extends LocationPredictionEvent {
   @override
   List<Object> get props => [];
 }
+
+class LocationPredicationChangeToInitalState extends LocationPredictionEvent {
+  @override
+  List<Object?> get props => [];
+}

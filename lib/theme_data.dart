@@ -22,8 +22,11 @@ class ThemesData {
       )),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ButtonStyle(
-          backgroundColor: MaterialStateProperty.all<Color>(
-              const Color.fromRGBO(244, 201, 60, 1)),
+          backgroundColor: MaterialStateProperty.resolveWith<Color>(
+              (Set<MaterialState> state) =>
+                  state.contains(MaterialState.disabled)
+                      ? Colors.grey
+                      : buttonColor),
           shape: MaterialStateProperty.all<RoundedRectangleBorder>(
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
           foregroundColor: MaterialStateProperty.all<Color>(Colors.black),
@@ -70,14 +73,16 @@ class ThemesData {
       )),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ButtonStyle(
-          foregroundColor: MaterialStateProperty.resolveWith<Color?>(
+          backgroundColor: MaterialStateProperty.resolveWith<Color>(
               (Set<MaterialState> state) =>
-                  state.contains(MaterialState.disabled) ? Colors.grey : null),
-          backgroundColor: MaterialStateProperty.all<Color>(
-              const Color.fromRGBO(244, 201, 60, 1)),
+                  state.contains(MaterialState.disabled)
+                      ? Colors.grey
+                      : buttonColor),
+          // backgroundColor: MaterialStateProperty.all<Color>(
+          //     const Color.fromRGBO(244, 201, 60, 1)),
           shape: MaterialStateProperty.all<RoundedRectangleBorder>(
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
-          // foregroundColor: MaterialStateProperty.all<Color>(Colors.black),
+          foregroundColor: MaterialStateProperty.all<Color>(Colors.black),
           textStyle: MaterialStateProperty.all<TextStyle>(const TextStyle(
               color: Colors.black, fontWeight: FontWeight.w300, fontSize: 20)),
         ),

@@ -58,9 +58,9 @@ class SavedAddress extends StatelessWidget {
                                       final item = items[index];
                                       return Dismissible(
                                           direction:
-                                              DismissDirection.endToStart,
+                                              DismissDirection.horizontal,
                                           background: Container(
-                                            padding: EdgeInsets.symmetric(
+                                            padding: const EdgeInsets.symmetric(
                                                 horizontal: 20),
                                             decoration: BoxDecoration(
                                               color: Color(0xFFFFE6E6),
@@ -69,6 +69,10 @@ class SavedAddress extends StatelessWidget {
                                             ),
                                             child: Row(
                                               children: const [
+                                                Icon(
+                                                  Icons.edit,
+                                                  color: Colors.redAccent,
+                                                ),
                                                 Spacer(),
                                                 Icon(
                                                   Icons.delete_outlined,
@@ -78,9 +82,28 @@ class SavedAddress extends StatelessWidget {
                                               ],
                                             ),
                                           ),
+                                          confirmDismiss: (direction) async {
+                                            if (direction ==
+                                                DismissDirection.startToEnd) {
+                                              Navigator.pushNamed(context,
+                                                  AddAddressScreen.routeName,
+                                                  arguments:
+                                                      AddAdressScreenArgument(
+                                                          edit: true,
+                                                          savedLocation: state
+                                                                  .savedLocation[
+                                                              index]));
+                                              return false;
+                                            }
+                                            if (direction ==
+                                                DismissDirection.endToStart) {
+                                              return true;
+                                            }
+                                          },
                                           onDismissed: (DismissDirection d) {
                                             if (d ==
                                                 DismissDirection.endToStart) {
+                                              print("Come Over Meee");
                                               print(
                                                   "hererere ${state.savedLocation[index]!.id}");
                                               context

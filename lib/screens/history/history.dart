@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:passengerapp/bloc/bloc.dart';
+import 'package:passengerapp/helper/constants.dart';
 import 'package:passengerapp/models/models.dart';
 import 'package:passengerapp/rout.dart';
 import 'package:passengerapp/screens/screens.dart';
 import 'package:passengerapp/widgets/widgets.dart';
+import 'package:shimmer/shimmer.dart';
 
 class HistoryPage extends StatefulWidget {
   static const routeName = "/history";
@@ -75,32 +77,38 @@ class _HistoryPageState extends State<HistoryPage> {
               }
             }
           },
-          builder: (context, state) => !_isFirst
-              ? Padding(
-                  padding: const EdgeInsets.only(top: 80),
-                  child: SizedBox(
-                    height: MediaQuery.of(context).size.height * 0.75,
-                    child: ListView.builder(
-                      controller: _scrollController,
-                      itemCount: _history.length,
-                      itemBuilder: (context, index) {
-                        return _history.isNotEmpty
-                            ? _builHistoryCard(context,
-                                _history[index]!.status!, _history[index])
-                            : Container();
-                      },
-                      padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
-                    ),
-                  ),
-                )
-              : const Center(
-                  child: SizedBox(
-                      height: 50,
-                      width: 50,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 1,
-                      )),
+          builder: (context, state) {
+            if (state is TripHistoryOperationFailure) {
+              return const Center(
+                child: Text(
+                  "Oops something went wrong...",
+                  style: TextStyle(
+                      color: Colors.red,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 25),
                 ),
+              );
+            }
+            return !_isFirst
+                ? Padding(
+                    padding: const EdgeInsets.only(top: 80),
+                    child: SizedBox(
+                      height: MediaQuery.of(context).size.height * 0.75,
+                      child: ListView.builder(
+                        controller: _scrollController,
+                        itemCount: _history.length,
+                        itemBuilder: (context, index) {
+                          return _history.isNotEmpty
+                              ? _builHistoryCard(context,
+                                  _history[index]!.status!, _history[index])
+                              : Container();
+                        },
+                        padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
+                      ),
+                    ),
+                  )
+                : _buildShimmerEffect();
+          },
         ),
         !_isFirst
             ? BlocBuilder<TripHistoryBloc, TripHistoryState>(
@@ -235,6 +243,113 @@ class _HistoryPageState extends State<HistoryPage> {
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildShimmerEffect() {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(8, 88, 8, 8),
+      child: ListView(
+        children: List.generate(
+            10,
+            (index) => Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Shimmer(
+                    gradient: shimmerGradient,
+                    child: Container(
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(color: Colors.black, width: 1)),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 20, vertical: 10),
+                      child: Column(
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(10),
+                                child: Container(
+                                  height: 40,
+                                  width: 40,
+                                  color: Colors.black,
+                                ),
+                              ),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: [
+                                  Container(
+                                    height: 10,
+                                    width: 80,
+                                    decoration: const BoxDecoration(
+                                        color: Colors.black),
+                                  ),
+                                  SizedBox(
+                                    height: 10,
+                                  ),
+                                  Container(
+                                    height: 10,
+                                    width: 60,
+                                    decoration: const BoxDecoration(
+                                        color: Colors.black),
+                                  ),
+                                ],
+                              )
+                            ],
+                          ),
+                          const Divider(),
+                          const SizedBox(height: 10),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Container(
+                                    height: 10,
+                                    width: 60,
+                                    decoration: const BoxDecoration(
+                                        color: Colors.black),
+                                  ),
+                                  const SizedBox(
+                                    width: 10,
+                                  ),
+                                  Container(
+                                    height: 10,
+                                    width: 60,
+                                    decoration: const BoxDecoration(
+                                        color: Colors.black),
+                                  ),
+                                  Container(
+                                    height: 10,
+                                    width: 60,
+                                    decoration: const BoxDecoration(
+                                        color: Colors.black),
+                                  ),
+                                  const SizedBox(
+                                    width: 10,
+                                  ),
+                                ],
+                              ),
+                              Container(
+                                height: 10,
+                                width: 60,
+                                decoration:
+                                    const BoxDecoration(color: Colors.black),
+                              ),
+                              // Text(
+                              //   "${request.price != 'null' ? double.parse(request.price!).truncate() : 0} ETB",
+                              //   // style: const TextStyle(color: Colors.black),
+                              // )
+                            ],
+                          )
+                        ],
+                      ),
+                    ),
+                  ),
+                )),
       ),
     );
   }

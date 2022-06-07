@@ -43,13 +43,6 @@ class _WhereToState extends State<WhereTo> {
         height: MediaQuery.of(context).size.height * 0.22,
         padding: const EdgeInsets.only(top: 10, bottom: 10),
         decoration: BoxDecoration(
-            // boxShadow: const [
-            //   BoxShadow(
-            //       blurRadius: 6,
-            //       spreadRadius: 1,
-            //       offset: Offset(0, -4),
-            //       color: Colors.grey)
-            // ],
             color: Theme.of(context).backgroundColor,
             borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(20), topRight: Radius.circular(20))),
@@ -74,77 +67,46 @@ class _WhereToState extends State<WhereTo> {
                   const SizedBox(
                     width: 10,
                   ),
-                  BlocConsumer<LocationBloc, ReverseLocationState>(
-                      listenWhen: (previous, current) => whereToClicked,
-                      listener: (context, state) {
-                        if (state is ReverseLocationLoading) {
-                          showDialog(
-                              barrierDismissible: false,
-                              context: context,
-                              builder: (BuildContext context) {
-                                return WillPopScope(
-                                  onWillPop: () async => false,
-                                  child: AlertDialog(
-                                    content: Row(
-                                      children: const [
-                                        SizedBox(
-                                          height: 20,
-                                          width: 20,
-                                          child: CircularProgressIndicator(
-                                            strokeWidth: 1,
-                                            color: Colors.red,
-                                          ),
-                                        ),
-                                        SizedBox(
-                                          width: 5,
-                                        ),
-                                        Text("Loading current Location."),
-                                      ],
-                                    ),
-                                  ),
-                                );
-                              });
-                        }
-                        if (state is ReverseLocationLoadSuccess) {
-                          Navigator.pop(context);
-                          buttomSheet();
-                          // List addresses = state.location.address1.split(",");
-                          pickupAddress = state.location.address1;
-                          currentLocation = state.location.address1;
-                          pickupController.text = state.location.address1;
-                          // addresses[1];
-                          pickupAddress = currentLocation;
-
-                          // return Text(addresses[0]);
-                        }
-                        if (state is ReverseLocationOperationFailure) {
-                          Navigator.pop(context);
-                        }
-                      },
+                  BlocBuilder<LocationBloc, ReverseLocationState>(
                       builder: (context, state) {
-                        return Padding(
-                          padding: const EdgeInsets.only(top: 15),
-                          child: InkWell(
-                            onTap: () {
-                              whereToClicked = true;
-                              BlocProvider.of<LocationBloc>(context)
-                                  .add(const ReverseLocationLoad());
-
-                              // Navigator.pushNamed(context, SearchScreen.routeName,
-                              //     arguments: SearchScreenArgument(
-                              //         currentLocation: currentLocation));
-                            },
-                            child: SizedBox(
-                              height: 35,
-                              width: 150,
-                              child: Text(
-                                "Where To?",
-                                style: Theme.of(context).textTheme.titleLarge,
-                              ),
-                            ),
+                    return Padding(
+                      padding: const EdgeInsets.only(top: 15),
+                      child: InkWell(
+                        onTap: () {
+                          if (state is ReverseLocationLoadSuccess) {
+                            buttomSheet();
+                            pickupAddress = state.location.address1;
+                            currentLocation = state.location.address1;
+                            pickupController.text = state.location.address1;
+                            pickupAddress = currentLocation;
+                          }
+                          if (state is ReverseLocationLoading) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                    content:
+                                        Text("Determining current location")));
+                          }
+                          if (state is ReverseLocationOperationFailure) {
+                            context
+                                .read<LocationBloc>()
+                                .add(const ReverseLocationLoad());
+                            _buildReverseLocationLoadingDialog();
+                          }
+                          whereToClicked = true;
+                          BlocProvider.of<LocationBloc>(context)
+                              .add(const ReverseLocationLoad());
+                        },
+                        child: SizedBox(
+                          height: 35,
+                          width: 150,
+                          child: Text(
+                            "Where To?",
+                            style: Theme.of(context).textTheme.titleLarge,
                           ),
-                        );
-                      }),
+                        ),
+                      ),
+                    );
+                  }),
                 ],
               ),
             ),
@@ -237,6 +199,43 @@ class _WhereToState extends State<WhereTo> {
         ),
       ),
     );
+  }
+
+  void _buildReverseLocationLoadingDialog() {
+    showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: (BuildContext context) {
+          return BlocBuilder(builder: ((context, state) {
+            if (state is ReverseLocationLoadSuccess) {
+              Navigator.pop(context);
+            }
+            if (state is ReverseLocationOperationFailure) {
+              Navigator.pop(context);
+            }
+            return WillPopScope(
+              onWillPop: () async => false,
+              child: AlertDialog(
+                content: Row(
+                  children: const [
+                    SizedBox(
+                      height: 20,
+                      width: 20,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 1,
+                        color: Colors.red,
+                      ),
+                    ),
+                    SizedBox(
+                      width: 5,
+                    ),
+                    Text("Loading current Location."),
+                  ],
+                ),
+              ),
+            );
+          }));
+        });
   }
 
   Widget _buildFavoriteLocations(SavedLocation location) {
@@ -381,7 +380,9 @@ class _WhereToState extends State<WhereTo> {
   }
 
   void _changePlaceDetailBlocToInitialState() {
-    context.read<PlaceDetailBloc>().add(PlaceDetailChangeToInitialState());
+    context
+        .read<LocationPredictionBloc>()
+        .add(LocationPredicationChangeToInitalState());
   }
 
   void settingPickupDialog() {
@@ -525,9 +526,7 @@ class _WhereToState extends State<WhereTo> {
           return WillPopScope(
             onWillPop: () async {
               print("YYYYDY");
-              context
-                  .read<PlaceDetailBloc>()
-                  .add(PlaceDetailChangeToInitialState());
+              _changePlaceDetailBlocToInitialState();
               return true;
             },
             child: Stack(

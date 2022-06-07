@@ -21,10 +21,5 @@ class PlaceDetailBloc extends Bloc<PlaceDetailEvent, PlaceDetailState> {
         yield PlaceDetailOperationFailure();
       }
     }
-
-    if (event is PlaceDetailChangeToInitialState) {
-      print("We ate ehere aasdf");
-      yield PlaceDetailInitialState();
-    }
   }
 }

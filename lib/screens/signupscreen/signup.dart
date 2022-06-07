@@ -65,14 +65,16 @@ class _SignupScreenState extends State<SignupScreen> {
         codeAutoRetrievalTimeout: (verificationId) async {});
   }
 
-  void checkInternet() async {
+  Future<bool> checkInternet() async {
     result = await _connectivity.checkConnectivity();
     if (result == ConnectivityResult.none) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: const Text("No Internet Connection"),
         backgroundColor: Colors.red.shade900,
       ));
-      return;
+      return false;
+    } else {
+      return true;
     }
   }
 
@@ -174,44 +176,50 @@ class _SignupScreenState extends State<SignupScreen> {
                                 : () {
                                     final form = _formkey.currentState;
                                     if (form!.validate()) {
-                                      checkInternet();
-                                      showDialog(
-                                          context: context,
-                                          builder: (BuildContext context) {
-                                            return AlertDialog(
-                                              title: const Text("Confirm"),
-                                              content: Text.rich(TextSpan(
-                                                  text:
-                                                      "We will send a verification code to ",
-                                                  children: [
-                                                    TextSpan(
-                                                        text: phoneController)
-                                                  ])),
-                                              actions: [
-                                                TextButton(
-                                                    onPressed: () async {
-                                                      setState(() {
-                                                        _isLoading = true;
-                                                      });
+                                      checkInternet().then((value) {
+                                        if (value) {
+                                          showDialog(
+                                              context: context,
+                                              builder: (BuildContext context) {
+                                                return AlertDialog(
+                                                  title: const Text("Confirm"),
+                                                  content: Text.rich(TextSpan(
+                                                      text:
+                                                          "We will send a verification code to ",
+                                                      children: [
+                                                        TextSpan(
+                                                            text:
+                                                                phoneController)
+                                                      ])),
+                                                  actions: [
+                                                    TextButton(
+                                                        onPressed: () async {
+                                                          setState(() {
+                                                            _isLoading = true;
+                                                          });
 
-                                                      Navigator.pop(context);
+                                                          Navigator.pop(
+                                                              context);
 
-                                                      print(phoneController);
-                                                      checkPhoneNumber(
-                                                          phoneController);
-                                                    },
-                                                    child: const Text(
-                                                        "Send Code")),
-                                                TextButton(
-                                                    onPressed: () {
-                                                      Navigator.pop(
-                                                          context, "Cancel");
-                                                    },
-                                                    child:
-                                                        const Text("Cancel")),
-                                              ],
-                                            );
-                                          });
+                                                          print(
+                                                              phoneController);
+                                                          checkPhoneNumber(
+                                                              phoneController);
+                                                        },
+                                                        child: const Text(
+                                                            "Send Code")),
+                                                    TextButton(
+                                                        onPressed: () {
+                                                          Navigator.pop(context,
+                                                              "Cancel");
+                                                        },
+                                                        child: const Text(
+                                                            "Cancel")),
+                                                  ],
+                                                );
+                                              });
+                                        }
+                                      });
                                     }
                                   },
                             child: Row(

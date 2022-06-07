@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:passengerapp/bloc/bloc.dart';
 import 'package:passengerapp/helper/constants.dart';
 import 'package:passengerapp/helper/url_launcher.dart';
+import 'package:shimmer/shimmer.dart';
 
 import '../screens/screens.dart';
 
@@ -42,12 +43,12 @@ class DriverProfile extends StatelessWidget {
                               onPressed: () {
                                 makePhoneCall(state.driver.phoneNumber);
                               },
-                              icon: Icon(
+                              icon: const Icon(
                                 Icons.call,
                                 size: 18,
                               ))),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       width: 10,
                     ),
                     ClipRRect(
@@ -61,12 +62,12 @@ class DriverProfile extends StatelessWidget {
                                 sendTextMessage(
                                     state.driver.phoneNumber, "test");
                               },
-                              icon: Icon(
+                              icon: const Icon(
                                 Icons.mark_chat_read,
                                 size: 18,
                               ))),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       width: 10,
                     ),
                     ClipRRect(
@@ -89,7 +90,7 @@ class DriverProfile extends StatelessWidget {
                                 //     .routeName);
                                 // makePhoneCall(state.driver.phoneNumber);
                               },
-                              icon: Icon(
+                              icon: const Icon(
                                 Icons.share,
                                 size: 18,
                               ))),
@@ -133,7 +134,7 @@ class DriverProfile extends StatelessWidget {
                                         return const Icon(Icons.error);
                                       }),
                                 ))),
-                        SizedBox(
+                        const SizedBox(
                           width: 10,
                         ),
                         Column(
@@ -141,16 +142,16 @@ class DriverProfile extends StatelessWidget {
                           children: [
                             Text(
                               state.driver.firstName,
-                              style: TextStyle(
+                              style: const TextStyle(
                                   fontSize: 20, fontWeight: FontWeight.w300),
                             ),
                             Row(
                               children: [
                                 Text(driverRating!.toString()),
-                                SizedBox(
+                                const SizedBox(
                                   width: 3,
                                 ),
-                                Icon(Icons.star,
+                                const Icon(Icons.star,
                                     size: 15,
                                     color: Color.fromRGBO(244, 201, 60, 1))
                               ],
@@ -181,7 +182,7 @@ class DriverProfile extends StatelessWidget {
                                       "Plate Number: ${vehicle!['plate_number']}")
                                 ],
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 width: 15,
                               ),
                               Text('Color: ${vehicle!['color']}'),
@@ -193,22 +194,161 @@ class DriverProfile extends StatelessWidget {
                   ],
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 10,
               ),
             ],
           ),
         );
       }
-      return const Center(
-        child: SizedBox(
-          height: 60,
-          width: 60,
-          child: CircularProgressIndicator(
-            strokeWidth: 1,
-          ),
-        ),
-      );
+      return _buildDriverProffileShimmerEffect();
     });
+  }
+
+  Widget _buildDriverProffileShimmerEffect() {
+    return Shimmer(
+      gradient: shimmerGradient,
+      child: Container(
+        child: Column(
+          children: [
+            Flexible(
+              flex: 3,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(100),
+                    child: Container(
+                      height: 33,
+                      width: 33,
+                      color: Colors.black,
+                    ),
+                  ),
+                  const SizedBox(
+                    width: 10,
+                  ),
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(100),
+                    child: Container(
+                      height: 33,
+                      width: 33,
+                      color: Colors.black,
+                    ),
+                  ),
+                  const SizedBox(
+                    width: 10,
+                  ),
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(100),
+                    child: Container(
+                      height: 33,
+                      width: 33,
+                      color: Colors.black,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Flexible(
+              flex: 4,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: [
+                      Center(
+                          child: CircleAvatar(
+                              radius: 25,
+                              backgroundColor: Colors.black,
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(100),
+                              ))),
+                      const SizedBox(
+                        width: 10,
+                      ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            height: 10,
+                            width: 80,
+                            color: Colors.black,
+                          ),
+                          Row(
+                            children: [
+                              Container(
+                                height: 10,
+                                width: 40,
+                                color: Colors.black,
+                              ),
+                              const SizedBox(
+                                width: 3,
+                              ),
+                              const Icon(Icons.star,
+                                  size: 15, color: Colors.black)
+                            ],
+                          )
+                        ],
+                      ),
+                    ],
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Flexible(
+                          flex: 2,
+                          child:
+                              Image(height: 40, image: AssetImage(assetImage))),
+                      Flexible(
+                        flex: 4,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // Spacer(),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Container(
+                                    width: 90,
+                                    height: 10,
+                                    decoration: BoxDecoration(
+                                        color: Colors.black,
+                                        borderRadius:
+                                            BorderRadius.circular(16))),
+                                Container(
+                                    width: 60,
+                                    height: 10,
+                                    decoration: BoxDecoration(
+                                        color: Colors.black,
+                                        borderRadius:
+                                            BorderRadius.circular(16))),
+                              ],
+                            ),
+                            const SizedBox(
+                              width: 15,
+                            ),
+                            Container(
+                                width: 60,
+                                height: 10,
+                                decoration: BoxDecoration(
+                                    color: Colors.black,
+                                    borderRadius: BorderRadius.circular(16))),
+                          ],
+                        ),
+                      )
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

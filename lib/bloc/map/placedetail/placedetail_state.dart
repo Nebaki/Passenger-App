@@ -8,8 +8,6 @@ class PlaceDetailState extends Equatable {
   List<Object> get props => [];
 }
 
-class PlaceDetailInitialState extends PlaceDetailState {}
-
 class PlaceDetailLoading extends PlaceDetailState {}
 
 class PlaceDetailLoadSuccess extends PlaceDetailState {

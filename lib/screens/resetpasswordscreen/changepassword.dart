@@ -182,8 +182,9 @@ class ChangePassword extends StatelessWidget {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               const Spacer(),
-                              const Text("Change Password",
-                                  style: TextStyle(color: Colors.white)),
+                              const Text(
+                                "Change Password",
+                              ),
                               const Spacer(),
                               Align(
                                 alignment: Alignment.centerRight,

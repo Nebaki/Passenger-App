@@ -12,8 +12,3 @@ class PlaceDetailLoad extends PlaceDetailEvent {
   @override
   List<Object> get props => [];
 }
-
-class PlaceDetailChangeToInitialState extends PlaceDetailEvent {
-  @override
-  List<Object?> get props => [];
-}

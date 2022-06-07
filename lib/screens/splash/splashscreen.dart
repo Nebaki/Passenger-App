@@ -85,8 +85,26 @@ class _CustomSplashScreenState extends State<CustomSplashScreen> {
                 ),
               );
             }
+
             return Container();
           }, listener: (context, st) {
+            if (st is RideRequestOperationFailur) {
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                duration: const Duration(minutes: 5),
+                backgroundColor: Colors.black,
+                content: const Text(
+                  "Check your internet connection",
+                  style: TextStyle(color: Colors.white),
+                ),
+                action: SnackBarAction(
+                    textColor: Colors.white,
+                    label: "Try Again",
+                    onPressed: () {
+                      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                      _checkStartedTrip();
+                    }),
+              ));
+            }
             if (st is RideRequestStartedTripChecked) {
               if (st.rideRequest.pickUpAddress == null) {
                 Navigator.pushReplacementNamed(context, HomeScreen.routeName,

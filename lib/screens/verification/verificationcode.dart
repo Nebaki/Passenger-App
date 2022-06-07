@@ -476,8 +476,9 @@ class _PhoneVerificationState extends State<PhoneVerification> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       const Spacer(),
-                      const Text("Verify",
-                          style: TextStyle(color: Colors.white)),
+                      const Text(
+                        "Verify",
+                      ),
                       const Spacer(),
                       Align(
                         alignment: Alignment.centerRight,

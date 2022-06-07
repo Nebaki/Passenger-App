@@ -47,7 +47,6 @@ class FrontPage extends StatelessWidget {
                           },
                           child: const Text(
                             "Sign In",
-                            style: TextStyle(color: Colors.white),
                           )),
                     ),
                   ),
@@ -64,8 +63,9 @@ class FrontPage extends StatelessWidget {
                             Navigator.pushNamed(
                                 context, SignupScreen.routeName);
                           },
-                          child: const Text("Sign Up",
-                              style: TextStyle(color: Colors.white))),
+                          child: const Text(
+                            "Sign Up",
+                          )),
                     ),
                   ),
                 ],

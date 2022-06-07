@@ -22,5 +22,8 @@ class LocationPredictionBloc
         yield LocationPredictionOperationFailure();
       }
     }
+    if (event is LocationPredicationChangeToInitalState) {
+      yield LocationPredictionInitialState();
+    }
   }
 }
