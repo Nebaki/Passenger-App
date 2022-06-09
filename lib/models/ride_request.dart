@@ -57,17 +57,6 @@ class RideRequest extends Equatable {
         driver: json.containsKey("driver")
             ? DriverModel.fromJson(json["driver"])
             : null,
-        // json["driver"] != null
-        //     ? DriverModel.fromJson(json["driver"])
-        //     : DriverModel(
-        //         id: 'id',
-        //         firstName: 'firstName',
-        //         lastName: 'lastName',
-        //         phoneNumber: 'phoneNumber',
-        //         gender: 'gender',
-        //         rating: 4,
-        //         profileImage: 'profileImage',
-        //         fcmId: 'fcmId'),
         pickupLocation:
             LatLng(json["pickup_location"][0], json["pickup_location"][1]),
         dropOffLocation:
@@ -78,7 +67,7 @@ class RideRequest extends Equatable {
         status: json['status'],
         price: json['price'].toString(),
         distance: json['distance'].toString(),
-        date: DateFormat.yMMMMEEEEd().format(now),
+        date: DateFormat.yMMMEd().format(now),
         time: DateFormat.jm().format(now));
 
     print("this is the response data ${json["driver_id"]}");

@@ -105,6 +105,9 @@ class _CustomSplashScreenState extends State<CustomSplashScreen> {
                     }),
               ));
             }
+            if (st is RideRequestTokentExpired) {
+              Navigator.pushReplacementNamed(context, SigninScreen.routeName);
+            }
             if (st is RideRequestStartedTripChecked) {
               if (st.rideRequest.pickUpAddress == null) {
                 Navigator.pushReplacementNamed(context, HomeScreen.routeName,

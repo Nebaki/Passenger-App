@@ -8,6 +8,7 @@ import 'package:passengerapp/bloc/bloc.dart';
 import 'package:passengerapp/bloc/notificationrequest/notification_request_bloc.dart';
 import 'package:passengerapp/helper/constants.dart';
 import 'package:passengerapp/helper/helper_functions.dart';
+import 'package:passengerapp/repository/nearby_driver.dart';
 import 'package:passengerapp/screens/home/assistant/home_screen_assistant.dart';
 import 'package:passengerapp/widgets/custome_back_arrow.dart';
 import 'package:passengerapp/widgets/widgets.dart';
@@ -235,6 +236,15 @@ class _OrderForOtherScreenState extends State<OrderForOtherScreen> {
                                   ),
                                   onPressed: pickupSetted && droppOffSetted
                                       ? () {
+                                          Geofire.stopListener().then((value) {
+                                            NearbyDriverRepository()
+                                                .resetList();
+                                            debugPrint("Stoppedd");
+                                            Geofire.queryAtLocation(
+                                                pickupLatLng.latitude,
+                                                pickupLatLng.longitude,
+                                                1);
+                                          });
                                           DirectionEvent event =
                                               DirectionLoadFromDiffrentPickupLocation(
                                                   pickup: pickupLatLng,

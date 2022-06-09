@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:passengerapp/bloc/bloc.dart';
 import 'package:passengerapp/helper/constants.dart';
+import 'package:shimmer/shimmer.dart';
 
 class DirectionDetail extends StatefulWidget {
   const DirectionDetail({
@@ -38,6 +39,9 @@ class _DirectionDetailState extends State<DirectionDetail> {
               duration = (directionState.direction.durationValue / 60)
                   .truncate()
                   .toString();
+            }
+            if (directionState is DirectionLoading) {
+              return _buildShimmer();
             }
             return Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -95,8 +99,61 @@ class _DirectionDetailState extends State<DirectionDetail> {
             );
           });
         }
-        return Container();
+
+        return _buildShimmer();
       },
+    );
+  }
+
+  Widget _buildShimmer() {
+    return Shimmer(
+      gradient: shimmerGradient,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                  height: 10,
+                  width: 100,
+                  decoration: BoxDecoration(
+                      color: Colors.black,
+                      borderRadius: BorderRadius.circular(16))),
+              const SizedBox(
+                height: 5,
+              ),
+              Container(
+                  height: 10,
+                  width: 100,
+                  decoration: BoxDecoration(
+                      color: Colors.black,
+                      borderRadius: BorderRadius.circular(16))),
+            ],
+          ),
+          const SizedBox(height: 35, child: VerticalDivider()),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                  height: 10,
+                  width: 80,
+                  decoration: BoxDecoration(
+                      color: Colors.black,
+                      borderRadius: BorderRadius.circular(16))),
+              const SizedBox(
+                height: 5,
+              ),
+              Container(
+                  height: 10,
+                  width: 80,
+                  decoration: BoxDecoration(
+                      color: Colors.black,
+                      borderRadius: BorderRadius.circular(16))),
+            ],
+          )
+        ],
+      ),
     );
   }
 }

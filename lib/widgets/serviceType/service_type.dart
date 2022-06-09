@@ -121,8 +121,10 @@ class _ServiceState extends State<Service> {
     return WillPopScope(
       onWillPop: () async {
         BlocProvider.of<DirectionBloc>(context).add(
-            const DirectionChangeToInitialState(
-                loadCurrentLocation: false, listenToNearbyDriver: false));
+            DirectionChangeToInitialState(
+                loadCurrentLocation: false,
+                listenToNearbyDriver:
+                    widget.fromOrderForOthers ? true : false));
         context.read<CurrentWidgetCubit>().changeWidget(WhereTo());
         return false;
       },
@@ -174,6 +176,9 @@ class _ServiceState extends State<Service> {
                       }
                     }),
                 // Text("${nextDrivers}"),
+                SizedBox(
+                  height: 15,
+                ),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: SizedBox(
@@ -187,15 +192,6 @@ class _ServiceState extends State<Service> {
                             builder: (context, categoryState) {
                           if (categoryState is CategoryChanged) {
                             return ElevatedButton(
-                              style: ButtonStyle(
-                                  backgroundColor: MaterialStateProperty.all<
-                                          Color>(
-                                      const Color.fromRGBO(244, 201, 60, 1)),
-                                  shape: MaterialStateProperty.all<
-                                          RoundedRectangleBorder>(
-                                      RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(10)))),
                               onPressed: () {
                                 final l = searchNearbyDriversList(
                                     categoryState.category.name);
@@ -263,17 +259,9 @@ class _ServiceState extends State<Service> {
 
                       // }
                       if (state is DriverLoading) {
-                        return ElevatedButton(
-                          style: ButtonStyle(
-                              backgroundColor: MaterialStateProperty.all<Color>(
-                                  const Color.fromRGBO(244, 201, 60, 1)),
-                              shape: MaterialStateProperty.all<
-                                      RoundedRectangleBorder>(
-                                  RoundedRectangleBorder(
-                                      borderRadius:
-                                          BorderRadius.circular(10)))),
+                        return const ElevatedButton(
                           onPressed: null,
-                          child: const Text(
+                          child: Text(
                             "Finding nearby driver..",
                             style: TextStyle(
                                 color: Colors.black,
@@ -282,17 +270,9 @@ class _ServiceState extends State<Service> {
                         );
                       }
                       if (state is DriverOperationFailure) {
-                        return ElevatedButton(
-                          style: ButtonStyle(
-                              backgroundColor: MaterialStateProperty.all<Color>(
-                                  const Color.fromRGBO(244, 201, 60, 1)),
-                              shape: MaterialStateProperty.all<
-                                      RoundedRectangleBorder>(
-                                  RoundedRectangleBorder(
-                                      borderRadius:
-                                          BorderRadius.circular(10)))),
+                        return const ElevatedButton(
                           onPressed: null,
-                          child: const Text(
+                          child: Text(
                             "No driver Found",
                             style: TextStyle(
                                 color: Colors.black,
@@ -301,17 +281,9 @@ class _ServiceState extends State<Service> {
                         );
                       }
                       if (state is DriverNotFoundState) {
-                        return ElevatedButton(
-                          style: ButtonStyle(
-                              backgroundColor: MaterialStateProperty.all<Color>(
-                                  const Color.fromRGBO(244, 201, 60, 1)),
-                              shape: MaterialStateProperty.all<
-                                      RoundedRectangleBorder>(
-                                  RoundedRectangleBorder(
-                                      borderRadius:
-                                          BorderRadius.circular(10)))),
+                        return const ElevatedButton(
                           onPressed: null,
-                          child: const Text(
+                          child: Text(
                             "No driver Found",
                             style: TextStyle(
                                 color: Colors.black,
@@ -319,16 +291,11 @@ class _ServiceState extends State<Service> {
                           ),
                         );
                       }
-                      return ElevatedButton(
-                        style: ButtonStyle(
-                            backgroundColor: MaterialStateProperty.all<Color>(
-                                const Color.fromRGBO(244, 201, 60, 1)),
-                            shape: MaterialStateProperty.all<
-                                    RoundedRectangleBorder>(
-                                RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10)))),
+                      return
+                          // Container();
+                          const ElevatedButton(
                         onPressed: null,
-                        child: const Text(
+                        child: Text(
                           "Please select car type",
                           style: TextStyle(
                               color: Colors.black,

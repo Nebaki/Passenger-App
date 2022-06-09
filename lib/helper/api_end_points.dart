@@ -114,7 +114,7 @@ class RideRequestEndPoints {
   }
 
   static String getRideRequestsEndPoint(int skip, int top) {
-    return '$baseUrl/$middle/get-my-ride-requests?includes[0]=driver&skip=$skip&top=$top&orderBy[0][field]=createdAt&orderBy[0][direction]=desc]';
+    return '$baseUrl/$middle/get-my-ride-requests?includes[0]=driver&skip=$skip&top=$top&orderBy[0][field]=createdAt&orderBy[0][direction]=desc';
   }
 
   static String createRideRequestEndPoint() {

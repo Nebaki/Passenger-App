@@ -44,7 +44,7 @@ class _HistoryPageState extends State<HistoryPage> {
     debugPrint(_scrollController.position.extentAfter.toString());
     if (_scrollController.position.extentAfter < 300 && _loadMore) {
       _loadMore = false;
-      _skip = _top + 1;
+      _skip = _top;
       _top += 15;
       print(
           "Hereeeeeeeeeeeeeeeeee Called ::::::::::::::::::::::::::::::::::::::::::::::: skip$_skip,Top:$_top");
@@ -93,7 +93,7 @@ class _HistoryPageState extends State<HistoryPage> {
                 ? Padding(
                     padding: const EdgeInsets.only(top: 80),
                     child: SizedBox(
-                      height: MediaQuery.of(context).size.height * 0.75,
+                      height: MediaQuery.of(context).size.height * 0.9,
                       child: ListView.builder(
                         controller: _scrollController,
                         itemCount: _history.length,
@@ -176,36 +176,46 @@ class _HistoryPageState extends State<HistoryPage> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(10),
-                    child: Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 2),
-                        color: status == "Completed"
-                            ? Colors.green
-                            : status == "Cancelled"
-                                ? Colors.red
-                                : status == "Accepted"
-                                    ? Colors.indigo.shade900
-                                    : status == "Searching"
-                                        ? Colors.indigo
-                                        : Colors.grey,
-                        child: Text(st,
-                            style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold))),
+                  Flexible(
+                    flex: 1,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(10),
+                      child: Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8, vertical: 2),
+                          color: status == "Completed"
+                              ? Colors.green
+                              : status == "Cancelled"
+                                  ? Colors.red
+                                  : status == "Accepted"
+                                      ? Colors.indigo.shade900
+                                      : status == "Searching"
+                                          ? Colors.indigo
+                                          : Colors.grey,
+                          child: Text(st,
+                              style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold))),
+                    ),
                   ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Text(
-                        request!.droppOffAddress!,
-                      ),
-                      Text(
-                        request.pickUpAddress!,
-                      )
-                    ],
+                  Flexible(
+                    flex: 6,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Text(
+                          request!.droppOffAddress!,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        Text(
+                          request.pickUpAddress!,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        )
+                      ],
+                    ),
                   )
                 ],
               ),

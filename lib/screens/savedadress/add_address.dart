@@ -146,46 +146,79 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
                 },
               ),
               SizedBox(height: 10),
-              Row(
-                children: [
-                  IconButton(
-                      padding: EdgeInsets.zero,
-                      onPressed: () async {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) {
-                              return PlacePicker(
-                                apiKey: apiKey,
-                                initialPosition: initialPosition,
-                                useCurrentLocation: true,
-                                selectInitialPosition: true,
+              ListTile(
+                onTap: () async {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) {
+                        return PlacePicker(
+                          apiKey: apiKey,
+                          initialPosition: initialPosition,
+                          useCurrentLocation: true,
+                          selectInitialPosition: true,
 
-                                //usePlaceDetailSearch: true,
-                                onPlacePicked: (result) {
-                                  placeId = result.placeId;
-                                  address = result.formattedAddress;
-                                  selectedPlace = result;
-                                  locationController.text =
-                                      result.formattedAddress!;
-                                  Navigator.of(context).pop();
-                                  setState(() {});
-                                },
-                              );
-                            },
-                          ),
+                          //usePlaceDetailSearch: true,
+                          onPlacePicked: (result) {
+                            placeId = result.placeId;
+                            address = result.formattedAddress;
+                            selectedPlace = result;
+                            locationController.text = result.formattedAddress!;
+                            Navigator.of(context).pop();
+                            setState(() {});
+                          },
                         );
                       },
-                      icon: const Icon(
-                        Icons.location_on,
-                        color: Colors.black,
-                      )),
-                  const SizedBox(
-                    width: 5,
-                  ),
-                  const Text("Pick Location from map"),
-                ],
+                    ),
+                  );
+                },
+                dense: true,
+                horizontalTitleGap: 0,
+                leading: const Icon(
+                  Icons.location_on,
+                ),
+                title: const Text("Pick location from map"),
               ),
+              // Row(
+              //   children: [
+              //     IconButton(
+              //         padding: EdgeInsets.zero,
+              //         onPressed: () async {
+              //           Navigator.push(
+              //             context,
+              //             MaterialPageRoute(
+              //               builder: (context) {
+              //                 return PlacePicker(
+              //                   apiKey: apiKey,
+              //                   initialPosition: initialPosition,
+              //                   useCurrentLocation: true,
+              //                   selectInitialPosition: true,
+
+              //                   //usePlaceDetailSearch: true,
+              //                   onPlacePicked: (result) {
+              //                     placeId = result.placeId;
+              //                     address = result.formattedAddress;
+              //                     selectedPlace = result;
+              //                     locationController.text =
+              //                         result.formattedAddress!;
+              //                     Navigator.of(context).pop();
+              //                     setState(() {});
+              //                   },
+              //                 );
+              //               },
+              //             ),
+              //           );
+              //         },
+              //         icon: const Icon(
+              //           Icons.location_on,
+              //           color: Colors.black,
+              //         )),
+              //     const SizedBox(
+              //       width: 5,
+              //     ),
+              //     const Text("Pick Location from map"),
+              //   ],
+              // ),
               const Divider(),
               BlocBuilder<LocationPredictionBloc, LocationPredictionState>(
                   builder: (context, state) {
@@ -237,67 +270,117 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
                 builder: (_, state) {
                   return Container();
                 },
-              )
+              ),
+              ElevatedButton(
+                onPressed: placeId != null
+                    ? () {
+                        final form = _formState.currentState;
+                        if (form!.validate()) {
+                          form.save();
+                          _isLoading = true;
+
+                          widget.args.edit
+                              ? context
+                                  .read<FavoriteLocationCubit>()
+                                  .updateFavoriteLocation(SavedLocation(
+                                      id: widget.args.savedLocation!.id,
+                                      name: name!,
+                                      address: address!,
+                                      placeId: placeId!))
+                              : context
+                                  .read<FavoriteLocationCubit>()
+                                  .addToFavoriteLocation(SavedLocation(
+                                      name: name!,
+                                      address: address!,
+                                      placeId: placeId!));
+                        }
+                      }
+                    : null,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Spacer(),
+                    const Text(
+                      "Save",
+                    ),
+                    const Spacer(),
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: _isLoading
+                          ? const SizedBox(
+                              height: 20,
+                              width: 20,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: Colors.black,
+                              ),
+                            )
+                          : Container(),
+                    )
+                  ],
+                ),
+              ),
             ],
           ),
         ),
         CustomeBackArrow(),
-        Align(
-          alignment: Alignment.bottomCenter,
-          child: SizedBox(
-            height: 50,
-            child: ElevatedButton(
-              onPressed: placeId != null
-                  ? () {
-                      final form = _formState.currentState;
-                      if (form!.validate()) {
-                        form.save();
-                        _isLoading = true;
+        // Align(
+        //   alignment: Alignment.bottomCenter,
+        //   child: SizedBox(
+        //     height: 50,
+        //     child: ElevatedButton(
+        //       onPressed: placeId != null
+        //           ? () {
+        //               final form = _formState.currentState;
+        //               if (form!.validate()) {
+        //                 form.save();
+        //                 _isLoading = true;
 
-                        widget.args.edit
-                            ? context
-                                .read<FavoriteLocationCubit>()
-                                .updateFavoriteLocation(SavedLocation(
-                                    id: widget.args.savedLocation!.id,
-                                    name: name!,
-                                    address: address!,
-                                    placeId: placeId!))
-                            : context
-                                .read<FavoriteLocationCubit>()
-                                .addToFavoriteLocation(SavedLocation(
-                                    name: name!,
-                                    address: address!,
-                                    placeId: placeId!));
-                      }
-                    }
-                  : null,
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Spacer(),
-                  const Text(
-                    "Save",
-                  ),
-                  const Spacer(),
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: _isLoading
-                        ? const SizedBox(
-                            height: 20,
-                            width: 20,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              color: Colors.black,
-                            ),
-                          )
-                        : Container(),
-                  )
-                ],
-              ),
-            ),
-          ),
-        )
+        //                 widget.args.edit
+        //                     ? context
+        //                         .read<FavoriteLocationCubit>()
+        //                         .updateFavoriteLocation(SavedLocation(
+        //                             id: widget.args.savedLocation!.id,
+        //                             name: name!,
+        //                             address: address!,
+        //                             placeId: placeId!))
+        //                     : context
+        //                         .read<FavoriteLocationCubit>()
+        //                         .addToFavoriteLocation(SavedLocation(
+        //                             name: name!,
+        //                             address: address!,
+        //                             placeId: placeId!));
+        //               }
+        //             }
+        //           : null,
+        //       child: Row(
+        //         mainAxisSize: MainAxisSize.min,
+        //         mainAxisAlignment: MainAxisAlignment.center,
+        //         children: [
+        //           const Spacer(),
+        //           const Text(
+        //             "Save",
+        //           ),
+        //           const Spacer(),
+        //           Align(
+        //             alignment: Alignment.centerRight,
+        //             child: _isLoading
+        //                 ? const SizedBox(
+        //                     height: 20,
+        //                     width: 20,
+        //                     child: CircularProgressIndicator(
+        //                       strokeWidth: 2,
+        //                       color: Colors.black,
+        //                     ),
+        //                   )
+        //                 : Container(),
+        //           )
+        //         ],
+        //       ),
+        //     ),
+        //   ),
+        // )
       ],
     );
   }

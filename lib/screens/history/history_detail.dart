@@ -182,16 +182,16 @@ class DetailHistoryScreen extends StatelessWidget {
                           const SizedBox(
                             height: 15,
                           ),
-                          // _buildReciept(
-                          //     title: "Vehicle ",
-                          //     value: args.request.driver!.vehicle!['model']),
-                          // const SizedBox(
-                          //   height: 15,
-                          // ),
-                          // _buildReciept(
-                          //     title: "Plate Number",
-                          //     value: args
-                          //         .request.driver!.vehicle!['plate_number']),
+                          _buildReciept(
+                              title: "Vehicle ",
+                              value: args.request.driver!.vehicle!['model']),
+                          const SizedBox(
+                            height: 15,
+                          ),
+                          _buildReciept(
+                              title: "Plate Number",
+                              value: args
+                                  .request.driver!.vehicle!['plate_number']),
                           const SizedBox(
                             height: 15,
                           ),

@@ -386,7 +386,8 @@ class SavedAddress extends StatelessWidget {
                         ))),
                 TextButton(
                     onPressed: () {
-                      Navigator.pushNamed(context, AddAddressScreen.routeName,
+                      Navigator.popAndPushNamed(
+                          context, AddAddressScreen.routeName,
                           arguments: AddAdressScreenArgument(
                               edit: true, savedLocation: location));
                     },

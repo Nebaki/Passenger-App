@@ -46,6 +46,7 @@ class DriverProfile extends StatelessWidget {
                               icon: const Icon(
                                 Icons.call,
                                 size: 18,
+                                color: Colors.white,
                               ))),
                     ),
                     const SizedBox(
@@ -65,6 +66,7 @@ class DriverProfile extends StatelessWidget {
                               icon: const Icon(
                                 Icons.mark_chat_read,
                                 size: 18,
+                                color: Colors.white,
                               ))),
                     ),
                     const SizedBox(
@@ -93,6 +95,7 @@ class DriverProfile extends StatelessWidget {
                               icon: const Icon(
                                 Icons.share,
                                 size: 18,
+                                color: Colors.white,
                               ))),
                     ),
                   ],

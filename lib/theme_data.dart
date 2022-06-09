@@ -7,6 +7,9 @@ class ThemesData {
       inputDecorationTheme: InputDecorationTheme(fillColor: Colors.black),
       bottomSheetTheme:
           BottomSheetThemeData(backgroundColor: Colors.grey.shade900),
+      iconTheme: const IconThemeData(
+        color: Colors.white,
+      ),
       floatingActionButtonTheme: FloatingActionButtonThemeData(
           backgroundColor: Colors.grey.shade900,
           foregroundColor: Colors.white,
@@ -25,7 +28,7 @@ class ThemesData {
           backgroundColor: MaterialStateProperty.resolveWith<Color>(
               (Set<MaterialState> state) =>
                   state.contains(MaterialState.disabled)
-                      ? Colors.grey
+                      ? Colors.grey.shade300
                       : buttonColor),
           shape: MaterialStateProperty.all<RoundedRectangleBorder>(
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
@@ -63,7 +66,7 @@ class ThemesData {
           headline5: const TextStyle(fontWeight: FontWeight.bold),
           bodyText2: TextStyle(color: Colors.grey.shade700)),
       iconTheme: const IconThemeData(
-        color: Colors.white,
+        color: Colors.black,
       ),
       textButtonTheme: TextButtonThemeData(
           style: ButtonStyle(
@@ -76,7 +79,7 @@ class ThemesData {
           backgroundColor: MaterialStateProperty.resolveWith<Color>(
               (Set<MaterialState> state) =>
                   state.contains(MaterialState.disabled)
-                      ? Colors.grey
+                      ? Colors.grey.shade300
                       : buttonColor),
           // backgroundColor: MaterialStateProperty.all<Color>(
           //     const Color.fromRGBO(244, 201, 60, 1)),

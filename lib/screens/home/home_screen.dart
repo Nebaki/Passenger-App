@@ -334,21 +334,21 @@ class _HomeScreenState extends State<HomeScreen> {
             alignment: Alignment.centerLeft,
             child: Text(repo.getNearbyDrivers().length.toString()),
           ),
-          Padding(
-            padding: const EdgeInsets.only(top: 60),
-            child: Align(
-              alignment: Alignment.topRight,
-              child: ElevatedButton(
-                  onPressed: () async {
-                    context
-                        .read<CurrentWidgetCubit>()
-                        .changeWidget(DriverOnTheWay(fromBackGround: false));
+          // Padding(
+          //   padding: const EdgeInsets.only(top: 60),
+          //   child: Align(
+          //     alignment: Alignment.topRight,
+          //     child: ElevatedButton(
+          //         onPressed: () async {
+          //           context
+          //               .read<CurrentWidgetCubit>()
+          //               .changeWidget(DriverOnTheWay(fromBackGround: false));
 
-                    debugPrint(repo.getNearbyDrivers().length.toString());
-                  },
-                  child: const Text("Maintenance")),
-            ),
-          ),
+          //           debugPrint(repo.getNearbyDrivers().length.toString());
+          //         },
+          //         child: const Text("Maintenance")),
+          //   ),
+          // ),
           Align(
             alignment: Alignment.centerRight,
             child: SizedBox(
@@ -538,9 +538,10 @@ class _HomeScreenState extends State<HomeScreen> {
           break;
       }
     }
+    context.read<CurrentWidgetCubit>().changeWidget(WhereTo());
 
     setState(() {
-      _currentWidget = WhereTo();
+      // _currentWidget = WhereTo();
       markers.clear();
       polylines.clear();
       carMarker.clear();
@@ -683,7 +684,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void showDriversOnMap() {
     ImageConfiguration imageConfiguration =
-        createLocalImageConfiguration(context, size: Size(1, 2));
+        createLocalImageConfiguration(context, size: Size(0.5, 1));
     Map<MarkerId, Marker> newMarker = {};
     for (NearbyDriver driver in repo.getNearbyDrivers()) {
       LatLng driverPosition = LatLng(driver.latitude, driver.longitude);
@@ -709,7 +710,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void showTrucksOnMap() {
     ImageConfiguration imageConfiguration =
-        createLocalImageConfiguration(context, size: Size(1, 2));
+        createLocalImageConfiguration(context, size: Size(0.5, 1));
     Map<MarkerId, Marker> newMarker = {};
     for (NearbyDriver driver in repo.getNearbyDrivers()) {
       LatLng driverPosition = LatLng(driver.latitude, driver.longitude);
@@ -885,7 +886,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void createMarkerIcon() {
     if (carMarkerIcon == null) {
       ImageConfiguration imageConfiguration =
-          createLocalImageConfiguration(context, size: Size(1, 2));
+          createLocalImageConfiguration(context, size: Size(0.5, 1));
       BitmapDescriptor.fromAssetImage(
               imageConfiguration, 'assets/icons/car.png')
           .then((value) {
@@ -971,40 +972,55 @@ class _HomeScreenState extends State<HomeScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Expanded(
+                    flex: 2,
                     child: Text("Enable Location Services",
                         style: Theme.of(context).textTheme.headline5),
                   ),
                   const Expanded(
+                      flex: 2,
                       child: Center(
-                    child: Icon(Icons.location_off_outlined,
-                        color: buttonColor, size: 60),
-                  )),
-                  const Expanded(child: SizedBox()),
+                        child: Icon(Icons.location_off_outlined,
+                            color: buttonColor, size: 60),
+                      )),
+                  // const Expanded(child: SizedBox()),
+                  const SizedBox(
+                    height: 20,
+                  ),
                   Expanded(
+                      flex: 3,
                       child: Text(
                           "We can't get your location because you have disabled location services. Please turn it on for better experience.",
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
                           style: Theme.of(context).textTheme.bodyText2)),
                   Expanded(
+                      flex: 2,
                       child: SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                        onPressed: () async {
-                          await Geolocator.openLocationSettings();
-                        },
-                        child: const Text("TURN ON LOCATION SERVICES")),
-                  )),
+                        width: double.infinity,
+                        child: ElevatedButton(
+                            onPressed: () async {
+                              await Geolocator.openLocationSettings();
+                            },
+                            child: Text(
+                              "TURN ON LOCATION SERVICES",
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              textAlign: TextAlign.center,
+                            )),
+                      )),
                   const SizedBox(
                     height: 10,
                   ),
                   Expanded(
+                      flex: 2,
                       child: SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                        onPressed: () async {
-                          SystemNavigator.pop();
-                        },
-                        child: const Text("CANCEL")),
-                  ))
+                        width: double.infinity,
+                        child: ElevatedButton(
+                            onPressed: () async {
+                              SystemNavigator.pop();
+                            },
+                            child: const Text("CANCEL")),
+                      ))
                 ],
               ),
             ),
@@ -1028,47 +1044,57 @@ class _HomeScreenState extends State<HomeScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Expanded(
+                    flex: 2,
                     child: Text("No Internet Connection",
                         style: Theme.of(context).textTheme.headline5),
                   ),
                   const Expanded(
+                      flex: 2,
                       child: Center(
-                    child: Icon(
-                        Icons
-                            .signal_wifi_statusbar_connected_no_internet_4_rounded,
-                        color: buttonColor,
-                        size: 60),
-                  )),
-                  const Expanded(child: SizedBox()),
+                        child: Icon(
+                            Icons
+                                .signal_wifi_statusbar_connected_no_internet_4_rounded,
+                            color: buttonColor,
+                            size: 60),
+                      )),
+                  const SizedBox(
+                    height: 20,
+                  ),
                   Expanded(
+                      flex: 3,
                       child: Text(
                           "Please enable WIFI or Mobile data to serve the app",
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
                           style: Theme.of(context).textTheme.bodyText2)),
                   // Expanded(
                   //     child: Text(
                   //         "For better accuracy,please turn on both GPS and WIFI location services",
                   //         style: Theme.of(context).textTheme.bodyText2)),
                   Expanded(
+                      flex: 2,
                       child: SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                        onPressed: () {
-                          AppSettings.openDeviceSettings(asAnotherTask: true);
-                        },
-                        child: const Text("Go to Settings")),
-                  )),
+                        width: double.infinity,
+                        child: ElevatedButton(
+                            onPressed: () {
+                              AppSettings.openDeviceSettings(
+                                  asAnotherTask: true);
+                            },
+                            child: const Text("Go to Settings")),
+                      )),
                   const SizedBox(
                     height: 10,
                   ),
                   Expanded(
+                      flex: 2,
                       child: SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                        onPressed: () async {
-                          SystemNavigator.pop();
-                        },
-                        child: const Text("Cancel")),
-                  ))
+                        width: double.infinity,
+                        child: ElevatedButton(
+                            onPressed: () async {
+                              SystemNavigator.pop();
+                            },
+                            child: const Text("Cancel")),
+                      ))
                 ],
               ),
             ),
