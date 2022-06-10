@@ -149,24 +149,20 @@ class NavDrawer extends StatelessWidget {
                         icon: Icons.history,
                         text: "History"),
                   ),
-                  BlocBuilder<CurrentWidgetCubit, Widget>(
-                    builder: (context, state) {
-                      print(
-                          "Esat Bewutachew ${state.toString() == WhereTo().toString()}");
-                      return GestureDetector(
-                        onTap: () {
-                          state.toString() == WhereTo().toString()
-                              ? Navigator.popAndPushNamed(
-                                  context, OrderForOtherScreen.routeName)
-                              : null;
-                        },
-                        child: _menuItem(
-                            divider: true,
-                            context: context,
-                            icon: Icons.border_outer_rounded,
-                            text: "Order for other"),
-                      );
+
+                  GestureDetector(
+                    onTap: () {
+                      context.read<CurrentWidgetCubit>().state.toString() ==
+                              WhereTo().toString()
+                          ? Navigator.popAndPushNamed(
+                              context, OrderForOtherScreen.routeName)
+                          : null;
                     },
+                    child: _menuItem(
+                        divider: true,
+                        context: context,
+                        icon: Icons.border_outer_rounded,
+                        text: "Order for other"),
                   ),
 
                   GestureDetector(

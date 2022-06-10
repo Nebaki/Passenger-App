@@ -21,13 +21,13 @@ class RideRequestDataProvider {
   RideRequestDataProvider({required this.httpClient});
 
   Future<RideRequest> checkStartedTrip() async {
-    print("CheckingGGGGGGGGGGGGGGG");
     final http.Response response = await http.get(
         Uri.parse(RideRequestEndPoints.checkStartedTripEndPoint()),
         headers: <String, String>{
           'Content-Type': "application/json",
           'x-access-token': '${await authDataProvider.getToken()}'
         });
+
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
       return data['isEmpty'] != true

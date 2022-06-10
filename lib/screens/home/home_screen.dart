@@ -51,7 +51,6 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   //Location location = new Location();
-  late Widget _currentWidget;
   BitmapDescriptor? carMarkerIcon;
   final Completer<GoogleMapController> _controller = Completer();
   late GoogleMapController outerController;
@@ -149,11 +148,11 @@ class _HomeScreenState extends State<HomeScreen> {
         BlocProvider.of<ThemeModeCubit>(context).ActivateLightTheme();
       }
     };
-    _currentWidget = widget.args.isSelected
+    context.read<CurrentWidgetCubit>().changeWidget(widget.args.isSelected
         ? DriverOnTheWay(
             fromBackGround: false,
           )
-        : WhereTo();
+        : WhereTo());
 
     super.initState();
   }
@@ -366,7 +365,11 @@ class _HomeScreenState extends State<HomeScreen> {
                           onPressed: () {
                             outerController.animateCamera(
                                 _directionLoadSuccess &&
-                                        _currentWidget.toString() != "WhereTo"
+                                        context
+                                                .read<CurrentWidgetCubit>()
+                                                .state
+                                                .toString() !=
+                                            "WhereTo"
                                     ? CameraUpdate.newLatLngBounds(
                                         latLngBounds, 100)
                                     : CameraUpdate.newCameraPosition(
@@ -486,11 +489,9 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
           ),
-          BlocConsumer<CurrentWidgetCubit, Widget>(
-              builder: (context, state) => _currentWidget,
-              listener: (context, state) {
-                _currentWidget = state;
-              })
+          BlocBuilder<CurrentWidgetCubit, Widget>(
+            builder: (context, state) => state,
+          )
         ],
       ),
     );

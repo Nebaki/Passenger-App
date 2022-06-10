@@ -65,6 +65,7 @@ class RideRequestBloc extends Bloc<RideRequestEvent, RideRequestState> {
         final rideRequest = await rideRequestRepository.checkStartedTrip();
         yield RideRequestStartedTripChecked(rideRequest);
       } catch (_) {
+        print("$_");
         if (_.toString().split(" ")[1] == "401") {
           yield RideRequestTokentExpired();
         } else {

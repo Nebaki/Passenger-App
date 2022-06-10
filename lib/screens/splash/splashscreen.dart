@@ -121,6 +121,7 @@ class _CustomSplashScreenState extends State<CustomSplashScreen> {
                 distance = st.rideRequest.distance!;
                 driverModel = st.rideRequest.driver!;
                 driverId = st.rideRequest.driver!.id;
+                rideRequestId = st.rideRequest.id!;
                 Navigator.pushReplacementNamed(context, HomeScreen.routeName,
                     arguments: HomeScreenArgument(
                         isFromSplash: false,

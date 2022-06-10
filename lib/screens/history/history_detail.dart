@@ -43,11 +43,15 @@ class DetailHistoryScreen extends StatelessWidget {
                           Icons.location_on_outlined,
                           color: Colors.blue,
                         ),
-                        Text(
-                          args.request.pickUpAddress!,
+                        Flexible(
+                          child: Text(
+                            args.request.pickUpAddress!,
+                            overflow: TextOverflow.ellipsis,
+                          ),
                         )
                       ],
                     ),
+
                     const SizedBox(
                       height: 5,
                     ),
@@ -55,14 +59,18 @@ class DetailHistoryScreen extends StatelessWidget {
                       children: [
                         const Icon(Icons.location_on_outlined,
                             color: Colors.green),
-                        Text(args.request.droppOffAddress!)
+                        Flexible(
+                            child: Text(
+                          args.request.droppOffAddress!,
+                          overflow: TextOverflow.ellipsis,
+                        ))
                       ],
                     ),
                     Center(
                       child: Padding(
                         padding: const EdgeInsets.symmetric(vertical: 15),
                         child: Text(
-                          '${args.request.price!} ETB',
+                          '${double.parse(args.request.price!).toStringAsFixed(2)} ETB',
                           style: const TextStyle(
                               color: Colors.green, fontSize: 26),
                         ),
@@ -84,9 +92,9 @@ class DetailHistoryScreen extends StatelessWidget {
                       children: [
                         Column(
                           children: [
-                            const Text("15 min"),
+                            Text("${args.request.duration} min"),
                             Text(
-                              "Time",
+                              "Duration",
                               style: Theme.of(context).textTheme.overline,
                             )
                           ],
@@ -162,7 +170,8 @@ class DetailHistoryScreen extends StatelessWidget {
               child: Text("Driver & Vehicle"),
             ),
             args.request.status != 'Cancelled' &&
-                    args.request.status != 'Pending'
+                    args.request.status != 'Pending' &&
+                    args.request.status != 'Time Out'
                 ? Card(
                     child: Container(
                       padding: const EdgeInsets.fromLTRB(20, 10, 20, 5),
@@ -189,6 +198,12 @@ class DetailHistoryScreen extends StatelessWidget {
                             height: 15,
                           ),
                           _buildReciept(
+                              title: "Color",
+                              value: args.request.driver!.vehicle!['color']),
+                          const SizedBox(
+                            height: 15,
+                          ),
+                          _buildReciept(
                               title: "Plate Number",
                               value: args
                                   .request.driver!.vehicle!['plate_number']),
@@ -202,7 +217,8 @@ class DetailHistoryScreen extends StatelessWidget {
                                 "Your Payment",
                                 style: _greenTextStyle,
                               ),
-                              Text("\$${args.request.price!}",
+                              Text(
+                                  "${double.parse(args.request.price!).toStringAsFixed(2)} ETB",
                                   style: _greenTextStyle)
                             ],
                           ),
