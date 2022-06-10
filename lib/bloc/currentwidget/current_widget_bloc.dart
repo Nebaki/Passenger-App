@@ -3,6 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:passengerapp/widgets/whereto.dart';
 
 class CurrentWidgetCubit extends Cubit<Widget> {
-  CurrentWidgetCubit() : super(WhereTo());
+  CurrentWidgetCubit()
+      : super(WhereTo(
+          key: Key("whereto"),
+        ));
   void changeWidget(Widget widget) => emit(widget);
 }

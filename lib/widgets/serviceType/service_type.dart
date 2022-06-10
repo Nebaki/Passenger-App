@@ -125,7 +125,9 @@ class _ServiceState extends State<Service> {
                 loadCurrentLocation: false,
                 listenToNearbyDriver:
                     widget.fromOrderForOthers ? true : false));
-        context.read<CurrentWidgetCubit>().changeWidget(WhereTo());
+        context.read<CurrentWidgetCubit>().changeWidget(WhereTo(
+              key: Key("whereto"),
+            ));
         return false;
       },
       child: Positioned(

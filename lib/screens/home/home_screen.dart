@@ -152,7 +152,9 @@ class _HomeScreenState extends State<HomeScreen> {
         ? DriverOnTheWay(
             fromBackGround: false,
           )
-        : WhereTo());
+        : WhereTo(
+            key: Key("whereto"),
+          ));
 
     super.initState();
   }
@@ -333,21 +335,23 @@ class _HomeScreenState extends State<HomeScreen> {
             alignment: Alignment.centerLeft,
             child: Text(repo.getNearbyDrivers().length.toString()),
           ),
-          // Padding(
-          //   padding: const EdgeInsets.only(top: 60),
-          //   child: Align(
-          //     alignment: Alignment.topRight,
-          //     child: ElevatedButton(
-          //         onPressed: () async {
-          //           context
-          //               .read<CurrentWidgetCubit>()
-          //               .changeWidget(DriverOnTheWay(fromBackGround: false));
+          Padding(
+            padding: const EdgeInsets.only(top: 60),
+            child: Align(
+              alignment: Alignment.topRight,
+              child: ElevatedButton(
+                  onPressed: () async {
+                    // context
+                    //     .read<CurrentWidgetCubit>()
+                    //     .changeWidget(DriverOnTheWay(fromBackGround: false));
+                    print(
+                        "Keyyyyy ${context.read<CurrentWidgetCubit>().state.key}");
 
-          //           debugPrint(repo.getNearbyDrivers().length.toString());
-          //         },
-          //         child: const Text("Maintenance")),
-          //   ),
-          // ),
+                    debugPrint(repo.getNearbyDrivers().length.toString());
+                  },
+                  child: const Text("Maintenance")),
+            ),
+          ),
           Align(
             alignment: Alignment.centerRight,
             child: SizedBox(
@@ -539,7 +543,9 @@ class _HomeScreenState extends State<HomeScreen> {
           break;
       }
     }
-    context.read<CurrentWidgetCubit>().changeWidget(WhereTo());
+    context.read<CurrentWidgetCubit>().changeWidget(WhereTo(
+          key: Key("whereto"),
+        ));
 
     setState(() {
       // _currentWidget = WhereTo();

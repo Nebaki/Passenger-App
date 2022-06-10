@@ -151,13 +151,16 @@ class NavDrawer extends StatelessWidget {
                   ),
 
                   GestureDetector(
-                    onTap: () {
-                      context.read<CurrentWidgetCubit>().state.toString() ==
-                              WhereTo().toString()
-                          ? Navigator.popAndPushNamed(
-                              context, OrderForOtherScreen.routeName)
-                          : null;
-                    },
+                    onTap: context.read<CurrentWidgetCubit>().state.key ==
+                            Key("whereto")
+                        ? () {
+                            print(
+                                "YOW  this is the current widget from the cubit ${context.read<CurrentWidgetCubit>().state.key} the condition ${context.read<CurrentWidgetCubit>().state.key == Key("whereto")}");
+
+                            Navigator.popAndPushNamed(
+                                context, OrderForOtherScreen.routeName);
+                          }
+                        : null,
                     child: _menuItem(
                         divider: true,
                         context: context,

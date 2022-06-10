@@ -42,7 +42,9 @@ class PushNotificationService {
           ));
           break;
         case 'Cancelled':
-          BlocProvider.of<CurrentWidgetCubit>(context).changeWidget(WhereTo());
+          BlocProvider.of<CurrentWidgetCubit>(context).changeWidget(WhereTo(
+            key: Key("whereto"),
+          ));
 
           BlocProvider.of<DirectionBloc>(context).add(
               const DirectionChangeToInitialState(
