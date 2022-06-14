@@ -14,356 +14,77 @@ class SettingScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 5,
-        centerTitle: true,
-        leading: IconButton(
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            icon: const Icon(
-              Icons.clear,
-              color: Colors.black,
-            )),
-        title: const Text(
-          "Settings",
-          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
-        ),
-      ),
-      body: BlocBuilder<AuthBloc, AuthState>(builder: (_, state) {
-        String name;
-        String phoneNumber;
-        if (state is AuthDataLoadSuccess) {
-          name = state.auth.name!;
-          phoneNumber = state.auth.phoneNumber!;
-          return ListView(
-            padding: const EdgeInsets.only(top: 20, left: 5, right: 5),
-            children: [
-              Card(
-                elevation: 3,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Padding(
-                      padding: EdgeInsets.only(top: 8, left: 5),
-                      child: Text(
-                        "Profile",
-                        // style: _textStyle,
-                      ),
-                    ),
-                    const Divider(
-                      color: Colors.red,
-                      thickness: 1.5,
-                    ),
-                    Center(
-                      child: CircleAvatar(
-                        radius: 50,
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(100),
-                          child: CachedNetworkImage(
-                            imageUrl: state.auth.profilePicture!,
-                            imageBuilder: (context, imageProvider) => Container(
-                              decoration: BoxDecoration(
-                                image: DecorationImage(
-                                  image: imageProvider,
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                            ),
-                            placeholder: (context, url) =>
-                                const CircularProgressIndicator(),
-                            errorWidget: (context, url, error) =>
-                                const Icon(Icons.error),
+      body: CustomScrollView(
+        slivers: [
+          BlocBuilder<AuthBloc, AuthState>(
+            builder: (context, state) {
+              if (state is AuthDataLoadSuccess) {
+                return SliverAppBar(
+                  floating: true,
+                  pinned: true,
+                  snap: false,
+                  expandedHeight: 150,
+                  flexibleSpace: FlexibleSpaceBar(
+                    background: CachedNetworkImage(
+                      imageUrl: state.auth.profilePicture!,
+                      imageBuilder: (context, imageProvider) => Container(
+                        decoration: BoxDecoration(
+                          image: DecorationImage(
+                            image: imageProvider,
+                            fit: BoxFit.cover,
                           ),
                         ),
+                      ),
+                      placeholder: (context, url) =>
+                          const CircularProgressIndicator(),
+                      errorWidget: (context, url, error) =>
+                          const Icon(Icons.error),
+                    ),
+                    title: Text("Settings"),
+                  ),
+                );
+              }
 
-                        // ClipRRect(
-                        //   borderRadius: BorderRadius.circular(100),
-                        //   child: Container(
-                        //     width: 300,
-                        //     height: 300,
-                        //     child: Image.network(
-                        //       state.auth.profilePicture!,
-                        //       fit: BoxFit.cover,
-                        //     ),
-                        //   ),
-                        // ),
-                      ),
-                    ),
-                    Center(child: Text(state.auth.name!)),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    Container(
-                      padding: const EdgeInsets.only(left: 10),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            state.auth.phoneNumber!,
-                            // style: _textStyle,
-                          ),
-                          Text(
-                            state.auth.email!,
-                            // style: _textStyle,
-                          ),
-                          Text(
-                            state.auth.emergencyContact!,
-                            // style: _textStyle,
-                          ),
-                        ],
-                      ),
-                    ),
-                    Row(mainAxisAlignment: MainAxisAlignment.end, children: [
-                      TextButton(
-                          onPressed: () {
-                            Navigator.pushNamed(context, EditProfile.routeName,
-                                arguments: EditProfileArgument(
-                                    auth: Auth(
-                                        phoneNumber: state.auth.phoneNumber,
-                                        id: state.auth.id,
-                                        name: state.auth.name,
-                                        email: state.auth.email,
-                                        emergencyContact:
-                                            state.auth.emergencyContact,
-                                        profilePicture:
-                                            state.auth.profilePicture)));
-                          },
-                          child: const Text("Edit Profile")),
-                      TextButton(
-                          onPressed: () {
-                            Navigator.pushNamed(
-                                context, ChangePassword.routeName);
-                          },
-                          child: const Text("Change Password")),
-                    ])
-                  ],
+              return Container();
+            },
+          ),
+          // SliverAppBar(
+          //   floating: true,
+          //   pinned: true,
+          //   snap: false,
+          //   expandedHeight: 150,
+          //   flexibleSpace: FlexibleSpaceBar(
+          //     background: BlocBuilder<AuthBloc,AuthState>(builder: (context, state) => Text(""),),
+          //     title: Text("Settings"),
+          //   ),
+          // ),
+          BlocBuilder<AuthBloc, AuthState>(builder: ((context, state) {
+            if (state is AuthDataLoadSuccess) {
+              return SliverList(
+                  delegate: SliverChildListDelegate([
+                _buildAccountItems(context, "Account", state),
+                const SizedBox(
+                  height: 10,
                 ),
-              ),
-              Card(
-                elevation: 3,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Padding(
-                      padding: EdgeInsets.only(top: 8, left: 5),
-                      child: Text(
-                        "Legal",
-                        // style: _textStyle,
-                      ),
-                    ),
-                    const Divider(
-                      color: Colors.red,
-                      thickness: 1.5,
-                    ),
-                    Container(
-                      padding:
-                          const EdgeInsets.only(left: 10, bottom: 20, top: 10),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            "Contact Us",
-                            style: _textStyle,
-                          ),
-                          Text("Privacy Policy", style: _textStyle),
-                          Text("Terms & Conditions", style: _textStyle),
-                        ],
-                      ),
-                    ),
-                  ],
+                _buildLegalItems(context, "Legal"),
+                const SizedBox(
+                  height: 10,
                 ),
-              ),
-              Card(
-                elevation: 3,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(top: 8, left: 5),
-                      child: Text(
-                        "Preference",
-                        style: _textStyle,
-                      ),
-                    ),
-                    const Divider(
-                      color: Colors.red,
-                      thickness: 1.5,
-                    ),
-                    Container(
-                      padding:
-                          const EdgeInsets.only(left: 10, bottom: 20, top: 10),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text.rich(TextSpan(
-                              text: "Driver Gender: ",
-                              style: _textStyle,
-                              children: [
-                                TextSpan(
-                                    text: state.auth.pref!["gender"],
-                                    style: const TextStyle(
-                                        fontStyle: FontStyle.italic,
-                                        fontWeight: FontWeight.w300))
-                              ])),
-                          Text.rich(TextSpan(
-                              text: "Minimum Driver Rating: ",
-                              style: _textStyle,
-                              children: [
-                                TextSpan(
-                                    text: state.auth.pref!["min_rate"],
-                                    style: const TextStyle(
-                                        fontStyle: FontStyle.italic,
-                                        fontWeight: FontWeight.w300))
-                              ])),
-                          Text.rich(TextSpan(
-                              text: "Car Type: ",
-                              style: _textStyle,
-                              children: [
-                                TextSpan(
-                                    text: state.auth.pref!["car_type"],
-                                    style: const TextStyle(
-                                        fontStyle: FontStyle.italic,
-                                        fontWeight: FontWeight.w300))
-                              ])),
-                        ],
-                      ),
-                    ),
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: TextButton(
-                          onPressed: () {
-                            //print(state.auth.);
-                            Navigator.pushNamed(
-                                context, PreferenceScreen.routeNAme,
-                                arguments: PreferenceArgument(
-                                    gender: state.auth.pref!['gender'],
-                                    min_rate: double.parse(
-                                      state.auth.pref!['min_rate'],
-                                    ),
-                                    carType: state.auth.pref!["car_type"]));
-                            // Navigator.pushNamed(
-                            //     context, PreferenceScreen.routeNAme);
-                          },
-                          child: const Text("Edit Preference")),
-                    )
-                  ],
+                _buildPreferenceItems(context, "Preference", state),
+                const SizedBox(
+                  height: 10,
                 ),
-              ),
-              Card(
-                elevation: 3,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Padding(
-                      padding: EdgeInsets.only(top: 8, left: 5),
-                      child: Text(
-                        "App Info",
-                        // style: _textStyle,
-                      ),
-                    ),
-                    const Divider(
-                      color: Colors.red,
-                      thickness: 1.5,
-                    ),
-                    Container(
-                      padding:
-                          const EdgeInsets.only(left: 10, bottom: 20, top: 10),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text.rich(TextSpan(
-                              text: "Build Name: ",
-                              style: _textStyle,
-                              children: const [
-                                TextSpan(
-                                    text: " SafeWay",
-                                    style: TextStyle(
-                                        fontStyle: FontStyle.italic,
-                                        fontWeight: FontWeight.w300))
-                              ])),
-                          Text.rich(TextSpan(
-                              text: "App Version: ",
-                              style: _textStyle,
-                              children: const [
-                                TextSpan(
-                                    text: " 1.0",
-                                    style: TextStyle(
-                                        fontStyle: FontStyle.italic,
-                                        fontWeight: FontWeight.w300))
-                              ])),
-                          Text.rich(TextSpan(
-                              text: "Build Number: ",
-                              style: _textStyle,
-                              children: const [
-                                TextSpan(
-                                    text: " 102034",
-                                    style: TextStyle(
-                                        fontStyle: FontStyle.italic,
-                                        fontWeight: FontWeight.w300))
-                              ])),
-                        ],
-                      ),
-                    ),
-                  ],
+                _buildAppinfoItems(context, "App Info"),
+                const SizedBox(
+                  height: 10,
                 ),
-              ),
-              Card(
-                elevation: 3,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(top: 8, left: 5),
-                      child: Text(
-                        "About us",
-                        style: _textStyle,
-                      ),
-                    ),
-                    const Divider(
-                      color: Colors.red,
-                      thickness: 1.5,
-                    ),
-                    Container(
-                      padding:
-                          const EdgeInsets.only(left: 10, bottom: 20, top: 10),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text.rich(TextSpan(
-                              text: "Owned by:\n  ",
-                              style: _textStyle,
-                              children: const [
-                                TextSpan(
-                                    text: " Safeway Transport",
-                                    style: TextStyle(
-                                        fontStyle: FontStyle.italic,
-                                        fontWeight: FontWeight.w300))
-                              ])),
-                          Text.rich(TextSpan(
-                              text: "Developed by:\n  ",
-                              style: _textStyle,
-                              children: const [
-                                TextSpan(
-                                    text: " Vintage Technologies",
-                                    style: TextStyle(
-                                        fontStyle: FontStyle.italic,
-                                        fontWeight: FontWeight.w300))
-                              ])),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          );
-        }
-
-        if (state is AuthDataLoading) {}
-        return Container();
-      }),
+                _buildAboutUsItems(context, "About us")
+              ]));
+            }
+            return Container();
+          }))
+        ],
+      ),
     );
   }
 
@@ -395,3 +116,643 @@ class SettingScreen extends StatelessWidget {
     );
   }
 }
+
+void _navigateToEditProfileScreen(
+    BuildContext context, AuthDataLoadSuccess state) {
+  Navigator.pushNamed(context, EditProfile.routeName,
+      arguments: EditProfileArgument(
+          auth: Auth(
+              phoneNumber: state.auth.phoneNumber,
+              id: state.auth.id,
+              name: state.auth.name,
+              email: state.auth.email,
+              emergencyContact: state.auth.emergencyContact,
+              profilePicture: state.auth.profilePicture)));
+}
+
+Widget _buildAccountItems(
+    BuildContext context, String title, AuthDataLoadSuccess state) {
+  return Container(
+    color: Colors.black54,
+    padding: const EdgeInsets.symmetric(horizontal: 20),
+    child: Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SizedBox(
+          height: 20,
+        ),
+        Text(
+          title,
+          style: Theme.of(context)
+              .textTheme
+              .titleLarge!
+              .copyWith(color: Colors.blueAccent),
+        ),
+        ListTile(
+          onTap: () {
+            _navigateToEditProfileScreen(context, state);
+          },
+          contentPadding: EdgeInsets.zero,
+          title: Text(
+            state.auth.phoneNumber!,
+          ),
+          subtitle: const Text("Tap to change the phone number"),
+        ),
+        const Divider(
+          color: Colors.black,
+          height: 0,
+        ),
+        ListTile(
+          onTap: () {
+            _navigateToEditProfileScreen(context, state);
+          },
+          contentPadding: EdgeInsets.zero,
+          title: Text(
+            state.auth.name!,
+          ),
+          subtitle: const Text("Name"),
+        ),
+        const Divider(
+          color: Colors.black,
+          height: 0,
+        ),
+        ListTile(
+          onTap: () {
+            _navigateToEditProfileScreen(context, state);
+          },
+          contentPadding: EdgeInsets.zero,
+          title: Text(
+            state.auth.email!,
+          ),
+          subtitle: const Text("email"),
+        ),
+        const Divider(
+          color: Colors.black,
+          height: 0,
+        ),
+        ListTile(
+          onTap: () {
+            _navigateToEditProfileScreen(context, state);
+          },
+          contentPadding: EdgeInsets.zero,
+          title: Text(
+            state.auth.emergencyContact!,
+          ),
+          subtitle: const Text("Emergency Contact"),
+        ),
+        ListTile(
+          onTap: () {
+            Navigator.pushNamed(context, ChangePassword.routeName);
+          },
+          contentPadding: EdgeInsets.zero,
+          title: const Text(
+            "Change password",
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
+Widget _buildLegalItems(BuildContext context, String title) {
+  return Container(
+    color: Colors.black54,
+    padding: const EdgeInsets.symmetric(horizontal: 20),
+    child: Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SizedBox(
+          height: 20,
+        ),
+        Text(
+          title,
+          style: Theme.of(context)
+              .textTheme
+              .titleLarge!
+              .copyWith(color: Colors.blueAccent),
+        ),
+        const ListTile(
+          contentPadding: EdgeInsets.zero,
+          leading: Icon(
+            Icons.contact_mail,
+            size: 20,
+          ),
+          minLeadingWidth: 0,
+          title: Text(
+            "Contact us",
+          ),
+        ),
+        const Divider(
+          color: Colors.black,
+          height: 0,
+        ),
+        const ListTile(
+          leading: Icon(Icons.privacy_tip_outlined),
+          minLeadingWidth: 0,
+          contentPadding: EdgeInsets.zero,
+          title: Text(
+            "Privacy Policy",
+          ),
+        ),
+        const Divider(
+          color: Colors.black,
+          height: 0,
+        ),
+        const ListTile(
+          leading: Icon(Icons.present_to_all_sharp),
+          minLeadingWidth: 0,
+          contentPadding: EdgeInsets.zero,
+          title: Text(
+            "Terms & Conditions",
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
+Widget _buildPreferenceItems(
+    BuildContext context, String title, AuthDataLoadSuccess state) {
+  return Container(
+    color: Colors.black54,
+    padding: const EdgeInsets.symmetric(horizontal: 20),
+    child: Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SizedBox(
+          height: 20,
+        ),
+        Text(
+          title,
+          style: Theme.of(context)
+              .textTheme
+              .titleLarge!
+              .copyWith(color: Colors.blueAccent),
+        ),
+        ListTile(
+          contentPadding: EdgeInsets.zero,
+          title: Text(
+            state.auth.pref!['gender'],
+          ),
+          subtitle: const Text("Driver Gender"),
+        ),
+        const Divider(
+          color: Colors.black,
+          height: 0,
+        ),
+        ListTile(
+          contentPadding: EdgeInsets.zero,
+          title: Text(
+            state.auth.pref!['min_rate'],
+          ),
+          subtitle: const Text("Minimum driver rating"),
+        ),
+        const Divider(
+          color: Colors.black,
+          height: 0,
+        ),
+        ListTile(
+          contentPadding: EdgeInsets.zero,
+          title: Text(
+            state.auth.pref!['car_type'],
+          ),
+          subtitle: const Text("Car Type"),
+        ),
+      ],
+    ),
+  );
+}
+
+Widget _buildAboutUsItems(BuildContext context, String title) {
+  return Container(
+    color: Colors.black54,
+    padding: const EdgeInsets.symmetric(horizontal: 20),
+    child: Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SizedBox(
+          height: 20,
+        ),
+        Text(
+          title,
+          style: Theme.of(context)
+              .textTheme
+              .titleLarge!
+              .copyWith(color: Colors.blueAccent),
+        ),
+        const Text.rich(TextSpan(text: "Owned by:\n  ", children: [
+          TextSpan(
+              text: " Safeway Transport",
+              style: TextStyle(
+                  fontStyle: FontStyle.italic, fontWeight: FontWeight.w300))
+        ])),
+        const Text.rich(TextSpan(text: "Developed by:\n  ", children: [
+          TextSpan(
+              text: " Vintage Technologies",
+              style: TextStyle(
+                  fontStyle: FontStyle.italic, fontWeight: FontWeight.w300))
+        ])),
+      ],
+    ),
+  );
+}
+
+Widget _buildAppinfoItems(BuildContext context, String title) {
+  return Container(
+    color: Colors.black54,
+    padding: const EdgeInsets.symmetric(horizontal: 20),
+    child: Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SizedBox(
+          height: 20,
+        ),
+        Text(
+          title,
+          style: Theme.of(context)
+              .textTheme
+              .titleLarge!
+              .copyWith(color: Colors.blueAccent),
+        ),
+        const Text.rich(TextSpan(text: "Build Name: ", children: [
+          TextSpan(
+              text: " SafeWay",
+              style: TextStyle(
+                  fontStyle: FontStyle.italic, fontWeight: FontWeight.w300))
+        ])),
+        const Text.rich(TextSpan(text: "App Version: ", children: [
+          TextSpan(
+              text: " 1.0",
+              style: TextStyle(
+                  fontStyle: FontStyle.italic, fontWeight: FontWeight.w300))
+        ])),
+        const Text.rich(TextSpan(text: "Build Number: ", children: [
+          TextSpan(
+              text: " 102034",
+              style: TextStyle(
+                  fontStyle: FontStyle.italic, fontWeight: FontWeight.w300))
+        ])),
+      ],
+    ),
+  );
+}
+
+
+
+// Scaffold(
+//       appBar: AppBar(
+//         backgroundColor: Colors.white,
+//         elevation: 5,
+//         centerTitle: true,
+//         leading: IconButton(
+//             onPressed: () {
+//               Navigator.pop(context);
+//             },
+//             icon: const Icon(
+//               Icons.clear,
+//               color: Colors.black,
+//             )),
+//         title: const Text(
+//           "Settings",
+//           style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+//         ),
+//       ),
+//       body: BlocBuilder<AuthBloc, AuthState>(builder: (_, state) {
+//         String name;
+//         String phoneNumber;
+//         if (state is AuthDataLoadSuccess) {
+//           name = state.auth.name!;
+//           phoneNumber = state.auth.phoneNumber!;
+//           return ListView(
+//             padding: const EdgeInsets.only(top: 20, left: 5, right: 5),
+//             children: [
+//               Card(
+//                 elevation: 3,
+//                 child: Column(
+//                   crossAxisAlignment: CrossAxisAlignment.start,
+//                   children: [
+//                     const Padding(
+//                       padding: EdgeInsets.only(top: 8, left: 5),
+//                       child: Text(
+//                         "Profile",
+//                         // style: _textStyle,
+//                       ),
+//                     ),
+//                     const Divider(
+//                       color: Colors.red,
+//                       thickness: 1.5,
+//                     ),
+//                     Center(
+//                       child: CircleAvatar(
+//                         radius: 50,
+//                         child: ClipRRect(
+//                           borderRadius: BorderRadius.circular(100),
+//                           child: CachedNetworkImage(
+//                             imageUrl: state.auth.profilePicture!,
+//                             imageBuilder: (context, imageProvider) => Container(
+//                               decoration: BoxDecoration(
+//                                 image: DecorationImage(
+//                                   image: imageProvider,
+//                                   fit: BoxFit.cover,
+//                                 ),
+//                               ),
+//                             ),
+//                             placeholder: (context, url) =>
+//                                 const CircularProgressIndicator(),
+//                             errorWidget: (context, url, error) =>
+//                                 const Icon(Icons.error),
+//                           ),
+//                         ),
+
+//                         // ClipRRect(
+//                         //   borderRadius: BorderRadius.circular(100),
+//                         //   child: Container(
+//                         //     width: 300,
+//                         //     height: 300,
+//                         //     child: Image.network(
+//                         //       state.auth.profilePicture!,
+//                         //       fit: BoxFit.cover,
+//                         //     ),
+//                         //   ),
+//                         // ),
+//                       ),
+//                     ),
+//                     Center(child: Text(state.auth.name!)),
+//                     const SizedBox(
+//                       height: 20,
+//                     ),
+//                     Container(
+//                       padding: const EdgeInsets.only(left: 10),
+//                       child: Column(
+//                         crossAxisAlignment: CrossAxisAlignment.start,
+//                         children: [
+//                           Text(
+//                             state.auth.phoneNumber!,
+//                             // style: _textStyle,
+//                           ),
+//                           Text(
+//                             state.auth.email!,
+//                             // style: _textStyle,
+//                           ),
+//                           Text(
+//                             state.auth.emergencyContact!,
+//                             // style: _textStyle,
+//                           ),
+//                         ],
+//                       ),
+//                     ),
+//                     Row(mainAxisAlignment: MainAxisAlignment.end, children: [
+//                       TextButton(
+//                           onPressed: () {
+//                             Navigator.pushNamed(context, EditProfile.routeName,
+//                                 arguments: EditProfileArgument(
+//                                     auth: Auth(
+//                                         phoneNumber: state.auth.phoneNumber,
+//                                         id: state.auth.id,
+//                                         name: state.auth.name,
+//                                         email: state.auth.email,
+//                                         emergencyContact:
+//                                             state.auth.emergencyContact,
+//                                         profilePicture:
+//                                             state.auth.profilePicture)));
+//                           },
+//                           child: const Text("Edit Profile")),
+//                       TextButton(
+//                           onPressed: () {
+//                             Navigator.pushNamed(
+//                                 context, ChangePassword.routeName);
+//                           },
+//                           child: const Text("Change Password")),
+//                     ])
+//                   ],
+//                 ),
+//               ),
+//               Card(
+//                 elevation: 3,
+//                 child: Column(
+//                   crossAxisAlignment: CrossAxisAlignment.start,
+//                   children: [
+//                     const Padding(
+//                       padding: EdgeInsets.only(top: 8, left: 5),
+//                       child: Text(
+//                         "Legal",
+//                         // style: _textStyle,
+//                       ),
+//                     ),
+//                     const Divider(
+//                       color: Colors.red,
+//                       thickness: 1.5,
+//                     ),
+//                     Container(
+//                       padding:
+//                           const EdgeInsets.only(left: 10, bottom: 20, top: 10),
+//                       child: Column(
+//                         crossAxisAlignment: CrossAxisAlignment.start,
+//                         children: [
+//                           Text(
+//                             "Contact Us",
+//                             style: _textStyle,
+//                           ),
+//                           Text("Privacy Policy", style: _textStyle),
+//                           Text("Terms & Conditions", style: _textStyle),
+//                         ],
+//                       ),
+//                     ),
+//                   ],
+//                 ),
+//               ),
+//               Card(
+//                 elevation: 3,
+//                 child: Column(
+//                   crossAxisAlignment: CrossAxisAlignment.start,
+//                   children: [
+//                     Padding(
+//                       padding: const EdgeInsets.only(top: 8, left: 5),
+//                       child: Text(
+//                         "Preference",
+//                         style: _textStyle,
+//                       ),
+//                     ),
+//                     const Divider(
+//                       color: Colors.red,
+//                       thickness: 1.5,
+//                     ),
+//                     Container(
+//                       padding:
+//                           const EdgeInsets.only(left: 10, bottom: 20, top: 10),
+//                       child: Column(
+//                         crossAxisAlignment: CrossAxisAlignment.start,
+//                         children: [
+//                           Text.rich(TextSpan(
+//                               text: "Driver Gender: ",
+//                               style: _textStyle,
+//                               children: [
+//                                 TextSpan(
+//                                     text: state.auth.pref!["gender"],
+//                                     style: const TextStyle(
+//                                         fontStyle: FontStyle.italic,
+//                                         fontWeight: FontWeight.w300))
+//                               ])),
+//                           Text.rich(TextSpan(
+//                               text: "Minimum Driver Rating: ",
+//                               style: _textStyle,
+//                               children: [
+//                                 TextSpan(
+//                                     text: state.auth.pref!["min_rate"],
+//                                     style: const TextStyle(
+//                                         fontStyle: FontStyle.italic,
+//                                         fontWeight: FontWeight.w300))
+//                               ])),
+//                           Text.rich(TextSpan(
+//                               text: "Car Type: ",
+//                               style: _textStyle,
+//                               children: [
+//                                 TextSpan(
+//                                     text: state.auth.pref!["car_type"],
+//                                     style: const TextStyle(
+//                                         fontStyle: FontStyle.italic,
+//                                         fontWeight: FontWeight.w300))
+//                               ])),
+//                         ],
+//                       ),
+//                     ),
+//                     Align(
+//                       alignment: Alignment.centerRight,
+//                       child: TextButton(
+//                           onPressed: () {
+//                             //print(state.auth.);
+//                             Navigator.pushNamed(
+//                                 context, PreferenceScreen.routeNAme,
+//                                 arguments: PreferenceArgument(
+//                                     gender: state.auth.pref!['gender'],
+//                                     min_rate: double.parse(
+//                                       state.auth.pref!['min_rate'],
+//                                     ),
+//                                     carType: state.auth.pref!["car_type"]));
+//                             // Navigator.pushNamed(
+//                             //     context, PreferenceScreen.routeNAme);
+//                           },
+//                           child: const Text("Edit Preference")),
+//                     )
+//                   ],
+//                 ),
+//               ),
+//               Card(
+//                 elevation: 3,
+//                 child: Column(
+//                   crossAxisAlignment: CrossAxisAlignment.start,
+//                   children: [
+//                     const Padding(
+//                       padding: EdgeInsets.only(top: 8, left: 5),
+//                       child: Text(
+//                         "App Info",
+//                         // style: _textStyle,
+//                       ),
+//                     ),
+//                     const Divider(
+//                       color: Colors.red,
+//                       thickness: 1.5,
+//                     ),
+//                     Container(
+//                       padding:
+//                           const EdgeInsets.only(left: 10, bottom: 20, top: 10),
+//                       child: Column(
+//                         crossAxisAlignment: CrossAxisAlignment.start,
+//                         children: [
+//                           Text.rich(TextSpan(
+//                               text: "Build Name: ",
+//                               style: _textStyle,
+//                               children: const [
+//                                 TextSpan(
+//                                     text: " SafeWay",
+//                                     style: TextStyle(
+//                                         fontStyle: FontStyle.italic,
+//                                         fontWeight: FontWeight.w300))
+//                               ])),
+//                           Text.rich(TextSpan(
+//                               text: "App Version: ",
+//                               style: _textStyle,
+//                               children: const [
+//                                 TextSpan(
+//                                     text: " 1.0",
+//                                     style: TextStyle(
+//                                         fontStyle: FontStyle.italic,
+//                                         fontWeight: FontWeight.w300))
+//                               ])),
+//                           Text.rich(TextSpan(
+//                               text: "Build Number: ",
+//                               style: _textStyle,
+//                               children: const [
+//                                 TextSpan(
+//                                     text: " 102034",
+//                                     style: TextStyle(
+//                                         fontStyle: FontStyle.italic,
+//                                         fontWeight: FontWeight.w300))
+//                               ])),
+//                         ],
+//                       ),
+//                     ),
+//                   ],
+//                 ),
+//               ),
+//               Card(
+//                 elevation: 3,
+//                 child: Column(
+//                   crossAxisAlignment: CrossAxisAlignment.start,
+//                   children: [
+//                     Padding(
+//                       padding: const EdgeInsets.only(top: 8, left: 5),
+//                       child: Text(
+//                         "About us",
+//                         style: _textStyle,
+//                       ),
+//                     ),
+//                     const Divider(
+//                       color: Colors.red,
+//                       thickness: 1.5,
+//                     ),
+//                     Container(
+//                       padding:
+//                           const EdgeInsets.only(left: 10, bottom: 20, top: 10),
+//                       child: Column(
+//                         crossAxisAlignment: CrossAxisAlignment.start,
+//                         children: [
+//                           Text.rich(TextSpan(
+//                               text: "Owned by:\n  ",
+//                               style: _textStyle,
+//                               children: const [
+//                                 TextSpan(
+//                                     text: " Safeway Transport",
+//                                     style: TextStyle(
+//                                         fontStyle: FontStyle.italic,
+//                                         fontWeight: FontWeight.w300))
+//                               ])),
+//                           Text.rich(TextSpan(
+//                               text: "Developed by:\n  ",
+//                               style: _textStyle,
+//                               children: const [
+//                                 TextSpan(
+//                                     text: " Vintage Technologies",
+//                                     style: TextStyle(
+//                                         fontStyle: FontStyle.italic,
+//                                         fontWeight: FontWeight.w300))
+//                               ])),
+//                         ],
+//                       ),
+//                     ),
+//                   ],
+//                 ),
+//               ),
+//             ],
+//           );
+//         }
+
+//         if (state is AuthDataLoading) {}
+//         return Container();
+//       }),
+//     );
