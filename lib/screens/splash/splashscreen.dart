@@ -3,6 +3,7 @@ import 'dart:developer' as developer;
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:passengerapp/bloc/bloc.dart';
 import 'package:passengerapp/helper/constants.dart';
 import 'package:passengerapp/helper/localization.dart';
@@ -36,6 +37,21 @@ class _CustomSplashScreenState extends State<CustomSplashScreen> {
     super.dispose();
   }
 
+  Future<bool> _requestLocationPermission() async {
+    LocationPermission permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        // return Future.error('Location permissions are denied');
+        return false;
+      } else {
+        return true;
+      }
+    } else {
+      return true;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -51,17 +67,24 @@ class _CustomSplashScreenState extends State<CustomSplashScreen> {
             );
           }, listener: (_, state) {
             if (state is AuthDataLoadSuccess) {
-              if (state.auth.token != null) {
-                name = state.auth.name!;
-                number = state.auth.phoneNumber!;
-                myId = state.auth.id!;
-                checkInterNetServiceOnInit();
-              } else {
-                Navigator.pushReplacementNamed(context, SigninScreen.routeName);
-              }
+              _requestLocationPermission().then((value) {
+                if (value) {
+                  if (state.auth.token != null) {
+                    name = state.auth.name!;
+                    number = state.auth.phoneNumber!;
+                    myId = state.auth.id!;
+                    checkInterNetServiceOnInit();
+                  } else {
+                    Navigator.pushReplacementNamed(
+                        context, SigninScreen.routeName);
+                  }
+                }
+              });
             }
             if (state is AuthOperationFailure) {
-              Navigator.pushReplacementNamed(context, SigninScreen.routeName);
+              _requestLocationPermission().then((value) {
+                Navigator.pushReplacementNamed(context, SigninScreen.routeName);
+              });
             }
           }),
           BlocConsumer<RideRequestBloc, RideRequestState>(
