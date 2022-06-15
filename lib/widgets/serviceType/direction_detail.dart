@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:passengerapp/bloc/bloc.dart';
 import 'package:passengerapp/helper/constants.dart';
+import 'package:passengerapp/helper/localization.dart';
 import 'package:shimmer/shimmer.dart';
 
 class DirectionDetail extends StatefulWidget {
@@ -50,7 +51,7 @@ class _DirectionDetailState extends State<DirectionDetail> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text.rich(TextSpan(
-                        text: "Estimated Fare:   ",
+                        text: "${getTranslation(context, "estimated_fare")}:  ",
                         style: Theme.of(context).textTheme.subtitle1,
                         children: [
                           TextSpan(
@@ -61,7 +62,8 @@ class _DirectionDetailState extends State<DirectionDetail> {
                       height: 5,
                     ),
                     Text.rich(TextSpan(
-                        text: "Estimated Duration:  ",
+                        text:
+                            "${getTranslation(context, "estimated_duration")}: ",
                         style: Theme.of(context).textTheme.subtitle1,
                         children: [
                           TextSpan(
@@ -75,7 +77,7 @@ class _DirectionDetailState extends State<DirectionDetail> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text.rich(TextSpan(
-                        text: "Distance: ",
+                        text: getTranslation(context, "distance"),
                         style: Theme.of(context).textTheme.subtitle1,
                         children: [
                           TextSpan(
@@ -86,7 +88,7 @@ class _DirectionDetailState extends State<DirectionDetail> {
                       height: 5,
                     ),
                     Text.rich(TextSpan(
-                        text: "Capacity: ",
+                        text: "${getTranslation(context, "capacity")}: ",
                         style: Theme.of(context).textTheme.subtitle1,
                         children: [
                           TextSpan(

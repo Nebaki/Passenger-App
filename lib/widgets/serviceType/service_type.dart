@@ -6,6 +6,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:passengerapp/bloc/bloc.dart';
 import 'package:passengerapp/bloc/notificationrequest/notification_request_bloc.dart';
 import 'package:passengerapp/helper/constants.dart';
+import 'package:passengerapp/helper/localization.dart';
 import 'package:passengerapp/models/models.dart';
 import 'package:passengerapp/repository/nearby_driver.dart';
 import 'package:passengerapp/screens/home/assistant/home_screen_assistant.dart';
@@ -58,7 +59,8 @@ class _ServiceState extends State<Service> {
       if (state is RideRequestOperationFailur) {
         _isLoading = false;
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: const Text("Notification Not Sent"),
+          content: Text(
+              getTranslation(context, "create_ride_request_failure_message")),
           backgroundColor: Colors.red.shade900,
         ));
       }
@@ -145,9 +147,9 @@ class _ServiceState extends State<Service> {
                     topRight: Radius.circular(20))),
             child: Column(
               children: [
-                const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 10),
-                  child: Text("Choose a taxi"),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 10),
+                  child: Text(getTranslation(context, "choose_taxi")),
                 ),
                 CategoryList(
                     changeCost: changeCost,
@@ -228,7 +230,10 @@ class _ServiceState extends State<Service> {
                                 children: [
                                   const Spacer(),
                                   Text(
-                                    _isLoading ? "Sending...." : "Send Request",
+                                    _isLoading
+                                        ? getTranslation(context, "sending")
+                                        : getTranslation(
+                                            context, "send_request"),
                                     style: const TextStyle(
                                         color: Colors.black,
                                         fontWeight: FontWeight.normal),
@@ -261,33 +266,33 @@ class _ServiceState extends State<Service> {
 
                       // }
                       if (state is DriverLoading) {
-                        return const ElevatedButton(
+                        return ElevatedButton(
                           onPressed: null,
                           child: Text(
-                            "Finding nearby driver..",
-                            style: TextStyle(
+                            getTranslation(context, "finding_nearby_driver"),
+                            style: const TextStyle(
                                 color: Colors.black,
                                 fontWeight: FontWeight.normal),
                           ),
                         );
                       }
                       if (state is DriverOperationFailure) {
-                        return const ElevatedButton(
+                        return ElevatedButton(
                           onPressed: null,
                           child: Text(
-                            "No driver Found",
-                            style: TextStyle(
+                            getTranslation(context, "no_driver_found"),
+                            style: const TextStyle(
                                 color: Colors.black,
                                 fontWeight: FontWeight.normal),
                           ),
                         );
                       }
                       if (state is DriverNotFoundState) {
-                        return const ElevatedButton(
+                        return ElevatedButton(
                           onPressed: null,
                           child: Text(
-                            "No driver Found",
-                            style: TextStyle(
+                            getTranslation(context, "no_driver_found"),
+                            style: const TextStyle(
                                 color: Colors.black,
                                 fontWeight: FontWeight.normal),
                           ),
@@ -295,11 +300,11 @@ class _ServiceState extends State<Service> {
                       }
                       return
                           // Container();
-                          const ElevatedButton(
+                          ElevatedButton(
                         onPressed: null,
                         child: Text(
-                          "Please select car type",
-                          style: TextStyle(
+                          getTranslation(context, "please_select_car_type"),
+                          style: const TextStyle(
                               color: Colors.black,
                               fontWeight: FontWeight.normal),
                         ),

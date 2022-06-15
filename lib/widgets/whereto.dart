@@ -7,6 +7,7 @@ import 'package:passengerapp/bloc/database/location_history_bloc.dart';
 import 'package:passengerapp/cubit/favorite_location.dart';
 import 'package:passengerapp/cubit/favorite_location_state.dart';
 import 'package:passengerapp/helper/constants.dart';
+import 'package:passengerapp/helper/localization.dart';
 import 'package:passengerapp/rout.dart';
 import 'package:passengerapp/screens/home/assistant/home_screen_assistant.dart';
 import 'package:passengerapp/screens/screens.dart';
@@ -81,10 +82,9 @@ class _WhereToState extends State<WhereTo> {
                             pickupAddress = currentLocation;
                           }
                           if (state is ReverseLocationLoading) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                    content:
-                                        Text("Determining current location")));
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                                content: Text(getTranslation(
+                                    context, "determining_current_location"))));
                           }
                           if (state is ReverseLocationOperationFailure) {
                             context
@@ -100,7 +100,7 @@ class _WhereToState extends State<WhereTo> {
                           height: 35,
                           width: 150,
                           child: Text(
-                            "Where To?",
+                            getTranslation(context, "where_to"),
                             style: Theme.of(context).textTheme.titleLarge,
                           ),
                         ),
@@ -130,10 +130,9 @@ class _WhereToState extends State<WhereTo> {
                                 state.locationHistory[index].placeId);
                             settingDropOffDialog(true);
                           } else {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                    content: Text(
-                                        "Your current location isn't determined yet")));
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                                content: Text(getTranslation(context,
+                                    "location_not_determined_error_message"))));
                           }
                         },
                         child: Padding(
@@ -179,12 +178,13 @@ class _WhereToState extends State<WhereTo> {
               }
               if (state is LocationHistoryLoading) {
                 return Column(
-                  children: const [
-                    Text("Loading recent histories.."),
-                    SizedBox(
+                  children: [
+                    Text(getTranslation(
+                        context, "location_history_loading_message")),
+                    const SizedBox(
                       height: 10,
                     ),
-                    Padding(
+                    const Padding(
                       padding: EdgeInsets.only(top: 10),
                       child: LinearProgressIndicator(
                         minHeight: 2,
@@ -193,7 +193,9 @@ class _WhereToState extends State<WhereTo> {
                   ],
                 );
               }
-              return const Center(child: Text("No recent history"));
+              return Center(
+                  child: Text(getTranslation(
+                      context, "recent_history_not_found_message")));
             }),
           ],
         ),
@@ -217,8 +219,8 @@ class _WhereToState extends State<WhereTo> {
               onWillPop: () async => false,
               child: AlertDialog(
                 content: Row(
-                  children: const [
-                    SizedBox(
+                  children: [
+                    const SizedBox(
                       height: 20,
                       width: 20,
                       child: CircularProgressIndicator(
@@ -226,10 +228,11 @@ class _WhereToState extends State<WhereTo> {
                         color: Colors.red,
                       ),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       width: 5,
                     ),
-                    Text("Loading current Location."),
+                    Text(getTranslation(
+                        context, "current_location_loading_message")),
                   ],
                 ),
               ),
@@ -406,13 +409,14 @@ class _WhereToState extends State<WhereTo> {
                 WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                       backgroundColor: Colors.red.shade900,
-                      content: const Text("Unable To set the Pickup.")));
+                      content: Text(getTranslation(
+                          context, "settingup_pickup_failure_message"))));
                 });
               }
               return AlertDialog(
                 content: Row(
-                  children: const [
-                    SizedBox(
+                  children: [
+                    const SizedBox(
                       height: 20,
                       width: 20,
                       child: CircularProgressIndicator(
@@ -420,10 +424,11 @@ class _WhereToState extends State<WhereTo> {
                         color: Colors.black,
                       ),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       width: 5,
                     ),
-                    Text("Setting up Pickup. Please wait.."),
+                    Text(
+                        getTranslation(context, "settingup_dropp_off_message")),
                   ],
                 ),
               );
@@ -479,15 +484,16 @@ class _WhereToState extends State<WhereTo> {
                 WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                       backgroundColor: Colors.red.shade900,
-                      content: const Text("Unable To set the Dropoff.")));
+                      content: Text(getTranslation(
+                          context, "settingup_dropp_off_failure_message"))));
                 });
               }
               return WillPopScope(
                 onWillPop: () async => false,
                 child: AlertDialog(
                   content: Row(
-                    children: const [
-                      SizedBox(
+                    children: [
+                      const SizedBox(
                         height: 20,
                         width: 20,
                         child: CircularProgressIndicator(
@@ -495,10 +501,11 @@ class _WhereToState extends State<WhereTo> {
                           color: Colors.black,
                         ),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         width: 5,
                       ),
-                      Text("Setting up Drop Off. Please wait.."),
+                      Text(getTranslation(
+                          context, "settingup_dropp_off_message")),
                     ],
                   ),
                 ),
@@ -636,7 +643,8 @@ class _WhereToState extends State<WhereTo> {
                                       Icons.clear,
                                       size: 15,
                                     )),
-                                hintText: "PickUp Address",
+                                hintText: getTranslation(
+                                    context, "pickup_address_hint_text"),
                                 prefixIcon: const Padding(
                                   padding: EdgeInsets.only(left: 20, right: 10),
                                   child: Icon(
@@ -671,7 +679,8 @@ class _WhereToState extends State<WhereTo> {
                               findPlace(value);
                             },
                             decoration: InputDecoration(
-                                hintText: "DropOff Address",
+                                hintText: getTranslation(
+                                    context, "droppoff_address_hint_text"),
                                 prefixIcon: const Padding(
                                   padding: EdgeInsets.only(left: 20, right: 10),
                                   child: Icon(Icons.location_on,

@@ -4,11 +4,9 @@ import 'package:google_maps_place_picker/google_maps_place_picker.dart';
 import 'package:passengerapp/cubit/favorite_location.dart';
 import 'package:passengerapp/cubit/favorite_location_state.dart';
 import 'package:passengerapp/helper/constants.dart';
+import 'package:passengerapp/helper/localization.dart';
 import 'package:passengerapp/rout.dart';
-import 'package:passengerapp/screens/placepicker/place_picker.dart';
-import 'package:passengerapp/screens/screens.dart';
 import 'package:passengerapp/widgets/widgets.dart';
-
 import '../../bloc/bloc.dart';
 import '../../models/models.dart';
 
@@ -16,7 +14,7 @@ class AddAddressScreen extends StatefulWidget {
   static const routeName = 'addaddress';
   final AddAdressScreenArgument args;
 
-  AddAddressScreen({required this.args, Key? key}) : super(key: key);
+  const AddAddressScreen({required this.args, Key? key}) : super(key: key);
 
   @override
   State<AddAddressScreen> createState() => _AddAddressScreenState();
@@ -29,7 +27,7 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
   PickResult? selectedPlace;
   bool _isLoading = false;
   final locationController = TextEditingController();
-  GlobalKey<FormState> _formState = GlobalKey<FormState>();
+  final GlobalKey<FormState> _formState = GlobalKey<FormState>();
 
   @override
   void initState() {
@@ -50,7 +48,6 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
         body: BlocConsumer<FavoriteLocationCubit, FavoriteLocationState>(
             builder: (context, state) => _buildScreen(),
             listener: (context, state) {
-              print("Favoriteeee Stateeeeeeessssssss $state");
               if (state is FavoriteLocationLoadSuccess) {
                 _isLoading = false;
 
@@ -66,7 +63,8 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
 
                 ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                     backgroundColor: Colors.red.shade900,
-                    content: const Text("OperationFailure")));
+                    content:
+                        Text(getTranslation(context, "operation_failure"))));
               }
             }));
   }
@@ -96,17 +94,16 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
                 child: TextFormField(
                   initialValue:
                       widget.args.edit ? widget.args.savedLocation!.name : null,
-                  decoration: const InputDecoration(
-                    label: Text('Name'),
-                    // hintText: "Name",
-                    hintStyle: TextStyle(
+                  decoration: InputDecoration(
+                    label: Text(getTranslation(context, "name")),
+                    hintStyle: const TextStyle(
                         fontWeight: FontWeight.bold, color: Colors.black45),
                     fillColor: Colors.white,
                     // filled: true,
                   ),
                   validator: (value) {
                     if (value!.isEmpty) {
-                      return 'Please enter name';
+                      return getTranslation(context, "please_enter_name");
                     }
                     return null;
                   },
@@ -124,28 +121,24 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
                 },
                 controller: locationController,
                 decoration: InputDecoration(
-                  label: Text('Search Location'),
+                  label: Text(getTranslation(context, "search_location")),
                   suffixIcon: IconButton(
                       onPressed: () {
                         locationController.clear();
-                        debugPrint("TATAT");
                       },
                       icon: const Icon(
                         Icons.clear,
                         size: 15,
                       )),
-                  hintStyle: TextStyle(
+                  hintStyle: const TextStyle(
                       fontWeight: FontWeight.bold, color: Colors.black45),
                   fillColor: Colors.white,
                 ),
                 validator: (value) {
-                  if (value!.isEmpty) {
-                    return 'Please enter The Old password';
-                  }
                   return null;
                 },
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               ListTile(
                 onTap: () async {
                   Navigator.push(
@@ -177,48 +170,8 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
                 leading: const Icon(
                   Icons.location_on,
                 ),
-                title: const Text("Pick location from map"),
+                title: Text(getTranslation(context, "pick_location_from_map")),
               ),
-              // Row(
-              //   children: [
-              //     IconButton(
-              //         padding: EdgeInsets.zero,
-              //         onPressed: () async {
-              //           Navigator.push(
-              //             context,
-              //             MaterialPageRoute(
-              //               builder: (context) {
-              //                 return PlacePicker(
-              //                   apiKey: apiKey,
-              //                   initialPosition: initialPosition,
-              //                   useCurrentLocation: true,
-              //                   selectInitialPosition: true,
-
-              //                   //usePlaceDetailSearch: true,
-              //                   onPlacePicked: (result) {
-              //                     placeId = result.placeId;
-              //                     address = result.formattedAddress;
-              //                     selectedPlace = result;
-              //                     locationController.text =
-              //                         result.formattedAddress!;
-              //                     Navigator.of(context).pop();
-              //                     setState(() {});
-              //                   },
-              //                 );
-              //               },
-              //             ),
-              //           );
-              //         },
-              //         icon: const Icon(
-              //           Icons.location_on,
-              //           color: Colors.black,
-              //         )),
-              //     const SizedBox(
-              //       width: 5,
-              //     ),
-              //     const Text("Pick Location from map"),
-              //   ],
-              // ),
               const Divider(),
               BlocBuilder<LocationPredictionBloc, LocationPredictionState>(
                   builder: (context, state) {
@@ -230,10 +183,8 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
                     borderRadius: BorderRadius.circular(20),
                     child: Container(
                       padding: const EdgeInsets.only(top: 10, bottom: 20),
-                      // height: 200,
                       constraints:
                           const BoxConstraints(maxHeight: 400, minHeight: 30),
-
                       width: double.infinity,
                       child: ListView.separated(
                           physics: const ClampingScrollPhysics(),
@@ -260,7 +211,6 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
               BlocConsumer<PlaceDetailBloc, PlaceDetailState>(
                 listener: (_, state) {
                   if (state is PlaceDetailLoadSuccess) {
-                    print("Yeah Yeah it's succesfull");
                     setState(() {
                       placeId = state.placeDetail.placeId;
                       address = state.placeDetail.placeName;
@@ -301,8 +251,8 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     const Spacer(),
-                    const Text(
-                      "Save",
+                    Text(
+                      getTranslation(context, "save"),
                     ),
                     const Spacer(),
                     Align(
@@ -325,62 +275,6 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
           ),
         ),
         CustomeBackArrow(),
-        // Align(
-        //   alignment: Alignment.bottomCenter,
-        //   child: SizedBox(
-        //     height: 50,
-        //     child: ElevatedButton(
-        //       onPressed: placeId != null
-        //           ? () {
-        //               final form = _formState.currentState;
-        //               if (form!.validate()) {
-        //                 form.save();
-        //                 _isLoading = true;
-
-        //                 widget.args.edit
-        //                     ? context
-        //                         .read<FavoriteLocationCubit>()
-        //                         .updateFavoriteLocation(SavedLocation(
-        //                             id: widget.args.savedLocation!.id,
-        //                             name: name!,
-        //                             address: address!,
-        //                             placeId: placeId!))
-        //                     : context
-        //                         .read<FavoriteLocationCubit>()
-        //                         .addToFavoriteLocation(SavedLocation(
-        //                             name: name!,
-        //                             address: address!,
-        //                             placeId: placeId!));
-        //               }
-        //             }
-        //           : null,
-        //       child: Row(
-        //         mainAxisSize: MainAxisSize.min,
-        //         mainAxisAlignment: MainAxisAlignment.center,
-        //         children: [
-        //           const Spacer(),
-        //           const Text(
-        //             "Save",
-        //           ),
-        //           const Spacer(),
-        //           Align(
-        //             alignment: Alignment.centerRight,
-        //             child: _isLoading
-        //                 ? const SizedBox(
-        //                     height: 20,
-        //                     width: 20,
-        //                     child: CircularProgressIndicator(
-        //                       strokeWidth: 2,
-        //                       color: Colors.black,
-        //                     ),
-        //                   )
-        //                 : Container(),
-        //           )
-        //         ],
-        //       ),
-        //     ),
-        //   ),
-        // )
       ],
     );
   }
@@ -392,9 +286,6 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
         onTap: () {
           locationController.text = prediction.mainText;
           getPlaceDetail(prediction.placeId);
-          // settingDropOffDialog(con);
-          // LocationHistoryEvent event = LocationHistoryAdd(location: prediction);
-          // BlocProvider.of<LocationHistoryBloc>(context).add(event);
         },
         child: Container(
           color: Colors.black.withOpacity(0),

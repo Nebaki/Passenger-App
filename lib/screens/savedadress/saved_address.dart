@@ -1,24 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:passengerapp/bloc/bloc.dart';
 import 'package:passengerapp/bloc/database/location_history_bloc.dart';
-import 'package:passengerapp/bloc/savedlocation/saved_location_bloc.dart';
 import 'package:passengerapp/cubit/favorite_location.dart';
 import 'package:passengerapp/cubit/favorite_location_state.dart';
 import 'package:passengerapp/helper/constants.dart';
+import 'package:passengerapp/helper/localization.dart';
 import 'package:passengerapp/models/models.dart';
-import 'package:passengerapp/models/savedlocation/saved_location.dart';
 import 'package:passengerapp/rout.dart';
 import 'package:passengerapp/screens/screens.dart';
 import 'package:passengerapp/widgets/widgets.dart';
 import 'package:shimmer/shimmer.dart';
-
 import '../home/assistant/home_screen_assistant.dart';
 
 class SavedAddress extends StatelessWidget {
   static const routeName = "/savedadresses";
+
+  const SavedAddress({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -28,34 +27,19 @@ class SavedAddress extends StatelessWidget {
             child: BlocBuilder<FavoriteLocationCubit, FavoriteLocationState>(
                 builder: (context, state) {
               if (state is FavoriteLocationLoadSuccess) {
-                final items;
-                print("YAhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh");
-                if (state.savedLocation.isNotEmpty) {
-                  items = List.generate(state.savedLocation.length,
-                      (index) => state.savedLocation[index]!.name);
-                } else {
-                  items = [];
-                }
-
-                // List<String>.generate(10, (i) => 'Item ${i + 1}');
-
                 return state.savedLocation.isEmpty
                     ? Container()
                     : Container(
-                        padding: EdgeInsets.only(top: 80),
+                        padding: const EdgeInsets.only(top: 80),
                         child: Column(
                           children: [
-                            // Padding(
-                            //   padding: const EdgeInsets.only(left: 5, right: 5),
-                            //   child: WhereTo(setIsSelected: () {}),
-                            // ),
                             Container(
-                                padding: EdgeInsets.symmetric(horizontal: 20),
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 20),
                                 height: MediaQuery.of(context).size.height - 80,
                                 child: ListView.builder(
                                     itemCount: state.savedLocation.length,
                                     itemBuilder: (context, index) {
-                                      final item = items[index];
                                       return Dismissible(
                                           direction:
                                               DismissDirection.horizontal,
@@ -63,7 +47,7 @@ class SavedAddress extends StatelessWidget {
                                             padding: const EdgeInsets.symmetric(
                                                 horizontal: 20),
                                             decoration: BoxDecoration(
-                                              color: Color(0xFFFFE6E6),
+                                              color: const Color(0xFFFFE6E6),
                                               borderRadius:
                                                   BorderRadius.circular(15),
                                             ),
@@ -78,7 +62,6 @@ class SavedAddress extends StatelessWidget {
                                                   Icons.delete_outlined,
                                                   color: Colors.redAccent,
                                                 )
-                                                //SvgPicture.asset("assets/icons/Trash.svg"),
                                               ],
                                             ),
                                           ),
@@ -99,13 +82,11 @@ class SavedAddress extends StatelessWidget {
                                                 DismissDirection.endToStart) {
                                               return true;
                                             }
+                                            return null;
                                           },
                                           onDismissed: (DismissDirection d) {
                                             if (d ==
                                                 DismissDirection.endToStart) {
-                                              print("Come Over Meee");
-                                              print(
-                                                  "hererere ${state.savedLocation[index]!.id}");
                                               context
                                                   .read<FavoriteLocationCubit>()
                                                   .deleteFavoriteLocation(state
@@ -115,14 +96,9 @@ class SavedAddress extends StatelessWidget {
                                                   .removeAt(index);
                                             }
                                           },
-                                          key: Key("item."),
+                                          key: const Key("item."),
                                           child: _builHistoryCard(context,
                                               state.savedLocation[index]));
-                                      // _historyItem(
-                                      //     context: context,
-                                      //     text: state.savedLocation[index].name,
-                                      //     routename: "routename"),
-                                      // );
                                     }))
                           ],
                         ),
@@ -153,7 +129,7 @@ class SavedAddress extends StatelessWidget {
             child: Align(
                 alignment: Alignment.topCenter,
                 child: Text(
-                  "Saved Addresses",
+                  getTranslation(context, "saved_addresses"),
                   style: Theme.of(context).textTheme.titleLarge,
                 )),
           )
@@ -164,7 +140,7 @@ class SavedAddress extends StatelessWidget {
 
   Widget _buildShimmer(BuildContext context) {
     return Container(
-      padding: EdgeInsets.only(top: 80),
+      padding: const EdgeInsets.only(top: 80),
       child: Column(
         children: [
           Container(
@@ -173,22 +149,15 @@ class SavedAddress extends StatelessWidget {
               child: ListView.builder(
                   itemCount: 10,
                   itemBuilder: (context, index) {
-                    return Container(
-                        child: Padding(
+                    return Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Container(
                         padding: const EdgeInsets.symmetric(
                             horizontal: 20, vertical: 10),
                         decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(20),
-                            color: Theme.of(context).backgroundColor,
-                            boxShadow: [
-                              // BoxShadow(
-                              //     blurStyle: BlurStyle.normal,
-                              //     color: Colors.grey.shade300,
-                              //     blurRadius: 8,
-                              //     spreadRadius: 5)
-                            ]),
+                          borderRadius: BorderRadius.circular(20),
+                          color: Theme.of(context).backgroundColor,
+                        ),
                         child: Column(
                           children: [
                             Row(
@@ -236,45 +205,14 @@ class SavedAddress extends StatelessWidget {
                               ],
                             ),
                             const Divider(),
-                            SizedBox(height: 10),
+                            const SizedBox(height: 10),
                           ],
                         ),
                       ),
-                    ));
-                    // _historyItem(
-                    //     context: context,
-                    //     text: state.savedLocation[index].name,
-                    //     routename: "routename"),
-                    // );
+                    );
                   }))
         ],
       ),
-    );
-  }
-
-  Widget _historyItem(
-      {required BuildContext context,
-      required String text,
-      required String routename}) {
-    const color = Colors.grey;
-    const hoverColor = Colors.white70;
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [
-        ListTile(
-          leading: Icon(Icons.history, color: color.shade700),
-          title: Text(text, style: Theme.of(context).textTheme.bodyText2),
-          hoverColor: hoverColor,
-          onLongPress: () {},
-          onTap: () {
-            // Navigator.pushNamed(context, routename);
-          },
-        ),
-        Padding(
-          padding: const EdgeInsets.only(left: 65, right: 20),
-          child: Divider(color: Colors.grey.shade400),
-        )
-      ],
     );
   }
 
@@ -286,7 +224,7 @@ class SavedAddress extends StatelessWidget {
           _showModaLButtomSheet(context, location!);
         },
         child: Container(
-          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
           decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(20),
               color: Theme.of(context).backgroundColor,
@@ -361,7 +299,7 @@ class SavedAddress extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text("SavedLocations",
+                Text(getTranslation(context, "saved_locations_title"),
                     style: Theme.of(context).textTheme.titleLarge),
                 const Divider(),
                 SizedBox(
@@ -380,8 +318,9 @@ class SavedAddress extends StatelessWidget {
                               .add(event);
                         },
                         child: Row(
-                          children: const [
-                            Text("Ride To"),
+                          children: [
+                            Text(getTranslation(context,
+                                "saved_locations_bottom_rideto_action")),
                           ],
                         ))),
                 TextButton(
@@ -392,8 +331,9 @@ class SavedAddress extends StatelessWidget {
                               edit: true, savedLocation: location));
                     },
                     child: Row(
-                      children: const [
-                        Text("Edit"),
+                      children: [
+                        Text(getTranslation(
+                            context, "saved_locations_bottom_edit_action")),
                       ],
                     )),
               ],
@@ -443,15 +383,16 @@ class SavedAddress extends StatelessWidget {
                 WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                       backgroundColor: Colors.red.shade900,
-                      content: const Text("Unable To set the Dropoff.")));
+                      content: Text(getTranslation(
+                          context, "settingup_dropp_off_failure_message"))));
                 });
               }
               return WillPopScope(
                 onWillPop: () async => false,
                 child: AlertDialog(
                   content: Row(
-                    children: const [
-                      SizedBox(
+                    children: [
+                      const SizedBox(
                         height: 20,
                         width: 20,
                         child: CircularProgressIndicator(
@@ -459,10 +400,11 @@ class SavedAddress extends StatelessWidget {
                           color: Colors.black,
                         ),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         width: 5,
                       ),
-                      Text("Setting up Drop Off. Please wait.."),
+                      Text(getTranslation(
+                          context, "settingup_dropp_off_message")),
                     ],
                   ),
                 ),

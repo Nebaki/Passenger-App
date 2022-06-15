@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:passengerapp/bloc/bloc.dart';
 import 'package:passengerapp/helper/constants.dart';
+import 'package:passengerapp/helper/localization.dart';
 import 'package:passengerapp/models/models.dart';
 import 'package:passengerapp/rout.dart';
 import 'package:passengerapp/screens/screens.dart';
@@ -27,21 +28,14 @@ class ReviewScreen extends StatelessWidget {
             listener: (context, state) {
               if (state is ReviewSent) {
                 _isLoading = false;
-                // BlocProvider.of<DirectionBloc>(context)
-                //     .add(DirectionChangeToInitialState());
+
                 Navigator.pop(context);
-                //     Navigator.pushNamedAndRemoveUntil(context, HomeScreen.routeName,
-                //     ((Route<dynamic> route) => false),
-                //     arguments: HomeScreenArgument(
-                //         isSelected: false, isFromSplash: false));
-                // Navigator.pushReplacementNamed(context, HomeScreen.routeName,
-                //     arguments: HomeScreenArgument(
-                //         isFromSplash: false, isSelected: false));
               }
               if (state is ReviewSendingFailure) {
                 _isLoading = false;
                 ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                  content: const Text("Review not Sent please try again"),
+                  content:
+                      Text(getTranslation(context, "review_not_sent_message")),
                   backgroundColor: Colors.red.shade900,
                 ));
               }
@@ -63,25 +57,8 @@ class ReviewScreen extends StatelessWidget {
                   height: 30,
                   width: 30,
                   child: TextButton(
-                    //padding: EdgeInsets.zero,
-                    //color: Colors.white,
-                    //shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
                     onPressed: () {
-                      // BlocProvider.of<DirectionBloc>(context)
-                      //     .add(DirectionChangeToInitialState());
-                      // BlocProvider.of<DirectionBloc>(context)
-                      //     .add(DirectionChangeToInitialState());
                       Navigator.pop(context);
-                      // Navigator.pushNamedAndRemoveUntil(
-                      //     context,
-                      //     HomeScreen.routeName,
-                      //     ((Route<dynamic> route) => false),
-                      //     arguments: HomeScreenArgument(
-                      //         isSelected: false, isFromSplash: false));
-                      // Navigator.pushReplacementNamed(
-                      //     context, HomeScreen.routeName,
-                      //     arguments: HomeScreenArgument(
-                      //         isFromSplash: false, isSelected: false));
                     },
                     child: const Icon(
                       Icons.clear,
@@ -121,7 +98,7 @@ class ReviewScreen extends StatelessWidget {
           Padding(
               padding: const EdgeInsets.all(8.0),
               child: Text(
-                "How was your trip?",
+                getTranslation(context, "how_was_you_trip"),
                 style: Theme.of(context).textTheme.titleLarge,
               )),
           Padding(
@@ -175,7 +152,7 @@ class ReviewScreen extends StatelessWidget {
                         itemCount: 5,
                         //itemPadding: EdgeInsets.symmetric(horizontal: 4.0),
                         itemBuilder: (context, _) =>
-                            Icon(Icons.star, color: Colors.green),
+                            const Icon(Icons.star, color: Colors.green),
                         onRatingUpdate: (rating) {}),
                   ],
                 ),
@@ -189,14 +166,14 @@ class ReviewScreen extends StatelessWidget {
                     itemCount: 5,
                     //itemPadding: EdgeInsets.symmetric(horizontal: 4.0),
                     itemBuilder: (context, _) =>
-                        Icon(Icons.star, color: Colors.green),
+                        const Icon(Icons.star, color: Colors.green),
                     onRatingUpdate: (rating) {
                       min_rate = rating;
                     }),
               ],
             ),
           ),
-          Divider(),
+          const Divider(),
           Padding(
             padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
             child: Container(
@@ -211,25 +188,20 @@ class ReviewScreen extends StatelessWidget {
                 controller: description,
                 minLines: 4,
                 maxLines: 4,
-                decoration: const InputDecoration(
-                    hintText: "Leave a comment..",
-                    hintStyle: TextStyle(
+                decoration: InputDecoration(
+                    hintText: getTranslation(context, "leave_a_comment"),
+                    hintStyle: const TextStyle(
                         fontWeight: FontWeight.bold, color: Colors.black45),
                     fillColor: Colors.white,
                     filled: true,
-                    border: OutlineInputBorder(borderSide: BorderSide.none)),
-                validator: (value) {
-                  if (value!.isEmpty) {
-                    return 'Please enter The Old password';
-                  }
-                  return null;
-                },
+                    border:
+                        const OutlineInputBorder(borderSide: BorderSide.none)),
               ),
             ),
           ),
           Center(
             child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 30),
+              padding: const EdgeInsets.symmetric(horizontal: 30),
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: _isLoading
@@ -242,8 +214,8 @@ class ReviewScreen extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     const Spacer(),
-                    const Text(
-                      "Submit",
+                    Text(
+                      getTranslation(context, "submit"),
                     ),
                     const Spacer(),
                     Align(

@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:passengerapp/bloc/bloc.dart';
 import 'package:passengerapp/helper/constants.dart';
+import 'package:passengerapp/helper/localization.dart';
 import 'package:passengerapp/rout.dart';
 
 class SettingLocationDialog extends StatelessWidget {
@@ -47,8 +48,8 @@ class SettingLocationDialog extends StatelessWidget {
               builder: (BuildContext context) {
                 return AlertDialog(
                   content: Row(
-                    children: const [
-                      SizedBox(
+                    children: [
+                      const SizedBox(
                         height: 20,
                         width: 20,
                         child: CircularProgressIndicator(
@@ -56,10 +57,10 @@ class SettingLocationDialog extends StatelessWidget {
                           color: Colors.black,
                         ),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         width: 5,
                       ),
-                      Text("Setting up Pickup. Please wait.."),
+                      Text(getTranslation(context, "settingup_pickup_message")),
                     ],
                   ),
                 );

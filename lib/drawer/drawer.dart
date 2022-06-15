@@ -1,18 +1,15 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:passengerapp/bloc/bloc.dart';
 import 'package:passengerapp/bloc/database/location_history_bloc.dart';
-import 'package:passengerapp/bloc/thememode/theme_mode_bloc.dart';
 import 'package:passengerapp/cubit/favorite_location.dart';
 import 'package:passengerapp/dataprovider/auth/auth.dart';
 import 'package:passengerapp/drawer/custome_paint.dart';
-import 'package:passengerapp/rout.dart';
+import 'package:passengerapp/helper/localization.dart';
 import 'package:passengerapp/screens/screens.dart';
 import 'package:http/http.dart' as http;
-import 'package:passengerapp/widgets/widgets.dart';
 
 class NavDrawer extends StatelessWidget {
   AuthDataProvider authDataProvider =
@@ -137,7 +134,7 @@ class NavDrawer extends StatelessWidget {
                         divider: true,
                         context: context,
                         icon: Icons.favorite_outline_outlined,
-                        text: "Saved Addreses"),
+                        text: getTranslation(context, "saved_addresses")),
                   ),
                   GestureDetector(
                     onTap: () {
@@ -147,16 +144,13 @@ class NavDrawer extends StatelessWidget {
                         divider: true,
                         context: context,
                         icon: Icons.history,
-                        text: "History"),
+                        text: getTranslation(context, "history_title")),
                   ),
 
                   GestureDetector(
                     onTap: context.read<CurrentWidgetCubit>().state.key ==
                             Key("whereto")
                         ? () {
-                            print(
-                                "YOW  this is the current widget from the cubit ${context.read<CurrentWidgetCubit>().state.key} the condition ${context.read<CurrentWidgetCubit>().state.key == Key("whereto")}");
-
                             Navigator.popAndPushNamed(
                                 context, OrderForOtherScreen.routeName);
                           }
@@ -165,7 +159,7 @@ class NavDrawer extends StatelessWidget {
                         divider: true,
                         context: context,
                         icon: Icons.border_outer_rounded,
-                        text: "Order for other"),
+                        text: getTranslation(context, "order_for_other")),
                   ),
 
                   GestureDetector(
@@ -177,7 +171,7 @@ class NavDrawer extends StatelessWidget {
                         divider: true,
                         context: context,
                         icon: Icons.settings_outlined,
-                        text: "Settings"),
+                        text: getTranslation(context, "settings")),
                   ),
                   const SizedBox(height: 20),
                   GestureDetector(
@@ -198,7 +192,7 @@ class NavDrawer extends StatelessWidget {
                         divider: false,
                         context: context,
                         icon: Icons.logout,
-                        text: "Logout"),
+                        text: getTranslation(context, "logout")),
                   ),
                 ],
               ),
@@ -220,7 +214,7 @@ class NavDrawer extends StatelessWidget {
     return ListTile(
       horizontalTitleGap: 0,
       leading: Icon(icon, color: color),
-      title: Text(text, style: TextStyle(color: Colors.black)),
+      title: Text(text, style: const TextStyle(color: Colors.black)),
       hoverColor: hoverColor,
     );
   }

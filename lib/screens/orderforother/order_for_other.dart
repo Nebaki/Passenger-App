@@ -1,22 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_geofire/flutter_geofire.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:passengerapp/bloc/bloc.dart';
-import 'package:passengerapp/bloc/notificationrequest/notification_request_bloc.dart';
 import 'package:passengerapp/helper/constants.dart';
-import 'package:passengerapp/helper/helper_functions.dart';
+import 'package:passengerapp/helper/localization.dart';
 import 'package:passengerapp/repository/nearby_driver.dart';
-import 'package:passengerapp/screens/home/assistant/home_screen_assistant.dart';
-import 'package:passengerapp/widgets/custome_back_arrow.dart';
 import 'package:passengerapp/widgets/widgets.dart';
-
 import '../../models/models.dart';
 
 class OrderForOtherScreen extends StatefulWidget {
   static const routeName = "/orderforothers";
+
+  const OrderForOtherScreen({Key? key}) : super(key: key);
 
   @override
   _OrderForOtherScreenState createState() => _OrderForOtherScreenState();
@@ -25,7 +22,7 @@ class OrderForOtherScreen extends StatefulWidget {
 class _OrderForOtherScreenState extends State<OrderForOtherScreen> {
   int _currentStep = 0;
   int selected = -1;
-  GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   FocusNode pickupLocationNode = FocusNode();
   FocusNode droppOffLocationNode = FocusNode();
@@ -52,7 +49,7 @@ class _OrderForOtherScreenState extends State<OrderForOtherScreen> {
     List<Step> steps = [
       Step(
           isActive: _currentStep >= 0,
-          title: const Text("Passenger Information"),
+          title: Text(getTranslation(context, "passenger_information")),
           content: Form(
             key: _formKey,
             child: Column(
@@ -63,9 +60,10 @@ class _OrderForOtherScreenState extends State<OrderForOtherScreen> {
                     onSaved: (value) {
                       number = value.phoneNumber!;
                     },
-                    inputDecoration: const InputDecoration(
-                      hintText: "Phone Number of the passenger",
-                      hintStyle: TextStyle(
+                    inputDecoration: InputDecoration(
+                      hintText:
+                          getTranslation(context, "phone_number_of_passenger"),
+                      hintStyle: const TextStyle(
                           fontWeight: FontWeight.w300, color: Colors.black45),
                     ),
                     onInputChanged: (PhoneNumber phoneNum) {},
@@ -89,7 +87,7 @@ class _OrderForOtherScreenState extends State<OrderForOtherScreen> {
           )),
       Step(
           isActive: _currentStep >= 1,
-          title: Text("Location"),
+          title: Text(getTranslation(context, "location")),
           content: Column(
             children: [
               SizedBox(
@@ -111,7 +109,8 @@ class _OrderForOtherScreenState extends State<OrderForOtherScreen> {
                           color: Colors.black,
                           size: 15,
                         )),
-                    hintText: "PickUp Address",
+                    hintText:
+                        getTranslation(context, "pickup_address_hint_text"),
                     prefixIcon: const Padding(
                       padding: EdgeInsets.only(left: 20, right: 10),
                       child: Icon(
@@ -131,9 +130,10 @@ class _OrderForOtherScreenState extends State<OrderForOtherScreen> {
                 onChanged: (value) {
                   findPlace(value);
                 },
-                decoration: const InputDecoration(
-                  hintText: "DropOff Address",
-                  prefixIcon: Padding(
+                decoration: InputDecoration(
+                  hintText:
+                      getTranslation(context, "droppoff_address_hint_text"),
+                  prefixIcon: const Padding(
                     padding: EdgeInsets.only(left: 20, right: 10),
                     child: Icon(Icons.location_on, color: Colors.green),
                   ),
@@ -190,13 +190,14 @@ class _OrderForOtherScreenState extends State<OrderForOtherScreen> {
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: Text(
-                      "Order For Others",
+                      getTranslation(context, "order_for_other"),
                       style: Theme.of(context).textTheme.headlineSmall,
                     ),
                   ),
                   // 0996635512
                   Stepper(
-                      physics: ScrollPhysics(parent: ClampingScrollPhysics()),
+                      physics:
+                          const ScrollPhysics(parent: ClampingScrollPhysics()),
                       controlsBuilder: ((context, details) {
                         if (_currentStep == 0) {
                           return Row(
@@ -209,13 +210,13 @@ class _OrderForOtherScreenState extends State<OrderForOtherScreen> {
                                       details.onStepContinue!();
                                     }
                                   },
-                                  child: const Text(
-                                    "Next",
-                                    style: TextStyle(color: Colors.black),
+                                  child: Text(
+                                    getTranslation(context, "next"),
+                                    style: const TextStyle(color: Colors.black),
                                   )),
                               TextButton(
                                   onPressed: details.onStepCancel,
-                                  child: const Text("Back"))
+                                  child: Text(getTranslation(context, "back")))
                             ],
                           );
                         } else if (_currentStep == 1) {
@@ -262,13 +263,13 @@ class _OrderForOtherScreenState extends State<OrderForOtherScreen> {
                                           Navigator.pop(context);
                                         }
                                       : null,
-                                  child: const Text(
-                                    "Next",
-                                    style: TextStyle(color: Colors.black),
+                                  child: Text(
+                                    getTranslation(context, "next"),
+                                    style: const TextStyle(color: Colors.black),
                                   )),
                               TextButton(
                                   onPressed: details.onStepCancel,
-                                  child: Text("Back"))
+                                  child: Text(getTranslation(context, "back")))
                             ],
                           );
                         } else {
@@ -376,14 +377,15 @@ class _OrderForOtherScreenState extends State<OrderForOtherScreen> {
               WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
                 ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                     backgroundColor: Colors.red.shade900,
-                    content: const Text("Unable To set the Pickup.")));
+                    content: Text(getTranslation(
+                        context, "settingup_pickup_failure_message"))));
               });
               _changePlaceDetailBlocToInitialState();
             }
             return AlertDialog(
               content: Row(
-                children: const [
-                  SizedBox(
+                children: [
+                  const SizedBox(
                     height: 20,
                     width: 20,
                     child: CircularProgressIndicator(
@@ -391,10 +393,10 @@ class _OrderForOtherScreenState extends State<OrderForOtherScreen> {
                       color: Colors.black,
                     ),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     width: 5,
                   ),
-                  Text("Setting up Pickup. Please wait.."),
+                  Text(getTranslation(context, "settingup_pickup_message")),
                 ],
               ),
             );
@@ -442,13 +444,14 @@ class _OrderForOtherScreenState extends State<OrderForOtherScreen> {
               WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
                 ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                     backgroundColor: Colors.red.shade900,
-                    content: const Text("Unable To set the Dropoff.")));
+                    content: Text(getTranslation(
+                        context, "settingup_dropp_off_failure_message"))));
               });
             }
             return AlertDialog(
               content: Row(
-                children: const [
-                  SizedBox(
+                children: [
+                  const SizedBox(
                     height: 20,
                     width: 20,
                     child: CircularProgressIndicator(
@@ -456,10 +459,10 @@ class _OrderForOtherScreenState extends State<OrderForOtherScreen> {
                       color: Colors.black,
                     ),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     width: 5,
                   ),
-                  Text("Setting up Drop Off. Please wait.."),
+                  Text(getTranslation(context, "settingup_dropp_off_message")),
                 ],
               ),
             );

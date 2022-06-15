@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:passengerapp/bloc/bloc.dart';
+import 'package:passengerapp/helper/localization.dart';
 import 'package:passengerapp/rout.dart';
 import 'package:passengerapp/screens/screens.dart';
 import 'package:passengerapp/widgets/widgets.dart';
@@ -11,6 +12,8 @@ enum ResetMobileVerficationState { SHOW_MOBILE_FORM_STATE, SHOW_OTP_FORM_STATE }
 
 class MobileVerification extends StatefulWidget {
   static const routeName = '/resetverification';
+
+  const MobileVerification({Key? key}) : super(key: key);
 
   @override
   _MobileVerificationState createState() => _MobileVerificationState();
@@ -22,7 +25,7 @@ class _MobileVerificationState extends State<MobileVerification> {
   late String phoneController;
   bool isCorrect = false;
 
-  FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
   String verificationId = "";
   String userInput = "";
   bool showLoading = false;
@@ -42,7 +45,7 @@ class _MobileVerificationState extends State<MobileVerification> {
         // Navigator.push(
         //     context, MaterialPageRoute(builder: (context) => Dashboard()));
       }
-    } on FirebaseAuthException catch (e) {
+    } on FirebaseAuthException catch (_) {
       setState(() {
         showLoading = false;
       });
@@ -98,11 +101,11 @@ class _MobileVerificationState extends State<MobileVerification> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 10),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 10),
                     child: Text(
-                      "Enter mobile number",
-                      style: TextStyle(
+                      getTranslation(context, "signup_action"),
+                      style: const TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 24.0,
                         // color: Colors.black
@@ -112,16 +115,15 @@ class _MobileVerificationState extends State<MobileVerification> {
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 10),
                     child: InternationalPhoneNumberInput(
-                      inputDecoration: const InputDecoration(
-                          hintText: "Phone Number",
-                          hintStyle: TextStyle(
+                      inputDecoration: InputDecoration(
+                          hintText:
+                              getTranslation(context, "phone_number_hint_text"),
+                          hintStyle: const TextStyle(
                             fontWeight: FontWeight.bold,
-                            // color: Colors.black45
                           ),
-                          // fillColor: Colors.white,
                           filled: true,
-                          border:
-                              OutlineInputBorder(borderSide: BorderSide.none)),
+                          border: const OutlineInputBorder(
+                              borderSide: BorderSide.none)),
                       onInputChanged: (PhoneNumber number) {
                         setState(() {
                           phoneController = number.phoneNumber!;
@@ -145,20 +147,7 @@ class _MobileVerificationState extends State<MobileVerification> {
                       spaceBetweenSelectorAndTextField: 0,
                     ),
                   ),
-                  const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 10),
-                    child: Center(
-                      child: Text(
-                        "By continuing, iconfirm that i have read & agree to the Terms & conditions and Privacypolicy",
-                        overflow: TextOverflow.fade,
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                            // color: Colors.black54,
-                            fontWeight: FontWeight.w300,
-                            letterSpacing: 0),
-                      ),
-                    ),
-                  ),
+                  const SizedBox(height: 20),
                   Center(
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -175,10 +164,13 @@ class _MobileVerificationState extends State<MobileVerification> {
                                           context: context,
                                           builder: (BuildContext context) =>
                                               AlertDialog(
-                                                title: const Text("Confirm"),
+                                                title: Text(getTranslation(
+                                                    context,
+                                                    "signup_confirmation_dialog_title")),
                                                 content: Text.rich(TextSpan(
-                                                    text:
-                                                        "We will send a verification code to ",
+                                                    text: getTranslation(
+                                                        context,
+                                                        "signup_confirmation_dialog_text"),
                                                     children: [
                                                       TextSpan(
                                                           text: phoneController)
@@ -195,15 +187,17 @@ class _MobileVerificationState extends State<MobileVerification> {
                                                         //         PhoneVerification
                                                         //             .routeName);
                                                       },
-                                                      child: const Text(
-                                                          "Send Code")),
+                                                      child: Text(getTranslation(
+                                                          context,
+                                                          "signup_confirmation_dialog_action_approval"))),
                                                   TextButton(
                                                       onPressed: () {
                                                         Navigator.pop(
                                                             context, "Cancel");
                                                       },
-                                                      child:
-                                                          const Text("Cancel")),
+                                                      child: Text(getTranslation(
+                                                          context,
+                                                          "signup_confirmation_dialog_action_cancelation"))),
                                                 ],
                                               ));
                                     }
@@ -212,8 +206,8 @@ class _MobileVerificationState extends State<MobileVerification> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 const Spacer(),
-                                const Text(
-                                  "Continue",
+                                Text(
+                                  getTranslation(context, "continue"),
                                 ),
                                 const Spacer(),
                                 Align(
@@ -252,8 +246,8 @@ class _MobileVerificationState extends State<MobileVerification> {
                             showLoading = false;
                           });
                           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                            content:
-                                const Text("Unable to check the phone number."),
+                            content: Text(getTranslation(
+                                context, "signup_check_phone_number_error")),
                             backgroundColor: Colors.red.shade900,
                           ));
                         }
@@ -281,13 +275,13 @@ class _MobileVerificationState extends State<MobileVerification> {
         builder: (BuildContext context) {
           return AlertDialog(
             content:
-                const Text("There is no user registered by this phonenumber"),
+                Text(getTranslation(context, "no_user_registered_message")),
             actions: [
               TextButton(
                   onPressed: () {
                     Navigator.pop(context);
                   },
-                  child: Text("Okay"))
+                  child: Text(getTranslation(context, "okay_action")))
             ],
           );
         });

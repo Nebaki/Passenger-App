@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:passengerapp/bloc/bloc.dart';
 import 'package:passengerapp/helper/constants.dart';
+import 'package:passengerapp/helper/localization.dart';
 import 'package:passengerapp/models/models.dart';
 import 'package:passengerapp/rout.dart';
 import 'package:passengerapp/screens/screens.dart';
@@ -29,7 +30,7 @@ class _HistoryPageState extends State<HistoryPage> {
   @override
   void initState() {
     BlocProvider.of<TripHistoryBloc>(context)
-        .add(TripHistoryLoad(skip: 0, top: 15));
+        .add(const TripHistoryLoad(skip: 0, top: 15));
     _scrollController = ScrollController()..addListener(_loadMoreHistories);
     super.initState();
   }
@@ -46,8 +47,7 @@ class _HistoryPageState extends State<HistoryPage> {
       _loadMore = false;
       _skip = _top;
       _top += 15;
-      print(
-          "Hereeeeeeeeeeeeeeeeee Called ::::::::::::::::::::::::::::::::::::::::::::::: skip$_skip,Top:$_top");
+
       BlocProvider.of<TripHistoryBloc>(context)
           .add(TripHistoryLoad(skip: _skip, top: _top));
     }
@@ -79,10 +79,10 @@ class _HistoryPageState extends State<HistoryPage> {
           },
           builder: (context, state) {
             if (state is TripHistoryOperationFailure) {
-              return const Center(
+              return Center(
                 child: Text(
-                  "Oops something went wrong...",
-                  style: TextStyle(
+                  getTranslation(context, "history_error_text"),
+                  style: const TextStyle(
                       color: Colors.red,
                       fontWeight: FontWeight.bold,
                       fontSize: 25),
@@ -141,7 +141,7 @@ class _HistoryPageState extends State<HistoryPage> {
           child: Align(
               alignment: Alignment.topCenter,
               child: Text(
-                "History",
+                getTranslation(context, "history_detail_title"),
                 style: Theme.of(context).textTheme.titleLarge,
               )),
         )
@@ -295,7 +295,7 @@ class _HistoryPageState extends State<HistoryPage> {
                                     decoration: const BoxDecoration(
                                         color: Colors.black),
                                   ),
-                                  SizedBox(
+                                  const SizedBox(
                                     height: 10,
                                   ),
                                   Container(

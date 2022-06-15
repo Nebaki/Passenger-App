@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:passengerapp/main.dart';
 import 'package:passengerapp/screens/screens.dart';
 
 import 'models/models.dart';
@@ -94,9 +93,7 @@ class AppRoute {
                 args: argument,
               ));
     }
-    if (settings.name == ContactUsScreen.routeName) {
-      return MaterialPageRoute(builder: (context) => ContactUsScreen());
-    }
+
     if (settings.name == PreferenceScreen.routeNAme) {
       PreferenceArgument argument = settings.arguments as PreferenceArgument;
       return MaterialPageRoute(
@@ -130,19 +127,18 @@ class AppRoute {
               ));
     }
 
-    if (settings.name == CarTypeSelector.routName) {
-      return MaterialPageRoute(builder: (context) => CarTypeSelector());
-    }
-
-    if (settings.name == CarTypeSelector.routName) {
-      return MaterialPageRoute(builder: (context) => CarTypeSelector());
-    }
-
     if (settings.name == LocationChanger.routName) {
       LocationChangerArgument argument =
           settings.arguments as LocationChangerArgument;
       return MaterialPageRoute(
           builder: (context) => LocationChanger(
+                args: argument,
+              ));
+    }
+    if (settings.name == Language.routName) {
+      LanguageArgument argument = settings.arguments as LanguageArgument;
+      return MaterialPageRoute(
+          builder: (context) => Language(
                 args: argument,
               ));
     }
@@ -242,4 +238,9 @@ class LocationChangerArgument {
     required this.pickupLocationLatLng,
     required this.fromWhere,
   });
+}
+
+class LanguageArgument {
+  final int index;
+  LanguageArgument({required this.index});
 }

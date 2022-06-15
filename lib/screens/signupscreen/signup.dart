@@ -4,7 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:passengerapp/bloc/bloc.dart';
-import 'package:passengerapp/helper/constants.dart';
+// import 'package:passengerapp/helper/constants.dart';
+import 'package:passengerapp/helper/localization.dart';
 import 'package:passengerapp/rout.dart';
 import 'package:passengerapp/screens/screens.dart';
 import 'package:passengerapp/widgets/widgets.dart';
@@ -13,6 +14,8 @@ enum MobileVerficationState { SHOW_MOBILE_FORM_STATE, SHOW_OTP_FORM_STATE }
 
 class SignupScreen extends StatefulWidget {
   static const routeName = '/signup';
+
+  const SignupScreen({Key? key}) : super(key: key);
   @override
   _SignupScreenState createState() => _SignupScreenState();
 }
@@ -23,7 +26,7 @@ class _SignupScreenState extends State<SignupScreen> {
   late String phoneController;
   bool isCorrect = false;
 
-  FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
   String verificationId = "";
   String userInput = "";
   bool showLoading = false;
@@ -95,11 +98,11 @@ class _SignupScreenState extends State<SignupScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 10),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 10),
                     child: Text(
-                      "Enter mobile number",
-                      style: TextStyle(
+                      getTranslation(context, "signup_action"),
+                      style: const TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 24.0,
                       ),
@@ -108,16 +111,17 @@ class _SignupScreenState extends State<SignupScreen> {
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 10),
                     child: InternationalPhoneNumberInput(
-                      inputDecoration: const InputDecoration(
-                          hintText: "Phone Number",
-                          hintStyle: TextStyle(
+                      inputDecoration: InputDecoration(
+                          hintText:
+                              getTranslation(context, "phone_number_hint_text"),
+                          hintStyle: const TextStyle(
                             fontWeight: FontWeight.bold,
                             // color: Colors.black45
                           ),
                           // fillColor: Colors.white,
                           filled: true,
-                          border:
-                              OutlineInputBorder(borderSide: BorderSide.none)),
+                          border: const OutlineInputBorder(
+                              borderSide: BorderSide.none)),
                       onInputChanged: (PhoneNumber number) {
                         setState(() {
                           phoneController = number.phoneNumber!;
@@ -151,14 +155,14 @@ class _SignupScreenState extends State<SignupScreen> {
                       spaceBetweenSelectorAndTextField: 0,
                     ),
                   ),
-                  const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 10),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 10),
                     child: Center(
                       child: Text(
-                        createProfileArgumentText,
+                        getTranslation(context, "registration_agrement_text"),
                         overflow: TextOverflow.fade,
                         textAlign: TextAlign.center,
-                        style: TextStyle(
+                        style: const TextStyle(
                             // color: Colors.black54,
                             fontWeight: FontWeight.w300,
                             letterSpacing: 0),
@@ -182,10 +186,13 @@ class _SignupScreenState extends State<SignupScreen> {
                                               context: context,
                                               builder: (BuildContext context) {
                                                 return AlertDialog(
-                                                  title: const Text("Confirm"),
+                                                  title: Text(getTranslation(
+                                                      context,
+                                                      "signup_confirmation_dialog_title")),
                                                   content: Text.rich(TextSpan(
-                                                      text:
-                                                          "We will send a verification code to ",
+                                                      text: getTranslation(
+                                                          context,
+                                                          "signup_confirmation_dialog_text"),
                                                       children: [
                                                         TextSpan(
                                                             text:
@@ -201,20 +208,20 @@ class _SignupScreenState extends State<SignupScreen> {
                                                           Navigator.pop(
                                                               context);
 
-                                                          print(
-                                                              phoneController);
                                                           checkPhoneNumber(
                                                               phoneController);
                                                         },
-                                                        child: const Text(
-                                                            "Send Code")),
+                                                        child: Text(getTranslation(
+                                                            context,
+                                                            "signup_confirmation_dialog_action_approval"))),
                                                     TextButton(
                                                         onPressed: () {
                                                           Navigator.pop(context,
                                                               "Cancel");
                                                         },
-                                                        child: const Text(
-                                                            "Cancel")),
+                                                        child: Text(getTranslation(
+                                                            context,
+                                                            "signup_confirmation_dialog_action_cancelation"))),
                                                   ],
                                                 );
                                               });
@@ -226,8 +233,8 @@ class _SignupScreenState extends State<SignupScreen> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 const Spacer(),
-                                const Text(
-                                  "Sign Up",
+                                Text(
+                                  getTranslation(context, "signup_title"),
                                 ),
                                 const Spacer(),
                                 Align(
@@ -252,8 +259,10 @@ class _SignupScreenState extends State<SignupScreen> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Text("already have an account? ",
-                            style: TextStyle(
+                        Text(
+                            getTranslation(
+                                context, "signup_already_have_an_account_text"),
+                            style: const TextStyle(
                               fontSize: 16,
                               // color: Colors.black54
                             )),
@@ -263,7 +272,7 @@ class _SignupScreenState extends State<SignupScreen> {
                               //Navigator.pop(context);
                             },
                             child: Text(
-                              "SIGN IN",
+                              getTranslation(context, "signup_inkwell_text"),
                               style: Theme.of(context).textTheme.button,
                             ))
                       ],
@@ -278,8 +287,8 @@ class _SignupScreenState extends State<SignupScreen> {
                               _isLoading = false;
                             });
                             ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                              content: const Text(
-                                  "User already registered by this number."),
+                              content: Text(getTranslation(context,
+                                  "signup_alredy_registered_user_error")),
                               backgroundColor: Colors.red.shade900,
                             ));
                           } else {
@@ -291,8 +300,8 @@ class _SignupScreenState extends State<SignupScreen> {
                             _isLoading = false;
                           });
                           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                            content:
-                                const Text("Unable to check the phone number."),
+                            content: Text(getTranslation(
+                                context, "signup_check_phone_number_error")),
                             backgroundColor: Colors.red.shade900,
                           ));
                         }

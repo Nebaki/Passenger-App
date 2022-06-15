@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:passengerapp/bloc/bloc.dart';
 import 'package:passengerapp/helper/constants.dart';
+import 'package:passengerapp/helper/localization.dart';
 import 'package:passengerapp/helper/url_launcher.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -180,15 +181,17 @@ class DriverProfile extends StatelessWidget {
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text("Car Model: ${vehicle!['model']}"),
                                   Text(
-                                      "Plate Number: ${vehicle!['plate_number']}")
+                                      "${getTranslation(context, "car_model")}: ${vehicle!['model']}"),
+                                  Text(
+                                      "${getTranslation(context, "plate_number")}: ${vehicle!['plate_number']}")
                                 ],
                               ),
                               const SizedBox(
                                 width: 15,
                               ),
-                              Text('Color: ${vehicle!['color']}'),
+                              Text(
+                                  '${getTranslation(context, "color")}: ${vehicle!['color']}'),
                             ],
                           ),
                         )

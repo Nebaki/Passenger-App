@@ -18,14 +18,17 @@ import 'package:passengerapp/bloc/notificationrequest/notification_request_bloc.
 import 'package:passengerapp/bloc/savedlocation/saved_location_bloc.dart';
 import 'package:passengerapp/bloc/thememode/theme_mode_bloc.dart';
 import 'package:passengerapp/bloc_observer.dart';
+import 'package:passengerapp/cubit/cubits.dart';
 import 'package:passengerapp/cubit/favorite_location.dart';
 import 'package:passengerapp/dataprovider/dataproviders.dart';
 import 'package:passengerapp/helper/constants.dart';
+import 'package:passengerapp/localization/localization.dart';
 import 'package:passengerapp/repository/repositories.dart';
 import 'package:passengerapp/rout.dart';
 import 'package:http/http.dart' as http;
 import 'package:passengerapp/theme_data.dart';
 import 'package:wakelock/wakelock.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   // If you're going to use other Firebase services in the background, such as Firestore,http
@@ -256,16 +259,42 @@ class MyApp extends StatelessWidget {
                 create: (context) => FavoriteLocationCubit(
                     favoriteLocationRepository: dataBaseHelperRepository)
                   ..getFavoriteLocations(),
-              )
+              ),
+              BlocProvider(create: (context) => LocaleCubit()..getLocal())
             ],
             child: BlocBuilder<ThemeModeCubit, ThemeMode>(
-              builder: (context, state) => MaterialApp(
-                title: 'SafeWay',
-                themeMode: state,
-                darkTheme: ThemesData.darkTheme,
-                theme: ThemesData.lightTheme,
-                onGenerateRoute: AppRoute.generateRoute,
-              ),
+              builder: ((context, themeModeState) =>
+                  BlocBuilder<LocaleCubit, Locale>(
+                    builder: (context, localeState) => MaterialApp(
+                      locale: localeState,
+                      localizationsDelegates: const [
+                        Localization.delegate,
+                        GlobalMaterialLocalizations.delegate,
+                        GlobalWidgetsLocalizations.delegate,
+                        GlobalCupertinoLocalizations.delegate,
+                      ],
+                      supportedLocales: const [
+                        Locale('en', 'US'),
+                        Locale('am', 'ET')
+                      ],
+                      localeResolutionCallback:
+                          (deviceeLocal, supportedLocals) {
+                        for (var locale in supportedLocals) {
+                          if (locale.languageCode ==
+                                  deviceeLocal!.languageCode &&
+                              locale.countryCode == deviceeLocal.countryCode) {
+                            return deviceeLocal;
+                          }
+                        }
+                        return supportedLocals.first;
+                      },
+                      title: 'SafeWay',
+                      themeMode: themeModeState,
+                      darkTheme: ThemesData.darkTheme,
+                      theme: ThemesData.lightTheme,
+                      onGenerateRoute: AppRoute.generateRoute,
+                    ),
+                  )),
             )));
   }
 }

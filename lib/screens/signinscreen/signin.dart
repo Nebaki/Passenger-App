@@ -1,18 +1,19 @@
-import 'dart:async';
-
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:passengerapp/bloc/bloc.dart';
+import 'package:passengerapp/cubit/locale_cubit/locale_cubit.dart';
 import 'package:passengerapp/helper/constants.dart';
+import 'package:passengerapp/localization/localization.dart';
 import 'package:passengerapp/models/models.dart';
 import 'package:passengerapp/rout.dart';
 import 'package:passengerapp/screens/screens.dart';
-import 'package:passengerapp/widgets/widgets.dart';
 
 class SigninScreen extends StatefulWidget {
   static const routeName = '/signin';
+
+  const SigninScreen({Key? key}) : super(key: key);
   @override
   _SigninScreenState createState() => _SigninScreenState();
 }
@@ -54,7 +55,7 @@ class _SigninScreenState extends State<SigninScreen> {
         _isLoading = false;
 
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: const Text(Strings.signInIncorrectTrialMessage),
+          content: Text(getTranslation("signin_error_message")),
           backgroundColor: Colors.red.shade900,
         ));
       }
@@ -65,7 +66,7 @@ class _SigninScreenState extends State<SigninScreen> {
     result = await _connectivity.checkConnectivity();
     if (result == ConnectivityResult.none) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: const Text(Strings.noIntertConnection),
+        content: Text(getTranslation("button_no_internet_connection_message")),
         backgroundColor: Colors.red.shade900,
       ));
       return;
@@ -83,16 +84,15 @@ class _SigninScreenState extends State<SigninScreen> {
     return Stack(children: [
       Form(
         key: _formkey,
-        child: Container(
-          // color: const Color.fromRGBO(240, 241, 241, 1),
+        child: SizedBox(
           height: 600,
           child: Padding(
               padding: const EdgeInsets.fromLTRB(20, 60, 20, 20),
               child: ListView(
                 children: [
-                  const Text(
-                    Strings.signInTitle,
-                    style: TextStyle(
+                  Text(
+                    Localization.of(context).getTranslation("signin_title"),
+                    style: const TextStyle(
                       fontSize: 25,
                     ),
                   ),
@@ -117,51 +117,54 @@ class _SigninScreenState extends State<SigninScreen> {
                       inputBorder:
                           const OutlineInputBorder(borderSide: BorderSide.none),
                       spaceBetweenSelectorAndTextField: 0,
-                      inputDecoration: const InputDecoration(
-                          hintText: Strings.phoneNumberHintText,
-                          hintStyle: TextStyle(
+                      inputDecoration: InputDecoration(
+                          hintText: Localization.of(context)
+                              .getTranslation("phone_number_hint_text"),
+                          hintStyle: const TextStyle(
                             fontWeight: FontWeight.bold,
                             // color: Colors.black45
                           ),
                           // fillColor: Colors.white,
                           filled: true,
-                          border:
-                              OutlineInputBorder(borderSide: BorderSide.none)),
+                          border: const OutlineInputBorder(
+                              borderSide: BorderSide.none)),
                     ),
                   ),
                   Padding(
                     padding: const EdgeInsets.all(10),
-                    child: Container(
-                      child: TextFormField(
-                        decoration: const InputDecoration(
-                            alignLabelWithHint: true,
-                            hintText: Strings.passwordHintText,
-                            hintStyle: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              // color: Colors.black45
-                            ),
-                            prefixIcon: Icon(
-                              Icons.vpn_key,
-                              size: 19,
-                            ),
-                            // fillColor: Colors.white,
-                            filled: true,
-                            border: OutlineInputBorder(
-                                borderSide: BorderSide.none)),
-                        validator: (value) {
-                          if (value!.isEmpty) {
-                            return Strings.signInEmptyPasswordErrorText;
-                          } else if (value.length < 4) {
-                            return Strings.signInPasswordShortLengthErrorText;
-                          } else if (value.length > 25) {
-                            return Strings.signInPasswordLongLengthErrorText;
-                          }
-                          return null;
-                        },
-                        onSaved: (value) {
-                          _auth["password"] = value;
-                        },
-                      ),
+                    child: TextFormField(
+                      decoration: InputDecoration(
+                          alignLabelWithHint: true,
+                          hintText: Localization.of(context)
+                              .getTranslation("password_hint_text"),
+                          hintStyle: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            // color: Colors.black45
+                          ),
+                          prefixIcon: const Icon(
+                            Icons.vpn_key,
+                            size: 19,
+                          ),
+                          // fillColor: Colors.white,
+                          filled: true,
+                          border: const OutlineInputBorder(
+                              borderSide: BorderSide.none)),
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return Localization.of(context).getTranslation(
+                              "signin_form_empity_password_validation");
+                        } else if (value.length < 4) {
+                          return getTranslation(
+                              "signin_form_short_password_validation");
+                        } else if (value.length > 25) {
+                          return getTranslation(
+                              "signin_form_long_password_validation");
+                        }
+                        return null;
+                      },
+                      onSaved: (value) {
+                        _auth["password"] = value;
+                      },
                     ),
                   ),
                   Padding(
@@ -183,8 +186,8 @@ class _SigninScreenState extends State<SigninScreen> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             const Spacer(),
-                            const Text(
-                              Strings.signInTitle,
+                            Text(
+                              getTranslation("signin_title"),
                             ),
                             const Spacer(),
                             Align(
@@ -210,15 +213,11 @@ class _SigninScreenState extends State<SigninScreen> {
                     child: Center(
                       child: InkWell(
                           onTap: () {
-                            // Navigator.pushNamed(
-                            //     context, CreateProfileScreen.routeName,
-                            //     arguments: CreateProfileScreenArgument(
-                            //         phoneNumber: "+251934540217"));
                             Navigator.pushNamed(
                                 context, MobileVerification.routeName);
                           },
                           child: Text(
-                            Strings.forgotPasswordButtonText,
+                            getTranslation("signin_forgot_passwod_text"),
                             style: Theme.of(context).textTheme.button,
                           )),
                     ),
@@ -228,26 +227,70 @@ class _SigninScreenState extends State<SigninScreen> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Text(Strings.dontHaveAnAccount,
-                            style: TextStyle(fontSize: 16)),
+                        Text(getTranslation("singim_dont_have_an_account_text"),
+                            style: const TextStyle(fontSize: 16)),
                         InkWell(
                             onTap: () {
                               Navigator.pushNamed(
                                   context, SignupScreen.routeName);
                             },
-                            child: Text(Strings.signUpInkWell,
-                                style: Theme.of(context).textTheme.button
-                                // TextStyle(
-                                //     color: Color.fromRGBO(39, 49, 110, 1),
-                                //     fontWeight: FontWeight.bold),
-                                ))
+                            child: Text(getTranslation("signin_inkwell_text"),
+                                style: Theme.of(context).textTheme.button))
                       ],
                     ),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text("${getTranslation("language")}:"),
+                      const SizedBox(
+                        width: 10,
+                      ),
+                      BlocBuilder<LocaleCubit, Locale>(
+                        builder: (context, state) => DropdownButton(
+                            dropdownColor: Theme.of(context).backgroundColor,
+                            value: state == const Locale("en", "US")
+                                ? "English"
+                                : "Amharic",
+                            items: dropDownItems
+                                .map((e) => DropdownMenuItem(
+                                      child: Text(e),
+                                      value: e,
+                                    ))
+                                .toList(),
+                            onChanged: (value) {
+                              switch (value) {
+                                case "Amharic":
+                                  context
+                                      .read<LocaleCubit>()
+                                      .changeLocale(const Locale("am", "ET"));
+
+                                  break;
+                                case "English":
+                                  context
+                                      .read<LocaleCubit>()
+                                      .changeLocale(const Locale("en", "US"));
+
+                                  break;
+                                default:
+                                  context
+                                      .read<LocaleCubit>()
+                                      .changeLocale(const Locale("en", "US"));
+                              }
+                            }),
+                      )
+                    ],
                   )
                 ],
               )),
         ),
       )
     ]);
+  }
+
+  final List<String> dropDownItems = ["Amharic", "English"];
+
+  String getTranslation(String key) {
+    return Localization.of(context).getTranslation(key);
   }
 }

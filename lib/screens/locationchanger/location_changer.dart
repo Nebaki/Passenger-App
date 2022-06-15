@@ -4,6 +4,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_maps_place_picker/google_maps_place_picker.dart';
 import 'package:passengerapp/bloc/bloc.dart';
 import 'package:passengerapp/helper/constants.dart';
+import 'package:passengerapp/helper/localization.dart';
 import 'package:passengerapp/rout.dart';
 import 'package:passengerapp/screens/locationchanger/setting_location_dialog.dart';
 
@@ -30,7 +31,6 @@ class LocationChanger extends StatelessWidget {
       default:
     }
     return Scaffold(
-      // backgroundColor: backGroundColor,
       body: Column(
         children: [
           Padding(
@@ -66,8 +66,8 @@ class LocationChanger extends StatelessWidget {
                         size: 15,
                       )),
                   labelText: args.fromWhere == 'DroppOff'
-                      ? 'Where are you going?'
-                      : 'Pick-up address'),
+                      ? getTranslation(context, "where_are_you_going")
+                      : getTranslation(context, "pickup_address")),
               controller: _textEdittingController,
             ),
           ),
@@ -115,12 +115,6 @@ class LocationChanger extends StatelessWidget {
 
                         Navigator.of(context).pop();
                         Navigator.pop(context);
-
-                        // WidgetsBinding.instance!
-                        //     .addPostFrameCallback((timeStamp) {
-                        // });
-
-                        // setState(() {});
                       },
                     );
                   },
@@ -132,7 +126,7 @@ class LocationChanger extends StatelessWidget {
             leading: const Icon(
               Icons.location_on,
             ),
-            title: const Text("Pick location from map"),
+            title: Text(getTranslation(context, "pick_location_from_map")),
           ),
           const Divider(),
           const PredictedItems(),

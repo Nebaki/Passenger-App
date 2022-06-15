@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:passengerapp/bloc/bloc.dart';
+import 'package:passengerapp/helper/localization.dart';
 import 'package:passengerapp/rout.dart';
 import 'package:passengerapp/screens/signinscreen/signin.dart';
-import 'package:passengerapp/screens/signupscreen/signup.dart';
 
 class ResetPassword extends StatelessWidget {
   final ResetPasswordArgument arg;
@@ -17,14 +17,12 @@ class ResetPassword extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    late String _newPassword;
-    String _confirmedPassword;
     return Scaffold(
       appBar: AppBar(
         elevation: 0.3,
         backgroundColor: Colors.white,
         iconTheme: const IconThemeData(color: Colors.black),
-        title: const Text("Reset Password"),
+        title: Text(getTranslation(context, "reset_password")),
         centerTitle: true,
       ),
       body: BlocConsumer<UserBloc, UserState>(
@@ -34,7 +32,7 @@ class ResetPassword extends StatelessWidget {
               _isLoading = false;
 
               ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                  content: const Text('Password Changed'),
+                  content: Text(getTranslation(context, "password_changed")),
                   backgroundColor: Colors.green.shade900));
 
               Navigator.pushReplacementNamed(context, SigninScreen.routeName);
@@ -43,7 +41,8 @@ class ResetPassword extends StatelessWidget {
             if (state is UserOperationFailure) {
               _isLoading = false;
               ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                  content: const Text('Operation Failure'),
+                  content: Text(
+                      getTranslation(context, "operation_failure_message")),
                   backgroundColor: Colors.red.shade900));
             }
           }),
@@ -60,7 +59,7 @@ class ResetPassword extends StatelessWidget {
     return Stack(children: [
       Form(
         key: _formkey,
-        child: Container(
+        child: SizedBox(
           height: 600,
           child: Padding(
             padding: const EdgeInsets.fromLTRB(20, 40, 20, 20),
@@ -70,25 +69,29 @@ class ResetPassword extends StatelessWidget {
                   padding: const EdgeInsets.all(10),
                   child: TextFormField(
                     controller: newPassword,
-                    decoration: const InputDecoration(
-                        hintText: "New Password",
-                        hintStyle: TextStyle(
+                    decoration: InputDecoration(
+                        hintText:
+                            getTranslation(context, "new_password_hint_text"),
+                        hintStyle: const TextStyle(
                             fontWeight: FontWeight.bold, color: Colors.black45),
-                        prefixIcon: Icon(
+                        prefixIcon: const Icon(
                           Icons.vpn_key,
                           size: 19,
                         ),
                         fillColor: Colors.white,
                         filled: true,
-                        border:
-                            OutlineInputBorder(borderSide: BorderSide.none)),
+                        border: const OutlineInputBorder(
+                            borderSide: BorderSide.none)),
                     validator: (value) {
                       if (value!.isEmpty) {
-                        return 'Please enter Your Password';
+                        return getTranslation(
+                            context, "signin_form_empity_password_validation");
                       } else if (value.length < 4) {
-                        return 'Password length must not be less than 4';
+                        return getTranslation(context,
+                            "create_profile_short_password_validation");
                       } else if (value.length > 25) {
-                        return 'Password length must not be greater than 25';
+                        return getTranslation(
+                            context, "create_profile_long_password_validation");
                       }
                       return null;
                     },
@@ -101,18 +104,19 @@ class ResetPassword extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.all(10),
                   child: TextFormField(
-                    decoration: const InputDecoration(
-                        hintText: "Confirm Password",
-                        hintStyle: TextStyle(
+                    decoration: InputDecoration(
+                        hintText: getTranslation(
+                            context, "confirm_password_hint_text"),
+                        hintStyle: const TextStyle(
                             fontWeight: FontWeight.bold, color: Colors.black45),
-                        prefixIcon: Icon(
+                        prefixIcon: const Icon(
                           Icons.vpn_key,
                           size: 19,
                         ),
                         fillColor: Colors.white,
                         filled: true,
-                        border:
-                            OutlineInputBorder(borderSide: BorderSide.none)),
+                        border: const OutlineInputBorder(
+                            borderSide: BorderSide.none)),
                     validator: (value) {
                       if (value != newPassword.text) {
                         return 'Password must match';
@@ -143,8 +147,8 @@ class ResetPassword extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           const Spacer(),
-                          const Text(
-                            "Reset",
+                          Text(
+                            getTranslation(context, "reset"),
                           ),
                           const Spacer(),
                           Align(

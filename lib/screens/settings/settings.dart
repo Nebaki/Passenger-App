@@ -2,15 +2,18 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:passengerapp/bloc/bloc.dart';
+import 'package:passengerapp/helper/localization.dart';
 import 'package:passengerapp/models/models.dart';
 import 'package:passengerapp/rout.dart';
 import 'package:passengerapp/screens/screens.dart';
 
+import '../../cubit/cubits.dart';
+
 class SettingScreen extends StatelessWidget {
   static const routeName = "/settings";
 
-  final _textStyle =
-      const TextStyle(color: Colors.black, fontWeight: FontWeight.bold);
+  const SettingScreen({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -26,7 +29,7 @@ class SettingScreen extends StatelessWidget {
                   expandedHeight: 150,
                   flexibleSpace: FlexibleSpaceBar(
                     background: CachedNetworkImage(
-                      imageUrl: state.auth.profilePicture!,
+                      imageUrl: state.auth.profilePicture ?? "",
                       imageBuilder: (context, imageProvider) => Container(
                         decoration: BoxDecoration(
                           image: DecorationImage(
@@ -40,7 +43,7 @@ class SettingScreen extends StatelessWidget {
                       errorWidget: (context, url, error) =>
                           const Icon(Icons.error),
                     ),
-                    title: Text("Settings"),
+                    title: Text(getTranslation(context, "settings")),
                   ),
                 );
               }
@@ -48,37 +51,30 @@ class SettingScreen extends StatelessWidget {
               return Container();
             },
           ),
-          // SliverAppBar(
-          //   floating: true,
-          //   pinned: true,
-          //   snap: false,
-          //   expandedHeight: 150,
-          //   flexibleSpace: FlexibleSpaceBar(
-          //     background: BlocBuilder<AuthBloc,AuthState>(builder: (context, state) => Text(""),),
-          //     title: Text("Settings"),
-          //   ),
-          // ),
           BlocBuilder<AuthBloc, AuthState>(builder: ((context, state) {
             if (state is AuthDataLoadSuccess) {
               return SliverList(
                   delegate: SliverChildListDelegate([
-                _buildAccountItems(context, "Account", state),
+                _buildAccountItems(
+                    context, getTranslation(context, "account"), state),
                 const SizedBox(
                   height: 10,
                 ),
-                _buildLegalItems(context, "Legal"),
+                _buildLegalItems(context, getTranslation(context, "legal")),
                 const SizedBox(
                   height: 10,
                 ),
-                _buildPreferenceItems(context, "Preference", state),
+                _buildPreferenceItems(
+                    context, getTranslation(context, "preference"), state),
                 const SizedBox(
                   height: 10,
                 ),
-                _buildAppinfoItems(context, "App Info"),
+                _buildAppinfoItems(
+                    context, getTranslation(context, "app_info")),
                 const SizedBox(
                   height: 10,
                 ),
-                _buildAboutUsItems(context, "About us")
+                _buildAboutUsItems(context, getTranslation(context, "about_us"))
               ]));
             }
             return Container();
@@ -88,320 +84,325 @@ class SettingScreen extends StatelessWidget {
     );
   }
 
-  Widget _menuItem(
-      {required BuildContext context,
-      required IconData icon,
-      required String text,
-      required String routename}) {
-    const color = Colors.grey;
-    const hoverColor = Colors.white70;
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [
-        ListTile(
-          leading: Icon(icon),
-          title: Text(text,
-              style:
-                  const TextStyle(fontWeight: FontWeight.w400, fontSize: 18)),
-          hoverColor: hoverColor,
-          onLongPress: () {},
-          onTap: () {
-            Navigator.pushNamed(context, routename);
-          },
-        ),
-        const SizedBox(
-          height: 10,
-        )
-      ],
+  void _navigateToEditProfileScreen(
+      BuildContext context, AuthDataLoadSuccess state) {
+    Navigator.pushNamed(context, EditProfile.routeName,
+        arguments: EditProfileArgument(
+            auth: Auth(
+                phoneNumber: state.auth.phoneNumber,
+                id: state.auth.id,
+                name: state.auth.name,
+                email: state.auth.email,
+                emergencyContact: state.auth.emergencyContact,
+                profilePicture: state.auth.profilePicture)));
+  }
+
+  Widget _buildAccountItems(
+      BuildContext context, String title, AuthDataLoadSuccess state) {
+    return Container(
+      color: Colors.black54,
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SizedBox(
+            height: 20,
+          ),
+          Text(
+            title,
+            style: Theme.of(context)
+                .textTheme
+                .titleLarge!
+                .copyWith(color: Colors.blueAccent),
+          ),
+          ListTile(
+            onTap: () {
+              _navigateToEditProfileScreen(context, state);
+            },
+            contentPadding: EdgeInsets.zero,
+            title: Text(
+              state.auth.phoneNumber!,
+            ),
+            subtitle:
+                Text(getTranslation(context, "tap_to_change_phone_number")),
+          ),
+          const Divider(
+            color: Colors.black,
+            height: 0,
+          ),
+          ListTile(
+            onTap: () {
+              _navigateToEditProfileScreen(context, state);
+            },
+            contentPadding: EdgeInsets.zero,
+            title: Text(
+              state.auth.name!,
+            ),
+            subtitle: Text(getTranslation(context, "name_textfield_hint_text")),
+          ),
+          const Divider(
+            color: Colors.black,
+            height: 0,
+          ),
+          ListTile(
+            onTap: () {
+              _navigateToEditProfileScreen(context, state);
+            },
+            contentPadding: EdgeInsets.zero,
+            title: Text(
+              state.auth.email!,
+            ),
+            subtitle:
+                Text(getTranslation(context, "email_textfield_hint_text")),
+          ),
+          const Divider(
+            color: Colors.black,
+            height: 0,
+          ),
+          ListTile(
+            onTap: () {
+              _navigateToEditProfileScreen(context, state);
+            },
+            contentPadding: EdgeInsets.zero,
+            title: Text(
+              state.auth.emergencyContact!,
+            ),
+            subtitle: Text(
+                getTranslation(context, "emergency_contact_number_hint_text")),
+          ),
+          ListTile(
+            onTap: () {
+              Navigator.pushNamed(context, ChangePassword.routeName);
+            },
+            contentPadding: EdgeInsets.zero,
+            title: Text(
+              getTranslation(context, "change_password"),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildLegalItems(BuildContext context, String title) {
+    return Container(
+      color: Colors.black54,
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SizedBox(
+            height: 20,
+          ),
+          Text(
+            title,
+            style: Theme.of(context)
+                .textTheme
+                .titleLarge!
+                .copyWith(color: Colors.blueAccent),
+          ),
+          ListTile(
+            contentPadding: EdgeInsets.zero,
+            leading: const Icon(
+              Icons.contact_mail,
+              size: 20,
+            ),
+            minLeadingWidth: 0,
+            title: Text(
+              getTranslation(context, "contact_us"),
+            ),
+          ),
+          const Divider(
+            color: Colors.black,
+            height: 0,
+          ),
+          ListTile(
+            leading: const Icon(Icons.privacy_tip_outlined),
+            minLeadingWidth: 0,
+            contentPadding: EdgeInsets.zero,
+            title: Text(
+              getTranslation(context, "privacy_policy"),
+            ),
+          ),
+          const Divider(
+            color: Colors.black,
+            height: 0,
+          ),
+          ListTile(
+            leading: const Icon(Icons.present_to_all_sharp),
+            minLeadingWidth: 0,
+            contentPadding: EdgeInsets.zero,
+            title: Text(
+              getTranslation(context, "terms_and_conditions"),
+            ),
+          ),
+          ListTile(
+            onTap: () {
+              Navigator.pushNamed(context, Language.routName,
+                  arguments: LanguageArgument(
+                      index: context.read<LocaleCubit>().state ==
+                              const Locale("en", "US")
+                          ? 1
+                          : 0));
+            },
+            leading: const Icon(Icons.language),
+            minLeadingWidth: 0,
+            contentPadding: EdgeInsets.zero,
+            title: Text(
+              getTranslation(context, "language"),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPreferenceItems(
+      BuildContext context, String title, AuthDataLoadSuccess state) {
+    return Container(
+      color: Colors.black54,
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SizedBox(
+            height: 20,
+          ),
+          Text(
+            title,
+            style: Theme.of(context)
+                .textTheme
+                .titleLarge!
+                .copyWith(color: Colors.blueAccent),
+          ),
+          ListTile(
+            contentPadding: EdgeInsets.zero,
+            title: Text(
+              state.auth.pref!['gender'],
+            ),
+            subtitle: Text(getTranslation(context, "driver_gender")),
+          ),
+          const Divider(
+            color: Colors.black,
+            height: 0,
+          ),
+          ListTile(
+            contentPadding: EdgeInsets.zero,
+            title: Text(
+              state.auth.pref!['min_rate'],
+            ),
+            subtitle: Text(getTranslation(context, "minimum_driver_rating")),
+          ),
+          const Divider(
+            color: Colors.black,
+            height: 0,
+          ),
+          ListTile(
+            contentPadding: EdgeInsets.zero,
+            title: Text(
+              state.auth.pref!['car_type'],
+            ),
+            subtitle: Text(getTranslation(context, "car_type")),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAboutUsItems(BuildContext context, String title) {
+    return Container(
+      color: Colors.black54,
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SizedBox(
+            height: 20,
+          ),
+          Text(
+            title,
+            style: Theme.of(context)
+                .textTheme
+                .titleLarge!
+                .copyWith(color: Colors.blueAccent),
+          ),
+          Text.rich(TextSpan(
+              text: "${getTranslation(context, "owned_by")}:\n  ",
+              children: const [
+                TextSpan(
+                    text: " Safeway Transport",
+                    style: TextStyle(
+                        fontStyle: FontStyle.italic,
+                        fontWeight: FontWeight.w300))
+              ])),
+          Text.rich(TextSpan(
+              text: "${getTranslation(context, "developerd_by")}:\n  ",
+              children: const [
+                TextSpan(
+                    text: " Vintage Technologies",
+                    style: TextStyle(
+                        fontStyle: FontStyle.italic,
+                        fontWeight: FontWeight.w300))
+              ])),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAppinfoItems(BuildContext context, String title) {
+    return Container(
+      color: Colors.black54,
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SizedBox(
+            height: 20,
+          ),
+          Text(
+            title,
+            style: Theme.of(context)
+                .textTheme
+                .titleLarge!
+                .copyWith(color: Colors.blueAccent),
+          ),
+          Text.rich(TextSpan(
+              text: "${getTranslation(context, "build_name")}: ",
+              children: const [
+                TextSpan(
+                    text: " SafeWay",
+                    style: TextStyle(
+                        fontStyle: FontStyle.italic,
+                        fontWeight: FontWeight.w300))
+              ])),
+          Text.rich(TextSpan(
+              text: "${getTranslation(context, "app_version")}: ",
+              children: const [
+                TextSpan(
+                    text: " 1.0",
+                    style: TextStyle(
+                        fontStyle: FontStyle.italic,
+                        fontWeight: FontWeight.w300))
+              ])),
+          Text.rich(TextSpan(
+              text: "${getTranslation(context, "build_number")}: ",
+              children: const [
+                TextSpan(
+                    text: " 102034",
+                    style: TextStyle(
+                        fontStyle: FontStyle.italic,
+                        fontWeight: FontWeight.w300))
+              ])),
+        ],
+      ),
     );
   }
 }
-
-void _navigateToEditProfileScreen(
-    BuildContext context, AuthDataLoadSuccess state) {
-  Navigator.pushNamed(context, EditProfile.routeName,
-      arguments: EditProfileArgument(
-          auth: Auth(
-              phoneNumber: state.auth.phoneNumber,
-              id: state.auth.id,
-              name: state.auth.name,
-              email: state.auth.email,
-              emergencyContact: state.auth.emergencyContact,
-              profilePicture: state.auth.profilePicture)));
-}
-
-Widget _buildAccountItems(
-    BuildContext context, String title, AuthDataLoadSuccess state) {
-  return Container(
-    color: Colors.black54,
-    padding: const EdgeInsets.symmetric(horizontal: 20),
-    child: Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        SizedBox(
-          height: 20,
-        ),
-        Text(
-          title,
-          style: Theme.of(context)
-              .textTheme
-              .titleLarge!
-              .copyWith(color: Colors.blueAccent),
-        ),
-        ListTile(
-          onTap: () {
-            _navigateToEditProfileScreen(context, state);
-          },
-          contentPadding: EdgeInsets.zero,
-          title: Text(
-            state.auth.phoneNumber!,
-          ),
-          subtitle: const Text("Tap to change the phone number"),
-        ),
-        const Divider(
-          color: Colors.black,
-          height: 0,
-        ),
-        ListTile(
-          onTap: () {
-            _navigateToEditProfileScreen(context, state);
-          },
-          contentPadding: EdgeInsets.zero,
-          title: Text(
-            state.auth.name!,
-          ),
-          subtitle: const Text("Name"),
-        ),
-        const Divider(
-          color: Colors.black,
-          height: 0,
-        ),
-        ListTile(
-          onTap: () {
-            _navigateToEditProfileScreen(context, state);
-          },
-          contentPadding: EdgeInsets.zero,
-          title: Text(
-            state.auth.email!,
-          ),
-          subtitle: const Text("email"),
-        ),
-        const Divider(
-          color: Colors.black,
-          height: 0,
-        ),
-        ListTile(
-          onTap: () {
-            _navigateToEditProfileScreen(context, state);
-          },
-          contentPadding: EdgeInsets.zero,
-          title: Text(
-            state.auth.emergencyContact!,
-          ),
-          subtitle: const Text("Emergency Contact"),
-        ),
-        ListTile(
-          onTap: () {
-            Navigator.pushNamed(context, ChangePassword.routeName);
-          },
-          contentPadding: EdgeInsets.zero,
-          title: const Text(
-            "Change password",
-          ),
-        ),
-      ],
-    ),
-  );
-}
-
-Widget _buildLegalItems(BuildContext context, String title) {
-  return Container(
-    color: Colors.black54,
-    padding: const EdgeInsets.symmetric(horizontal: 20),
-    child: Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const SizedBox(
-          height: 20,
-        ),
-        Text(
-          title,
-          style: Theme.of(context)
-              .textTheme
-              .titleLarge!
-              .copyWith(color: Colors.blueAccent),
-        ),
-        const ListTile(
-          contentPadding: EdgeInsets.zero,
-          leading: Icon(
-            Icons.contact_mail,
-            size: 20,
-          ),
-          minLeadingWidth: 0,
-          title: Text(
-            "Contact us",
-          ),
-        ),
-        const Divider(
-          color: Colors.black,
-          height: 0,
-        ),
-        const ListTile(
-          leading: Icon(Icons.privacy_tip_outlined),
-          minLeadingWidth: 0,
-          contentPadding: EdgeInsets.zero,
-          title: Text(
-            "Privacy Policy",
-          ),
-        ),
-        const Divider(
-          color: Colors.black,
-          height: 0,
-        ),
-        const ListTile(
-          leading: Icon(Icons.present_to_all_sharp),
-          minLeadingWidth: 0,
-          contentPadding: EdgeInsets.zero,
-          title: Text(
-            "Terms & Conditions",
-          ),
-        ),
-      ],
-    ),
-  );
-}
-
-Widget _buildPreferenceItems(
-    BuildContext context, String title, AuthDataLoadSuccess state) {
-  return Container(
-    color: Colors.black54,
-    padding: const EdgeInsets.symmetric(horizontal: 20),
-    child: Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const SizedBox(
-          height: 20,
-        ),
-        Text(
-          title,
-          style: Theme.of(context)
-              .textTheme
-              .titleLarge!
-              .copyWith(color: Colors.blueAccent),
-        ),
-        ListTile(
-          contentPadding: EdgeInsets.zero,
-          title: Text(
-            state.auth.pref!['gender'],
-          ),
-          subtitle: const Text("Driver Gender"),
-        ),
-        const Divider(
-          color: Colors.black,
-          height: 0,
-        ),
-        ListTile(
-          contentPadding: EdgeInsets.zero,
-          title: Text(
-            state.auth.pref!['min_rate'],
-          ),
-          subtitle: const Text("Minimum driver rating"),
-        ),
-        const Divider(
-          color: Colors.black,
-          height: 0,
-        ),
-        ListTile(
-          contentPadding: EdgeInsets.zero,
-          title: Text(
-            state.auth.pref!['car_type'],
-          ),
-          subtitle: const Text("Car Type"),
-        ),
-      ],
-    ),
-  );
-}
-
-Widget _buildAboutUsItems(BuildContext context, String title) {
-  return Container(
-    color: Colors.black54,
-    padding: const EdgeInsets.symmetric(horizontal: 20),
-    child: Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const SizedBox(
-          height: 20,
-        ),
-        Text(
-          title,
-          style: Theme.of(context)
-              .textTheme
-              .titleLarge!
-              .copyWith(color: Colors.blueAccent),
-        ),
-        const Text.rich(TextSpan(text: "Owned by:\n  ", children: [
-          TextSpan(
-              text: " Safeway Transport",
-              style: TextStyle(
-                  fontStyle: FontStyle.italic, fontWeight: FontWeight.w300))
-        ])),
-        const Text.rich(TextSpan(text: "Developed by:\n  ", children: [
-          TextSpan(
-              text: " Vintage Technologies",
-              style: TextStyle(
-                  fontStyle: FontStyle.italic, fontWeight: FontWeight.w300))
-        ])),
-      ],
-    ),
-  );
-}
-
-Widget _buildAppinfoItems(BuildContext context, String title) {
-  return Container(
-    color: Colors.black54,
-    padding: const EdgeInsets.symmetric(horizontal: 20),
-    child: Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const SizedBox(
-          height: 20,
-        ),
-        Text(
-          title,
-          style: Theme.of(context)
-              .textTheme
-              .titleLarge!
-              .copyWith(color: Colors.blueAccent),
-        ),
-        const Text.rich(TextSpan(text: "Build Name: ", children: [
-          TextSpan(
-              text: " SafeWay",
-              style: TextStyle(
-                  fontStyle: FontStyle.italic, fontWeight: FontWeight.w300))
-        ])),
-        const Text.rich(TextSpan(text: "App Version: ", children: [
-          TextSpan(
-              text: " 1.0",
-              style: TextStyle(
-                  fontStyle: FontStyle.italic, fontWeight: FontWeight.w300))
-        ])),
-        const Text.rich(TextSpan(text: "Build Number: ", children: [
-          TextSpan(
-              text: " 102034",
-              style: TextStyle(
-                  fontStyle: FontStyle.italic, fontWeight: FontWeight.w300))
-        ])),
-      ],
-    ),
-  );
-}
-
 
 
 // Scaffold(

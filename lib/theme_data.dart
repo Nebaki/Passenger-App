@@ -8,7 +8,7 @@ class ThemesData {
       bottomSheetTheme:
           BottomSheetThemeData(backgroundColor: Colors.grey.shade900),
       iconTheme: const IconThemeData(
-        color: Colors.white,
+        color: Colors.grey,
       ),
       floatingActionButtonTheme: FloatingActionButtonThemeData(
           backgroundColor: Colors.grey.shade900,

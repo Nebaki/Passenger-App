@@ -1,10 +1,7 @@
 import 'dart:async';
-
 import 'package:firebase_auth/firebase_auth.dart';
-
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:passengerapp/bloc/bloc.dart';
+import 'package:passengerapp/helper/localization.dart';
 import 'package:passengerapp/rout.dart';
 import 'package:passengerapp/screens/screens.dart';
 import 'package:passengerapp/widgets/widgets.dart';
@@ -30,9 +27,7 @@ class _PhoneVerificationState extends State<PhoneVerification> {
   // late ScaffoldMessengerState _scaffoldMessenger;
 
   late Timer _timer;
-  FirebaseAuth _auth = FirebaseAuth.instance;
-
-  final _codeController = TextEditingController();
+  final FirebaseAuth _auth = FirebaseAuth.instance;
 
   int _start = 60;
   bool _isLoading = false;
@@ -57,7 +52,7 @@ class _PhoneVerificationState extends State<PhoneVerification> {
 
   late String _verificationId;
   late int _resendToken;
-  GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
@@ -106,8 +101,7 @@ class _PhoneVerificationState extends State<PhoneVerification> {
         },
         verificationFailed: (verificationFailed) async {
           ScaffoldMessenger.of(context).showSnackBar(_errorMesseageSnackBar(
-              verificationFailed.message ?? "Uknown Error"));
-          debugPrint("Verification failed: $verificationFailed");
+              getTranslation(context, "operation_failure_message")));
           Navigator.pop(context);
         },
         codeSent: (verificationId, resendingToken) async {
@@ -209,12 +203,12 @@ class _PhoneVerificationState extends State<PhoneVerification> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Verification Code Sent',
+            getTranslation(context, "verification_code_sent"),
             style: TextStyle(color: Colors.green[900], fontSize: 24.0),
           ),
-          const Text(
-            'Enter the verification code sent to you',
-            style: TextStyle(fontSize: 18.0),
+          Text(
+            getTranslation(context, "enter_verification_code"),
+            style: const TextStyle(fontSize: 18.0),
           ),
           const SizedBox(
             height: 20.0,
@@ -242,8 +236,7 @@ class _PhoneVerificationState extends State<PhoneVerification> {
                     style: const TextStyle(fontSize: 26.0),
                     onChanged: (value) {
                       if (value.length == 1) node.nextFocus();
-                      if (value.length == 0) node.previousFocus();
-                      print("Changedd");
+                      if (value.isEmpty) node.previousFocus();
                     },
                     maxLength: 1,
                     keyboardType: TextInputType.number,
@@ -272,7 +265,7 @@ class _PhoneVerificationState extends State<PhoneVerification> {
                     style: const TextStyle(fontSize: 26.0),
                     onChanged: (value) {
                       if (value.length == 1) node.nextFocus();
-                      if (value.length == 0) node.previousFocus();
+                      if (value.isEmpty) node.previousFocus();
                     },
                     maxLength: 1,
                     keyboardType: TextInputType.number,
@@ -301,7 +294,7 @@ class _PhoneVerificationState extends State<PhoneVerification> {
                     style: const TextStyle(fontSize: 26.0),
                     onChanged: (value) {
                       if (value.length == 1) node.nextFocus();
-                      if (value.length == 0) node.previousFocus();
+                      if (value.isEmpty) node.previousFocus();
                     },
                     maxLength: 1,
                     keyboardType: TextInputType.number,
@@ -330,7 +323,7 @@ class _PhoneVerificationState extends State<PhoneVerification> {
                     style: const TextStyle(fontSize: 26.0),
                     onChanged: (value) {
                       if (value.length == 1) node.nextFocus();
-                      if (value.length == 0) node.previousFocus();
+                      if (value.isEmpty) node.previousFocus();
                     },
                     maxLength: 1,
                     keyboardType: TextInputType.number,
@@ -359,7 +352,7 @@ class _PhoneVerificationState extends State<PhoneVerification> {
                     style: const TextStyle(fontSize: 26.0),
                     onChanged: (value) {
                       if (value.length == 1) node.nextFocus();
-                      if (value.length == 0) node.previousFocus();
+                      if (value.isEmpty) node.previousFocus();
                     },
                     maxLength: 1,
                     keyboardType: TextInputType.number,
@@ -388,7 +381,7 @@ class _PhoneVerificationState extends State<PhoneVerification> {
                     style: const TextStyle(fontSize: 26.0),
                     onChanged: (value) {
                       if (value.length == 1) node.nextFocus();
-                      if (value.length == 0) node.previousFocus();
+                      if (value.isEmpty) node.previousFocus();
                     },
                     maxLength: 1,
                     keyboardType: TextInputType.number,
@@ -404,10 +397,10 @@ class _PhoneVerificationState extends State<PhoneVerification> {
           ),
           doesAllTextFilledsFilled
               ? Container()
-              : const Center(
+              : Center(
                   child: Text(
-                  'Must fill all fields',
-                  style: TextStyle(color: Colors.red),
+                  getTranslation(context, "verification_form_validator_text"),
+                  style: const TextStyle(color: Colors.red),
                 )),
           const SizedBox(
             height: 30.0,
@@ -418,8 +411,8 @@ class _PhoneVerificationState extends State<PhoneVerification> {
                 children: [
                   Text(
                     _start != 0
-                        ? 'Didn\'t receive the code?  $_start'
-                        : 'Didn\'t receive the code? ',
+                        ? '${getTranslation(context, "verification_resent_text")}  $_start'
+                        : getTranslation(context, "verification_resent_text"),
                     style: const TextStyle(fontSize: 17.0),
                   ),
                   TextButton(
@@ -437,8 +430,9 @@ class _PhoneVerificationState extends State<PhoneVerification> {
                                   widget.args.phoneNumber, _resendToken);
                             }
                           : null,
-                      child: const Text(
-                        ' RESEND',
+                      child: Text(
+                        getTranslation(
+                            context, "verification_resend_button_text"),
                       )),
                 ],
               )),
@@ -461,8 +455,6 @@ class _PhoneVerificationState extends State<PhoneVerification> {
                                   otp4Controller.text +
                                   otp5Controller.text +
                                   otp6Controller.text;
-                              print(
-                                  "Codeeeeeee $code, ${widget.args.verificationId}");
 
                               PhoneAuthCredential credential =
                                   PhoneAuthProvider.credential(
@@ -476,8 +468,8 @@ class _PhoneVerificationState extends State<PhoneVerification> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       const Spacer(),
-                      const Text(
-                        "Verify",
+                      Text(
+                        getTranslation(context, "verification_button_text"),
                       ),
                       const Spacer(),
                       Align(

@@ -20,6 +20,7 @@ import 'package:passengerapp/bloc/driver/driver_bloc.dart';
 import 'package:passengerapp/cubit/favorite_location.dart';
 import 'package:passengerapp/drawer/drawer.dart';
 import 'package:passengerapp/helper/constants.dart';
+import 'package:passengerapp/helper/localization.dart';
 
 import 'package:passengerapp/helper/url_launcher.dart';
 import 'package:passengerapp/models/models.dart';
@@ -161,7 +162,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void dispose() {
-    context.read<UserBloc>().add(UserSetAvailability([], false));
+    // context.read<UserBloc>().add(UserSetAvailability([], false));
     IsolateNameServer.removePortNameMapping(portName);
     _serviceStatusStreamSubscription!.cancel();
     _connectivitySubscription!.cancel();
@@ -434,8 +435,8 @@ class _HomeScreenState extends State<HomeScreen> {
                               builder: (BuildContext context) {
                                 return AlertDialog(
                                   content: Row(
-                                    children: const [
-                                      SizedBox(
+                                    children: [
+                                      const SizedBox(
                                         height: 20,
                                         width: 20,
                                         child: CircularProgressIndicator(
@@ -443,10 +444,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                           color: Colors.red,
                                         ),
                                       ),
-                                      SizedBox(
+                                      const SizedBox(
                                         width: 5,
                                       ),
-                                      Text("Reporting.."),
+                                      Text(getTranslation(context,
+                                          "emergency_reporting_message")),
                                     ],
                                   ),
                                 );
@@ -460,16 +462,17 @@ class _HomeScreenState extends State<HomeScreen> {
                               builder: (BuildContext context) {
                                 return AlertDialog(
                                   content: Row(
-                                    children: const [
-                                      SizedBox(
+                                    children: [
+                                      const SizedBox(
                                           height: 20,
                                           width: 20,
                                           child: Icon(Icons.done,
                                               color: Colors.green)),
-                                      SizedBox(
+                                      const SizedBox(
                                         width: 5,
                                       ),
-                                      Text("Emergency report has been sent"),
+                                      Text(getTranslation(context,
+                                          "emergency_report_success_message")),
                                     ],
                                   ),
                                   actions: [
@@ -477,7 +480,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                         onPressed: () {
                                           Navigator.pop(context);
                                         },
-                                        child: const Text('Okay'))
+                                        child: Text(getTranslation(
+                                            context, "okay_action")))
                                   ],
                                 );
                               });
@@ -485,7 +489,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         if (state is EmergencyReportOperationFailur) {
                           Navigator.pop(context);
                           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                              content: const Text("Reporting Failed."),
+                              content: Text(getTranslation(
+                                  context, "emergency_report_failure_message")),
                               backgroundColor: Colors.red.shade900));
                         }
                       }),
@@ -920,7 +925,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   FilterChip(
                       backgroundColor: Theme.of(context).backgroundColor,
                       label: Text(
-                        "Truck",
+                        getTranslation(context, "truck"),
                         style: Theme.of(context).textTheme.titleMedium,
                       ),
                       onSelected: (selexted) {
@@ -931,7 +936,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   FilterChip(
                       backgroundColor: Theme.of(context).backgroundColor,
                       label: Text(
-                        "Taxi ",
+                        getTranslation(context, "taxi"),
                         style: Theme.of(context).textTheme.titleMedium,
                       ),
                       onSelected: (selexted) {
@@ -980,7 +985,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 children: [
                   Expanded(
                     flex: 2,
-                    child: Text("Enable Location Services",
+                    child: Text(
+                        getTranslation(
+                            context, "location_service_off_buttom_sheet_title"),
                         style: Theme.of(context).textTheme.headline5),
                   ),
                   const Expanded(
@@ -996,7 +1003,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   Expanded(
                       flex: 3,
                       child: Text(
-                          "We can't get your location because you have disabled location services. Please turn it on for better experience.",
+                          getTranslation(context,
+                              "location_service_off_buttom_sheet_text"),
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                           style: Theme.of(context).textTheme.bodyText2)),
@@ -1009,7 +1017,8 @@ class _HomeScreenState extends State<HomeScreen> {
                               await Geolocator.openLocationSettings();
                             },
                             child: Text(
-                              "TURN ON LOCATION SERVICES",
+                              getTranslation(context,
+                                  "location_service_off_buttom_sheet_acction_button_top"),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               textAlign: TextAlign.center,
@@ -1026,7 +1035,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             onPressed: () async {
                               SystemNavigator.pop();
                             },
-                            child: const Text("CANCEL")),
+                            child: Text(getTranslation(context, "cancel"))),
                       ))
                 ],
               ),
@@ -1052,7 +1061,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 children: [
                   Expanded(
                     flex: 2,
-                    child: Text("No Internet Connection",
+                    child: Text(
+                        getTranslation(
+                            context, "internet_service_off_buttom_sheet_title"),
                         style: Theme.of(context).textTheme.headline5),
                   ),
                   const Expanded(
@@ -1070,7 +1081,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   Expanded(
                       flex: 3,
                       child: Text(
-                          "Please enable WIFI or Mobile data to serve the app",
+                          getTranslation(context,
+                              "internet_service_off_buttom_sheet_text"),
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                           style: Theme.of(context).textTheme.bodyText2)),
@@ -1087,7 +1099,8 @@ class _HomeScreenState extends State<HomeScreen> {
                               AppSettings.openDeviceSettings(
                                   asAnotherTask: true);
                             },
-                            child: const Text("Go to Settings")),
+                            child: Text(getTranslation(context,
+                                "internet_service_off_buttom_sheet_acction_button_top"))),
                       )),
                   const SizedBox(
                     height: 10,
@@ -1100,7 +1113,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             onPressed: () async {
                               SystemNavigator.pop();
                             },
-                            child: const Text("Cancel")),
+                            child: Text(getTranslation(context, "cancel"))),
                       ))
                 ],
               ),

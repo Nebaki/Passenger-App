@@ -1,14 +1,11 @@
 import 'dart:async';
 import 'dart:developer' as developer;
-
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:passengerapp/bloc/bloc.dart';
 import 'package:passengerapp/helper/constants.dart';
+import 'package:passengerapp/helper/localization.dart';
 import 'package:passengerapp/rout.dart';
 import 'package:passengerapp/screens/home/assistant/home_screen_assistant.dart';
 import 'package:passengerapp/screens/home/variables.dart';
@@ -92,13 +89,13 @@ class _CustomSplashScreenState extends State<CustomSplashScreen> {
               ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                 duration: const Duration(minutes: 5),
                 backgroundColor: Colors.black,
-                content: const Text(
-                  "Check your internet connection",
-                  style: TextStyle(color: Colors.white),
+                content: Text(
+                  getTranslation(context, "check_internet_connection"),
+                  style: const TextStyle(color: Colors.white),
                 ),
                 action: SnackBarAction(
                     textColor: Colors.white,
-                    label: "Try Again",
+                    label: getTranslation(context, "try_again"),
                     onPressed: () {
                       ScaffoldMessenger.of(context).hideCurrentSnackBar();
                       _checkStartedTrip();
@@ -145,14 +142,12 @@ class _CustomSplashScreenState extends State<CustomSplashScreen> {
     result = await _connectivity.checkConnectivity();
 
     if (result == ConnectivityResult.none) {
-      print("Showing the banner from here");
       isFirstTime = true;
 
       ScaffoldMessenger.of(context).showMaterialBanner(MaterialBanner(
           content: const Text(Strings.noIntertConnection),
           actions: [TextButton(onPressed: () {}, child: Text("Try Again"))]));
     } else {
-      print("We are all around here");
       ScaffoldMessenger.of(context).hideCurrentMaterialBanner();
 
       _checkStartedTrip();
@@ -162,7 +157,6 @@ class _CustomSplashScreenState extends State<CustomSplashScreen> {
   void _toggleInternetServiceStatusStream() {
     _connectivitySubscription ??=
         _connectivity.onConnectivityChanged.listen((event) {
-      print("event:  $event");
       if (event == ConnectivityResult.none) {
         ScaffoldMessenger.of(context).showMaterialBanner(MaterialBanner(
             content: const Text(Strings.noIntertConnection),
@@ -181,7 +175,6 @@ class _CustomSplashScreenState extends State<CustomSplashScreen> {
           _checkStartedTrip();
         }
         isFirstTime = false;
-        print("Noohhhh");
         ScaffoldMessenger.of(context).hideCurrentMaterialBanner();
       }
     });
