@@ -124,7 +124,7 @@ class _HomeScreenState extends State<HomeScreen> {
     _listenBackGroundMessage();
     pushNotificationService.initialize(context);
     pushNotificationService.seubscribeTopic();
-    WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       setState(() {
         if (widget.args.isSelected) {
           _getPolyline(widget.args.encodedPts!);
@@ -132,7 +132,7 @@ class _HomeScreenState extends State<HomeScreen> {
         }
       });
     });
-    var window = WidgetsBinding.instance!.window;
+    var window = WidgetsBinding.instance.window;
     window.onPlatformBrightnessChanged = () {
       if (window.platformBrightness == Brightness.dark) {
         outerController.setMapStyle(_darkMapStyle);

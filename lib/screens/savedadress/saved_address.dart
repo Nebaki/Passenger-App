@@ -365,7 +365,7 @@ class SavedAddress extends StatelessWidget {
                 droppOffLatLng =
                     LatLng(state.placeDetail.lat, state.placeDetail.lng);
 
-                WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
+                WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
                   showCarIcons = false;
                   context
                       .read<CurrentWidgetCubit>()
@@ -380,7 +380,7 @@ class SavedAddress extends StatelessWidget {
               if (state is PlaceDetailOperationFailure) {
                 Navigator.pop(context);
 
-                WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
+                WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                       backgroundColor: Colors.red.shade900,
                       content: Text(getTranslation(

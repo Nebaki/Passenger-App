@@ -399,7 +399,7 @@ class _WhereToState extends State<WhereTo> {
               if (state is PlaceDetailOperationFailure) {
                 Navigator.pop(context);
 
-                WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
+                WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                       backgroundColor: Colors.red.shade900,
                       content: Text(getTranslation(
@@ -458,7 +458,7 @@ class _WhereToState extends State<WhereTo> {
                     LatLng(state.placeDetail.lat, state.placeDetail.lng);
                 droppOffLatLng = destinationLtlng;
 
-                WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
+                WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
                   showCarIcons = false;
                   droppOffLatLng = destinationLtlng;
                   _changePlaceDetailBlocToInitialState();
@@ -474,7 +474,7 @@ class _WhereToState extends State<WhereTo> {
               if (state is PlaceDetailOperationFailure) {
                 Navigator.pop(context);
 
-                WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
+                WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                       backgroundColor: Colors.red.shade900,
                       content: Text(getTranslation(

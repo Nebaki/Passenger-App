@@ -358,7 +358,7 @@ class _OrderForOtherScreenState extends State<OrderForOtherScreen> {
               builder: (context, state) {
             if (state is PlaceDetailLoadSuccess) {
               // FocusScope.of(context).requestFocus(droppOffLocationNode);
-              WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
+              WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
                 setState(() {
                   pickupSetted = true;
                 });
@@ -371,7 +371,7 @@ class _OrderForOtherScreenState extends State<OrderForOtherScreen> {
             }
 
             if (state is PlaceDetailOperationFailure) {
-              WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
+              WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
                 ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                     backgroundColor: Colors.red.shade900,
                     content: Text(getTranslation(
@@ -414,7 +414,7 @@ class _OrderForOtherScreenState extends State<OrderForOtherScreen> {
           return BlocBuilder<PlaceDetailBloc, PlaceDetailState>(
               builder: (context, state) {
             if (state is PlaceDetailLoadSuccess) {
-              WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
+              WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
                 setState(() {
                   droppOffSetted = true;
                 });
@@ -429,7 +429,7 @@ class _OrderForOtherScreenState extends State<OrderForOtherScreen> {
                   LatLng(state.placeDetail.lat, state.placeDetail.lng);
               droppOffLatLng = destinationLtlng;
 
-              WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
+              WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
                 droppOffLatLng = destinationLtlng;
 
                 Navigator.pop(context);
@@ -438,7 +438,7 @@ class _OrderForOtherScreenState extends State<OrderForOtherScreen> {
             }
 
             if (state is PlaceDetailOperationFailure) {
-              WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
+              WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
                 ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                     backgroundColor: Colors.red.shade900,
                     content: Text(getTranslation(
