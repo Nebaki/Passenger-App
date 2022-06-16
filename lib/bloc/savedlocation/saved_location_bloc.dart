@@ -1,7 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:passengerapp/models/models.dart';
-import 'package:equatable/equatable.dart';
 import 'package:passengerapp/repository/repositories.dart';
 
 class SavedLocationBloc extends Bloc<SavedLocationEvent, SavedLocationState> {
@@ -18,7 +17,7 @@ class SavedLocationBloc extends Bloc<SavedLocationEvent, SavedLocationState> {
             await savedLocationRepository.getSavedLocations();
         yield SavedLocationsLoadSuccess(savedLocations);
       } catch (_) {
-        yield SavedLocationOperationFailure(404);
+        yield const SavedLocationOperationFailure(404);
       }
     }
     if (event is SavedLocationCreate) {
@@ -38,7 +37,7 @@ class SavedLocationBloc extends Bloc<SavedLocationEvent, SavedLocationState> {
       try {
         await savedLocationRepository.deleteSavedLocationById(event.id);
       } catch (_) {
-        yield SavedLocationOperationFailure(404);
+        yield const SavedLocationOperationFailure(404);
       }
     }
     if (event is SavedLocationUpdate) {
@@ -48,7 +47,7 @@ class SavedLocationBloc extends Bloc<SavedLocationEvent, SavedLocationState> {
             .updateSavedLocation(event.savedLocation);
         yield SavedLocationsSuccess(savedLocation);
       } catch (_) {
-        yield SavedLocationOperationFailure(404);
+        yield const SavedLocationOperationFailure(404);
       }
     }
 
@@ -58,7 +57,7 @@ class SavedLocationBloc extends Bloc<SavedLocationEvent, SavedLocationState> {
         await savedLocationRepository.cleateSavedLocations();
         yield SavedLocationOperationsuccess();
       } catch (_) {
-        yield SavedLocationOperationFailure(404);
+        yield const SavedLocationOperationFailure(404);
       }
     }
   }

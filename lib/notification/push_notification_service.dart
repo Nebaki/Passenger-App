@@ -17,8 +17,8 @@ class PushNotificationService {
 
   Future initialize(context) async {
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      RemoteNotification? notification = message.notification;
-      AndroidNotification? android = message.notification?.android;
+      // RemoteNotification? notification = message.notification;
+      // AndroidNotification? android = message.notification?.android;
       player.open(Audio("assets/sounds/announcement-sound.mp3"));
       switch (message.data['response']) {
         case 'Accepted':
@@ -27,7 +27,7 @@ class PushNotificationService {
               .add(DriverLoad(message.data['myId']));
           driverId = message.data['myId'];
           BlocProvider.of<CurrentWidgetCubit>(context)
-              .changeWidget(DriverOnTheWay(
+              .changeWidget(const DriverOnTheWay(
             fromBackGround: false,
           ));
           // context.read<CurrentWidgetCubit>().changeWidget(DriverOnTheWay());
@@ -41,7 +41,8 @@ class PushNotificationService {
           ));
           break;
         case 'Cancelled':
-          BlocProvider.of<CurrentWidgetCubit>(context).changeWidget(WhereTo(
+          BlocProvider.of<CurrentWidgetCubit>(context)
+              .changeWidget(const WhereTo(
             key: Key("whereto"),
           ));
 
@@ -57,7 +58,7 @@ class PushNotificationService {
           break;
         case 'Started':
           BlocProvider.of<CurrentWidgetCubit>(context)
-              .changeWidget(StartedTripPannel());
+              .changeWidget(const StartedTripPannel());
           // context
           //     .read<CurrentWidgetCubit>()
           //     .changeWidget(const StartedTripPannel());
@@ -77,7 +78,7 @@ class PushNotificationService {
           break;
         case "TimeOut":
           BlocProvider.of<CurrentWidgetCubit>(context)
-              .changeWidget(Service(true, false));
+              .changeWidget(const Service(true, false));
 
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
             content: const Text("Time out"),
@@ -89,7 +90,7 @@ class PushNotificationService {
     });
 
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-      print('A new onMessageOpenedApp event was published!');
+      debugPrint('A new onMessageOpenedApp event was published!');
     });
   }
 
@@ -98,7 +99,7 @@ class PushNotificationService {
 
     final token = await FirebaseMessaging.instance.getToken();
 
-    print("The token is:: ");
-    print(token);
+    debugPrint("The token is:: ");
+    debugPrint(token);
   }
 }

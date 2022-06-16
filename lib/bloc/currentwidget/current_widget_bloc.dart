@@ -4,7 +4,7 @@ import 'package:passengerapp/widgets/whereto.dart';
 
 class CurrentWidgetCubit extends Cubit<Widget> {
   CurrentWidgetCubit()
-      : super(WhereTo(
+      : super(const WhereTo(
           key: Key("whereto"),
         ));
   void changeWidget(Widget widget) => emit(widget);

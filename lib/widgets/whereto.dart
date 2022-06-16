@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_geofire/flutter_geofire.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:passengerapp/bloc/bloc.dart';
 import 'package:passengerapp/bloc/database/location_history_bloc.dart';
@@ -8,14 +7,12 @@ import 'package:passengerapp/cubit/favorite_location.dart';
 import 'package:passengerapp/cubit/favorite_location_state.dart';
 import 'package:passengerapp/helper/constants.dart';
 import 'package:passengerapp/helper/localization.dart';
-import 'package:passengerapp/rout.dart';
 import 'package:passengerapp/screens/home/assistant/home_screen_assistant.dart';
-import 'package:passengerapp/screens/screens.dart';
 import 'package:passengerapp/widgets/serviceType/service_type.dart';
 import '../models/models.dart';
 
 class WhereTo extends StatefulWidget {
-  WhereTo({Key? key}) : super(key: key);
+  const WhereTo({Key? key}) : super(key: key);
 
   @override
   _WhereToState createState() => _WhereToState();
@@ -168,7 +165,7 @@ class _WhereToState extends State<WhereTo> {
                     },
                     itemCount: state.locationHistory.length,
                     separatorBuilder: (context, index) {
-                      return VerticalDivider();
+                      return const VerticalDivider();
                     },
                   ),
                 );
@@ -467,7 +464,7 @@ class _WhereToState extends State<WhereTo> {
                   _changePlaceDetailBlocToInitialState();
                   context
                       .read<CurrentWidgetCubit>()
-                      .changeWidget(Service(false, false));
+                      .changeWidget(const Service(false, false));
 
                   Navigator.pop(cont);
                   !isFromResentHisotry ? Navigator.pop(context) : null;

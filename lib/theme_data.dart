@@ -3,8 +3,8 @@ import 'package:passengerapp/helper/constants.dart';
 
 class ThemesData {
   static final darkTheme = ThemeData(
-      primaryIconTheme: IconThemeData(color: Colors.white),
-      inputDecorationTheme: InputDecorationTheme(fillColor: Colors.black),
+      primaryIconTheme: const IconThemeData(color: Colors.white),
+      inputDecorationTheme: const InputDecorationTheme(fillColor: Colors.black),
       bottomSheetTheme:
           BottomSheetThemeData(backgroundColor: Colors.grey.shade900),
       iconTheme: const IconThemeData(
@@ -13,7 +13,7 @@ class ThemesData {
       floatingActionButtonTheme: FloatingActionButtonThemeData(
           backgroundColor: Colors.grey.shade900,
           foregroundColor: Colors.white,
-          extendedTextStyle: TextStyle(color: Colors.white)),
+          extendedTextStyle: const TextStyle(color: Colors.white)),
       progressIndicatorTheme: const ProgressIndicatorThemeData(
           linearTrackColor: Colors.white, color: Colors.green),
       scaffoldBackgroundColor: Colors.grey.shade900,
@@ -39,7 +39,7 @@ class ThemesData {
       ),
       canvasColor: Colors.white,
       backgroundColor: Colors.grey.shade900,
-      textTheme: TextTheme(
+      textTheme: const TextTheme(
         button: TextStyle(color: Colors.white60),
         // bodyLarge: TextStyle(color: Colors.black)
         // subtitle1: const TextStyle(color: Colors.black38, fontSize: 14),
@@ -50,9 +50,10 @@ class ThemesData {
       colorScheme: const ColorScheme.dark());
 
   static final lightTheme = ThemeData(
-      primaryIconTheme: IconThemeData(color: Colors.black),
-      inputDecorationTheme: InputDecorationTheme(fillColor: Colors.white),
-      bottomSheetTheme: BottomSheetThemeData(backgroundColor: backGroundColor),
+      primaryIconTheme: const IconThemeData(color: Colors.black),
+      inputDecorationTheme: const InputDecorationTheme(fillColor: Colors.white),
+      bottomSheetTheme:
+          const BottomSheetThemeData(backgroundColor: backGroundColor),
       floatingActionButtonTheme: FloatingActionButtonThemeData(
           backgroundColor: Colors.grey.shade300,
           foregroundColor: Colors.indigo.shade900,

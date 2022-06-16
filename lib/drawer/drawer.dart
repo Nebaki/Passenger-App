@@ -12,14 +12,14 @@ import 'package:passengerapp/screens/screens.dart';
 import 'package:http/http.dart' as http;
 
 class NavDrawer extends StatelessWidget {
-  AuthDataProvider authDataProvider =
-      AuthDataProvider(httpClient: http.Client());
+  final authDataProvider = AuthDataProvider(httpClient: http.Client());
+
+  NavDrawer({Key? key}) : super(key: key);
 
   Future<String?> getImageUrl() async {
     return await authDataProvider.getImageUrl();
   }
 
-  late bool isDarkModeOn;
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -149,7 +149,7 @@ class NavDrawer extends StatelessWidget {
 
                   GestureDetector(
                     onTap: context.read<CurrentWidgetCubit>().state.key ==
-                            Key("whereto")
+                            const Key("whereto")
                         ? () {
                             Navigator.popAndPushNamed(
                                 context, OrderForOtherScreen.routeName);

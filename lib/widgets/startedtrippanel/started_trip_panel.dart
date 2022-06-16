@@ -1,9 +1,5 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:passengerapp/bloc/bloc.dart';
-import 'package:passengerapp/helper/constants.dart';
 import 'package:passengerapp/widgets/widgets.dart';
 
 class StartedTripPannel extends StatelessWidget {
@@ -29,13 +25,13 @@ class StartedTripPannel extends StatelessWidget {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
+                  children: const [
                     Flexible(
                         flex: 1,
                         child: DriverProfile(
                             assetImage: 'assets/icons/economyCarIcon.png')),
-                    const Divider(),
-                    const Flexible(flex: 1, child: Counter()),
+                    Divider(),
+                    Flexible(flex: 1, child: Counter()),
                   ],
                 )),
           ],

@@ -5,7 +5,6 @@ class DrawerBackGround extends CustomPainter {
   DrawerBackGround(this.context);
   @override
   void paint(Canvas canvas, Size size) {
-    // TODO: implement paint
     final height = size.height;
     final width = size.width;
     Paint paint = Paint();
@@ -30,7 +29,7 @@ class DrawerBackGround extends CustomPainter {
 
     bottomPath.lineTo(0, height);
 
-    paint.color = Color.fromARGB(255, 226, 182, 34);
+    paint.color = const Color.fromARGB(255, 226, 182, 34);
 
     canvas.drawPath(bottomPath, paint);
 
@@ -39,7 +38,6 @@ class DrawerBackGround extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) {
-    // TODO: implement shouldRepaint
     return oldDelegate != this;
   }
 }

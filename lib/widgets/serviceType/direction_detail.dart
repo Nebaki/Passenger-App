@@ -14,8 +14,6 @@ class DirectionDetail extends StatefulWidget {
 }
 
 class _DirectionDetailState extends State<DirectionDetail> {
-  final _greyTextStyle = const TextStyle(color: Colors.black26, fontSize: 14);
-  final _blackTextStyle = const TextStyle(color: Colors.black);
   late String capacity;
   @override
   Widget build(BuildContext context) {

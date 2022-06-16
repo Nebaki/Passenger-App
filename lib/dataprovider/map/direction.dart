@@ -7,8 +7,6 @@ import 'package:passengerapp/models/models.dart';
 import 'package:passengerapp/helper/constants.dart';
 
 class DirectionDataProvider {
-  final String _api_key = "AIzaSyB8z8UeyROt2-ay24jiHrrcMXaEAlPUvdQ";
-
   Future<Position> _determinePosition() async {
     return await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high);
@@ -24,7 +22,7 @@ class DirectionDataProvider {
     pickupLatLng = initialPosition;
 
     final _directionUrl =
-        "https://maps.googleapis.com/maps/api/directions/json?origin=${initialPosition.latitude},${initialPosition.longitude}&destination=${destination.latitude},${destination.longitude}&key=$_api_key";
+        "https://maps.googleapis.com/maps/api/directions/json?origin=${initialPosition.latitude},${initialPosition.longitude}&destination=${destination.latitude},${destination.longitude}&key=$apiKey";
 
     final response = await httpClient.get(Uri.parse(_directionUrl));
 
@@ -40,7 +38,7 @@ class DirectionDataProvider {
   Future<Direction> getDirectionFromDifrentPickupLocation(
       LatLng pickupLocation, LatLng destination) async {
     final _directionUrl =
-        "https://maps.googleapis.com/maps/api/directions/json?origin=${pickupLocation.latitude},${pickupLocation.longitude}&destination=${destination.latitude},${destination.longitude}&key=$_api_key";
+        "https://maps.googleapis.com/maps/api/directions/json?origin=${pickupLocation.latitude},${pickupLocation.longitude}&destination=${destination.latitude},${destination.longitude}&key=$apiKey";
 
     final response = await httpClient.get(Uri.parse(_directionUrl));
 

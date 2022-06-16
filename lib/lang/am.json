@@ -173,5 +173,7 @@
     "payment_made":"ክፍያ በጥሬ ገንዘብ በተሳካ ሁኔታ ተፈጽሟል።",
     "not_paid_yet":"እስካሁን አልተከፈለም።",
     "logout":"ውጣ",
-    "driver_gender":"Driver gender"
+    "driver_gender":"Driver gender",
+    "no_internet_connection":"No Internet Connection"
+
 }

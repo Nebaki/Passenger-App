@@ -1,22 +1,13 @@
 import 'dart:isolate';
 import 'dart:ui';
-
 import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-
 import 'package:flutter/material.dart';
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:geolocator/geolocator.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:passengerapp/bloc/bloc.dart';
-import 'package:passengerapp/bloc/category/category.dart';
-import 'package:passengerapp/bloc/currentwidget/current_widget_bloc.dart';
 import 'package:passengerapp/bloc/database/location_history_bloc.dart';
-import 'package:passengerapp/bloc/notificationrequest/notification_request_bloc.dart';
-import 'package:passengerapp/bloc/savedlocation/saved_location_bloc.dart';
-import 'package:passengerapp/bloc/thememode/theme_mode_bloc.dart';
 import 'package:passengerapp/bloc_observer.dart';
 import 'package:passengerapp/cubit/cubits.dart';
 import 'package:passengerapp/cubit/favorite_location.dart';
@@ -38,7 +29,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   final SendPort? send = IsolateNameServer.lookupPortByName(portName);
   send!.send(message);
 
-  print('Handling a background message ${message.messageId}');
+  debugPrint('Handling a background message ${message.messageId}');
 }
 
 void main() async {
@@ -69,10 +60,6 @@ void main() async {
 
   final AuthRepository authRepository =
       AuthRepository(dataProvider: AuthDataProvider(httpClient: http.Client()));
-  final NotificationRequestRepository notificationRequestRepository =
-      NotificationRequestRepository(
-          dataProvider:
-              NotificationRequestDataProvider(httpClient: http.Client()));
 
   final DataBaseHelperRepository dataBaseHelperRepository =
       DataBaseHelperRepository(dataProvider: DatabaseHelper());
@@ -94,7 +81,6 @@ void main() async {
       categoryDataProvider: CategoryDataProvider(httpClient: http.Client()));
 
   runApp(MyApp(
-    notificationRequestRepository: notificationRequestRepository,
     rideRequestRepository: rideRequestRepository,
     authRepository: authRepository,
     userRepository: userRepository,
@@ -112,36 +98,6 @@ void main() async {
 }
 
 class MyApp extends StatelessWidget {
-  Future<Position> _determinePosition() async {
-    bool serviceEnabled;
-    LocationPermission permission;
-
-    serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) {
-      if (!serviceEnabled) {
-        return Future.error("NoLocation Enabled");
-      }
-
-      return Future.error('Location services are disabled.');
-    }
-
-    permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied) {
-        return Future.error('Location permissions are denied');
-      }
-    }
-
-    if (permission == LocationPermission.deniedForever) {
-      return Future.error(
-          'Location permissions are permanently denied, we cannot request permissions.');
-    }
-
-    return await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high);
-  }
-
   final ReverseLocationRepository reverseLocationRepository;
   final LocationPredictionRepository locationPredictionRepository;
   final PlaceDetailRepository placeDetailRepository;
@@ -150,7 +106,6 @@ class MyApp extends StatelessWidget {
   final DriverRepository driverRepository;
   final AuthRepository authRepository;
   final RideRequestRepository rideRequestRepository;
-  final NotificationRequestRepository notificationRequestRepository;
   final DataBaseHelperRepository dataBaseHelperRepository;
   final ReviewRepository reviewRepository;
   final SavedLocationRepository savedLocationRepository;
@@ -159,7 +114,6 @@ class MyApp extends StatelessWidget {
 
   const MyApp({
     Key? key,
-    required this.notificationRequestRepository,
     required this.rideRequestRepository,
     required this.userRepository,
     required this.driverRepository,
@@ -181,7 +135,6 @@ class MyApp extends StatelessWidget {
 
     return MultiRepositoryProvider(
         providers: [
-          RepositoryProvider.value(value: notificationRequestRepository),
           RepositoryProvider.value(value: rideRequestRepository),
           RepositoryProvider.value(value: reverseLocationRepository),
           RepositoryProvider.value(value: locationPredictionRepository),
@@ -221,10 +174,6 @@ class MyApp extends StatelessWidget {
               BlocProvider(
                   create: (context) => RideRequestBloc(
                       rideRequestRepository: rideRequestRepository)),
-              BlocProvider(
-                  create: (context) => NotificationRequestBloc(
-                      notificationRequestRepository:
-                          notificationRequestRepository)),
               BlocProvider(
                   create: (context) =>
                       DriverBloc(driverRepository: driverRepository)),

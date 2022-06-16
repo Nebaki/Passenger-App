@@ -93,7 +93,7 @@ class _MobileVerificationState extends State<MobileVerification> {
       // backgroundColor: const Color.fromRGBO(240, 241, 241, 1),
       body: Stack(
         children: [
-          CustomeBackArrow(),
+          const CustomeBackArrow(),
           Form(
             key: _formkey,
             child: Padding(

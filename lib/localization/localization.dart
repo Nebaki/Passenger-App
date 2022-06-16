@@ -1,6 +1,4 @@
 import 'dart:convert';
-
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 
@@ -45,7 +43,7 @@ class LocalizationDelegate extends LocalizationsDelegate<Localization> {
   Future<Localization> load(Locale locale) async {
     // Returning a SynchronousFuture here because an async "load" operation
     // isn't needed to produce an instance of DemoLocalizations.
-    Localization localization = new Localization(locale);
+    Localization localization = Localization(locale);
     await localization.getLanguages();
     return localization;
     // SynchronousFuture<Localization>(Localization(locale));

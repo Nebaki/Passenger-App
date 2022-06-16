@@ -8,9 +8,9 @@ import 'package:passengerapp/widgets/widgets.dart';
 
 class PhoneVerification extends StatefulWidget {
   static const routeName = '/phoneverification';
-  VerificationArgument args;
+  final VerificationArgument args;
 
-  PhoneVerification({Key? key, required this.args}) : super(key: key);
+  const PhoneVerification({Key? key, required this.args}) : super(key: key);
 
   @override
   State<PhoneVerification> createState() => _PhoneVerificationState();
@@ -185,7 +185,7 @@ class _PhoneVerificationState extends State<PhoneVerification> {
     return Scaffold(
       body: Stack(
         children: [
-          CustomeBackArrow(),
+          const CustomeBackArrow(),
           Container(
               margin: const EdgeInsets.only(left: 25.0, right: 25.0),
               padding: const EdgeInsets.only(top: 100),

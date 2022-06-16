@@ -1,8 +1,6 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:passengerapp/bloc/bloc.dart';
 import 'package:passengerapp/helper/constants.dart';
 import 'package:passengerapp/helper/localization.dart';
@@ -24,40 +22,38 @@ class CreateProfileScreen extends StatefulWidget {
 class _CreateProfileScreenState extends State<CreateProfileScreen> {
   final password = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  XFile? _image;
-  final Map<String, dynamic?> _user = {};
+  final Map<String, dynamic> _user = {};
   bool _isLoading = false;
 
-  _showModalNavigation() {
-    showModalBottomSheet(
-        context: context,
-        builder: (BuildContext ctx) {
-          return ListTile(
-            leading: const Icon(Icons.image),
-            title: const Text("Gallery"),
-            onTap: () async {
-              XFile? image = (await ImagePicker.platform.getImage(
-                source: ImageSource.gallery,
-              )
+  // _showModalNavigation() {
+  //   showModalBottomSheet(
+  //       context: context,
+  //       builder: (BuildContext ctx) {
+  //         return ListTile(
+  //           leading: const Icon(Icons.image),
+  //           title: const Text("Gallery"),
+  //           onTap: () async {
+  //             XFile? image = (await ImagePicker.platform.getImage(
+  //               source: ImageSource.gallery,
+  //             )
 
-                  // .pickImage(
-                  //   source:
-                  //   maxHeight: 400,
-                  //   maxWidth: 400,
-                  // )
-                  );
+  //                 // .pickImage(
+  //                 //   source:
+  //                 //   maxHeight: 400,
+  //                 //   maxWidth: 400,
+  //                 // )
+  //                 );
 
-              setState(() {
-                _image = image;
-              });
-              UserEvent event = UploadProfile(image!);
+  //             setState(() {
+  //             });
+  //             UserEvent event = UploadProfile(image!);
 
-              BlocProvider.of<UserBloc>(ctx).add(event);
-              Navigator.pop(context);
-            },
-          );
-        });
-  }
+  //             BlocProvider.of<UserBloc>(ctx).add(event);
+  //             Navigator.pop(context);
+  //           },
+  //         );
+  //       });
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -335,81 +331,3 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
     );
   }
 }
-
-
-
-
-
-// GestureDetector(
-//                           onTap: () {},
-//                           child: CircleAvatar(
-//                             backgroundColor: Colors.grey.shade300,
-//                             radius: 40,
-//                             child: _image == null
-//                                 ? Stack(
-//                                     children: [
-//                                       const Align(
-//                                         alignment: Alignment.center,
-//                                         child: Icon(
-//                                           Icons.person,
-//                                           size: 50,
-//                                           color: Colors.black,
-//                                         ),
-//                                       ),
-//                                       Align(
-//                                         alignment: Alignment.bottomRight,
-//                                         child: IconButton(
-//                                             constraints: BoxConstraints.tight(
-//                                                 const Size.fromRadius(20)),
-//                                             splashRadius: 3,
-//                                             padding: EdgeInsets.zero,
-//                                             iconSize: 15,
-//                                             onPressed: () {
-//                                               _showModalNavigation();
-//                                             },
-//                                             icon: const Icon(Icons.edit,
-//                                                 color: Colors.black)),
-//                                       ),
-//                                     ],
-//                                   )
-//                                 : ClipRRect(
-//                                     borderRadius: BorderRadius.circular(100),
-//                                     child: Stack(
-//                                       children: [
-//                                         SizedBox(
-//                                           child: Image.file(
-//                                             File(_image!.path),
-//                                             fit: BoxFit.cover,
-//                                           ),
-//                                           width: 300,
-//                                           height: 300,
-//                                         ),
-//                                         Positioned(
-//                                           top: 6.0,
-//                                           right: 6.0,
-//                                           child: GestureDetector(
-//                                             onTap: () {
-//                                               setState(() {
-//                                                 _image = null;
-//                                               });
-//                                             },
-//                                             child: Container(
-//                                               padding: EdgeInsets.zero,
-//                                               decoration: BoxDecoration(
-//                                                   // color: Colors.white,
-//                                                   borderRadius:
-//                                                       BorderRadius.circular(
-//                                                           100)),
-//                                               child: const Icon(
-//                                                 Icons.close,
-//                                                 color: Colors.white,
-//                                                 size: 25,
-//                                               ),
-//                                             ),
-//                                           ),
-//                                         )
-//                                       ],
-//                                     ),
-//                                   ),
-//                           ),
-//                         ),

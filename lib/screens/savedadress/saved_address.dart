@@ -110,7 +110,7 @@ class SavedAddress extends StatelessWidget {
               return _buildShimmer(context);
             }),
           ),
-          CustomeBackArrow(),
+          const CustomeBackArrow(),
           Positioned(
             top: 40,
             right: 10,
@@ -369,7 +369,7 @@ class SavedAddress extends StatelessWidget {
                   showCarIcons = false;
                   context
                       .read<CurrentWidgetCubit>()
-                      .changeWidget(Service(false, false));
+                      .changeWidget(const Service(false, false));
 
                   Navigator.pop(cont);
                   Navigator.pop(context);

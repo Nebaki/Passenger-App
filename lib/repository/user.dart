@@ -1,7 +1,6 @@
 import 'package:image_picker/image_picker.dart';
 import 'package:passengerapp/dataprovider/dataproviders.dart';
 import 'package:passengerapp/models/models.dart';
-import 'dart:io';
 
 class UserRepository {
   final UserDataProvider dataProvider;

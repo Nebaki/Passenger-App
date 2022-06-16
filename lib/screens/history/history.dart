@@ -135,7 +135,7 @@ class _HistoryPageState extends State<HistoryPage> {
                 },
               )
             : Container(),
-        CustomeBackArrow(),
+        const CustomeBackArrow(),
         Padding(
           padding: const EdgeInsets.only(top: 50),
           child: Align(

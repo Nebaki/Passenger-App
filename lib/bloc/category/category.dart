@@ -7,6 +7,7 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
   final CategoryRepository categoryRepository;
   CategoryBloc({required this.categoryRepository}) : super(CategoryLoading());
 
+  @override
   Stream<CategoryState> mapEventToState(CategoryEvent event) async* {
     if (event is CategoryLoad) {
       yield CategoryLoading();

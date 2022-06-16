@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:developer' as developer;
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -168,8 +167,12 @@ class _CustomSplashScreenState extends State<CustomSplashScreen> {
       isFirstTime = true;
 
       ScaffoldMessenger.of(context).showMaterialBanner(MaterialBanner(
-          content: const Text(Strings.noIntertConnection),
-          actions: [TextButton(onPressed: () {}, child: Text("Try Again"))]));
+          content: Text(getTranslation(context, "no_internet_connection")),
+          actions: [
+            TextButton(
+                onPressed: () {},
+                child: Text(getTranslation(context, "try_again")))
+          ]));
     } else {
       ScaffoldMessenger.of(context).hideCurrentMaterialBanner();
 
@@ -182,9 +185,11 @@ class _CustomSplashScreenState extends State<CustomSplashScreen> {
         _connectivity.onConnectivityChanged.listen((event) {
       if (event == ConnectivityResult.none) {
         ScaffoldMessenger.of(context).showMaterialBanner(MaterialBanner(
-            content: const Text(Strings.noIntertConnection),
+            content: Text(getTranslation(context, "no_internet_connection")),
             actions: [
-              TextButton(onPressed: () {}, child: const Text("Try again"))
+              TextButton(
+                  onPressed: () {},
+                  child: Text(getTranslation(context, "try_again")))
             ]));
       } else if (event == ConnectivityResult.wifi) {
         ScaffoldMessenger.of(context).hideCurrentMaterialBanner();

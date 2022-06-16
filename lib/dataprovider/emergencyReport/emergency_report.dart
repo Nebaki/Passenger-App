@@ -24,7 +24,7 @@ class EmergencyReportDataProvider {
     );
 
     if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
+      // final data = jsonDecode(response.body);
       // return da
     } else {
       throw Exception('Failed to create emergencyReport.');

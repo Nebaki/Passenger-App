@@ -4,11 +4,11 @@ import 'package:equatable/equatable.dart';
 
 @immutable
 class SavedLocation extends Equatable {
-  int? id;
-  String name;
-  String address;
-  String placeId;
-  SavedLocation(
+  final int? id;
+  final String name;
+  final String address;
+  final String placeId;
+  const SavedLocation(
       {this.id,
       required this.name,
       required this.address,

@@ -1,4 +1,3 @@
-import 'dart:collection';
 import 'dart:isolate';
 import 'dart:math';
 import 'dart:ui';
@@ -13,15 +12,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_geofire/flutter_geofire.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:intl/intl.dart';
 import 'package:passengerapp/bloc/bloc.dart';
-import 'package:passengerapp/bloc/database/location_history_bloc.dart';
-import 'package:passengerapp/bloc/driver/driver_bloc.dart';
-import 'package:passengerapp/cubit/favorite_location.dart';
 import 'package:passengerapp/drawer/drawer.dart';
 import 'package:passengerapp/helper/constants.dart';
 import 'package:passengerapp/helper/localization.dart';
-
 import 'package:passengerapp/helper/url_launcher.dart';
 import 'package:passengerapp/models/models.dart';
 import 'package:passengerapp/models/nearby_driver.dart';
@@ -30,12 +24,11 @@ import 'package:passengerapp/repository/nearby_driver.dart';
 import 'package:passengerapp/rout.dart';
 import 'dart:async';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
-import 'package:passengerapp/helper/constants.dart';
 import 'package:geolocator_platform_interface/src/enums/location_accuracy.dart'
     as La;
 import 'package:passengerapp/screens/home/assistant/home_screen_assistant.dart';
-import 'package:passengerapp/screens/home/test.dart';
 import 'package:passengerapp/screens/screens.dart';
+// ignore: unnecessary_import
 import 'package:flutter/services.dart' show rootBundle;
 
 import 'package:passengerapp/widgets/widgets.dart';
@@ -43,9 +36,9 @@ import 'package:passengerapp/widgets/widgets.dart';
 class HomeScreen extends StatefulWidget {
   static const routeName = '/home';
 
-  HomeScreenArgument args;
+  final HomeScreenArgument args;
 
-  HomeScreen({Key? key, required this.args}) : super(key: key);
+  const HomeScreen({Key? key, required this.args}) : super(key: key);
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
@@ -150,10 +143,10 @@ class _HomeScreenState extends State<HomeScreen> {
       }
     };
     context.read<CurrentWidgetCubit>().changeWidget(widget.args.isSelected
-        ? DriverOnTheWay(
+        ? const DriverOnTheWay(
             fromBackGround: false,
           )
-        : WhereTo(
+        : const WhereTo(
             key: Key("whereto"),
           ));
 
@@ -380,7 +373,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                             zoom: 16.4746,
                                             target: pickupLatLng)));
                           },
-                          child: Icon(Icons.gps_fixed, size: 30)),
+                          child: const Icon(Icons.gps_fixed, size: 30)),
                     ),
                   ),
                   Align(
@@ -391,7 +384,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         onPressed: () {
                           makePhoneCall('9495');
                         },
-                        child: Icon(Icons.call, size: 30),
+                        child: const Icon(Icons.call, size: 30),
                       ),
                     ),
                   ),
@@ -415,7 +408,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                             context)
                                         .add(event);
                                   },
-                                  child: Text(
+                                  child: const Text(
                                     'SOS',
                                     style: TextStyle(
                                         fontWeight: FontWeight.bold,
@@ -546,7 +539,7 @@ class _HomeScreenState extends State<HomeScreen> {
           break;
       }
     }
-    context.read<CurrentWidgetCubit>().changeWidget(WhereTo(
+    context.read<CurrentWidgetCubit>().changeWidget(const WhereTo(
           key: Key("whereto"),
         ));
 
@@ -584,7 +577,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   _addPolyLine() {
     polylines.clear();
-    PolylineId id = PolylineId("poly");
+    PolylineId id = const PolylineId("poly");
     Polyline polyline = Polyline(
         width: 4,
         polylineId: id,
@@ -694,7 +687,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void showDriversOnMap() {
     ImageConfiguration imageConfiguration =
-        createLocalImageConfiguration(context, size: Size(0.5, 1));
+        createLocalImageConfiguration(context, size: const Size(0.5, 1));
     Map<MarkerId, Marker> newMarker = {};
     for (NearbyDriver driver in repo.getNearbyDrivers()) {
       LatLng driverPosition = LatLng(driver.latitude, driver.longitude);
@@ -720,7 +713,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void showTrucksOnMap() {
     ImageConfiguration imageConfiguration =
-        createLocalImageConfiguration(context, size: Size(0.5, 1));
+        createLocalImageConfiguration(context, size: const Size(0.5, 1));
     Map<MarkerId, Marker> newMarker = {};
     for (NearbyDriver driver in repo.getNearbyDrivers()) {
       LatLng driverPosition = LatLng(driver.latitude, driver.longitude);
@@ -832,7 +825,7 @@ class _HomeScreenState extends State<HomeScreen> {
           Geofire.stopListener();
           driverId = message.data['myId'];
           BlocProvider.of<CurrentWidgetCubit>(context)
-              .changeWidget(DriverOnTheWay(
+              .changeWidget(const DriverOnTheWay(
             fromBackGround: true,
           ));
           requestAccepted();
@@ -856,11 +849,11 @@ class _HomeScreenState extends State<HomeScreen> {
             backgroundColor: Colors.indigo.shade900,
           ));
           BlocProvider.of<CurrentWidgetCubit>(context)
-              .changeWidget(StartedTripPannel());
+              .changeWidget(const StartedTripPannel());
           break;
         case "TimeOut":
           BlocProvider.of<CurrentWidgetCubit>(context)
-              .changeWidget(Service(true, false));
+              .changeWidget(const Service(true, false));
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
             content: const Text("Time out"),
             backgroundColor: Colors.indigo.shade900,
@@ -872,8 +865,6 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void showBookedDriver() {
-    ImageConfiguration imageConfiguration =
-        createLocalImageConfiguration(context, size: Size(0.5, 1));
     MarkerId markerId = MarkerId(generateRandomId());
     databaseReference.onValue.listen((event) {
       debugPrint(event.snapshot.value.toString());
@@ -896,7 +887,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void createMarkerIcon() {
     if (carMarkerIcon == null) {
       ImageConfiguration imageConfiguration =
-          createLocalImageConfiguration(context, size: Size(0.5, 1));
+          createLocalImageConfiguration(context, size: const Size(0.5, 1));
       BitmapDescriptor.fromAssetImage(
               imageConfiguration, 'assets/icons/car.png')
           .then((value) {

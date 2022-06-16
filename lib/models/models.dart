@@ -5,7 +5,6 @@ export 'map/direction.dart';
 export 'user/user.dart';
 export 'auth/auth.dart';
 export 'ride_request.dart';
-export 'notification_request.dart';
 export 'driver/driver.dart';
 export 'review/review.dart';
 export 'savedlocation/saved_location.dart';

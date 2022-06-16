@@ -2,26 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:passengerapp/bloc/bloc.dart';
 import 'package:passengerapp/helper/constants.dart';
-import 'package:passengerapp/helper/url_launcher.dart';
 import 'package:passengerapp/rout.dart';
-import 'package:passengerapp/screens/home/assistant/home_screen_assistant.dart';
 import 'package:passengerapp/screens/screens.dart';
-import 'package:passengerapp/widgets/canceltrip.dart';
 import 'package:passengerapp/widgets/widgets.dart';
 
 class DriverOnTheWay extends StatefulWidget {
   final bool fromBackGround;
-  DriverOnTheWay({required this.fromBackGround});
+  const DriverOnTheWay({Key? key, required this.fromBackGround})
+      : super(key: key);
 
   @override
   State<DriverOnTheWay> createState() => _DriverOnTheWayState();
 }
 
 class _DriverOnTheWayState extends State<DriverOnTheWay> {
-  final _greyTextStyle = TextStyle(color: Colors.black26, fontSize: 14);
-
-  final _blackTextStyle = TextStyle(color: Colors.black);
-
   @override
   void initState() {
     widget.fromBackGround
@@ -51,7 +45,7 @@ class _DriverOnTheWayState extends State<DriverOnTheWay> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    Flexible(
+                    const Flexible(
                         flex: 3,
                         child: DriverProfile(
                             assetImage: 'assets/icons/economyCarIcon.png')),
@@ -111,7 +105,7 @@ class _DriverOnTheWayState extends State<DriverOnTheWay> {
                     //   ],
                     // ),
 
-                    SizedBox(
+                    const SizedBox(
                       height: 30,
                     ),
 

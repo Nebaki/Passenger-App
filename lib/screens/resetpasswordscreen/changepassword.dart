@@ -4,7 +4,6 @@ import 'package:passengerapp/bloc/bloc.dart';
 import 'package:passengerapp/helper/localization.dart';
 import 'package:passengerapp/widgets/widgets.dart';
 
-@immutable
 class ChangePassword extends StatelessWidget {
   static const routeName = '/changepassword';
   final _formkey = GlobalKey<FormState>();
@@ -195,7 +194,7 @@ class ChangePassword extends StatelessWidget {
                   ),
                 ),
               ),
-              CustomeBackArrow(),
+              const CustomeBackArrow(),
             ],
           ),
         ));

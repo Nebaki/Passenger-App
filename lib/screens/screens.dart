@@ -18,7 +18,6 @@ export 'history/history_detail.dart';
 export 'settings/preference.dart';
 export 'orderforother/order_for_other.dart';
 export 'review/review.dart';
-export 'placepicker/place_picker.dart';
 export 'savedadress/add_address.dart';
 export 'locationchanger/location_changer.dart';
 export 'settings/language.dart';

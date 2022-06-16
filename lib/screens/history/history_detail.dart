@@ -246,9 +246,6 @@ class DetailHistoryScreen extends StatelessWidget {
     color: Colors.green,
     fontWeight: FontWeight.bold,
   );
-  final _greyTextStyle = const TextStyle(
-    color: Colors.black38,
-  );
 
   Widget _buildReciept({required String title, required String value}) {
     return Row(
@@ -258,7 +255,7 @@ class DetailHistoryScreen extends StatelessWidget {
           title,
         ),
         Text(
-          "$value",
+          value,
         )
       ],
     );

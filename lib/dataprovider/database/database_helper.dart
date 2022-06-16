@@ -5,8 +5,8 @@ import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 
 class DatabaseHelper {
-  static final _databaseName = "MyNewDatabase.db";
-  static final _databaseVersion = 1;
+  static const _databaseName = "MyNewDatabase.db";
+  static const _databaseVersion = 1;
 
   static Database? _database;
   Future<Database> get database async {

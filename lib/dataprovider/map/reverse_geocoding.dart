@@ -8,12 +8,6 @@ import 'package:passengerapp/dataprovider/user/user.dart';
 import 'package:passengerapp/helper/constants.dart';
 import 'package:passengerapp/models/models.dart';
 
-String geolocator =
-    "https://maps.googleapis.com/maps/api/geocode/json?address=1600+Amphitheatre+Parkway,+Mountain+View,+CA&key=AIzaSyB8z8UeyROt2-ay24jiHrrcMXaEAlPUvdQ";
-
-String reverseGeocoding =
-    "https://maps.googleapis.com/maps/api/geocode/json?latlng=40.714224,-73.961452&key=AIzaSyB8z8UeyROt2-ay24jiHrrcMXaEAlPUvdQ";
-
 class ReverseGocoding {
   UserDataProvider udp = UserDataProvider(httpClient: http.Client());
   Future<Position> _determinePosition() async {
@@ -22,7 +16,6 @@ class ReverseGocoding {
 
     serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
-      //serviceEnabled = await location.requestService();
       if (!serviceEnabled) {
         return Future.error("NoLocation Enabled");
       }
@@ -57,7 +50,7 @@ class ReverseGocoding {
     pickupLatLng = LatLng(p.latitude, p.longitude);
 
     final _baseUrl =
-        "https://maps.googleapis.com/maps/api/geocode/json?latlng=${p.latitude},${p.longitude}&key=AIzaSyB8z8UeyROt2-ay24jiHrrcMXaEAlPUvdQ";
+        "https://maps.googleapis.com/maps/api/geocode/json?latlng=${p.latitude},${p.longitude}&key=$apiKey";
 
     final response = await httpClient.get(Uri.parse(_baseUrl));
 

@@ -1,6 +1,4 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-
-import 'package:meta/meta.dart';
 import 'package:passengerapp/repository/repositories.dart';
 import 'bloc.dart';
 

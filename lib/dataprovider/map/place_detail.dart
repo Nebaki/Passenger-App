@@ -1,18 +1,17 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
+import 'package:passengerapp/helper/constants.dart';
 import 'package:passengerapp/models/models.dart';
 
 class PlaceDetailDataProvider {
-  final String _api_key = "AIzaSyB8z8UeyROt2-ay24jiHrrcMXaEAlPUvdQ";
-
   final http.Client httpClient;
 
   PlaceDetailDataProvider({required this.httpClient});
 
   Future<PlaceDetail> getPlaceAddressDetails(String placeId) async {
     final _placeDetailUrl =
-        "https://maps.googleapis.com/maps/api/place/details/json?place_id=$placeId&key=$_api_key";
+        "https://maps.googleapis.com/maps/api/place/details/json?place_id=$placeId&key=$apiKey";
 
     final response = await httpClient.get(Uri.parse(_placeDetailUrl));
 

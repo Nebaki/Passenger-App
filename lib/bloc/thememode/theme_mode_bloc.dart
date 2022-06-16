@@ -1,6 +1,7 @@
+// ignore_for_file: non_constant_identifier_names
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:passengerapp/bloc/bloc.dart';
 
 // enum MyThemeModes { light, dark }
 

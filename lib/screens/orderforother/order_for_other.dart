@@ -256,7 +256,7 @@ class _OrderForOtherScreenState extends State<OrderForOtherScreen> {
                                           context
                                               .read<CurrentWidgetCubit>()
                                               .changeWidget(
-                                                  Service(false, true));
+                                                  const Service(false, true));
 
                                           Navigator.pop(context);
                                         }
@@ -291,7 +291,7 @@ class _OrderForOtherScreenState extends State<OrderForOtherScreen> {
                 ],
               ),
             ),
-            CustomeBackArrow(),
+            const CustomeBackArrow(),
           ],
         ),
       ),

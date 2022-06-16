@@ -6,26 +6,26 @@ import 'package:passengerapp/models/models.dart';
 
 @immutable
 class RideRequest extends Equatable {
-  String? id;
-  String? driverId;
-  String? driverFcm;
-  LatLng? pickupLocation;
-  LatLng? dropOffLocation;
-  String? passengerName;
-  String? pickUpAddress;
-  String? passengerPhoneNumber;
-  String? droppOffAddress;
-  String? status;
-  String? cancelReason;
-  String? price;
-  String? distance;
-  String? duration;
-  String? direction;
-  String? date;
-  String? time;
-  DriverModel? driver;
+  final String? id;
+  final String? driverId;
+  final String? driverFcm;
+  final LatLng? pickupLocation;
+  final LatLng? dropOffLocation;
+  final String? passengerName;
+  final String? pickUpAddress;
+  final String? passengerPhoneNumber;
+  final String? droppOffAddress;
+  final String? status;
+  final String? cancelReason;
+  final String? price;
+  final String? distance;
+  final String? duration;
+  final String? direction;
+  final String? date;
+  final String? time;
+  final DriverModel? driver;
 
-  RideRequest(
+  const RideRequest(
       {this.id,
       this.date,
       this.time,

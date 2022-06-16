@@ -1,8 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:passengerapp/models/models.dart';
 
-//import '../place.dart';
-
 class UserState extends Equatable {
   const UserState();
 

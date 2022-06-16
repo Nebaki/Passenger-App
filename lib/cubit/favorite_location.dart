@@ -1,6 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:passengerapp/cubit/favorite_location_state.dart';
-import 'package:passengerapp/dataprovider/dataproviders.dart';
 import 'package:passengerapp/models/models.dart';
 import 'package:passengerapp/repository/repositories.dart';
 

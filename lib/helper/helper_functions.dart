@@ -1,6 +1,5 @@
 import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:passengerapp/models/nearby_driver.dart';
 import 'package:passengerapp/repository/repositories.dart';
 
 const rt = "fdsa";

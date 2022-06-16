@@ -47,8 +47,8 @@ String? searchNearbyDriver(String category) {
       .getNearbyDrivers()
       .where((element) => element.id.contains(category))
       .toList();
-  var nearest;
-  var nearestDriver;
+  double? nearest;
+  NearbyDriver? nearestDriver;
 
   Map<String, double> distanceList = {};
   for (NearbyDriver driver in a) {
@@ -57,8 +57,6 @@ String? searchNearbyDriver(String category) {
 
     nearest ??= distance;
     distanceList[driver.id] = distance;
-
-    print(distance);
 
     if (distance <= nearest) {
       nearest = distance;

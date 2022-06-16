@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class LocaleCubit extends Cubit<Locale> {
-  final storage = FlutterSecureStorage();
+  final storage = const FlutterSecureStorage();
   LocaleCubit() : super(const Locale("en", 'US'));
 
   void changeLocale(Locale locale) {

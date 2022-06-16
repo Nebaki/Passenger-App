@@ -1,28 +1,22 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:passengerapp/bloc/bloc.dart';
-import 'package:passengerapp/helper/constants.dart';
-import 'package:passengerapp/models/models.dart';
+
 import 'package:passengerapp/rout.dart';
 import 'package:passengerapp/screens/screens.dart';
-import 'package:passengerapp/widgets/canceltrip.dart';
-import 'package:passengerapp/widgets/widgets.dart';
 
 class WaitingDriverResponse extends StatefulWidget {
-  WaitingDriverResponse();
+  const WaitingDriverResponse({Key? key}) : super(key: key);
 
   @override
   State<WaitingDriverResponse> createState() => _WaitingDriverResponseState();
 }
 
 class _WaitingDriverResponseState extends State<WaitingDriverResponse> {
-  late Timer _timer;
   int _start = 90;
   void startTimer() {
     const oneSec = Duration(seconds: 1);
-    _timer = Timer.periodic(
+    Timer.periodic(
       oneSec,
       (Timer timer) {
         if (_start == 0) {
@@ -40,14 +34,12 @@ class _WaitingDriverResponseState extends State<WaitingDriverResponse> {
 
   @override
   void initState() {
-    // TODO: implement initState
     // startTimer();
     super.initState();
   }
 
   @override
   void dispose() {
-    // TODO: implement dispose
     // _timer.cancel();
     super.dispose();
   }
@@ -55,7 +47,7 @@ class _WaitingDriverResponseState extends State<WaitingDriverResponse> {
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-      onWillPop: ()async=>false,
+      onWillPop: () async => false,
       child: Positioned(
         bottom: 0,
         right: 0,
@@ -107,7 +99,8 @@ class _WaitingDriverResponseState extends State<WaitingDriverResponse> {
                                   },
                                   child: Text(
                                     "Cancel",
-                                    style: Theme.of(context).textTheme.titleLarge,
+                                    style:
+                                        Theme.of(context).textTheme.titleLarge,
                                   )),
                             ))
                       ],
@@ -124,7 +117,7 @@ class _WaitingDriverResponseState extends State<WaitingDriverResponse> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.end,
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [],
+                      children: const [],
                     ),
                   )
                 ],

@@ -3,11 +3,11 @@ import 'package:equatable/equatable.dart';
 
 @immutable
 class Review extends Equatable {
-  String? id;
-  String description;
-  double rating;
+  final String? id;
+  final String description;
+  final double rating;
 
-  Review({this.id, required this.description, required this.rating});
+  const Review({this.id, required this.description, required this.rating});
 
   @override
   List<Object?> get props => [

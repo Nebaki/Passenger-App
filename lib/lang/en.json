@@ -173,6 +173,7 @@
     "payment_made":"Payment made sucessfully by Cash",
     "not_paid_yet":"Not Paid Yet",
     "logout":"Logout",   
-    "driver_gender":"Driver gender"
+    "driver_gender":"Driver gender",
+    "no_internet_connection":"No Internet Connection"
 
 }

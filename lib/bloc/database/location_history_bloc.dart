@@ -36,7 +36,7 @@ class LocationHistoryBloc
 
     if (event is LocationHistoryClear) {
       try {
-        final data = await dataBaseHelperRepository.clearHistory();
+        // final data = await dataBaseHelperRepository.clearHistory();
       } catch (_) {}
     }
   }

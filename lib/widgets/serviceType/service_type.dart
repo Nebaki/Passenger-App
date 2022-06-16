@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_geofire/flutter_geofire.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:passengerapp/bloc/bloc.dart';
-import 'package:passengerapp/bloc/notificationrequest/notification_request_bloc.dart';
 import 'package:passengerapp/helper/constants.dart';
 import 'package:passengerapp/helper/localization.dart';
 import 'package:passengerapp/models/models.dart';
@@ -17,7 +15,7 @@ class Service extends StatefulWidget {
   final bool ignoreLastDrivers;
   final bool fromOrderForOthers;
 
-  Service(this.ignoreLastDrivers, this.fromOrderForOthers, {Key? key})
+  const Service(this.ignoreLastDrivers, this.fromOrderForOthers, {Key? key})
       : super(key: key);
 
   @override
@@ -49,11 +47,10 @@ class _ServiceState extends State<Service> {
         _isLoading = false;
         context
             .read<CurrentWidgetCubit>()
-            .changeWidget(WaitingDriverResponse());
+            .changeWidget(const WaitingDriverResponse());
         // widget.callback!(WaitingDriverResponse(widget.callback));
         // widget.callback!(DriverOnTheWay(this.widget.callback));
       }
-      if (state is NotificationRequestSending) {}
       if (state is RideRequestOperationFailur) {
         _isLoading = false;
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -67,9 +64,6 @@ class _ServiceState extends State<Service> {
 
   NearbyDriverRepository repo = NearbyDriverRepository();
 
-  final _greyTextStyle = TextStyle(color: Colors.black26, fontSize: 14);
-
-  final _blackTextStyle = TextStyle(color: Colors.black);
   void orderForOthers(String fcmToken) {
     RideRequestEvent event = RideRequestOrderForOther(RideRequest(
         driverFcm: fcmToken,
@@ -124,7 +118,7 @@ class _ServiceState extends State<Service> {
                 loadCurrentLocation: false,
                 listenToNearbyDriver:
                     widget.fromOrderForOthers ? true : false));
-        context.read<CurrentWidgetCubit>().changeWidget(WhereTo(
+        context.read<CurrentWidgetCubit>().changeWidget(const WhereTo(
               key: Key("whereto"),
             ));
         return false;
@@ -175,7 +169,7 @@ class _ServiceState extends State<Service> {
                       }
                     }),
                 // Text("${nextDrivers}"),
-                SizedBox(
+                const SizedBox(
                   height: 15,
                 ),
                 Padding(
@@ -431,6 +425,3 @@ class _ServiceState extends State<Service> {
 //                   ),
 //                 ],
 //               ),
-
-
-

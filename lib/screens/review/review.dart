@@ -7,14 +7,12 @@ import 'package:passengerapp/helper/constants.dart';
 import 'package:passengerapp/helper/localization.dart';
 import 'package:passengerapp/models/models.dart';
 import 'package:passengerapp/rout.dart';
-import 'package:passengerapp/screens/screens.dart';
-import 'package:passengerapp/widgets/widgets.dart';
 
 class ReviewScreen extends StatelessWidget {
   final ReviewScreenArgument arg;
   static const routeName = 'reviewscreen';
   final description = TextEditingController();
-  double min_rate = 1;
+  double minRate = 1;
   bool _isLoading = false;
 
   ReviewScreen({Key? key, required this.arg}) : super(key: key);
@@ -115,7 +113,7 @@ class ReviewScreen extends StatelessWidget {
                           borderRadius: BorderRadius.circular(100),
                           child: CachedNetworkImage(
                               imageUrl:
-                                  'https://safeway-api.herokuapp.com/${driverImage}',
+                                  'https://safeway-api.herokuapp.com/$driverImage',
                               imageBuilder: (context, imageProvider) =>
                                   Container(
                                     decoration: BoxDecoration(
@@ -168,7 +166,7 @@ class ReviewScreen extends StatelessWidget {
                     itemBuilder: (context, _) =>
                         const Icon(Icons.star, color: Colors.green),
                     onRatingUpdate: (rating) {
-                      min_rate = rating;
+                      minRate = rating;
                     }),
               ],
             ),
@@ -244,7 +242,7 @@ class ReviewScreen extends StatelessWidget {
   void createReview(BuildContext context) {
     _isLoading = true;
     ReviewEvent event =
-        ReviewCreate(Review(description: description.text, rating: min_rate));
+        ReviewCreate(Review(description: description.text, rating: minRate));
     BlocProvider.of<ReviewBloc>(context).add(event);
   }
 }

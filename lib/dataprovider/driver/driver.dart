@@ -1,21 +1,14 @@
 import 'dart:convert';
-
-// import 'package:dio/dio.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:meta/meta.dart';
-import 'dart:io';
-import 'package:http_parser/http_parser.dart';
 import 'package:http/http.dart' as http;
 import 'package:passengerapp/dataprovider/auth/auth.dart';
 import 'package:passengerapp/models/models.dart';
-import 'package:passengerapp/repository/auth.dart';
 
 class DriverDataProvider {
   final _baseUrl = 'https://safeway-api.herokuapp.com/api/drivers';
   final http.Client httpClient;
   AuthDataProvider authDataProvider =
       AuthDataProvider(httpClient: http.Client());
-  DriverDataProvider({required this.httpClient}) : assert(httpClient != null);
+  DriverDataProvider({required this.httpClient});
 
   Future<DriverModel> getDriverById(String id) async {
     final response = await http

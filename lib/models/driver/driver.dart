@@ -3,17 +3,17 @@ import 'package:equatable/equatable.dart';
 
 @immutable
 class DriverModel extends Equatable {
-  String id;
-  String firstName;
-  String lastName;
-  String phoneNumber;
-  String gender;
-  String profileImage;
-  String fcmId;
-  double rating;
-  Map<String, dynamic>? vehicle;
+  final String id;
+  final String firstName;
+  final String lastName;
+  final String phoneNumber;
+  final String gender;
+  final String profileImage;
+  final String fcmId;
+  final double rating;
+  final Map<String, dynamic>? vehicle;
 
-  DriverModel(
+  const DriverModel(
       {required this.id,
       this.vehicle,
       required this.firstName,
@@ -38,20 +38,21 @@ class DriverModel extends Equatable {
 
   factory DriverModel.fromJson(Map<String, dynamic> json) {
     return DriverModel(
-      id: json["id"],
-      firstName: json["first_name"],
-      lastName: json["last_name"],
-      gender: json["gender"],
-      phoneNumber: json["phone_number"],
-      profileImage: json["profile_image"] ?? '',
-      fcmId: json['fcm_id'],
-      rating: double.parse(json['avg_rate']['score'].toString()),
-      vehicle: json.containsKey('vehicle')?{
-        'model': json['vehicle']['model'],
-        'plate_number': json['vehicle']['plate_number'],
-        "color": json['vehicle']['color']
-      }: null
-    );
+        id: json["id"],
+        firstName: json["first_name"],
+        lastName: json["last_name"],
+        gender: json["gender"],
+        phoneNumber: json["phone_number"],
+        profileImage: json["profile_image"] ?? '',
+        fcmId: json['fcm_id'],
+        rating: double.parse(json['avg_rate']['score'].toString()),
+        vehicle: json.containsKey('vehicle')
+            ? {
+                'model': json['vehicle']['model'],
+                'plate_number': json['vehicle']['plate_number'],
+                "color": json['vehicle']['color']
+              }
+            : null);
   }
 
   @override

@@ -1,6 +1,5 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:passengerapp/bloc/bloc.dart';
 import 'package:passengerapp/models/models.dart';
 import 'package:passengerapp/repository/repositories.dart';
 

@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:passengerapp/screens/screens.dart';
-
 import 'models/models.dart';
 
 class AppRoute {
   static Route generateRoute(RouteSettings settings) {
     if (settings.name == SigninScreen.routeName) {
-      return MaterialPageRoute(builder: (context) => SigninScreen());
+      return MaterialPageRoute(builder: (context) => const SigninScreen());
     }
     if (settings.name == SignupScreen.routeName) {
-      return MaterialPageRoute(builder: (context) => SignupScreen());
+      return MaterialPageRoute(builder: (context) => const SignupScreen());
     }
     if (settings.name == PhoneVerification.routeName) {
       VerificationArgument arguments =
@@ -33,17 +32,6 @@ class AppRoute {
                 args: argument,
               ));
     }
-    if (settings.name == SearchScreen.routeName) {
-      SearchScreenArgument argument =
-          settings.arguments as SearchScreenArgument;
-      return MaterialPageRoute(
-          builder: (context) => SearchScreen(
-                args: argument,
-              ));
-    }
-    if (settings.name == ProfileDetail.routeName) {
-      return MaterialPageRoute(builder: (context) => ProfileDetail());
-    }
     if (settings.name == EditProfile.routeName) {
       EditProfileArgument argumnet = settings.arguments as EditProfileArgument;
       return MaterialPageRoute(
@@ -52,13 +40,13 @@ class AppRoute {
               ));
     }
     if (settings.name == SavedAddress.routeName) {
-      return MaterialPageRoute(builder: (context) => SavedAddress());
+      return MaterialPageRoute(builder: (context) => const SavedAddress());
     }
     if (settings.name == HistoryPage.routeName) {
-      return MaterialPageRoute(builder: (context) => HistoryPage());
+      return MaterialPageRoute(builder: (context) => const HistoryPage());
     }
     if (settings.name == SettingScreen.routeName) {
-      return MaterialPageRoute(builder: (context) => SettingScreen());
+      return MaterialPageRoute(builder: (context) => const SettingScreen());
     }
     if (settings.name == ResetPassword.routeName) {
       ResetPasswordArgument argument =
@@ -77,10 +65,11 @@ class AppRoute {
               ));
     }
     if (settings.name == SigninScreen.routeName) {
-      return MaterialPageRoute(builder: (context) => SigninScreen());
+      return MaterialPageRoute(builder: (context) => const SigninScreen());
     }
     if (settings.name == MobileVerification.routeName) {
-      return MaterialPageRoute(builder: (context) => MobileVerification());
+      return MaterialPageRoute(
+          builder: (context) => const MobileVerification());
     }
     if (settings.name == ChangePassword.routeName) {
       return MaterialPageRoute(builder: (context) => ChangePassword());
@@ -102,7 +91,8 @@ class AppRoute {
               ));
     }
     if (settings.name == OrderForOtherScreen.routeName) {
-      return MaterialPageRoute(builder: (context) => OrderForOtherScreen());
+      return MaterialPageRoute(
+          builder: (context) => const OrderForOtherScreen());
     }
     if (settings.name == ReviewScreen.routeName) {
       ReviewScreenArgument argument =
@@ -112,12 +102,7 @@ class AppRoute {
                 arg: argument,
               ));
     }
-    if (settings.name == PlacePickerScreen.routeName) {
-      return MaterialPageRoute(builder: (context) => PlacePickerScreen());
-    }
-    if (settings.name == PlacePickerScreen.routeName) {
-      return MaterialPageRoute(builder: (context) => PlacePickerScreen());
-    }
+
     if (settings.name == AddAddressScreen.routeName) {
       AddAdressScreenArgument argument =
           settings.arguments as AddAdressScreenArgument;
@@ -142,7 +127,7 @@ class AppRoute {
                 args: argument,
               ));
     }
-    return MaterialPageRoute(builder: (context) => CustomSplashScreen());
+    return MaterialPageRoute(builder: (context) => const CustomSplashScreen());
   }
 }
 
@@ -190,11 +175,11 @@ class EditProfileArgument {
 
 class PreferenceArgument {
   String gender;
-  double min_rate;
+  double minRate;
   String carType;
 
   PreferenceArgument(
-      {required this.gender, required this.min_rate, required this.carType});
+      {required this.gender, required this.minRate, required this.carType});
 }
 
 class AddAdressScreenArgument {

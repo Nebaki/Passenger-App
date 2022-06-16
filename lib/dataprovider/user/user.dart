@@ -1,27 +1,21 @@
 import 'dart:convert';
-
 // import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:meta/meta.dart';
-import 'dart:io';
 import 'package:http_parser/http_parser.dart';
 import 'package:http/http.dart' as http;
 import 'package:passengerapp/dataprovider/auth/auth.dart';
-import 'package:passengerapp/helper/constants.dart';
 import 'package:passengerapp/models/models.dart';
-import 'package:passengerapp/repository/auth.dart';
 
 class UserDataProvider {
   final _baseUrl = 'https://safeway-api.herokuapp.com/api/passengers';
   final http.Client httpClient;
   AuthDataProvider authDataProvider =
       AuthDataProvider(httpClient: http.Client());
-  UserDataProvider({required this.httpClient}) : assert(httpClient != null);
+  UserDataProvider({required this.httpClient});
   final _imageBaseUrl = 'https://safeway-api.herokuapp.com/';
 
-  final secure_storage = new FlutterSecureStorage();
+  final secureStorage = const FlutterSecureStorage();
 
   Future<User> createPassenger(User user) async {
     final response = await http.post(
@@ -37,31 +31,31 @@ class UserDataProvider {
 
     if (response.statusCode == 200) {
       final output = jsonDecode(response.body);
-      await secure_storage.write(key: 'id', value: output['passenger']['id']);
-      await secure_storage.write(
+      await secureStorage.write(key: 'id', value: output['passenger']['id']);
+      await secureStorage.write(
           key: 'phone_number', value: output['passenger']['phone_number']);
-      await secure_storage.write(
+      await secureStorage.write(
           key: 'name', value: output['passenger']['name']);
-      await secure_storage.write(key: 'token', value: output['token'] ?? "");
-      await secure_storage.write(
+      await secureStorage.write(key: 'token', value: output['token'] ?? "");
+      await secureStorage.write(
           key: "email", value: output['passenger']['email'] ?? "");
-      await secure_storage.write(
+      await secureStorage.write(
           key: "emergency_contact",
           value: output['passenger']['emergency_contact'] ?? "");
 
-      await secure_storage.write(
+      await secureStorage.write(
           key: 'profile_image',
           value: output['passenger']['profile_image'] != null
               ? _imageBaseUrl + output['passenger']['profile_image']
               : '');
 
-      await secure_storage.write(
+      await secureStorage.write(
           key: "driver_gender",
           value: output["passenger"]['preference']['gender']);
-      await secure_storage.write(
+      await secureStorage.write(
           key: "min_rate",
           value: output["passenger"]['preference']['min_rate'].toString());
-      await secure_storage.write(
+      await secureStorage.write(
           key: "car_type",
           value: output["passenger"]['preference']['car_type']);
       return User.fromJson(jsonDecode(response.body));
@@ -82,7 +76,7 @@ class UserDataProvider {
     final response = await request.send();
 
     if (response.statusCode == 200) {
-      await response.stream.transform(utf8.decoder).listen((value) async {
+      response.stream.transform(utf8.decoder).listen((value) async {
         final data = jsonDecode(value);
         await authDataProvider
             .updateProfile(data['passenger']['profile_image']);
