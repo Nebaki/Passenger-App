@@ -3,6 +3,8 @@ import 'package:passengerapp/helper/constants.dart';
 
 class ThemesData {
   static final darkTheme = ThemeData(
+    dividerColor: Colors.black,
+    cardColor: Colors.black38,
       primaryIconTheme: const IconThemeData(color: Colors.white),
       inputDecorationTheme: const InputDecorationTheme(fillColor: Colors.black),
       bottomSheetTheme:
@@ -50,6 +52,8 @@ class ThemesData {
       colorScheme: const ColorScheme.dark());
 
   static final lightTheme = ThemeData(
+    dividerColor: Colors.grey.shade300,
+    cardColor: Colors.white,
       primaryIconTheme: const IconThemeData(color: Colors.black),
       inputDecorationTheme: const InputDecorationTheme(fillColor: Colors.white),
       bottomSheetTheme:

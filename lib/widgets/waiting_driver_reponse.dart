@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:passengerapp/helper/localization.dart';
 
 import 'package:passengerapp/rout.dart';
 import 'package:passengerapp/screens/screens.dart';
@@ -71,38 +72,41 @@ class _WaitingDriverResponseState extends State<WaitingDriverResponse> {
               child: Column(
                 children: [
                   Center(
-                    child: Stack(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
-                        Align(
-                          alignment: Alignment.center,
+                        Flexible(
+                          flex: 5,
                           child: Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 20),
+                            padding: const EdgeInsets.symmetric(vertical: 20,horizontal: 10),
                             child: Text(
-                              "Looking for nearby providers...",
+                              getTranslation(context, "looking_for_nearby_providers"),
+                              textAlign: TextAlign.center,
                               style: Theme.of(context).textTheme.titleLarge,
                             ),
                           ),
                         ),
-                        Align(
-                            alignment: Alignment.centerRight,
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 10),
-                              child: TextButton(
-                                  onPressed: () {
-                                    Navigator.pushNamed(
-                                        context, CancelReason.routeName,
-                                        arguments: CancelReasonArgument(
-                                            sendRequest: true));
-
-                                    // callback!(CancelTrip(
-                                    //     callback, WaitingDriverResponse(callback)));
-                                  },
-                                  child: Text(
-                                    "Cancel",
-                                    style:
-                                        Theme.of(context).textTheme.titleLarge,
-                                  )),
-                            ))
+                        Flexible(
+                          flex: 1,
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 10),
+                            child: TextButton(
+                                onPressed: () {
+                                  Navigator.pushNamed(
+                                      context, CancelReason.routeName,
+                                      arguments: CancelReasonArgument(
+                                          sendRequest: true));
+                        
+                                  // callback!(CancelTrip(
+                                  //     callback, WaitingDriverResponse(callback)));
+                                },
+                                child: Text(
+                                  getTranslation(context, "cancel"),
+                                  style:
+                                      Theme.of(context).textTheme.titleLarge,
+                                )),
+                          ),
+                        )
                       ],
                     ),
                   ),

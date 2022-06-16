@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_geofire/flutter_geofire.dart';
 import 'package:passengerapp/bloc/bloc.dart';
+import 'package:passengerapp/helper/localization.dart';
 import 'package:passengerapp/repository/repositories.dart';
 import 'package:passengerapp/rout.dart';
 import 'package:passengerapp/screens/home/assistant/home_screen_assistant.dart';
@@ -36,8 +37,8 @@ class PushNotificationService {
           break;
         case 'Arrived':
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: const Text(" Driver Arrived"),
-            backgroundColor: Colors.indigo.shade900,
+            content:  Text(getTranslation(context, "driver_arrived")),
+            // backgroundColor: Colors.indigo.shade900,
           ));
           break;
         case 'Cancelled':
@@ -50,8 +51,8 @@ class PushNotificationService {
               const DirectionChangeToInitialState(
                   loadCurrentLocation: false, listenToNearbyDriver: false));
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: const Text(" Request cancelled"),
-            backgroundColor: Colors.indigo.shade900,
+            content:  Text(getTranslation(context, "trip_cancelled")),
+            // backgroundColor: Colors.indigo.shade900,
           ));
           // context.read<CurrentWidgetCubit>().changeWidget(Service(true,false));
 
@@ -64,8 +65,8 @@ class PushNotificationService {
           //     .changeWidget(const StartedTripPannel());
 
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: const Text(" Trip Started"),
-            backgroundColor: Colors.indigo.shade900,
+            content:  Text(getTranslation(context, "trip_started")),
+            // backgroundColor: Colors.indigo.shade900,
           ));
           break;
         case 'Completed':
@@ -81,8 +82,8 @@ class PushNotificationService {
               .changeWidget(const Service(true, false));
 
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: const Text("Time out"),
-            backgroundColor: Colors.indigo.shade900,
+            content:  Text((getTranslation(context, "request_time_out"))),
+            // backgroundColor: Colors.indigo.shade900,
           ));
           break;
         default:

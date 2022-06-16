@@ -485,20 +485,25 @@ class _WhereToState extends State<WhereTo> {
                 onWillPop: () async => false,
                 child: AlertDialog(
                   content: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      const SizedBox(
-                        height: 20,
-                        width: 20,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 1,
-                          color: Colors.black,
+                      const Flexible(
+                        flex: 1,
+                        child:  SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 1,
+                            color: Colors.green,
+                          ),
                         ),
                       ),
-                      const SizedBox(
-                        width: 5,
+                      
+                      Flexible(
+                        flex: 4,
+                        child: Text(getTranslation(
+                            context, "settingup_dropp_off_message")),
                       ),
-                      Text(getTranslation(
-                          context, "settingup_dropp_off_message")),
                     ],
                   ),
                 ),

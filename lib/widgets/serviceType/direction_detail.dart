@@ -43,57 +43,63 @@ class _DirectionDetailState extends State<DirectionDetail> {
               return _buildShimmer();
             }
             return Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text.rich(TextSpan(
-                        text: "${getTranslation(context, "estimated_fare")}:  ",
-                        style: Theme.of(context).textTheme.subtitle1,
-                        children: [
-                          TextSpan(
-                              text: "$price ETB",
-                              style: Theme.of(context).textTheme.labelMedium)
-                        ])),
-                    const SizedBox(
-                      height: 5,
-                    ),
-                    Text.rich(TextSpan(
-                        text:
-                            "${getTranslation(context, "estimated_duration")}: ",
-                        style: Theme.of(context).textTheme.subtitle1,
-                        children: [
-                          TextSpan(
-                              text: "$duration min",
-                              style: Theme.of(context).textTheme.labelMedium)
-                        ]))
-                  ],
+                Flexible(
+                  flex: 3,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text.rich(TextSpan(
+                          text: "${getTranslation(context, "estimated_fare")}:  ",
+                          style: Theme.of(context).textTheme.subtitle1,
+                          children: [
+                            TextSpan(
+                                text: "$price ETB",
+                                style: Theme.of(context).textTheme.labelMedium)
+                          ])),
+                      const SizedBox(
+                        height: 5,
+                      ),
+                      Text.rich(TextSpan(
+                          text:
+                              "${getTranslation(context, "estimated_duration")}: ",
+                          style: Theme.of(context).textTheme.subtitle1,
+                          children: [
+                            TextSpan(
+                                text: "$duration min",
+                                style: Theme.of(context).textTheme.labelMedium)
+                          ]))
+                    ],
+                  ),
                 ),
-                const SizedBox(height: 35, child: VerticalDivider()),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text.rich(TextSpan(
-                        text: getTranslation(context, "distance"),
-                        style: Theme.of(context).textTheme.subtitle1,
-                        children: [
-                          TextSpan(
-                              text: "$distance km",
-                              style: Theme.of(context).textTheme.labelMedium)
-                        ])),
-                    const SizedBox(
-                      height: 5,
-                    ),
-                    Text.rich(TextSpan(
-                        text: "${getTranslation(context, "capacity")}: ",
-                        style: Theme.of(context).textTheme.subtitle1,
-                        children: [
-                          TextSpan(
-                              text: capacity,
-                              style: Theme.of(context).textTheme.labelMedium)
-                        ])),
-                  ],
+                //  const Flexible(flex:1 ,child: VerticalDivider()),
+                Flexible(
+                  flex: 4,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text.rich(TextSpan(
+                          text: getTranslation(context, "distance"),
+                          style: Theme.of(context).textTheme.subtitle1,
+                          children: [
+                            TextSpan(
+                                text: "$distance km",
+                                style: Theme.of(context).textTheme.labelMedium)
+                          ])),
+                      const SizedBox(
+                        height: 5,
+                      ),
+                      Text.rich(TextSpan(
+                          text: "${getTranslation(context, "capacity")}: ",
+                          style: Theme.of(context).textTheme.subtitle1,
+                          children: [
+                            TextSpan(
+                                text: capacity,
+                                style: Theme.of(context).textTheme.labelMedium)
+                          ])),
+                    ],
+                  ),
                 )
               ],
             );

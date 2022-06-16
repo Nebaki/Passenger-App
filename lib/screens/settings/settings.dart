@@ -99,306 +99,337 @@ class SettingScreen extends StatelessWidget {
 
   Widget _buildAccountItems(
       BuildContext context, String title, AuthDataLoadSuccess state) {
-    return Container(
-      color: Colors.black54,
+    return Card(
+      margin: const EdgeInsets.symmetric(horizontal: 0),
+
+      child: Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const SizedBox(
-            height: 20,
-          ),
-          Text(
-            title,
-            style: Theme.of(context)
-                .textTheme
-                .titleLarge!
-                .copyWith(color: Colors.blueAccent),
-          ),
-          ListTile(
-            onTap: () {
-              _navigateToEditProfileScreen(context, state);
-            },
-            contentPadding: EdgeInsets.zero,
-            title: Text(
-              state.auth.phoneNumber!,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(
+              height: 20,
             ),
-            subtitle:
-                Text(getTranslation(context, "tap_to_change_phone_number")),
-          ),
-          const Divider(
-            color: Colors.black,
-            height: 0,
-          ),
-          ListTile(
-            onTap: () {
-              _navigateToEditProfileScreen(context, state);
-            },
-            contentPadding: EdgeInsets.zero,
-            title: Text(
-              state.auth.name!,
+            Text(
+              title,
+              style: Theme.of(context)
+                  .textTheme
+                  .titleLarge!
+                  .copyWith(color: Colors.blueAccent),
             ),
-            subtitle: Text(getTranslation(context, "name_textfield_hint_text")),
-          ),
-          const Divider(
-            color: Colors.black,
-            height: 0,
-          ),
-          ListTile(
-            onTap: () {
-              _navigateToEditProfileScreen(context, state);
-            },
-            contentPadding: EdgeInsets.zero,
-            title: Text(
-              state.auth.email!,
+             const SizedBox(
+              height: 20,
             ),
-            subtitle:
-                Text(getTranslation(context, "email_textfield_hint_text")),
-          ),
-          const Divider(
-            color: Colors.black,
-            height: 0,
-          ),
-          ListTile(
-            onTap: () {
-              _navigateToEditProfileScreen(context, state);
-            },
-            contentPadding: EdgeInsets.zero,
-            title: Text(
-              state.auth.emergencyContact!,
+            ListTile(
+              horizontalTitleGap: 0,
+minVerticalPadding: 0,
+              onTap: () {
+                _navigateToEditProfileScreen(context, state);
+              },
+              contentPadding: EdgeInsets.zero,
+              title: Text(
+                state.auth.phoneNumber!,
+              ),
+              subtitle:
+                  Text(getTranslation(context, "tap_to_change_phone_number")),
             ),
-            subtitle: Text(
-                getTranslation(context, "emergency_contact_number_hint_text")),
-          ),
-          ListTile(
-            onTap: () {
-              Navigator.pushNamed(context, ChangePassword.routeName);
-            },
-            contentPadding: EdgeInsets.zero,
-            title: Text(
-              getTranslation(context, "change_password"),
+           const Divider(
+             height: 0,
             ),
-          ),
-        ],
+            ListTile(
+                            isThreeLine: false,
+minVerticalPadding: 0,
+              onTap: () {
+                _navigateToEditProfileScreen(context, state);
+              },
+              contentPadding: EdgeInsets.zero,
+              title: Text(
+                state.auth.name!,
+              ),
+              subtitle: Text(getTranslation(context, "name_textfield_hint_text")),
+            ),
+            const Divider(
+              height: 0,
+            ),
+            ListTile(
+              onTap: () {
+                _navigateToEditProfileScreen(context, state);
+              },
+              contentPadding: EdgeInsets.zero,
+              title: Text(
+                state.auth.email!,
+              ),
+              subtitle:
+                  Text(getTranslation(context, "email_textfield_hint_text")),
+            ),
+             const Divider(
+              height: 0,
+            ),
+            ListTile(
+              onTap: () {
+                _navigateToEditProfileScreen(context, state);
+              },
+              contentPadding: EdgeInsets.zero,
+              title: Text(
+                state.auth.emergencyContact!,
+              ),
+              subtitle: Text(
+                  getTranslation(context, "emergency_contact_number_hint_text")),
+            ),
+              const  Divider(
+              height: 0,
+            ),
+            ListTile(
+              onTap: () {
+                Navigator.pushNamed(context, ChangePassword.routeName);
+              },
+              contentPadding: EdgeInsets.zero,
+              title: Text(
+                getTranslation(context, "change_password"),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 
   Widget _buildLegalItems(BuildContext context, String title) {
-    return Container(
-      color: Colors.black54,
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const SizedBox(
-            height: 20,
-          ),
-          Text(
-            title,
-            style: Theme.of(context)
-                .textTheme
-                .titleLarge!
-                .copyWith(color: Colors.blueAccent),
-          ),
-          ListTile(
-            contentPadding: EdgeInsets.zero,
-            leading: const Icon(
-              Icons.contact_mail,
-              size: 20,
+    return Card(
+            margin: const EdgeInsets.symmetric(horizontal: 0),
+
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(
+              height: 20,
             ),
-            minLeadingWidth: 0,
-            title: Text(
-              getTranslation(context, "contact_us"),
+            Text(
+              title,
+              style: Theme.of(context)
+                  .textTheme
+                  .titleLarge!
+                  .copyWith(color: Colors.blueAccent),
             ),
-          ),
-          const Divider(
-            color: Colors.black,
-            height: 0,
-          ),
-          ListTile(
-            leading: const Icon(Icons.privacy_tip_outlined),
-            minLeadingWidth: 0,
-            contentPadding: EdgeInsets.zero,
-            title: Text(
-              getTranslation(context, "privacy_policy"),
+            ListTile(
+              contentPadding: EdgeInsets.zero,
+              leading: const Icon(
+                Icons.contact_mail,
+                size: 20,
+              ),
+              minLeadingWidth: 0,
+              title: Text(
+                getTranslation(context, "contact_us"),
+              ),
             ),
-          ),
-          const Divider(
-            color: Colors.black,
-            height: 0,
-          ),
-          ListTile(
-            leading: const Icon(Icons.present_to_all_sharp),
-            minLeadingWidth: 0,
-            contentPadding: EdgeInsets.zero,
-            title: Text(
-              getTranslation(context, "terms_and_conditions"),
+             const Divider(
+              height: 0,
             ),
-          ),
-          ListTile(
-            onTap: () {
-              Navigator.pushNamed(context, Language.routName,
-                  arguments: LanguageArgument(
-                      index: context.read<LocaleCubit>().state ==
-                              const Locale("en", "US")
-                          ? 1
-                          : 0));
-            },
-            leading: const Icon(Icons.language),
-            minLeadingWidth: 0,
-            contentPadding: EdgeInsets.zero,
-            title: Text(
-              getTranslation(context, "language"),
+            ListTile(
+              leading: const Icon(Icons.privacy_tip_outlined),
+              minLeadingWidth: 0,
+              contentPadding: EdgeInsets.zero,
+              title: Text(
+                getTranslation(context, "privacy_policy"),
+              ),
             ),
-          ),
-        ],
+             const Divider(
+              height: 0,
+            ),
+            ListTile(
+              leading: const Icon(Icons.present_to_all_sharp),
+              minLeadingWidth: 0,
+              contentPadding: EdgeInsets.zero,
+              title: Text(
+                getTranslation(context, "terms_and_conditions"),
+              ),
+            ),
+             const Divider(
+              height: 0,
+            ),
+            ListTile(
+              onTap: () {
+                Navigator.pushNamed(context, Language.routName,
+                    arguments: LanguageArgument(
+                        index: context.read<LocaleCubit>().state ==
+                                const Locale("en", "US")
+                            ? 1
+                            : 0));
+              },
+              leading: const Icon(Icons.language),
+              minLeadingWidth: 0,
+              contentPadding: EdgeInsets.zero,
+              title: Text(
+                getTranslation(context, "language"),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 
   Widget _buildPreferenceItems(
       BuildContext context, String title, AuthDataLoadSuccess state) {
-    return Container(
-      color: Colors.black54,
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const SizedBox(
-            height: 20,
-          ),
-          Text(
-            title,
-            style: Theme.of(context)
-                .textTheme
-                .titleLarge!
-                .copyWith(color: Colors.blueAccent),
-          ),
-          ListTile(
-            contentPadding: EdgeInsets.zero,
-            title: Text(
-              state.auth.pref!['gender'],
+    return Card(
+            margin: const EdgeInsets.symmetric(horizontal: 0),
+
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(
+              height: 20,
             ),
-            subtitle: Text(getTranslation(context, "driver_gender")),
-          ),
-          const Divider(
-            color: Colors.black,
-            height: 0,
-          ),
-          ListTile(
-            contentPadding: EdgeInsets.zero,
-            title: Text(
-              state.auth.pref!['min_rate'],
+            Text(
+              title,
+              style: Theme.of(context)
+                  .textTheme
+                  .titleLarge!
+                  .copyWith(color: Colors.blueAccent),
             ),
-            subtitle: Text(getTranslation(context, "minimum_driver_rating")),
-          ),
-          const Divider(
-            color: Colors.black,
-            height: 0,
-          ),
-          ListTile(
-            contentPadding: EdgeInsets.zero,
-            title: Text(
-              state.auth.pref!['car_type'],
+            ListTile(
+              contentPadding: EdgeInsets.zero,
+              title: Text(
+                state.auth.pref!['gender'],
+              ),
+              subtitle: Text(getTranslation(context, "driver_gender")),
             ),
-            subtitle: Text(getTranslation(context, "car_type")),
-          ),
-        ],
+             const Divider(
+              height: 0,
+            ),
+            ListTile(
+              contentPadding: EdgeInsets.zero,
+              title: Text(
+                state.auth.pref!['min_rate'],
+              ),
+              subtitle: Text(getTranslation(context, "minimum_driver_rating")),
+            ),
+             const Divider(
+              height: 0,
+            ),
+            ListTile(
+              contentPadding: EdgeInsets.zero,
+              title: Text(
+                state.auth.pref!['car_type'],
+              ),
+              subtitle: Text(getTranslation(context, "car_type")),
+            ),
+          ],
+        ),
       ),
     );
   }
 
   Widget _buildAboutUsItems(BuildContext context, String title) {
-    return Container(
-      color: Colors.black54,
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const SizedBox(
-            height: 20,
-          ),
-          Text(
-            title,
-            style: Theme.of(context)
-                .textTheme
-                .titleLarge!
-                .copyWith(color: Colors.blueAccent),
-          ),
-          Text.rich(TextSpan(
-              text: "${getTranslation(context, "owned_by")}:\n  ",
-              children: const [
-                TextSpan(
-                    text: " Safeway Transport",
-                    style: TextStyle(
-                        fontStyle: FontStyle.italic,
-                        fontWeight: FontWeight.w300))
-              ])),
-          Text.rich(TextSpan(
-              text: "${getTranslation(context, "developerd_by")}:\n  ",
-              children: const [
-                TextSpan(
-                    text: " Vintage Technologies",
-                    style: TextStyle(
-                        fontStyle: FontStyle.italic,
-                        fontWeight: FontWeight.w300))
-              ])),
-        ],
+    return Card(
+                  margin: const EdgeInsets.symmetric(horizontal: 0),
+
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(
+              height: 20,
+            ),
+            Text(
+              title,
+              style: Theme.of(context)
+                  .textTheme
+                  .titleLarge!
+                  .copyWith(color: Colors.blueAccent),
+            ), const Divider(
+              height: 0,
+            ),
+            Text.rich(TextSpan(
+                text: "${getTranslation(context, "owned_by")}:\n  ",
+                children: const [
+                  TextSpan(
+                      text: " Safeway Transport",
+                      style: TextStyle(
+                          fontStyle: FontStyle.italic,
+                          fontWeight: FontWeight.w300))
+                ])),const  Divider(
+              height: 0,
+            ),
+            Text.rich(TextSpan(
+                text: "${getTranslation(context, "developerd_by")}:\n  ",
+                children: const [
+                  TextSpan(
+                      text: " Vintage Technologies",
+                      style: TextStyle(
+                          fontStyle: FontStyle.italic,
+                          fontWeight: FontWeight.w300))
+                ])),
+          ],
+        ),
       ),
     );
   }
 
   Widget _buildAppinfoItems(BuildContext context, String title) {
-    return Container(
-      color: Colors.black54,
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const SizedBox(
-            height: 20,
-          ),
-          Text(
-            title,
-            style: Theme.of(context)
-                .textTheme
-                .titleLarge!
-                .copyWith(color: Colors.blueAccent),
-          ),
-          Text.rich(TextSpan(
-              text: "${getTranslation(context, "build_name")}: ",
-              children: const [
-                TextSpan(
-                    text: " SafeWay",
-                    style: TextStyle(
-                        fontStyle: FontStyle.italic,
-                        fontWeight: FontWeight.w300))
-              ])),
-          Text.rich(TextSpan(
-              text: "${getTranslation(context, "app_version")}: ",
-              children: const [
-                TextSpan(
-                    text: " 1.0",
-                    style: TextStyle(
-                        fontStyle: FontStyle.italic,
-                        fontWeight: FontWeight.w300))
-              ])),
-          Text.rich(TextSpan(
-              text: "${getTranslation(context, "build_number")}: ",
-              children: const [
-                TextSpan(
-                    text: " 102034",
-                    style: TextStyle(
-                        fontStyle: FontStyle.italic,
-                        fontWeight: FontWeight.w300))
-              ])),
-        ],
+    return Card(
+                  margin: const EdgeInsets.symmetric(horizontal: 0),
+
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(
+              height: 20,
+            ),
+            Text(
+              title,
+              style: Theme.of(context)
+                  .textTheme
+                  .titleLarge!
+                  .copyWith(color: Colors.blueAccent),
+            ), const Divider(
+              height: 0,
+            ),
+            Text.rich(TextSpan(
+                text: "${getTranslation(context, "build_name")}: ",
+                children: const [
+                  TextSpan(
+                      text: " SafeWay",
+                      style: TextStyle(
+                          fontStyle: FontStyle.italic,
+                          fontWeight: FontWeight.w300))
+                ])), const Divider(
+              height: 0,
+            ),
+            Text.rich(TextSpan(
+                text: "${getTranslation(context, "app_version")}: ",
+                children: const [
+                  TextSpan(
+                      text: " 1.0",
+                      style: TextStyle(
+                          fontStyle: FontStyle.italic,
+                          fontWeight: FontWeight.w300))
+                ])), const Divider(
+              height: 0,
+            ),
+            Text.rich(TextSpan(
+                text: "${getTranslation(context, "build_number")}: ",
+                children: const [
+                  TextSpan(
+                      text: " 102034",
+                      style: TextStyle(
+                          fontStyle: FontStyle.italic,
+                          fontWeight: FontWeight.w300))
+                ])),
+          ],
+        ),
       ),
     );
   }

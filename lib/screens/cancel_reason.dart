@@ -32,16 +32,14 @@ class _CancelReasonState extends State<CancelReason> {
     return Scaffold(
         appBar: AppBar(
           elevation: 0.3,
-          backgroundColor: Colors.white,
           leading: IconButton(
               onPressed: () {
                 Navigator.pop(context);
               },
               icon: const Icon(
                 Icons.clear,
-                color: Colors.black,
               )),
-          title: Text(getTranslation(context, "Cancel Trip")),
+          title: Text(getTranslation(context, "cancel_trip")),
           centerTitle: true,
         ),
         body: BlocConsumer<RideRequestBloc, RideRequestState>(

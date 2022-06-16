@@ -49,7 +49,7 @@
     "location_service_off_buttom_sheet_title":"የአቅጣጫ አገልግሎት ያስጀምሩ",
     "location_service_off_buttom_sheet_text":"የአቅጣጭ አገልግሎት ስላላስጀመሩ አቅጣጫዎን ልናገኝ አልቻልንም እባክዎን አገልግሎቱን ያስጀምሩ.",
     "location_service_off_buttom_sheet_acction_button_top":"የአቅጣጫ አገልግሎት ያስጀምሩ",
-    "cancel":"Cancel",
+    "cancel":"አቋርጥ",
     "internet_service_off_buttom_sheet_title":"ኢንተርኔት ተቋርጧል",
     "internet_service_off_buttom_sheet_text":"መተግበሪያውን ለማገልገል እባክዎ WIFI ወይም የሞባይል ዳታ ያብሩ.",
     "internet_service_off_buttom_sheet_acction_button_top":"ወደ ቅንብሮች ይሂዱ",
@@ -174,6 +174,13 @@
     "not_paid_yet":"እስካሁን አልተከፈለም።",
     "logout":"ውጣ",
     "driver_gender":"Driver gender",
-    "no_internet_connection":"No Internet Connection"
+    "no_internet_connection":"No Internet Connection",
+
+
+    "driver_arrived":"ሹፌሩ ደርሷል",
+    "trip_started":"ጉዞ ተጀመረ",
+    "trip_cancelled":"ጉዞ ተሰርዟል።",
+    "request_time_out":"ጥያቄው ጊዜው አልፎበታል።",
+    "looking_for_nearby_providers":"በአቅራቢያ ያሉ አሽከርካሪዎችን በመፈለግ ላይ"
 
 }

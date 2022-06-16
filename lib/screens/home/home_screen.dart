@@ -76,7 +76,6 @@ class _HomeScreenState extends State<HomeScreen> {
   late String brightness;
   late Position currentPostion;
   late LatLngBounds latLngBounds;
-  late bool _directionLoadSuccess;
 
   Future _loadMapStyles() async {
     _darkMapStyle =
@@ -116,7 +115,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void initState() {
-    _directionLoadSuccess = false;
     _loadMapStyles();
     _checkLocationServiceOnInit();
     _toggleLocationServiceStatusStream();
@@ -339,7 +337,11 @@ class _HomeScreenState extends State<HomeScreen> {
                     //     .read<CurrentWidgetCubit>()
                     //     .changeWidget(DriverOnTheWay(fromBackGround: false));
 
-                    debugPrint(repo.getNearbyDrivers().length.toString());
+                    debugPrint("${context
+                                                .read<CurrentWidgetCubit>()
+                                                .state
+                                                .key !=
+                                            const Key("WhsereTo")}");
                   },
                   child: const Text("Maintenance")),
             ),
@@ -360,12 +362,11 @@ class _HomeScreenState extends State<HomeScreen> {
                           // backgroundColor: Colors.grey.shade300,
                           onPressed: () {
                             outerController.animateCamera(
-                                _directionLoadSuccess &&
                                         context
                                                 .read<CurrentWidgetCubit>()
                                                 .state
-                                                .toString() !=
-                                            "WhereTo"
+                                                .key !=
+                                            const Key("whereto")
                                     ? CameraUpdate.newLatLngBounds(
                                         latLngBounds, 100)
                                     : CameraUpdate.newCameraPosition(
@@ -505,7 +506,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void resetScreen(bool determinePosition, bool listenToNearbyTaxi) {
     if (determinePosition) {
-      _directionLoadSuccess = false;
       _determinePosition().then((value) {
         outerController.animateCamera(CameraUpdate.newCameraPosition(
             CameraPosition(
@@ -759,7 +759,6 @@ class _HomeScreenState extends State<HomeScreen> {
       latLngBounds =
           LatLngBounds(southwest: pickupLatLng, northeast: destinationLatLng);
     }
-    _directionLoadSuccess = true;
 
     outerController
         .animateCamera(CameraUpdate.newLatLngBounds(latLngBounds, 100));
