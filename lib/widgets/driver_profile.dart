@@ -81,9 +81,6 @@ class DriverProfile extends StatelessWidget {
                           color: Colors.indigo.shade900,
                           child: IconButton(
                               onPressed: () {
-                                print("hey ${state.driver}");
-                                print(pickupAddress);
-                                print(droppOffAddress);
                                 sendTelegramMessage(state.driver.firstName,
                                     state.driver.phoneNumber);
 

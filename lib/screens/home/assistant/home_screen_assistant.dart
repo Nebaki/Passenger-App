@@ -52,8 +52,6 @@ String? searchNearbyDriver(String category) {
 
   Map<String, double> distanceList = {};
   for (NearbyDriver driver in a) {
-    print("drivers ::");
-    print(driver.id.split(',')[0]);
     double distance = Geolocator.distanceBetween(pickupLatLng.latitude,
         pickupLatLng.longitude, driver.latitude, driver.longitude);
 

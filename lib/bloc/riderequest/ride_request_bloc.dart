@@ -10,27 +10,21 @@ class RideRequestBloc extends Bloc<RideRequestEvent, RideRequestState> {
   @override
   Stream<RideRequestState> mapEventToState(RideRequestEvent event) async* {
     if (event is RideRequestCreate) {
-      print("i'm arround here");
       yield RideRequestLoading();
       try {
         await rideRequestRepository.createRequest(event.rideRequest);
         yield RideRequestSuccess();
       } catch (_) {
-        print("i'm'nt arround here $_");
-
         yield RideRequestOperationFailur();
       }
     }
 
     if (event is RideRequestOrderForOther) {
-      print("i'm arround here");
       yield RideRequestLoading();
       try {
         await rideRequestRepository.orderForOther(event.request);
         yield RideRequestSuccess();
       } catch (_) {
-        print("i'm'nt arround here $_");
-
         yield RideRequestOperationFailur();
       }
     }
@@ -65,7 +59,6 @@ class RideRequestBloc extends Bloc<RideRequestEvent, RideRequestState> {
         final rideRequest = await rideRequestRepository.checkStartedTrip();
         yield RideRequestStartedTripChecked(rideRequest);
       } catch (_) {
-        print("$_");
         if (_.toString().split(" ")[1] == "401") {
           yield RideRequestTokentExpired();
         } else {

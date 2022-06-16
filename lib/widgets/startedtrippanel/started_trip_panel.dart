@@ -1,6 +1,9 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:passengerapp/bloc/bloc.dart';
+import 'package:passengerapp/helper/constants.dart';
 import 'package:passengerapp/widgets/widgets.dart';
 
 class StartedTripPannel extends StatelessWidget {
@@ -74,15 +77,16 @@ class _CounterState extends State<Counter> {
 
   @override
   void initState() {
+    // context.read<DriverBloc>().state != DriverLoadSuccess
+    //     ? context.read<DriverBloc>().add(DriverLoad(driverId!))
+    //     : null;
     startTimer();
     super.initState();
   }
 
   @override
   void dispose() {
-    print("Disposed");
     timer!.cancel();
-    // TODO: implement dispose
     super.dispose();
   }
 

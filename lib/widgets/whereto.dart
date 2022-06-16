@@ -113,10 +113,7 @@ class _WhereToState extends State<WhereTo> {
             const Divider(),
             BlocBuilder<LocationHistoryBloc, LocationHistoryState>(
                 builder: (context, state) {
-              print("hey i'm trying $state");
               if (state is LocationHistoryLoadSuccess) {
-                print("Succccccccccccccccccccccccccccesssssss");
-                print(state.locationHistory[0]);
                 return SizedBox(
                   height: 70,
                   width: double.infinity,
@@ -320,7 +317,6 @@ class _WhereToState extends State<WhereTo> {
                   child:
                       BlocBuilder<FavoriteLocationCubit, FavoriteLocationState>(
                     builder: ((context, state) {
-                      print("Her is Your state $state");
                       if (state is FavoriteLocationLoadSuccess) {
                         bool isFav = false;
                         if (state.savedLocation.isNotEmpty) {
@@ -532,7 +528,6 @@ class _WhereToState extends State<WhereTo> {
         builder: (BuildContext context) {
           return WillPopScope(
             onWillPop: () async {
-              print("YYYYDY");
               _changePlaceDetailBlocToInitialState();
               return true;
             },
@@ -637,7 +632,6 @@ class _WhereToState extends State<WhereTo> {
                                 suffixIcon: IconButton(
                                     onPressed: () {
                                       pickupController.clear();
-                                      debugPrint("TATAT");
                                     },
                                     icon: const Icon(
                                       Icons.clear,

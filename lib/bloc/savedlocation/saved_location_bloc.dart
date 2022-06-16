@@ -28,7 +28,6 @@ class SavedLocationBloc extends Bloc<SavedLocationEvent, SavedLocationState> {
             .createSavedLocation(event.savedLocation);
         yield SavedLocationsSuccess(savedLocation);
       } catch (_) {
-        print('Heyyyyy ${_.toString()}');
         yield SavedLocationOperationFailure(
             int.parse(_.toString().split(" ")[1]));
       }

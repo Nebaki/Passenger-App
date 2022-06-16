@@ -24,12 +24,6 @@ class UserDataProvider {
   final secure_storage = new FlutterSecureStorage();
 
   Future<User> createPassenger(User user) async {
-    print(user.name);
-    print(user.email);
-    print(user.gender);
-    print(user.password);
-    print(user.phoneNumber);
-    //print(user.emergencyContact);
     final response = await http.post(
       Uri.parse('$_baseUrl/create-passenger'),
       headers: <String, String>{'Content-Type': 'application/json'},
@@ -40,8 +34,6 @@ class UserDataProvider {
         'phone_number': user.phoneNumber,
       }),
     );
-    print("Hererersetttttttttttttttttttttttttttttttttttttt");
-    print(response.body);
 
     if (response.statusCode == 200) {
       final output = jsonDecode(response.body);
@@ -95,12 +87,6 @@ class UserDataProvider {
         await authDataProvider
             .updateProfile(data['passenger']['profile_image']);
       });
-
-      // var resp = await response.stream.transform(utf8.decoder).listen.;
-      // print(resp);
-
-      //final data = jsonDecode(response.);
-      //return User.fromJson(jsonDecode(response.body));
     } else {
       throw Exception('Failed to upload image.');
     }
@@ -120,7 +106,6 @@ class UserDataProvider {
   }
 
   Future<User> updatePassenger(User user) async {
-    print("heree");
     final http.Response response = await http.post(
       Uri.parse('$_baseUrl/update-profile'),
       headers: <String, String>{
@@ -137,9 +122,6 @@ class UserDataProvider {
       }),
     );
 
-    print(response.statusCode);
-    print(response.body);
-
     if (response.statusCode == 200) {
       authDataProvider.updateUserData(user);
       return User.fromJson(jsonDecode(response.body));
@@ -151,8 +133,6 @@ class UserDataProvider {
   }
 
   Future updatePreference(User user) async {
-    print("Comeonnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn");
-    print(user.preference);
     final http.Response response = await http.post(
       Uri.parse('$_baseUrl/update-profile'),
       headers: <String, String>{
@@ -161,12 +141,9 @@ class UserDataProvider {
       },
       body: jsonEncode(<String, dynamic>{'preference': user.preference}),
     );
-    print(response.statusCode);
-    print(response.body);
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
-      print(data['passenger']['preference']['car_type']);
       authDataProvider.updatePreference(
           data['passenger']['preference']['gender'],
           data['passenger']['preference']['min_rate'].toString(),
@@ -190,7 +167,6 @@ class UserDataProvider {
               "new_password": passwordInfo['new_password'],
               "confirm_password": passwordInfo['confirm_password']
             }));
-    print('response ${response.statusCode}');
     if (response.statusCode != 200) {
       throw 'Unable to change password';
     }
@@ -203,7 +179,6 @@ class UserDataProvider {
         'Content-Type': 'application/json',
       },
     );
-    print('response ${response.statusCode}');
     if (response.statusCode == 200) {
       return true;
     } else if (response.statusCode == 404) {
@@ -214,7 +189,6 @@ class UserDataProvider {
   }
 
   Future forgetPassword(Map<String, String> forgetPasswordInfo) async {
-    print(' Pasdre ${forgetPasswordInfo['new_passsword']}o');
     final http.Response response =
         await http.post(Uri.parse('$_baseUrl/forget-password'),
             headers: <String, String>{
@@ -224,7 +198,6 @@ class UserDataProvider {
               'phone_number': forgetPasswordInfo['phone_number'],
               'newPassword': forgetPasswordInfo['new_password']
             }));
-    print('response ${response.statusCode}, ${response.body}');
     if (response.statusCode != 200) {
       throw 'Unable to rest password';
     }

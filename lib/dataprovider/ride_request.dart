@@ -59,8 +59,6 @@ class RideRequestDataProvider {
   }
 
   Future createRequest(RideRequest request) async {
-    print(
-        "yow yow here is the requestttttt $direction, price:$price,distance:$distance");
     final response = await http.post(
       Uri.parse(RideRequestEndPoints.createRideRequestEndPoint()),
       headers: <String, String>{
@@ -84,12 +82,10 @@ class RideRequestDataProvider {
         'distance': int.parse(distance)
       }),
     );
-    print('my datas are this bruhhh ${response.statusCode} ${response.body}');
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
       rideRequestId = data["id"];
-      print('my data is this bruhhh $rideRequestId');
 
       sendNotification(request, data["id"]);
       // return RideRequest.fromJson(data["rideRequest"]);
@@ -99,8 +95,6 @@ class RideRequestDataProvider {
   }
 
   Future orderForOther(RideRequest request) async {
-    print(
-        "yow yow here is the requestttttt $direction, price:$price,distance:$distance");
     final response = await http.post(
       Uri.parse(RideRequestEndPoints.orderForOtherEndPoint()),
       headers: <String, String>{
@@ -124,12 +118,10 @@ class RideRequestDataProvider {
         'distance': int.parse(distance)
       }),
     );
-    print('my datas are this bruhhh ${response.statusCode} ${response.body}');
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
       rideRequestId = data["rideRequest"]["id"];
-      print('my data is this bruhhh $rideRequestId');
 
       sendNotification(request, data["rideRequest"]["id"]);
       // return RideRequest.fromJson(data["rideRequest"]);
@@ -152,8 +144,6 @@ class RideRequestDataProvider {
   }
 
   Future sendCanceledNotification(String fcmToken) async {
-    print(
-        "come on come on turn the radio on it;s friday night status ${driverFcm}");
     final response = await http.post(
       Uri.parse(_fcmUrl),
       headers: <String, String>{
@@ -170,13 +160,9 @@ class RideRequestDataProvider {
         }
       }),
     );
-    print(
-        "come on come on turn the radio on it;s friday night status ${response.statusCode}");
 
     if (response.statusCode == 200) {
-      print("Bodyyyyyyyyyyyyyyyyyyy ${response.body}");
       final data = (response.body);
-      //return NotificationRequest.fromJson(data);
     } else {
       throw Exception('Failed to send notification.');
     }
@@ -185,10 +171,6 @@ class RideRequestDataProvider {
   Future sendNotification(RideRequest request, String requestId) async {
     final fcmtoken = await FirebaseMessaging.instance.getToken();
 
-    print("Sending notification $nextDrivers");
-    print(fcmtoken);
-    print(request.driverFcm);
-    print(requestId);
     final response = await http.post(
       Uri.parse(_fcmUrl),
       headers: <String, String>{
@@ -231,10 +213,7 @@ class RideRequestDataProvider {
 
     // dxGQlHGETnWjGYmlVy8Utn:APA91bErJaqPmsqfQOcStX6MYcBxfIAMr9kofXqF7bOBhftlZ3qo327e3PQ1jinm6o7FmtTy1LX4e0SE-dCUc2NwcyL6OJqKW7dagp6uTs8k-m6ynhp7NBotpPMaioTNxBuJFPz_RUif
 
-    print("Status code is ${response.body}");
-
     if (response.statusCode == 200) {
-      print("come on come on turn the radio on it;s friday night");
       final data = (response.body);
       //return NotificationRequest.fromJson(data);
     } else {
@@ -252,13 +231,8 @@ class RideRequestDataProvider {
         },
         body: json.encode({'status': 'Canceled'}));
 
-    print("this is the status codesssssssss: ${response.statusCode}");
     if (response.statusCode == 200) {
-      print("finally we are here: ${response.statusCode} ${sendRequest}");
-
       if (sendRequest) {
-        print("finally we are here and here: ${response.statusCode}");
-
         sendCanceledNotification(driverFcm);
       }
     } else {
@@ -275,8 +249,6 @@ class RideRequestDataProvider {
               "x-access-token": "${await authDataProvider.getToken()}"
             },
             body: json.encode({'cancel_reason': cancelReason}));
-
-    print("response ${response.statusCode} ${response.body}");
 
     if (response.statusCode == 200) {
       if (sendRequest) {
@@ -303,8 +275,6 @@ class RideRequestDataProvider {
         }
       }),
     );
-
-    print(response.statusCode);
 
     if (response.statusCode == 200) {
       final data = (response.body);

@@ -18,14 +18,11 @@ class DriverDataProvider {
   DriverDataProvider({required this.httpClient}) : assert(httpClient != null);
 
   Future<DriverModel> getDriverById(String id) async {
-    print("in hereeeeeeeee");
     final response = await http
         .get(Uri.parse('$_baseUrl/get-driver/$id'), headers: <String, String>{
       'Content-Type': "application/json",
       'x-access-token': '${await authDataProvider.getToken()}',
     });
-
-    print(response.statusCode);
 
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);

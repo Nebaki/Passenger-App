@@ -29,19 +29,12 @@ class NearbyDriversData {
     if (ids.contains(driver.id.split(',')[0])) {
       int ind = ids.indexWhere((element) => element == driver.id.split(',')[0]);
 
-      print('index iss   ${ids[ind]}');
       ids.removeAt(ind);
       int index =
           nearbyDrivers.indexWhere((element) => element.id == driver.id);
       nearbyDrivers.removeAt(index);
       addDriver(driver);
     }
-
-    // nearbyDrivers[index].latitude = driver.latitude;
-    // nearbyDrivers[index].longitude = driver.longitude;
-
-    // print(driver.longitude);
-    // print("We are Hereeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeesss");
   }
 
   static void resetList() {

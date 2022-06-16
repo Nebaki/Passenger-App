@@ -15,7 +15,6 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
         List<Category> categories = await categoryRepository.getCategories();
         yield CategoryLoadSuccess(categories: categories);
       } catch (e) {
-        print("Category Load Error : ${e.toString()}");
         yield CategoryOperationFailure();
       }
     }

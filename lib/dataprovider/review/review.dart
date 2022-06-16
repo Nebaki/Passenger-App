@@ -12,8 +12,6 @@ class ReviewDataProvider {
   AuthDataProvider authDataProvider =
       AuthDataProvider(httpClient: http.Client());
   Future<void> createRideRequest(Review review) async {
-    print("creating the review");
-
     http.Response response = await httpClient.post(
         Uri.parse("$_baseUrl/create-review"),
         headers: <String, String>{
@@ -25,7 +23,6 @@ class ReviewDataProvider {
           "description": review.description,
           "driver": driverId
         }));
-    print("you know this is the statusCode ${response.statusCode}");
     if (response.statusCode == 200) {
     } else {
       throw Exception('Failed to create review.');

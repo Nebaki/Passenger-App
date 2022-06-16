@@ -42,8 +42,6 @@ class _ServiceState extends State<Service> {
 
   @override
   Widget build(BuildContext context) {
-    print("YAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAYs");
-
     return BlocConsumer<RideRequestBloc, RideRequestState>(builder: (_, state) {
       return serviceTypeWidget();
     }, listener: (_, state) {
@@ -84,7 +82,6 @@ class _ServiceState extends State<Service> {
   }
 
   void sendNotification(String fcmToken, String id) async {
-    print(' driver fcm $fcmToken');
     setState(() {
       _isLoading = true;
     });
@@ -172,9 +169,7 @@ class _ServiceState extends State<Service> {
                         driverFcm = state.driver.fcmId;
                         if (widget.fromOrderForOthers) {
                           orderForOthers(driverFcm);
-                          print("For others");
                         } else {
-                          print("For mine");
                           sendNotification(state.driver.fcmId, state.driver.id);
                         }
                       }
@@ -213,7 +208,6 @@ class _ServiceState extends State<Service> {
                                     nextDrivers = l;
                                   }
                                 }
-                                print('nexenexe $nextDrivers');
 
                                 if (nextDrivers!.isNotEmpty) {
                                   DriverEvent event =

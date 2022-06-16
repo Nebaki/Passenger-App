@@ -345,8 +345,6 @@ class _HomeScreenState extends State<HomeScreen> {
                     // context
                     //     .read<CurrentWidgetCubit>()
                     //     .changeWidget(DriverOnTheWay(fromBackGround: false));
-                    print(
-                        "Keyyyyy ${context.read<CurrentWidgetCubit>().state.key}");
 
                     debugPrint(repo.getNearbyDrivers().length.toString());
                   },

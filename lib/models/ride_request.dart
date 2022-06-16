@@ -69,8 +69,6 @@ class RideRequest extends Equatable {
         distance: json['distance'].toString(),
         date: DateFormat.yMMMEd().format(now),
         time: DateFormat.jm().format(now));
-
-    print("this is the response data ${json["driver_id"]}");
   }
 
   @override

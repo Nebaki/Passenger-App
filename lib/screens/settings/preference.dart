@@ -28,7 +28,6 @@ class _PreferenceScreenState extends State<PreferenceScreen> {
   @override
   void initState() {
     // TODO: implement initState
-    print(widget.args.carType);
     serviceName = widget.args.carType;
     min_rate = widget.args.min_rate;
     switch (widget.args.gender) {
@@ -119,7 +118,6 @@ class _PreferenceScreenState extends State<PreferenceScreen> {
                                 groupValue: _gender,
                                 onChanged: (Gender? value) {
                                   setState(() {
-                                    print(value);
                                     _gender = value!;
                                   });
                                 }),
@@ -189,7 +187,6 @@ class _PreferenceScreenState extends State<PreferenceScreen> {
                             Icon(Icons.star, color: Colors.white),
                         onRatingUpdate: (rating) {
                           min_rate = rating;
-                          print(rating);
                         }),
                     //_buildVihcleTypeList(),
                     const Padding(

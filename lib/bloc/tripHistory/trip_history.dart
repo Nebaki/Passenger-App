@@ -19,7 +19,6 @@ class TripHistoryBloc extends Bloc<TripHistoryEvent, TripHistoryState> {
 
         yield TripHstoriesLoadSuccess(requestes);
       } catch (_) {
-        print("Errorrr is heree $_");
         yield TripHistoryOperationFailure();
       }
     }

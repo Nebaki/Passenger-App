@@ -25,11 +25,9 @@ class AuthDataProvider {
         'fcm_id': fcm_id
       }),
     );
-    print(response.statusCode);
 
     if (response.statusCode == 200) {
       Map<String, dynamic> output = jsonDecode(response.body);
-      print('hey yowwww  alachuu${output['passenger']['name']}');
 
       await secure_storage.write(key: 'id', value: output['passenger']['id']);
       await secure_storage.write(
@@ -57,10 +55,6 @@ class AuthDataProvider {
           key: "car_type",
           value: output["passenger"]['preference']['car_type']);
 
-      print(await secure_storage.read(key: "min_rate"));
-      print(await secure_storage.read(key: "driver_gender"));
-      print("WelDoneeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee");
-
       //return User.fromJson(output);
     } else {
       throw Exception('Failed to login.');
@@ -86,14 +80,9 @@ class AuthDataProvider {
   }
 
   Future updatePreference(String gender, String rate, String carType) async {
-    print("waleeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee");
-    print(gender);
-    print(rate);
     await secure_storage.write(key: "driver_gender", value: gender);
     await secure_storage.write(key: "min_rate", value: rate);
     await secure_storage.write(key: "car_type", value: carType);
-
-    print("Doneeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee");
   }
 
   Future logOut() async {

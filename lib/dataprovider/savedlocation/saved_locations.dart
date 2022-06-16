@@ -13,7 +13,6 @@ class SavedLocationDataProvider {
   SavedLocationDataProvider({required this.httpClient});
 
   Future<SavedLocation> createSavedLocation(SavedLocation savedLocation) async {
-    print("createing..");
     http.Response response =
         await httpClient.post(Uri.parse('$_baseUrl/create-saved-location'),
             headers: <String, String>{
@@ -26,8 +25,6 @@ class SavedLocationDataProvider {
               'place_id': savedLocation.placeId
             }));
 
-    print("status Code is ${response.statusCode}");
-
     if (response.statusCode == 200) {
       final savedlocation = json.decode(response.body);
       return SavedLocation.fromJson(savedlocation);
@@ -37,15 +34,12 @@ class SavedLocationDataProvider {
   }
 
   Future<List<SavedLocation>> getSavedLocations() async {
-    print("loading....");
     http.Response response = await httpClient.get(
         Uri.parse('$_baseUrl/get-my-saved-locations'),
         headers: <String, String>{
           'Content-Type': 'application/json',
           'x-access-token': '${await authDataProvider.getToken()}'
         });
-
-    print("status Code is ${response.statusCode}");
 
     if (response.statusCode == 200) {
       final savedlocations = json.decode(response.body)['items'] as List;
@@ -73,14 +67,12 @@ class SavedLocationDataProvider {
   }
 
   Future deleteSavedLocationById(String id) async {
-    print("deleting..");
     http.Response response = await httpClient.delete(
         Uri.parse('$_baseUrl/delete-saved-location/$id'),
         headers: <String, String>{
           'Content-Type': 'application/json',
           'x-access-token': '${await authDataProvider.getToken()}'
         });
-    print("the status Code is ${response.body}");
     if (response.statusCode == 200) {
     } else {
       throw '';
@@ -88,7 +80,6 @@ class SavedLocationDataProvider {
   }
 
   Future<SavedLocation> updateSavedLocation(SavedLocation savedLocation) async {
-    print("updatingg...");
     http.Response response =
         await httpClient.post(Uri.parse('$_baseUrl/update-saved-location'),
             headers: <String, String>{
@@ -101,7 +92,6 @@ class SavedLocationDataProvider {
               'address': savedLocation.address,
               'place_id': savedLocation.placeId
             }));
-    print("status code is ${response.statusCode}");
     if (response.statusCode == 200) {
       final savedlocation = json.decode(response.body);
       return SavedLocation.fromJson(savedlocation);

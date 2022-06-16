@@ -102,7 +102,6 @@ class _OrderForOtherScreenState extends State<OrderForOtherScreen> {
                     suffixIcon: IconButton(
                         onPressed: () {
                           pickupController.clear();
-                          debugPrint("TATAT");
                         },
                         icon: const Icon(
                           Icons.clear,
@@ -240,7 +239,6 @@ class _OrderForOtherScreenState extends State<OrderForOtherScreen> {
                                           Geofire.stopListener().then((value) {
                                             NearbyDriverRepository()
                                                 .resetList();
-                                            debugPrint("Stoppedd");
                                             Geofire.queryAtLocation(
                                                 pickupLatLng.latitude,
                                                 pickupLatLng.longitude,
@@ -279,7 +277,6 @@ class _OrderForOtherScreenState extends State<OrderForOtherScreen> {
                       onStepContinue: () {
                         final isLastStep = _currentStep == steps.length - 1;
                         if (isLastStep) {
-                          print("Steps Completed");
                         } else {
                           setState(() => _currentStep += 1);
                         }

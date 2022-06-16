@@ -12,7 +12,6 @@ class EmergencyReportDataProvider {
   EmergencyReportDataProvider({required this.httpClient});
 
   Future<void> createEmergencyReport(EmergencyReport emergencyReport) async {
-    print("we are in");
     final response = await http.post(
       Uri.parse('$_baseUrl/create-emergency-report'),
       headers: <String, String>{
