@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:passengerapp/bloc/bloc.dart';
 import 'package:passengerapp/bloc/database/location_history_bloc.dart';
+import 'package:passengerapp/cubit/cubits.dart';
 import 'package:passengerapp/cubit/favorite_location.dart';
 import 'package:passengerapp/dataprovider/auth/auth.dart';
 import 'package:passengerapp/drawer/custome_paint.dart';
@@ -16,9 +17,7 @@ class NavDrawer extends StatelessWidget {
 
   NavDrawer({Key? key}) : super(key: key);
 
-  Future<String?> getImageUrl() async {
-    return await authDataProvider.getImageUrl();
-  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -47,8 +46,8 @@ class NavDrawer extends StatelessWidget {
                                 backgroundColor: Colors.grey.shade300,
                                 child: ClipRRect(
                                   borderRadius: BorderRadius.circular(100),
-                                  child: CachedNetworkImage(
-                                      imageUrl: state.auth.profilePicture!,
+                                  child: BlocBuilder<ProfilePictureCubit,String>(builder:  (context, state) =>  CachedNetworkImage(
+                                      imageUrl: state,
                                       imageBuilder: (context, imageProvider) =>
                                           Container(
                                             decoration: BoxDecoration(
@@ -66,27 +65,56 @@ class NavDrawer extends StatelessWidget {
                                           color: Colors.black,
                                           size: 50,
                                         );
-                                      }),
+                                      }),)
                                 )),
                             BlocBuilder<ThemeModeCubit, ThemeMode>(
-                              builder: (context, state) => IconButton(
-                                  onPressed: () {
-                                    state == ThemeMode.light
-                                        ? context
-                                            .read<ThemeModeCubit>()
-                                            .ActivateDarkTheme()
-                                        : context
-                                            .read<ThemeModeCubit>()
-                                            .ActivateLightTheme();
-                                  },
-                                  iconSize: 30,
-                                  color: state == ThemeMode.light
-                                      ? Colors.black
-                                      : Colors.white,
-                                  icon: Icon(state == ThemeMode.light
-                                      ? Icons.dark_mode
-                                      : Icons.light_mode)),
-                            ),
+                                builder: (context, state) {
+                              if (state == ThemeMode.light) {
+                                return IconButton(
+                                    onPressed: () {
+                                      context
+                                          .read<ThemeModeCubit>()
+                                          .ActivateDarkTheme();
+                                    },
+                                    color: Colors.black,
+                                    icon: const Icon(Icons.dark_mode_outlined));
+                              }
+                              if (state == ThemeMode.dark) {
+                                return IconButton(
+                                    onPressed: () {
+                                      context
+                                          .read<ThemeModeCubit>()
+                                          .ActivateLightTheme();
+                                    },
+                                    color: Colors.white,
+                                    icon:
+                                        const Icon(Icons.light_mode_outlined));
+                              }
+                              if (state == ThemeMode.system) {
+                                Brightness brightness =
+                                    MediaQuery.of(context).platformBrightness;
+                                return brightness == Brightness.dark
+                                    ? IconButton(
+                                        onPressed: () {
+                                          context
+                                              .read<ThemeModeCubit>()
+                                              .ActivateLightTheme();
+                                        },
+                                        color: Colors.white,
+                                        icon: const Icon(
+                                            Icons.light_mode_outlined))
+                                    : IconButton(
+                                        onPressed: () {
+                                          context
+                                              .read<ThemeModeCubit>()
+                                              .ActivateDarkTheme();
+                                        },
+                                        color: Colors.black,
+                                        icon: const Icon(
+                                            Icons.dark_mode_outlined));
+                              }
+                              return Container();
+                            }),
                           ],
                         ),
                         const SizedBox(
@@ -112,19 +140,6 @@ class NavDrawer extends StatelessWidget {
               child: ListView(
                 padding: const EdgeInsets.symmetric(horizontal: 10),
                 children: [
-                  // GestureDetector(
-                  //   onTap: () {
-                  //     Navigator.pushNamedAndRemoveUntil(
-                  //         context, HomeScreen.routeName, (route) => false,
-                  //         arguments: HomeScreenArgument(
-                  //             isSelected: false, isFromSplash: false));
-                  //   },
-                  //   child: _menuItem(
-                  //       divider: true,
-                  //       context: context,
-                  //       icon: Icons.home_max_outlined,
-                  //       text: "Home"),
-                  // ),
                   GestureDetector(
                     onTap: () {
                       Navigator.popAndPushNamed(
@@ -146,7 +161,6 @@ class NavDrawer extends StatelessWidget {
                         icon: Icons.history,
                         text: getTranslation(context, "history_title")),
                   ),
-
                   GestureDetector(
                     onTap: context.read<CurrentWidgetCubit>().state.key ==
                             const Key("whereto")
@@ -161,7 +175,6 @@ class NavDrawer extends StatelessWidget {
                         icon: Icons.border_outer_rounded,
                         text: getTranslation(context, "order_for_other")),
                   ),
-
                   GestureDetector(
                     onTap: () {
                       Navigator.popAndPushNamed(

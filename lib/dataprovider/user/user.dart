@@ -6,6 +6,7 @@ import 'package:http_parser/http_parser.dart';
 import 'package:http/http.dart' as http;
 import 'package:passengerapp/dataprovider/auth/auth.dart';
 import 'package:passengerapp/models/models.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class UserDataProvider {
   final _baseUrl = 'https://safeway-api.herokuapp.com/api/passengers';
@@ -14,6 +15,7 @@ class UserDataProvider {
       AuthDataProvider(httpClient: http.Client());
   UserDataProvider({required this.httpClient});
   final _imageBaseUrl = 'https://safeway-api.herokuapp.com/';
+  final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
 
   final secureStorage = const FlutterSecureStorage();
 
@@ -31,6 +33,8 @@ class UserDataProvider {
 
     if (response.statusCode == 200) {
       final output = jsonDecode(response.body);
+          final SharedPreferences prefs = await _prefs;
+
       await secureStorage.write(key: 'id', value: output['passenger']['id']);
       await secureStorage.write(
           key: 'phone_number', value: output['passenger']['phone_number']);
@@ -43,6 +47,8 @@ class UserDataProvider {
           key: "emergency_contact",
           value: output['passenger']['emergency_contact'] ?? "");
 
+      // prefs.setString('profile_picture_url', _imageBaseUrl + output['passenger']['profile_image']);
+      // print(_imageBaseUrl + output['passenger']['profile_image']);
       await secureStorage.write(
           key: 'profile_image',
           value: output['passenger']['profile_image'] != null
@@ -76,8 +82,10 @@ class UserDataProvider {
     final response = await request.send();
 
     if (response.statusCode == 200) {
+     
       response.stream.transform(utf8.decoder).listen((value) async {
         final data = jsonDecode(value);
+
         await authDataProvider
             .updateProfile(data['passenger']['profile_image']);
       });

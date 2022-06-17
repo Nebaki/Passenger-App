@@ -13,6 +13,7 @@ import 'package:flutter_geofire/flutter_geofire.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:passengerapp/bloc/bloc.dart';
+import 'package:passengerapp/cubit/cubits.dart';
 import 'package:passengerapp/drawer/drawer.dart';
 import 'package:passengerapp/helper/constants.dart';
 import 'package:passengerapp/helper/localization.dart';
@@ -32,6 +33,7 @@ import 'package:passengerapp/screens/screens.dart';
 import 'package:flutter/services.dart' show rootBundle;
 
 import 'package:passengerapp/widgets/widgets.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeScreen extends StatefulWidget {
   static const routeName = '/home';
@@ -130,16 +132,22 @@ class _HomeScreenState extends State<HomeScreen> {
         }
       });
     });
-    var window = WidgetsBinding.instance.window;
-    window.onPlatformBrightnessChanged = () {
-      if (window.platformBrightness == Brightness.dark) {
-        outerController.setMapStyle(_darkMapStyle);
-        BlocProvider.of<ThemeModeCubit>(context).ActivateDarkTheme();
-      } else {
-        outerController.setMapStyle('[]');
-        BlocProvider.of<ThemeModeCubit>(context).ActivateLightTheme();
-      }
-    };
+
+    if (context.read<ThemeModeCubit>().state == ThemeMode.system) {
+        var window = WidgetsBinding.instance.window;
+        window.onPlatformBrightnessChanged = () {
+          if (window.platformBrightness == Brightness.dark) {
+            outerController.setMapStyle(_darkMapStyle);
+            BlocProvider.of<ThemeModeCubit>(context).ActivateDarkTheme();
+          } else {
+            outerController.setMapStyle('[]');
+            BlocProvider.of<ThemeModeCubit>(context).ActivateLightTheme();
+          }
+        };
+
+       
+    }
+
     context.read<CurrentWidgetCubit>().changeWidget(widget.args.isSelected
         ? const DriverOnTheWay(
             fromBackGround: false,
@@ -200,10 +208,10 @@ class _HomeScreenState extends State<HomeScreen> {
                             if (widget.args.isFromSplash) {
                               carTypeSelectorDialog(value);
                             }
-                            MediaQuery.of(context).platformBrightness ==
-                                    Brightness.dark
-                                ? controller.setMapStyle(_darkMapStyle)
-                                : null;
+                            // MediaQuery.of(context).platformBrightness ==
+                            //         Brightness.dark
+                            //     ? controller.setMapStyle(_darkMapStyle)
+                            //     : null;
                             currentLatLng =
                                 LatLng(value.latitude, value.longitude);
                             pickupLatLng = currentLatLng;
@@ -327,171 +335,165 @@ class _HomeScreenState extends State<HomeScreen> {
             alignment: Alignment.centerLeft,
             child: Text(repo.getNearbyDrivers().length.toString()),
           ),
+       
+          
           Padding(
-            padding: const EdgeInsets.only(top: 60),
-            child: Align(
-              alignment: Alignment.topRight,
-              child: ElevatedButton(
-                  onPressed: () async {
-                    // context
-                    //     .read<CurrentWidgetCubit>()
-                    //     .changeWidget(DriverOnTheWay(fromBackGround: false));
-
-                    debugPrint("${context
-                                                .read<CurrentWidgetCubit>()
-                                                .state
-                                                .key !=
-                                            const Key("WhsereTo")}");
-                  },
-                  child: const Text("Maintenance")),
-            ),
-          ),
-          Align(
-            alignment: Alignment.centerRight,
-            child: SizedBox(
-              height: 300,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: SizedBox(
-                      height: 45,
-                      child: FloatingActionButton(
-                          heroTag: 'Mylocation',
-                          // backgroundColor: Colors.grey.shade300,
-                          onPressed: () {
-                            outerController.animateCamera(
-                                        context
-                                                .read<CurrentWidgetCubit>()
-                                                .state
-                                                .key !=
-                                            const Key("whereto")
+            padding: const EdgeInsets.only(top: 50),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: Align(
+                              alignment: Alignment.centerRight,
+                              child: SizedBox(
+                  height: 300,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: SizedBox(
+                          height: 45,
+                          child: FloatingActionButton(
+                              heroTag: 'Mylocation',
+                              // backgroundColor: Colors.grey.shade300,
+                              onPressed: () {
+                                outerController.animateCamera(context
+                                            .read<CurrentWidgetCubit>()
+                                            .state
+                                            .key !=
+                                        const Key("whereto")
                                     ? CameraUpdate.newLatLngBounds(
                                         latLngBounds, 100)
-                                    : CameraUpdate.newCameraPosition(
-                                        CameraPosition(
-                                            zoom: 16.4746,
-                                            target: pickupLatLng)));
-                          },
-                          child: const Icon(Icons.gps_fixed, size: 30)),
-                    ),
-                  ),
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: SizedBox(
-                      height: 45,
-                      child: FloatingActionButton(
-                        onPressed: () {
-                          makePhoneCall('9495');
-                        },
-                        child: const Icon(Icons.call, size: 30),
+                                    : CameraUpdate.newCameraPosition(CameraPosition(
+                                        zoom: 16.4746, target: pickupLatLng)));
+                              },
+                              child: const Icon(Icons.gps_fixed, size: 20)),
+                        ),
                       ),
-                    ),
-                  ),
-                  BlocConsumer<EmergencyReportBloc, EmergencyReportState>(
-                      builder: (context, state) => Align(
-                            alignment: Alignment.centerRight,
-                            child: SizedBox(
-                              height: 45,
-                              child: FloatingActionButton(
-                                  heroTag: 'sos',
-                                  // backgroundColor: Colors.grey.shade300,
-                                  onPressed: () {
-                                    EmergencyReportEvent event =
-                                        EmergencyReportCreate(EmergencyReport(
-                                            location: [
-                                          currentLatLng.latitude,
-                                          currentLatLng.longitude
-                                        ]));
-
-                                    BlocProvider.of<EmergencyReportBloc>(
-                                            context)
-                                        .add(event);
-                                  },
-                                  child: const Text(
-                                    'SOS',
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 18),
-
-                                    // color: Colors.indigo.shade900,
-                                    // size: 35,
-                                  )),
-                            ),
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: SizedBox(
+                          height: 45,
+                          child: FloatingActionButton(
+                            onPressed: () {
+                              makePhoneCall('9495');
+                            },
+                            child: const Icon(Icons.call, size: 20),
                           ),
-                      listener: (context, state) {
-                        if (state is EmergencyReportCreating) {
-                          showDialog(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return AlertDialog(
-                                  content: Row(
-                                    children: [
-                                      const SizedBox(
-                                        height: 20,
-                                        width: 20,
-                                        child: CircularProgressIndicator(
-                                          strokeWidth: 1,
-                                          color: Colors.red,
-                                        ),
+                        ),
+                      ),
+                      BlocConsumer<EmergencyReportBloc, EmergencyReportState>(
+                          builder: (context, state) => Align(
+                                alignment: Alignment.centerRight,
+                                child: SizedBox(
+                                  height: 45,
+                                  child: FloatingActionButton(
+                                      heroTag: 'sos',
+                                      // backgroundColor: Colors.grey.shade300,
+                                      onPressed: () {
+                                        EmergencyReportEvent event =
+                                            EmergencyReportCreate(EmergencyReport(
+                                                location: [
+                                              currentLatLng.latitude,
+                                              currentLatLng.longitude
+                                            ]));
+                
+                                        BlocProvider.of<EmergencyReportBloc>(
+                                                context)
+                                            .add(event);
+                                      },
+                                      child: const Text(
+                                        'SOS',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 18),
+                
+                                        // color: Colors.indigo.shade900,
+                                        // size: 35,
+                                      )),
+                                ),
+                              ),
+                          listener: (context, state) {
+                            if (state is EmergencyReportCreating) {
+                              showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return AlertDialog(
+                                      content: Row(
+                                        children: [
+                                          const SizedBox(
+                                            height: 20,
+                                            width: 20,
+                                            child: CircularProgressIndicator(
+                                              strokeWidth: 1,
+                                              color: Colors.red,
+                                            ),
+                                          ),
+                                          const SizedBox(
+                                            width: 5,
+                                          ),
+                                          Text(getTranslation(context,
+                                              "emergency_reporting_message")),
+                                        ],
                                       ),
-                                      const SizedBox(
-                                        width: 5,
+                                    );
+                                  });
+                            }
+                            if (state is EmergencyReportCreated) {
+                              Navigator.pop(context);
+                
+                              showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return AlertDialog(
+                                      content: Row(
+                                        children: [
+                                          const SizedBox(
+                                              height: 20,
+                                              width: 20,
+                                              child: Icon(Icons.done,
+                                                  color: Colors.green)),
+                                          const SizedBox(
+                                            width: 5,
+                                          ),
+                                          Text(getTranslation(context,
+                                              "emergency_report_success_message")),
+                                        ],
                                       ),
-                                      Text(getTranslation(context,
-                                          "emergency_reporting_message")),
-                                    ],
-                                  ),
-                                );
-                              });
-                        }
-                        if (state is EmergencyReportCreated) {
-                          Navigator.pop(context);
-
-                          showDialog(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return AlertDialog(
-                                  content: Row(
-                                    children: [
-                                      const SizedBox(
-                                          height: 20,
-                                          width: 20,
-                                          child: Icon(Icons.done,
-                                              color: Colors.green)),
-                                      const SizedBox(
-                                        width: 5,
-                                      ),
-                                      Text(getTranslation(context,
-                                          "emergency_report_success_message")),
-                                    ],
-                                  ),
-                                  actions: [
-                                    TextButton(
-                                        onPressed: () {
-                                          Navigator.pop(context);
-                                        },
-                                        child: Text(getTranslation(
-                                            context, "okay_action")))
-                                  ],
-                                );
-                              });
-                        }
-                        if (state is EmergencyReportOperationFailur) {
-                          Navigator.pop(context);
-                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                              content: Text(getTranslation(
-                                  context, "emergency_report_failure_message")),
-                              backgroundColor: Colors.red.shade900));
-                        }
-                      }),
-                ],
-              ),
+                                      actions: [
+                                        TextButton(
+                                            onPressed: () {
+                                              Navigator.pop(context);
+                                            },
+                                            child: Text(getTranslation(
+                                                context, "okay_action")))
+                                      ],
+                                    );
+                                  });
+                            }
+                            if (state is EmergencyReportOperationFailur) {
+                              Navigator.pop(context);
+                              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                                  content: Text(getTranslation(
+                                      context, "emergency_report_failure_message")),
+                                  backgroundColor: Colors.red.shade900));
+                            }
+                          }),
+                    ],
+                  ),
+                              ),
+                            ),
+                ),
+                Expanded(
+                  flex: 0,
+                  child: BlocBuilder<CurrentWidgetCubit, Widget>(
+                    builder: (context, state) => state,
+                  ),
+                ),
+                
+              ],
             ),
-          ),
-          BlocBuilder<CurrentWidgetCubit, Widget>(
-            builder: (context, state) => state,
           )
         ],
       ),
@@ -1152,8 +1154,6 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 }
-
-
 
 // onWillPop: () async {
 //           switch (_currentWidget.toString()) {

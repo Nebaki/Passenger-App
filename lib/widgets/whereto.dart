@@ -33,166 +33,161 @@ class _WhereToState extends State<WhereTo> {
 
   @override
   Widget build(BuildContext context) {
-    return Positioned(
-      bottom: 0.0,
-      left: 0.0,
-      right: 0.0,
-      child: Container(
-        height: MediaQuery.of(context).size.height * 0.22,
-        padding: const EdgeInsets.only(top: 10, bottom: 10),
-        decoration: BoxDecoration(
-            color: Theme.of(context).backgroundColor,
-            borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(20), topRight: Radius.circular(20))),
-        child: Column(
-          children: [
-            BlocConsumer<LocationBloc, ReverseLocationState>(
-                builder: (context, state) => Container(),
-                listener: (context, state) {
-                  if (state is ReverseLocationLoadSuccess) {
-                    pickupAddress = state.location.address1;
-                  }
-                }),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 50),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.location_on,
-                    color: Colors.blue.shade600,
-                  ),
-                  const SizedBox(
-                    width: 10,
-                  ),
-                  BlocBuilder<LocationBloc, ReverseLocationState>(
-                      builder: (context, state) {
-                    return Padding(
-                      padding: const EdgeInsets.only(top: 15),
-                      child: InkWell(
-                        onTap: () {
-                          if (state is ReverseLocationLoadSuccess) {
-                            buttomSheet();
-                            pickupAddress = state.location.address1;
-                            currentLocation = state.location.address1;
-                            pickupController.text = state.location.address1;
-                            pickupAddress = currentLocation;
-                          }
-                          if (state is ReverseLocationLoading) {
-                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                                content: Text(getTranslation(
-                                    context, "determining_current_location"))));
-                          }
-                          if (state is ReverseLocationOperationFailure) {
-                            context
-                                .read<LocationBloc>()
-                                .add(const ReverseLocationLoad());
-                            _buildReverseLocationLoadingDialog();
-                          }
-                          whereToClicked = true;
-                          BlocProvider.of<LocationBloc>(context)
+    return Container(
+      height: MediaQuery.of(context).size.height * 0.22,
+      padding: const EdgeInsets.only(top: 10, bottom: 10),
+      decoration: BoxDecoration(
+          color: Theme.of(context).backgroundColor,
+          borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(20), topRight: Radius.circular(20))),
+      child: Column(
+        children: [
+          BlocConsumer<LocationBloc, ReverseLocationState>(
+              builder: (context, state) => Container(),
+              listener: (context, state) {
+                if (state is ReverseLocationLoadSuccess) {
+                  pickupAddress = state.location.address1;
+                }
+              }),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 50),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.location_on,
+                  color: Colors.blue.shade600,
+                ),
+                const SizedBox(
+                  width: 10,
+                ),
+                BlocBuilder<LocationBloc, ReverseLocationState>(
+                    builder: (context, state) {
+                  return Padding(
+                    padding: const EdgeInsets.only(top: 15),
+                    child: InkWell(
+                      onTap: () {
+                        if (state is ReverseLocationLoadSuccess) {
+                          buttomSheet();
+                          pickupAddress = state.location.address1;
+                          currentLocation = state.location.address1;
+                          pickupController.text = state.location.address1;
+                          pickupAddress = currentLocation;
+                        }
+                        if (state is ReverseLocationLoading) {
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                              content: Text(getTranslation(
+                                  context, "determining_current_location"))));
+                        }
+                        if (state is ReverseLocationOperationFailure) {
+                          context
+                              .read<LocationBloc>()
                               .add(const ReverseLocationLoad());
-                        },
-                        child: SizedBox(
-                          height: 35,
-                          width: 150,
-                          child: Text(
-                            getTranslation(context, "where_to"),
-                            style: Theme.of(context).textTheme.titleLarge,
-                          ),
+                          _buildReverseLocationLoadingDialog();
+                        }
+                        whereToClicked = true;
+                        BlocProvider.of<LocationBloc>(context)
+                            .add(const ReverseLocationLoad());
+                      },
+                      child: SizedBox(
+                        height: 35,
+                        width: 150,
+                        child: Text(
+                          getTranslation(context, "where_to"),
+                          style: Theme.of(context).textTheme.titleLarge,
                         ),
+                      ),
+                    ),
+                  );
+                }),
+              ],
+            ),
+          ),
+          const Divider(),
+          BlocBuilder<LocationHistoryBloc, LocationHistoryState>(
+              builder: (context, state) {
+            if (state is LocationHistoryLoadSuccess) {
+              return SizedBox(
+                height: 70,
+                width: double.infinity,
+                child: ListView.separated(
+                  scrollDirection: Axis.horizontal,
+                  itemBuilder: (context, index) {
+                    return GestureDetector(
+                      onTap: () {
+                        if (selectedCar != SelectedCar.none) {
+                          getPlaceDetail(
+                              state.locationHistory[index].placeId);
+                          settingDropOffDialog(true);
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                              content: Text(getTranslation(context,
+                                  "location_not_determined_error_message"))));
+                        }
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Container(
+                            decoration: BoxDecoration(
+                                color: Theme.of(context).backgroundColor,
+                                borderRadius: BorderRadius.circular(10),
+                                boxShadow: const [
+                                  BoxShadow(
+                                      blurStyle: BlurStyle.outer,
+                                      color: Colors.grey,
+                                      blurRadius: 3,
+                                      spreadRadius: 2)
+                                ]),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 20, vertical: 10),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Flexible(
+                                  flex: 1,
+                                  child: Text(
+                                    state.locationHistory[index].mainText,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleSmall,
+                                  ),
+                                ),
+                                Text(state
+                                    .locationHistory[index].secondaryText)
+                              ],
+                            )),
                       ),
                     );
-                  }),
-                ],
-              ),
-            ),
-            const Divider(),
-            BlocBuilder<LocationHistoryBloc, LocationHistoryState>(
-                builder: (context, state) {
-              if (state is LocationHistoryLoadSuccess) {
-                return SizedBox(
-                  height: 70,
-                  width: double.infinity,
-                  child: ListView.separated(
-                    scrollDirection: Axis.horizontal,
-                    itemBuilder: (context, index) {
-                      return GestureDetector(
-                        onTap: () {
-                          if (selectedCar != SelectedCar.none) {
-                            getPlaceDetail(
-                                state.locationHistory[index].placeId);
-                            settingDropOffDialog(true);
-                          } else {
-                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                                content: Text(getTranslation(context,
-                                    "location_not_determined_error_message"))));
-                          }
-                        },
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Container(
-                              decoration: BoxDecoration(
-                                  color: Theme.of(context).backgroundColor,
-                                  borderRadius: BorderRadius.circular(10),
-                                  boxShadow: const [
-                                    BoxShadow(
-                                        blurStyle: BlurStyle.outer,
-                                        color: Colors.grey,
-                                        blurRadius: 3,
-                                        spreadRadius: 2)
-                                  ]),
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 20, vertical: 10),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Flexible(
-                                    flex: 1,
-                                    child: Text(
-                                      state.locationHistory[index].mainText,
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .titleSmall,
-                                    ),
-                                  ),
-                                  Text(state
-                                      .locationHistory[index].secondaryText)
-                                ],
-                              )),
-                        ),
-                      );
-                    },
-                    itemCount: state.locationHistory.length,
-                    separatorBuilder: (context, index) {
-                      return const VerticalDivider();
-                    },
+                  },
+                  itemCount: state.locationHistory.length,
+                  separatorBuilder: (context, index) {
+                    return const VerticalDivider();
+                  },
+                ),
+              );
+            }
+            if (state is LocationHistoryLoading) {
+              return Column(
+                children: [
+                  Text(getTranslation(
+                      context, "location_history_loading_message")),
+                  const SizedBox(
+                    height: 10,
                   ),
-                );
-              }
-              if (state is LocationHistoryLoading) {
-                return Column(
-                  children: [
-                    Text(getTranslation(
-                        context, "location_history_loading_message")),
-                    const SizedBox(
-                      height: 10,
+                  const Padding(
+                    padding: EdgeInsets.only(top: 10),
+                    child: LinearProgressIndicator(
+                      minHeight: 2,
                     ),
-                    const Padding(
-                      padding: EdgeInsets.only(top: 10),
-                      child: LinearProgressIndicator(
-                        minHeight: 2,
-                      ),
-                    ),
-                  ],
-                );
-              }
-              return Center(
-                  child: Text(getTranslation(
-                      context, "recent_history_not_found_message")));
-            }),
-          ],
-        ),
+                  ),
+                ],
+              );
+            }
+            return Center(
+                child: Text(getTranslation(
+                    context, "recent_history_not_found_message")));
+          }),
+        ],
       ),
     );
   }

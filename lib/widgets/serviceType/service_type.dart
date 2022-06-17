@@ -123,189 +123,184 @@ class _ServiceState extends State<Service> {
             ));
         return false;
       },
-      child: Positioned(
-        bottom: 3.0,
-        left: 8.0,
-        right: 8.0,
-        child: Container(
-                height: MediaQuery.of(context).size.height*0.37,
-            padding:
-                const EdgeInsets.only(top: 10, left: 10, right: 10, bottom: 20),
-            decoration: BoxDecoration(
-                color: Theme.of(context).backgroundColor,
-                borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(20),
-                    topRight: Radius.circular(20))),
-            child: Column(
-              children: [
-                Expanded(
-                  flex: 1,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 10),
-                    child: Text(getTranslation(context, "choose_taxi")),
-                  ),
+      child: Container(
+              height: MediaQuery.of(context).size.height*0.37,
+          padding:
+              const EdgeInsets.only(top: 10, left: 10, right: 10, bottom: 20),
+          decoration: BoxDecoration(
+              color: Theme.of(context).backgroundColor,
+              borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(20),
+                  topRight: Radius.circular(20))),
+          child: Column(
+            children: [
+              Expanded(
+                flex: 1,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 10),
+                  child: Text(getTranslation(context, "choose_taxi")),
                 ),
-                Expanded(
-                  flex: 2,
-                  child: CategoryList(
-                      changeCost: changeCost,
-                      searchNearbyDriver: searchNearbyDriver,
-                      changeCapacity: changeCapacity),
-                ),
-                const Divider(),
-             
-                const Expanded(flex: 2, child:  DirectionDetail()),
-                
-                BlocConsumer<DriverBloc, DriverState>(
-                    builder: (context, state) => Container(),
-                    listener: (context, state) {
-                      if (state is DriverLoadSuccess) {
-                        // widget.searchNearbyDriversList('lada').take();
-                        // nextDrivers.remove(state.driver.id);
-                        driverFcm = state.driver.fcmId;
-                        if (widget.fromOrderForOthers) {
-                          orderForOthers(driverFcm);
-                        } else {
-                          sendNotification(state.driver.fcmId, state.driver.id);
-                        }
-                      }
-                    }),
-                // Text("${nextDrivers}"),
+              ),
+              Expanded(
+                flex: 2,
+                child: CategoryList(
+                    changeCost: changeCost,
+                    searchNearbyDriver: searchNearbyDriver,
+                    changeCapacity: changeCapacity),
+              ),
+              const Divider(),
+           
+              const Expanded(flex: 2, child:  DirectionDetail()),
               
-                Expanded(
-                  flex: 1,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: SizedBox(
-                      height: 50,
-                      width: MediaQuery.of(context).size.width,
-                      child: BlocBuilder<DriverBloc, DriverState>(
-                          builder: (_, state) {
-                        if (state is DriverFoundState) {
-                          return BlocBuilder<SelectedCategoryBloc,
-                                  SelectedCategoryState>(
-                              builder: (context, categoryState) {
-                            if (categoryState is CategoryChanged) {
-                              return ElevatedButton(
-                                onPressed: () {
-                                  final l = searchNearbyDriversList(
-                                      categoryState.category.name);
-                                  if (widget.ignoreLastDrivers) {
-                                    nextDrivers = nextDrivers!
-                                        .toSet()
-                                        .difference(l!.toSet())
-                                        .toList()
-                                        .take(3)
-                                        .toList();
+              BlocConsumer<DriverBloc, DriverState>(
+                  builder: (context, state) => Container(),
+                  listener: (context, state) {
+                    if (state is DriverLoadSuccess) {
+                      // widget.searchNearbyDriversList('lada').take();
+                      // nextDrivers.remove(state.driver.id);
+                      driverFcm = state.driver.fcmId;
+                      if (widget.fromOrderForOthers) {
+                        orderForOthers(driverFcm);
+                      } else {
+                        sendNotification(state.driver.fcmId, state.driver.id);
+                      }
+                    }
+                  }),
+              // Text("${nextDrivers}"),
+            
+              Expanded(
+                flex: 1,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: SizedBox(
+                    height: 50,
+                    width: MediaQuery.of(context).size.width,
+                    child: BlocBuilder<DriverBloc, DriverState>(
+                        builder: (_, state) {
+                      if (state is DriverFoundState) {
+                        return BlocBuilder<SelectedCategoryBloc,
+                                SelectedCategoryState>(
+                            builder: (context, categoryState) {
+                          if (categoryState is CategoryChanged) {
+                            return ElevatedButton(
+                              onPressed: () {
+                                final l = searchNearbyDriversList(
+                                    categoryState.category.name);
+                                if (widget.ignoreLastDrivers) {
+                                  nextDrivers = nextDrivers!
+                                      .toSet()
+                                      .difference(l!.toSet())
+                                      .toList()
+                                      .take(3)
+                                      .toList();
+                                } else {
+                                  if (l!.length > 3) {
+                                    nextDrivers = l.take(3).toList();
                                   } else {
-                                    if (l!.length > 3) {
-                                      nextDrivers = l.take(3).toList();
-                                    } else {
-                                      nextDrivers = l;
-                                    }
+                                    nextDrivers = l;
                                   }
-                
-                                  if (nextDrivers!.isNotEmpty) {
-                                    DriverEvent event =
-                                        DriverLoad(nextDrivers!.first);
-                                    BlocProvider.of<DriverBloc>(context)
-                                        .add(event);
-                                  } else {
-                                    BlocProvider.of<DriverBloc>(context)
-                                        .add(DriverSetNotFound());
-                                  }
-                                },
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    const Spacer(),
-                                    Text(
-                                      _isLoading
-                                          ? getTranslation(context, "sending")
-                                          : getTranslation(
-                                              context, "send_request"),
-                                      style: const TextStyle(
-                                          color: Colors.black,
-                                          fontWeight: FontWeight.normal),
-                                    ),
-                                    const Spacer(),
-                                    Align(
-                                      alignment: Alignment.centerRight,
-                                      child: _isLoading
-                                          ? const SizedBox(
-                                              height: 20,
-                                              width: 20,
-                                              child: CircularProgressIndicator(
-                                                strokeWidth: 2,
-                                                color: Colors.black,
-                                              ),
-                                            )
-                                          : Container(),
-                                    )
-                                  ],
-                                ),
-                              );
-                            }
-                            return Container();
-                          });
-                        }
-                        // if (state is DriverLoadSuccess) {
-                        //   //  FirebaseMessaging.onMessage.listen((event) {
-                
-                        //   //   });
-                
-                        // }
-                        if (state is DriverLoading) {
-                          return ElevatedButton(
-                            onPressed: null,
-                            child: Text(
-                              getTranslation(context, "finding_nearby_driver"),
-                              style: const TextStyle(
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.normal),
-                            ),
-                          );
-                        }
-                        if (state is DriverOperationFailure) {
-                          return ElevatedButton(
-                            onPressed: null,
-                            child: Text(
-                              getTranslation(context, "no_driver_found"),
-                              style: const TextStyle(
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.normal),
-                            ),
-                          );
-                        }
-                        if (state is DriverNotFoundState) {
-                          return ElevatedButton(
-                            onPressed: null,
-                            child: Text(
-                              getTranslation(context, "no_driver_found"),
-                              style: const TextStyle(
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.normal),
-                            ),
-                          );
-                        }
-                        return
-                            // Container();
-                            ElevatedButton(
+                                }
+              
+                                if (nextDrivers!.isNotEmpty) {
+                                  DriverEvent event =
+                                      DriverLoad(nextDrivers!.first);
+                                  BlocProvider.of<DriverBloc>(context)
+                                      .add(event);
+                                } else {
+                                  BlocProvider.of<DriverBloc>(context)
+                                      .add(DriverSetNotFound());
+                                }
+                              },
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const Spacer(),
+                                  Text(
+                                    _isLoading
+                                        ? getTranslation(context, "sending")
+                                        : getTranslation(
+                                            context, "send_request"),
+                                    style: const TextStyle(
+                                        color: Colors.black,
+                                        fontWeight: FontWeight.normal),
+                                  ),
+                                  const Spacer(),
+                                  Align(
+                                    alignment: Alignment.centerRight,
+                                    child: _isLoading
+                                        ? const SizedBox(
+                                            height: 20,
+                                            width: 20,
+                                            child: CircularProgressIndicator(
+                                              strokeWidth: 2,
+                                              color: Colors.black,
+                                            ),
+                                          )
+                                        : Container(),
+                                  )
+                                ],
+                              ),
+                            );
+                          }
+                          return Container();
+                        });
+                      }
+                      // if (state is DriverLoadSuccess) {
+                      //   //  FirebaseMessaging.onMessage.listen((event) {
+              
+                      //   //   });
+              
+                      // }
+                      if (state is DriverLoading) {
+                        return ElevatedButton(
                           onPressed: null,
                           child: Text(
-                            getTranslation(context, "please_select_car_type"),
+                            getTranslation(context, "finding_nearby_driver"),
                             style: const TextStyle(
                                 color: Colors.black,
                                 fontWeight: FontWeight.normal),
                           ),
                         );
-                      }),
-                    ),
+                      }
+                      if (state is DriverOperationFailure) {
+                        return ElevatedButton(
+                          onPressed: null,
+                          child: Text(
+                            getTranslation(context, "no_driver_found"),
+                            style: const TextStyle(
+                                color: Colors.black,
+                                fontWeight: FontWeight.normal),
+                          ),
+                        );
+                      }
+                      if (state is DriverNotFoundState) {
+                        return ElevatedButton(
+                          onPressed: null,
+                          child: Text(
+                            getTranslation(context, "no_driver_found"),
+                            style: const TextStyle(
+                                color: Colors.black,
+                                fontWeight: FontWeight.normal),
+                          ),
+                        );
+                      }
+                      return
+                          // Container();
+                          ElevatedButton(
+                        onPressed: null,
+                        child: Text(
+                          getTranslation(context, "please_select_car_type"),
+                          style: const TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.normal),
+                        ),
+                      );
+                    }),
                   ),
                 ),
-              ],
-            )),
-      ),
+              ),
+            ],
+          )),
     );
   }
 }

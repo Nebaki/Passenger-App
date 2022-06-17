@@ -60,7 +60,7 @@ class ThemesData {
           const BottomSheetThemeData(backgroundColor: backGroundColor),
       floatingActionButtonTheme: FloatingActionButtonThemeData(
           backgroundColor: Colors.grey.shade300,
-          foregroundColor: Colors.indigo.shade900,
+          foregroundColor: Colors.black,
           extendedTextStyle: TextStyle(color: Colors.indigo.shade900)),
       backgroundColor: backGroundColor,
       scaffoldBackgroundColor: backGroundColor,

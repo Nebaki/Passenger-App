@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:passengerapp/bloc/bloc.dart';
 import 'package:passengerapp/models/models.dart';
 
 class UserState extends Equatable {
@@ -28,7 +29,9 @@ class UsersDeleteSuccess extends UserState {
   List<Object> get props => [isSuccessfull];
 }
 
-class ImageUploadSuccess extends UserState {}
+class ImageUploadSuccess extends UserState {
+
+}
 
 class UserPreferenceUploadSuccess extends UserState {}
 

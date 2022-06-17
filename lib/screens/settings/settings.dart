@@ -19,9 +19,8 @@ class SettingScreen extends StatelessWidget {
     return Scaffold(
       body: CustomScrollView(
         slivers: [
-          BlocBuilder<AuthBloc, AuthState>(
+          BlocBuilder<ProfilePictureCubit,String>(
             builder: (context, state) {
-              if (state is AuthDataLoadSuccess) {
                 return SliverAppBar(
                   floating: true,
                   pinned: true,
@@ -29,7 +28,7 @@ class SettingScreen extends StatelessWidget {
                   expandedHeight: 150,
                   flexibleSpace: FlexibleSpaceBar(
                     background: CachedNetworkImage(
-                      imageUrl: state.auth.profilePicture ?? "",
+                      imageUrl: state,
                       imageBuilder: (context, imageProvider) => Container(
                         decoration: BoxDecoration(
                           image: DecorationImage(
@@ -46,9 +45,8 @@ class SettingScreen extends StatelessWidget {
                     title: Text(getTranslation(context, "settings")),
                   ),
                 );
-              }
+              
 
-              return Container();
             },
           ),
           BlocBuilder<AuthBloc, AuthState>(builder: ((context, state) {

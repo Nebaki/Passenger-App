@@ -202,14 +202,15 @@ class MyApp extends StatelessWidget {
                   create: ((context) =>
                       SelectedCategoryBloc(SelectedCategoryLoading()))),
               BlocProvider(
-                  create: ((context) => ThemeModeCubit(ThemeMode.system))),
+                  create: ((context) => ThemeModeCubit()..getThemeMode())),
               BlocProvider(create: (context) => CurrentWidgetCubit()),
               BlocProvider(
                 create: (context) => FavoriteLocationCubit(
                     favoriteLocationRepository: dataBaseHelperRepository)
                   ..getFavoriteLocations(),
               ),
-              BlocProvider(create: (context) => LocaleCubit()..getLocal())
+              BlocProvider(create: (context) => LocaleCubit()..getLocal()),
+              BlocProvider(create: (context) => ProfilePictureCubit()..getProfilePictureUrl())
             ],
             child: BlocBuilder<ThemeModeCubit, ThemeMode>(
               builder: ((context, themeModeState) =>

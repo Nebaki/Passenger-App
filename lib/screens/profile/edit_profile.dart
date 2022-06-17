@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:passengerapp/bloc/bloc.dart';
+import 'package:passengerapp/cubit/cubits.dart';
 import 'package:passengerapp/helper/localization.dart';
 import 'package:passengerapp/models/user/user.dart';
 import 'package:passengerapp/rout.dart';
@@ -53,7 +54,8 @@ class _EditProfileState extends State<EditProfile> {
         return _buildProfileForm();
       }, listener: (context, state) {
         if (state is ImageUploadSuccess) {
-          BlocProvider.of<AuthBloc>(context).add(AuthDataLoad());
+          context.read<ProfilePictureCubit>().getProfilePictureUrl();
+
           _isImageLoading = false;
         }
         if (state is UserImageLoading) {
@@ -72,6 +74,8 @@ class _EditProfileState extends State<EditProfile> {
         }
         if (state is UserOperationFailure) {
           _isLoading = false;
+                    _isImageLoading = false;
+
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
             content: const Text("Update Failed"),
             backgroundColor: Colors.red.shade900,
@@ -121,13 +125,13 @@ class _EditProfileState extends State<EditProfile> {
                                   ? const CircularProgressIndicator()
                                   : ClipRRect(
                                       borderRadius: BorderRadius.circular(100),
-                                      child: BlocBuilder<AuthBloc, AuthState>(
+                                      child: BlocBuilder<ProfilePictureCubit,String>(
                                         builder: (_, state) {
-                                          if (state is AuthDataLoadSuccess) {
+                                          
                                             return CachedNetworkImage(
                                               useOldImageOnUrlChange: true,
                                               imageUrl:
-                                                  state.auth.profilePicture!,
+                                                  state,
                                               imageBuilder:
                                                   (context, imageProvider) =>
                                                       Container(
@@ -138,16 +142,14 @@ class _EditProfileState extends State<EditProfile> {
                                                   ),
                                                 ),
                                               ),
-                                              // placeholder: (context, url) =>
-                                              //     const CircularProgressIndicator(),
+                                              placeholder: (context, url) =>
+                                                  const CircularProgressIndicator(),
                                               errorWidget:
                                                   (context, url, error) =>
                                                       const Icon(Icons.error),
                                             );
-                                          }
-                                          return const CircleAvatar(
-                                            radius: 100,
-                                          );
+                                          
+                                          
                                         },
                                       )),
                             ),

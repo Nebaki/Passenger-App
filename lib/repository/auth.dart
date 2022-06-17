@@ -21,4 +21,8 @@ class AuthRepository {
   Future getToken() async {
     return await dataProvider.getToken();
   }
+
+  Future<String?> getImageUrl() async {
+    return dataProvider.getImageUrl();
+  }
 }
