@@ -74,6 +74,9 @@ class AppRoute {
     if (settings.name == ChangePassword.routeName) {
       return MaterialPageRoute(builder: (context) => ChangePassword());
     }
+    if (settings.name == AwardScreen.routeName) {
+      return MaterialPageRoute(builder: (context) => const AwardScreen());
+    }
     if (settings.name == DetailHistoryScreen.routeName) {
       DetailHistoryArgument argument =
           settings.arguments as DetailHistoryArgument;
@@ -132,14 +135,15 @@ class AppRoute {
 }
 
 class HomeScreenArgument {
-  //String widgetName;
   final bool isFromSplash;
   bool isSelected = false;
   LatLng? destinationlatlang;
   String? encodedPts;
+  final Settings settings;
 
   HomeScreenArgument(
       {required this.isSelected,
+      required this.settings,
       this.destinationlatlang,
       this.encodedPts,
       required this.isFromSplash});

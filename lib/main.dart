@@ -80,6 +80,9 @@ void main() async {
   final CategoryRepository categoryRepository = CategoryRepository(
       categoryDataProvider: CategoryDataProvider(httpClient: http.Client()));
 
+  final SettingsRepository settingsRepository = SettingsRepository(
+      settingsDataProvider: SettingsDataProvider(httpClient: http.Client()));
+
   runApp(MyApp(
     rideRequestRepository: rideRequestRepository,
     authRepository: authRepository,
@@ -94,6 +97,7 @@ void main() async {
     savedLocationRepository: savedLocationRepository,
     emergencyReportRepository: emergencyReportRepository,
     categoryRepository: categoryRepository,
+    settingsRepository: settingsRepository,
   ));
 }
 
@@ -111,6 +115,7 @@ class MyApp extends StatelessWidget {
   final SavedLocationRepository savedLocationRepository;
   final EmergencyReportRepository emergencyReportRepository;
   final CategoryRepository categoryRepository;
+  final SettingsRepository settingsRepository;
 
   const MyApp({
     Key? key,
@@ -127,6 +132,7 @@ class MyApp extends StatelessWidget {
     required this.savedLocationRepository,
     required this.emergencyReportRepository,
     required this.categoryRepository,
+    required this.settingsRepository
   }) : super(key: key);
   @override
   Widget build(BuildContext context) {
@@ -173,7 +179,7 @@ class MyApp extends StatelessWidget {
                     ..add(AuthDataLoad())),
               BlocProvider(
                   create: (context) => RideRequestBloc(
-                      rideRequestRepository: rideRequestRepository)),
+                      rideRequestRepository: rideRequestRepository)..add(RideRequestCheckStartedTrip()) ),
               BlocProvider(
                   create: (context) =>
                       DriverBloc(driverRepository: driverRepository)),
@@ -210,7 +216,13 @@ class MyApp extends StatelessWidget {
                   ..getFavoriteLocations(),
               ),
               BlocProvider(create: (context) => LocaleCubit()..getLocal()),
-              BlocProvider(create: (context) => ProfilePictureCubit()..getProfilePictureUrl())
+              BlocProvider(
+                  create: (context) =>
+                      ProfilePictureCubit()..getProfilePictureUrl()),
+              BlocProvider(
+                create: (context) =>
+                    SettingsBloc(settingsRepository: settingsRepository),
+              )
             ],
             child: BlocBuilder<ThemeModeCubit, ThemeMode>(
               builder: ((context, themeModeState) =>

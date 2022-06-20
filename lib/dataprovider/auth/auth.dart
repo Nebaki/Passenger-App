@@ -10,7 +10,7 @@ class AuthDataProvider {
   final _imageBaseUrl = 'https://safeway-api.herokuapp.com/';
 
   final http.Client httpClient;
-  final secureStorage = const FlutterSecureStorage();
+  static const  secureStorage =  FlutterSecureStorage();
   AuthDataProvider({required this.httpClient});
 
   Future<void> loginUser(Auth user) async {
@@ -89,6 +89,10 @@ class AuthDataProvider {
 
   Future<String?> getToken() async {
     return await secureStorage.read(key: "token");
+  }
+
+  static Future updateToken(token) async {
+      await secureStorage.write(key: 'token', value: token);
   }
 
   Future<String?> getImageUrl() async {

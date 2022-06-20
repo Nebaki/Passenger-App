@@ -49,86 +49,81 @@ class _WaitingDriverResponseState extends State<WaitingDriverResponse> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async => false,
-      child: Positioned(
-        bottom: 0,
-        right: 0,
-        left: 0,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              decoration: BoxDecoration(
-                  color: Theme.of(context).backgroundColor,
-                  boxShadow: const [
-                    BoxShadow(
-                        blurRadius: 3,
-                        color: Colors.grey,
-                        blurStyle: BlurStyle.outer,
-                        spreadRadius: 2)
-                  ],
-                  borderRadius: const BorderRadius.only(
-                      topLeft: Radius.circular(20),
-                      topRight: Radius.circular(20))),
-              child: Column(
-                children: [
-                  Center(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        Flexible(
-                          flex: 5,
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 20,horizontal: 10),
-                            child: Text(
-                              getTranslation(context, "looking_for_nearby_providers"),
-                              textAlign: TextAlign.center,
-                              style: Theme.of(context).textTheme.titleLarge,
-                            ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            decoration: BoxDecoration(
+                color: Theme.of(context).backgroundColor,
+                boxShadow: const [
+                  BoxShadow(
+                      blurRadius: 3,
+                      color: Colors.grey,
+                      blurStyle: BlurStyle.outer,
+                      spreadRadius: 2)
+                ],
+                borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(20),
+                    topRight: Radius.circular(20))),
+            child: Column(
+              children: [
+                Center(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      Flexible(
+                        flex: 5,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 20,horizontal: 10),
+                          child: Text(
+                            getTranslation(context, "looking_for_nearby_providers"),
+                            textAlign: TextAlign.center,
+                            style: Theme.of(context).textTheme.titleLarge,
                           ),
                         ),
-                        Flexible(
-                          flex: 1,
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 10),
-                            child: TextButton(
-                                onPressed: () {
-                                  Navigator.pushNamed(
-                                      context, CancelReason.routeName,
-                                      arguments: CancelReasonArgument(
-                                          sendRequest: true));
-                        
-                                  // callback!(CancelTrip(
-                                  //     callback, WaitingDriverResponse(callback)));
-                                },
-                                child: Text(
-                                  getTranslation(context, "cancel"),
-                                  style:
-                                      Theme.of(context).textTheme.titleLarge,
-                                )),
-                          ),
-                        )
-                      ],
-                    ),
+                      ),
+                      Flexible(
+                        flex: 1,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 10),
+                          child: TextButton(
+                              onPressed: () {
+                                Navigator.pushNamed(
+                                    context, CancelReason.routeName,
+                                    arguments: CancelReasonArgument(
+                                        sendRequest: true));
+                      
+                                // callback!(CancelTrip(
+                                //     callback, WaitingDriverResponse(callback)));
+                              },
+                              child: Text(
+                                getTranslation(context, "cancel"),
+                                style:
+                                    Theme.of(context).textTheme.titleLarge,
+                              )),
+                        ),
+                      )
+                    ],
                   ),
-                  const LinearProgressIndicator(
-                    minHeight: 1.5,
+                ),
+                const LinearProgressIndicator(
+                  minHeight: 1.5,
+                ),
+                Container(
+                  height: 90,
+                  // padding: const EdgeInsets.only(left: 20, top: 15, bottom: 15),
+                  width: MediaQuery.of(context).size.width,
+                  color: Theme.of(context).backgroundColor.withOpacity(0.05),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: const [],
                   ),
-                  Container(
-                    height: 90,
-                    // padding: const EdgeInsets.only(left: 20, top: 15, bottom: 15),
-                    width: MediaQuery.of(context).size.width,
-                    color: Theme.of(context).backgroundColor.withOpacity(0.05),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: const [],
-                    ),
-                  )
-                ],
-              ),
+                )
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

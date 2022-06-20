@@ -29,6 +29,9 @@ class _SigninScreenState extends State<SigninScreen> {
   final _formkey = GlobalKey<FormState>();
 
   bool _isLoading = false;
+  void _getSettings() {
+    context.read<SettingsBloc>().add(SettingsStarted());
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -40,10 +43,8 @@ class _SigninScreenState extends State<SigninScreen> {
         name = state.auth.name!;
         number = state.auth.phoneNumber!;
         myId = state.auth.id!;
-        Navigator.pushNamedAndRemoveUntil(
-            context, HomeScreen.routeName, ((Route<dynamic> route) => false),
-            arguments:
-                HomeScreenArgument(isSelected: false, isFromSplash: true));
+        _getSettings();
+        
       }
       if (state is AuthSigningIn) {
         _isLoading = true;
@@ -82,6 +83,14 @@ class _SigninScreenState extends State<SigninScreen> {
 
   Widget _buildSigninForm() {
     return Stack(children: [
+      BlocConsumer<SettingsBloc,SettingsState>(builder: (context, state) => Container(), listener: (context, state){
+        if (state is SettingsLoadSuccess){
+          Navigator.pushNamedAndRemoveUntil(
+            context, HomeScreen.routeName, ((Route<dynamic> route) => false),
+            arguments:
+                HomeScreenArgument(settings: state.settings, isSelected: false, isFromSplash: true));
+        }
+      }),
       Form(
         key: _formkey,
         child: SizedBox(
@@ -294,3 +303,11 @@ class _SigninScreenState extends State<SigninScreen> {
     return Localization.of(context).getTranslation(key);
   }
 }
+
+
+
+
+// Navigator.pushNamedAndRemoveUntil(
+//             context, HomeScreen.routeName, ((Route<dynamic> route) => false),
+//             arguments:
+//                 HomeScreenArgument(isSelected: false, isFromSplash: true));

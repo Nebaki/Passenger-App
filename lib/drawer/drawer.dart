@@ -186,6 +186,17 @@ class NavDrawer extends StatelessWidget {
                         icon: Icons.settings_outlined,
                         text: getTranslation(context, "settings")),
                   ),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.popAndPushNamed(
+                          context, AwardScreen.routeName);
+                    },
+                    child: _menuItem(
+                        divider: true,
+                        context: context,
+                        icon: Icons.wallet_giftcard_outlined,
+                        text: getTranslation(context, "award")),
+                  ),
                   const SizedBox(height: 20),
                   GestureDetector(
                     onTap: () {

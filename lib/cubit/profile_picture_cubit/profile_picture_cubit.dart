@@ -6,15 +6,13 @@ class ProfilePictureCubit extends Cubit<String> {
 
   ProfilePictureCubit() : super("");
   void getProfilePictureUrl() async {
-    final url = await secureStorage.read(key:"profile_image");
-        print("YOOOOOOOOOOOOOOOOWWW $url");
+    final url = await secureStorage.read(key: "profile_image");
 
-    emit(url??'');
+    emit(url ?? '');
   }
 
   void updateProfilePictureUrl(String url) async {
-    await secureStorage.write(key:"profile_image", value:url);
-            print("YOOOOOOOOOOOOOOOOWWW $url");
+    await secureStorage.write(key: "profile_image", value: url);
 
     emit(url);
   }

@@ -69,7 +69,18 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
               barrierDismissible: false,
               context: context,
               builder: (BuildContext con) => WillPopScope(
-                    onWillPop: () async => false,
+                  onWillPop: () async => false,
+                  child: BlocListener<AuthBloc, AuthState>(
+                    listener: (context, state) {
+                      if (state is AuthDataLoadSuccess) {
+                        name = state.auth.name!;
+                        number = state.auth.phoneNumber!;
+                        myId = state.auth.id!;
+                        Navigator.pop(con);
+
+                        context.read<SettingsBloc>().add(SettingsStarted());
+                      }
+                    },
                     child: AlertDialog(
                       title: Text(getTranslation(context,
                           "create_profile_register_successful_dialog_title")),
@@ -82,19 +93,12 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                             onPressed: () {
                               BlocProvider.of<AuthBloc>(context)
                                   .add(AuthDataLoad());
-                              Navigator.pop(con);
-                              Navigator.pushNamedAndRemoveUntil(
-                                  context,
-                                  HomeScreen.routeName,
-                                  ((Route<dynamic> route) => false),
-                                  arguments: HomeScreenArgument(
-                                      isSelected: false, isFromSplash: false));
                             },
                             child:
                                 Text(getTranslation(context, "okay_action"))),
                       ],
                     ),
-                  ));
+                  )));
         }
         if (state is UserOperationFailure) {
           _isLoading = false;
@@ -131,203 +135,217 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
   }
 
   Widget _buildProfileForm() {
-    return Padding(
-      padding: const EdgeInsets.only(top: 80, right: 20, left: 20, bottom: 10),
-      child: Form(
-        // autovalidateMode: AutovalidateMode.onUserInteraction,
-        key: _formKey,
-        child: SizedBox(
-          height: MediaQuery.of(context).size.height,
-          child: SingleChildScrollView(
-            scrollDirection: Axis.vertical,
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: SizedBox(
-                height: MediaQuery.of(context).size.height,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 10),
-                      child: Text(
-                        getTranslation(context, "create_profile_title"),
-                        style: const TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 24.0),
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    TextFormField(
-                      decoration: InputDecoration(
-                        hintText:
-                            getTranslation(context, "name_textfield_hint_text"),
-                        hintStyle: const TextStyle(
-                          fontWeight: FontWeight.w300,
-                          // color: Colors.black45
-                        ),
-                        prefixIcon: const Icon(
-                          Icons.contacts_rounded,
-                          size: 19,
-                        ),
-                        // fillColor: Colors.white,
-                        // filled: true,
-                        // border: OutlineInputBorder(
-                        //     borderSide: BorderSide.none)
-                      ),
-                      validator: (value) {
-                        if (value!.isEmpty) {
-                          return getTranslation(
-                              context, "create_profile_empity_name_validation");
-                        } else if (value.length > 25) {
-                          return getTranslation(
-                              context, "create_profile_long_name_validation");
-                        } else if (value.length < 4) {
-                          return getTranslation(
-                              context, "create_profile_short_name_validation");
-                        }
-                        return null;
-                      },
-                      onSaved: (value) {
-                        //final val = value!.split("")[0];
-                        //print();
-                        _user['name'] = value;
-                      },
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    TextFormField(
-                        controller: password,
-                        decoration: InputDecoration(
-                          hintText:
-                              getTranslation(context, "password_hint_text"),
-                          hintStyle: const TextStyle(
-                            fontWeight: FontWeight.w300,
-                            // color: Colors.black45
-                          ),
-                          prefixIcon: const Icon(
-                            Icons.lock,
-                            size: 19,
+    return BlocListener<SettingsBloc, SettingsState>(
+        listener: (context, state) {
+          if (state is SettingsLoadSuccess) {
+            Navigator.pushNamedAndRemoveUntil(context, HomeScreen.routeName,
+                ((Route<dynamic> route) => false),
+                arguments: HomeScreenArgument(
+                    settings: state.settings,
+                    isSelected: false,
+                    isFromSplash: false));
+          }
+        },
+        child: Padding(
+          padding:
+              const EdgeInsets.only(top: 80, right: 20, left: 20, bottom: 10),
+          child: Form(
+            // autovalidateMode: AutovalidateMode.onUserInteraction,
+            key: _formKey,
+            child: SizedBox(
+              height: MediaQuery.of(context).size.height,
+              child: SingleChildScrollView(
+                scrollDirection: Axis.vertical,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: SizedBox(
+                    height: MediaQuery.of(context).size.height,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 10),
+                          child: Text(
+                            getTranslation(context, "create_profile_title"),
+                            style: const TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 24.0),
                           ),
                         ),
-                        validator: (value) {
-                          if (value!.isEmpty) {
-                            return getTranslation(context,
-                                "create_profile_empity_password_validation");
-                          } else if (value.length > 25) {
-                            return 'Password must not be longer than 25 charachters';
-                          } else if (value.length < 4) {
-                            return getTranslation(context,
-                                "create_profile_long_password_validation");
-                          }
-                          return null;
-                        },
-                        onSaved: (value) {
-                          _user["password"] = value;
-                        }),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    TextFormField(
-                      decoration: InputDecoration(
-                        hintText: getTranslation(context, "confirm_password"),
-                        hintStyle: const TextStyle(
-                          fontWeight: FontWeight.w300,
-                          // color: Colors.black45
+                        const SizedBox(
+                          height: 10,
                         ),
-                        prefixIcon: const Icon(
-                          Icons.confirmation_num,
-                          size: 19,
-                        ),
-                      ),
-                      validator: (value) {
-                        if (value != password.text) {
-                          return getTranslation(context,
-                              "create_profile_password_match_validation_error");
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    TextFormField(
-                      decoration: InputDecoration(
-                          hintText: getTranslation(
-                              context, "create_profile_promo_text"),
-                          hintStyle: const TextStyle(
-                            fontWeight: FontWeight.w300,
-                            // color: Colors.black45
-                          ),
-                          prefixIcon: const Icon(
-                            Icons.gif,
-                            size: 19,
-                          )),
-                    ),
-                    const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 10),
-                      child: Center(
-                        child: Text(
-                          createProfileArgumentText,
-                          overflow: TextOverflow.fade,
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                              // color: Colors.black54,
+                        TextFormField(
+                          decoration: InputDecoration(
+                            hintText: getTranslation(
+                                context, "name_textfield_hint_text"),
+                            hintStyle: const TextStyle(
                               fontWeight: FontWeight.w300,
-                              letterSpacing: 0),
+                              // color: Colors.black45
+                            ),
+                            prefixIcon: const Icon(
+                              Icons.contacts_rounded,
+                              size: 19,
+                            ),
+                            // fillColor: Colors.white,
+                            // filled: true,
+                            // border: OutlineInputBorder(
+                            //     borderSide: BorderSide.none)
+                          ),
+                          validator: (value) {
+                            if (value!.isEmpty) {
+                              return getTranslation(context,
+                                  "create_profile_empity_name_validation");
+                            } else if (value.length > 25) {
+                              return getTranslation(context,
+                                  "create_profile_long_name_validation");
+                            } else if (value.length < 4) {
+                              return getTranslation(context,
+                                  "create_profile_short_name_validation");
+                            }
+                            return null;
+                          },
+                          onSaved: (value) {
+                            //final val = value!.split("")[0];
+                            //print();
+                            _user['name'] = value;
+                          },
                         ),
-                      ),
-                    ),
-                    Center(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
-                        child: SizedBox(
-                          width: MediaQuery.of(context).size.width,
-                          child: ElevatedButton(
-                              onPressed: _isLoading
-                                  ? null
-                                  : () {
-                                      final form = _formKey.currentState;
-                                      if (form!.validate()) {
-                                        form.save();
-                                        createProfile();
-                                      }
-                                    },
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  const Spacer(),
-                                  Text(
-                                    getTranslation(
-                                        context, "create_profile_button"),
-                                  ),
-                                  const Spacer(),
-                                  Align(
-                                    alignment: Alignment.centerRight,
-                                    child: _isLoading
-                                        ? const SizedBox(
-                                            height: 20,
-                                            width: 20,
-                                            child: CircularProgressIndicator(
-                                              strokeWidth: 1,
-                                              color: Colors.black,
-                                            ),
-                                          )
-                                        : Container(),
-                                  )
-                                ],
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        TextFormField(
+                            controller: password,
+                            decoration: InputDecoration(
+                              hintText:
+                                  getTranslation(context, "password_hint_text"),
+                              hintStyle: const TextStyle(
+                                fontWeight: FontWeight.w300,
+                                // color: Colors.black45
+                              ),
+                              prefixIcon: const Icon(
+                                Icons.lock,
+                                size: 19,
+                              ),
+                            ),
+                            validator: (value) {
+                              if (value!.isEmpty) {
+                                return getTranslation(context,
+                                    "create_profile_empity_password_validation");
+                              } else if (value.length > 25) {
+                                return 'Password must not be longer than 25 charachters';
+                              } else if (value.length < 4) {
+                                return getTranslation(context,
+                                    "create_profile_long_password_validation");
+                              }
+                              return null;
+                            },
+                            onSaved: (value) {
+                              _user["password"] = value;
+                            }),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        TextFormField(
+                          decoration: InputDecoration(
+                            hintText:
+                                getTranslation(context, "confirm_password"),
+                            hintStyle: const TextStyle(
+                              fontWeight: FontWeight.w300,
+                              // color: Colors.black45
+                            ),
+                            prefixIcon: const Icon(
+                              Icons.confirmation_num,
+                              size: 19,
+                            ),
+                          ),
+                          validator: (value) {
+                            if (value != password.text) {
+                              return getTranslation(context,
+                                  "create_profile_password_match_validation_error");
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        TextFormField(
+                          decoration: InputDecoration(
+                              hintText: getTranslation(
+                                  context, "create_profile_promo_text"),
+                              hintStyle: const TextStyle(
+                                fontWeight: FontWeight.w300,
+                                // color: Colors.black45
+                              ),
+                              prefixIcon: const Icon(
+                                Icons.gif,
+                                size: 19,
                               )),
                         ),
-                      ),
+                        const Padding(
+                          padding: EdgeInsets.symmetric(vertical: 10),
+                          child: Center(
+                            child: Text(
+                              createProfileArgumentText,
+                              overflow: TextOverflow.fade,
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                  // color: Colors.black54,
+                                  fontWeight: FontWeight.w300,
+                                  letterSpacing: 0),
+                            ),
+                          ),
+                        ),
+                        Center(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 20),
+                            child: SizedBox(
+                              width: MediaQuery.of(context).size.width,
+                              child: ElevatedButton(
+                                  onPressed: _isLoading
+                                      ? null
+                                      : () {
+                                          final form = _formKey.currentState;
+                                          if (form!.validate()) {
+                                            form.save();
+                                            createProfile();
+                                          }
+                                        },
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      const Spacer(),
+                                      Text(
+                                        getTranslation(
+                                            context, "create_profile_button"),
+                                      ),
+                                      const Spacer(),
+                                      Align(
+                                        alignment: Alignment.centerRight,
+                                        child: _isLoading
+                                            ? const SizedBox(
+                                                height: 20,
+                                                width: 20,
+                                                child:
+                                                    CircularProgressIndicator(
+                                                  strokeWidth: 1,
+                                                  color: Colors.black,
+                                                ),
+                                              )
+                                            : Container(),
+                                      )
+                                    ],
+                                  )),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                  ],
+                  ),
                 ),
               ),
             ),
           ),
-        ),
-      ),
-    );
+        ));
   }
 }

@@ -12,3 +12,5 @@ export 'review/review.dart';
 export 'saved_location.dart';
 export 'emergency_report.dart';
 export 'category.dart';
+export 'settings/settings.dart';
+

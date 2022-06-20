@@ -17,8 +17,16 @@ class CategoryEndPoints {
     return '$baseUrl/categories/get-categories-by-type?type=$type';
   }
 }
+class SettingsEndPoint {
+  static String getSettingsEndPoint(){
+    return "$baseUrl/settings/get-setting";
+  }
+}
 
 class AuthEndPoints {
+  static String refreshTokenEndPoint(){
+    return '$baseUrl/auth/refresh';
+  }
   static String passegerLoginEndPoint() {
     return '$baseUrl/passengers/passenger-login';
   }

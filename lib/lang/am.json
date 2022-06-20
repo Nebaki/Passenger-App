@@ -136,7 +136,7 @@
     "back":"ተመለስ",
     "continue":"ቀጥል",
     "no_user_registered_message":"በዚህ ስልክ ቁጥር የተመዘገበ ተጠቃሚ የለም።",
-    "reset_password":"Reset Password",
+    "reset_password":"የይለፍ ቃል ዳግም አስጀምር",
     "reset":"ዳግም አስጀምር",
     "saved_addresses":"የተቀመጡ አድራሻዎች",
     "name":"ስም",
@@ -173,7 +173,7 @@
     "payment_made":"ክፍያ በጥሬ ገንዘብ በተሳካ ሁኔታ ተፈጽሟል።",
     "not_paid_yet":"እስካሁን አልተከፈለም።",
     "logout":"ውጣ",
-    "driver_gender":"Driver gender",
+    "driver_gender":"የአሽከርካሪ ጾታ",
     "no_internet_connection":"ኢንተርኔት ተቋርጧል",
 
 
@@ -181,6 +181,8 @@
     "trip_started":"ጉዞ ተጀመረ",
     "trip_cancelled":"ጉዞ ተሰርዟል።",
     "request_time_out":"ጥያቄው ጊዜው አልፎበታል።",
-    "looking_for_nearby_providers":"በአቅራቢያ ያሉ አሽከርካሪዎችን በመፈለግ ላይ"
+    "looking_for_nearby_providers":"በአቅራቢያ ያሉ አሽከርካሪዎችን በመፈለግ ላይ",
+    "award":"ሽልማት",
+    "point":"ነጥብ"
 
 }

@@ -116,8 +116,7 @@ class _WhereToState extends State<WhereTo> {
                     return GestureDetector(
                       onTap: () {
                         if (selectedCar != SelectedCar.none) {
-                          getPlaceDetail(
-                              state.locationHistory[index].placeId);
+                          getPlaceDetail(state.locationHistory[index].placeId);
                           settingDropOffDialog(true);
                         } else {
                           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -147,13 +146,11 @@ class _WhereToState extends State<WhereTo> {
                                   flex: 1,
                                   child: Text(
                                     state.locationHistory[index].mainText,
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .titleSmall,
+                                    style:
+                                        Theme.of(context).textTheme.titleSmall,
                                   ),
                                 ),
-                                Text(state
-                                    .locationHistory[index].secondaryText)
+                                Text(state.locationHistory[index].secondaryText)
                               ],
                             )),
                       ),
@@ -456,12 +453,13 @@ class _WhereToState extends State<WhereTo> {
                 WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
                   showCarIcons = false;
                   droppOffLatLng = destinationLtlng;
-                  _changePlaceDetailBlocToInitialState();
                   context
                       .read<CurrentWidgetCubit>()
                       .changeWidget(const Service(false, false));
 
                   Navigator.pop(cont);
+                  _changePlaceDetailBlocToInitialState();
+
                   !isFromResentHisotry ? Navigator.pop(context) : null;
                 });
               }
@@ -484,7 +482,7 @@ class _WhereToState extends State<WhereTo> {
                     children: [
                       const Flexible(
                         flex: 1,
-                        child:  SizedBox(
+                        child: SizedBox(
                           height: 20,
                           width: 20,
                           child: CircularProgressIndicator(
@@ -493,7 +491,6 @@ class _WhereToState extends State<WhereTo> {
                           ),
                         ),
                       ),
-                      
                       Flexible(
                         flex: 4,
                         child: Text(getTranslation(
@@ -663,7 +660,7 @@ class _WhereToState extends State<WhereTo> {
                                     spreadRadius: 2,
                                     offset: Offset(0, 4))
                               ]),
-                          height: 50,
+                          height: 60,
                           child: TextFormField(
                             focusNode: droppOffLocationNode,
                             onChanged: (value) {

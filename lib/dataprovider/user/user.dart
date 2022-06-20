@@ -6,7 +6,6 @@ import 'package:http_parser/http_parser.dart';
 import 'package:http/http.dart' as http;
 import 'package:passengerapp/dataprovider/auth/auth.dart';
 import 'package:passengerapp/models/models.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class UserDataProvider {
   final _baseUrl = 'https://safeway-api.herokuapp.com/api/passengers';
@@ -15,7 +14,6 @@ class UserDataProvider {
       AuthDataProvider(httpClient: http.Client());
   UserDataProvider({required this.httpClient});
   final _imageBaseUrl = 'https://safeway-api.herokuapp.com/';
-  final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
 
   final secureStorage = const FlutterSecureStorage();
 
@@ -33,7 +31,6 @@ class UserDataProvider {
 
     if (response.statusCode == 200) {
       final output = jsonDecode(response.body);
-          final SharedPreferences prefs = await _prefs;
 
       await secureStorage.write(key: 'id', value: output['passenger']['id']);
       await secureStorage.write(

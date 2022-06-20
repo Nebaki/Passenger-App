@@ -10,3 +10,4 @@ export 'review/review.dart';
 export 'savedlocation/saved_location.dart';
 export 'emergencyReport/emergency_report.dart';
 export 'category/category.dart';
+export 'settings/settings.dart';

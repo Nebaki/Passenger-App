@@ -3,6 +3,7 @@ import 'package:passengerapp/helper/constants.dart';
 
 class ThemesData {
   static final darkTheme = ThemeData(
+    snackBarTheme: const SnackBarThemeData(backgroundColor: Colors.black),
     dividerColor: Colors.black,
     cardColor: Colors.black38,
       primaryIconTheme: const IconThemeData(color: Colors.white),
@@ -43,15 +44,13 @@ class ThemesData {
       backgroundColor: Colors.grey.shade900,
       textTheme: const TextTheme(
         button: TextStyle(color: Colors.white60),
-        // bodyLarge: TextStyle(color: Colors.black)
-        // subtitle1: const TextStyle(color: Colors.black38, fontSize: 14),
-        // headline5: const TextStyle(fontWeight: FontWeight.bold),
-        // bodyText2: TextStyle(color: Colors.grey.shade700
-        // )
+      
       ),
       colorScheme: const ColorScheme.dark());
 
   static final lightTheme = ThemeData(
+        snackBarTheme: const SnackBarThemeData(backgroundColor: Colors.white),
+
     dividerColor: Colors.grey.shade300,
     cardColor: Colors.white,
       primaryIconTheme: const IconThemeData(color: Colors.black),
@@ -86,8 +85,7 @@ class ThemesData {
                   state.contains(MaterialState.disabled)
                       ? Colors.grey.shade300
                       : buttonColor),
-          // backgroundColor: MaterialStateProperty.all<Color>(
-          //     const Color.fromRGBO(244, 201, 60, 1)),
+        
           shape: MaterialStateProperty.all<RoundedRectangleBorder>(
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
           foregroundColor: MaterialStateProperty.all<Color>(Colors.black),
@@ -100,13 +98,3 @@ class ThemesData {
         primarySwatch: Colors.green,
       ).copyWith(secondary: Colors.grey.shade600));
 }
-
-
-
- // backgroundColor: MaterialStateProperty.all<Color>(
-          //     const Color.fromRGBO(254, 79, 5, 1)),
-          // shape:
-          //     MaterialStateProperty.all<RoundedRectangleBorder>(
-          //         RoundedRectangleBorder(
-          //   borderRadius: BorderRadius.circular(80),
-          // ))

@@ -37,7 +37,7 @@ class PushNotificationService {
           break;
         case 'Arrived':
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content:  Text(getTranslation(context, "driver_arrived")),
+            content: Text(getTranslation(context, "driver_arrived")),
             // backgroundColor: Colors.indigo.shade900,
           ));
           break;
@@ -51,7 +51,7 @@ class PushNotificationService {
               const DirectionChangeToInitialState(
                   loadCurrentLocation: false, listenToNearbyDriver: false));
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content:  Text(getTranslation(context, "trip_cancelled")),
+            content: Text(getTranslation(context, "trip_cancelled")),
             // backgroundColor: Colors.indigo.shade900,
           ));
           // context.read<CurrentWidgetCubit>().changeWidget(Service(true,false));
@@ -65,7 +65,7 @@ class PushNotificationService {
           //     .changeWidget(const StartedTripPannel());
 
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content:  Text(getTranslation(context, "trip_started")),
+            content: Text(getTranslation(context, "trip_started")),
             // backgroundColor: Colors.indigo.shade900,
           ));
           break;
@@ -82,7 +82,7 @@ class PushNotificationService {
               .changeWidget(const Service(true, false));
 
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content:  Text((getTranslation(context, "request_time_out"))),
+            content: Text((getTranslation(context, "request_time_out"))),
             // backgroundColor: Colors.indigo.shade900,
           ));
           break;
@@ -96,7 +96,8 @@ class PushNotificationService {
   }
 
   void seubscribeTopic() async {
-    await FirebaseMessaging.instance.subscribeToTopic('driver');
+    await FirebaseMessaging.instance.subscribeToTopic('global');
+    await FirebaseMessaging.instance.subscribeToTopic('passenger');
 
     final token = await FirebaseMessaging.instance.getToken();
 

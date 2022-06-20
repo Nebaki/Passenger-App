@@ -1,5 +1,4 @@
 import 'package:equatable/equatable.dart';
-import 'package:passengerapp/bloc/bloc.dart';
 import 'package:passengerapp/models/models.dart';
 
 class UserState extends Equatable {

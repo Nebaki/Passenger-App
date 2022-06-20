@@ -51,12 +51,42 @@ class _CustomSplashScreenState extends State<CustomSplashScreen> {
     }
   }
 
+  bool showBanner = false;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.red,
       body: Stack(
+        fit: StackFit.loose,
         children: [
+          showBanner
+              ? Padding(
+                  child: Container(
+                      height: 20,
+                      color: Colors.black,
+                      width: double.infinity,
+                      child: Center(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(
+                                Icons
+                                    .signal_wifi_statusbar_connected_no_internet_4_outlined,
+                                size: 15,
+                                color: Colors.white),
+                            const SizedBox(
+                              width: 10,
+                            ),
+                            Text(
+                              getTranslation(context, "no_internet_connection"),
+                              style: const TextStyle(color: Colors.white),
+                            ),
+                          ],
+                        ),
+                      )),
+                  padding: EdgeInsets.only(
+                      top: MediaQuery.of(context).viewPadding.top))
+              : Container(),
           BlocConsumer<AuthBloc, AuthState>(builder: (_, state) {
             return const Center(
               child: Image(
@@ -86,72 +116,132 @@ class _CustomSplashScreenState extends State<CustomSplashScreen> {
               });
             }
           }),
-          BlocConsumer<RideRequestBloc, RideRequestState>(
-              builder: (context, state) {
-            if (state is RideRequestLoading) {
+          BlocConsumer<SettingsBloc, SettingsState>(
+              builder: (context, settingsState) {
+                if (settingsState is SettingsLoading) {
               return const Align(
-                alignment: Alignment.bottomCenter,
-                child: Padding(
-                  padding: EdgeInsets.only(bottom: 15),
-                  child: Align(
                     alignment: Alignment.bottomCenter,
-                    child: LinearProgressIndicator(
-                      minHeight: 1,
-                      color: Colors.black,
-                      backgroundColor: Colors.red,
+                    child: Padding(
+                      padding: EdgeInsets.only(bottom: 15),
+                      child: Align(
+                        alignment: Alignment.bottomCenter,
+                        child: LinearProgressIndicator(
+                          minHeight: 1,
+                          color: Colors.black,
+                          backgroundColor: Colors.white,
+                        ),
+                      ),
                     ),
-                  ),
-                ),
-              );
+                  );
             }
+            if (settingsState is SettingsLoadSuccess) {
+              return BlocConsumer<RideRequestBloc, RideRequestState>(
+                  builder: (context, state) {
+                if (state is RideRequestLoading) {
+                  return const Align(
+                    alignment: Alignment.bottomCenter,
+                    child: Padding(
+                      padding: EdgeInsets.only(bottom: 15),
+                      child: Align(
+                        alignment: Alignment.bottomCenter,
+                        child: LinearProgressIndicator(
+                          minHeight: 1,
+                          color: Colors.black,
+                          backgroundColor: Colors.white,
+                        ),
+                      ),
+                    ),
+                  );
+                }
+
+                return Container();
+              }, listener: (context, st) {
+                if (st is RideRequestOperationFailur) {
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    duration: const Duration(minutes: 5),
+                    backgroundColor: Colors.black,
+                    content: Text(
+                      getTranslation(context, "check_internet_connection"),
+                      style: const TextStyle(color: Colors.white),
+                    ),
+                    action: SnackBarAction(
+                        textColor: Colors.white,
+                        label: getTranslation(context, "try_again"),
+                        onPressed: () {
+                          ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                          _checkStartedTrip();
+                        }),
+                  ));
+                }
+                if (st is RideRequestTokentExpired) {
+                  Navigator.pushReplacementNamed(
+                      context, SigninScreen.routeName);
+                }
+                if (st is RideRequestStartedTripChecked) {
+                  if (st.rideRequest.pickUpAddress == null) {
+                    Navigator.pushReplacementNamed(
+                        context, HomeScreen.routeName,
+                        arguments: HomeScreenArgument(
+                            settings: settingsState.settings,
+                            isFromSplash: true,
+                            isSelected: false));
+                  } else {
+                    selectedCar = SelectedCar.taxi;
+                    DriverEvent event = DriverLoad(st.rideRequest.driver!.id);
+                    BlocProvider.of<DriverBloc>(context).add(event);
+                    price = st.rideRequest.price!;
+                    distance = st.rideRequest.distance!;
+                    driverModel = st.rideRequest.driver!;
+                    driverId = st.rideRequest.driver!.id;
+                    rideRequestId = st.rideRequest.id!;
+                    pickupAddress = st.rideRequest.pickUpAddress!;
+                    droppOffAddress = st.rideRequest.droppOffAddress!;
+                    droppOffLatLng = st.rideRequest.dropOffLocation!;
+                    pickupLatLng = st.rideRequest.pickupLocation!;
+                    Navigator.pushReplacementNamed(
+                        context, HomeScreen.routeName,
+                        arguments: HomeScreenArgument(
+                            settings: settingsState.settings,
+                            isFromSplash: false,
+                            isSelected: true,
+                            encodedPts: st.rideRequest.direction));
+                  }
+                }
+              });
+            }
+            
 
             return Container();
-          }, listener: (context, st) {
-            if (st is RideRequestOperationFailur) {
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                duration: const Duration(minutes: 5),
-                backgroundColor: Colors.black,
-                content: Text(
-                  getTranslation(context, "check_internet_connection"),
-                  style: const TextStyle(color: Colors.white),
-                ),
-                action: SnackBarAction(
-                    textColor: Colors.white,
-                    label: getTranslation(context, "try_again"),
-                    onPressed: () {
-                      ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                      _checkStartedTrip();
-                    }),
-              ));
-            }
-            if (st is RideRequestTokentExpired) {
+          }, listener: (context, state) {
+            if (state is SettingsUnAuthorised) {
               Navigator.pushReplacementNamed(context, SigninScreen.routeName);
+
             }
-            if (st is RideRequestStartedTripChecked) {
-              if (st.rideRequest.pickUpAddress == null) {
-                Navigator.pushReplacementNamed(context, HomeScreen.routeName,
-                    arguments: HomeScreenArgument(
-                        isFromSplash: true, isSelected: false));
-              } else {
-                selectedCar = SelectedCar.taxi;
-                DriverEvent event = DriverLoad(st.rideRequest.driver!.id);
-                BlocProvider.of<DriverBloc>(context).add(event);
-                price = st.rideRequest.price!;
-                distance = st.rideRequest.distance!;
-                driverModel = st.rideRequest.driver!;
-                driverId = st.rideRequest.driver!.id;
-                rideRequestId = st.rideRequest.id!;
-                Navigator.pushReplacementNamed(context, HomeScreen.routeName,
-                    arguments: HomeScreenArgument(
-                        isFromSplash: false,
-                        isSelected: true,
-                        encodedPts: st.rideRequest.direction));
-              }
+            if (state is SettingsOperationFailure) {
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    duration: const Duration(minutes: 5),
+                    backgroundColor: Colors.black,
+                    content: Text(
+                      getTranslation(context, "check_internet_connection"),
+                      style: const TextStyle(color: Colors.white),
+                    ),
+                    action: SnackBarAction(
+                        textColor: Colors.white,
+                        label: getTranslation(context, "try_again"),
+                        onPressed: () {
+                          ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                          _getSettings();
+                        }),
+                  ));
             }
-          })
+          }),
         ],
       ),
     );
+  }
+
+  void _getSettings() {
+    BlocProvider.of<SettingsBloc>(context).add(SettingsStarted());
   }
 
   void _checkStartedTrip() {
@@ -165,18 +255,19 @@ class _CustomSplashScreenState extends State<CustomSplashScreen> {
 
     if (result == ConnectivityResult.none) {
       isFirstTime = true;
-
-      ScaffoldMessenger.of(context).showMaterialBanner(MaterialBanner(
-          content: Text(getTranslation(context, "no_internet_connection")),
-          actions: [
-            TextButton(
-                onPressed: () {},
-                child: Text(getTranslation(context, "try_again")))
-          ]));
+      showBanner = true;
+      setState(() {});
+      // ScaffoldMessenger.of(context).showMaterialBanner(MaterialBanner(
+      //     content: Center(
+      //         child: Text(getTranslation(context, "no_internet_connection"))),
+      //     actions: [Container()]));
     } else {
-      ScaffoldMessenger.of(context).hideCurrentMaterialBanner();
+      showBanner = false;
+      setState(() {});
+      // ScaffoldMessenger.of(context).hideCurrentMaterialBanner();
 
-      _checkStartedTrip();
+      // _checkStartedTrip();
+      _getSettings();
     }
   }
 
@@ -184,15 +275,17 @@ class _CustomSplashScreenState extends State<CustomSplashScreen> {
     _connectivitySubscription ??=
         _connectivity.onConnectivityChanged.listen((event) {
       if (event == ConnectivityResult.none) {
-        ScaffoldMessenger.of(context).showMaterialBanner(MaterialBanner(
-            content: Text(getTranslation(context, "no_internet_connection")),
-            actions: [
-              TextButton(
-                  onPressed: () {},
-                  child: Text(getTranslation(context, "try_again")))
-            ]));
+        showBanner = true;
+        setState(() {});
+        // ScaffoldMessenger.of(context).showMaterialBanner(MaterialBanner(
+
+        //     content: Center(
+        //         child: Text(getTranslation(context, "no_internet_connection"))),
+        //     actions: [Container()]));
       } else if (event == ConnectivityResult.wifi) {
-        ScaffoldMessenger.of(context).hideCurrentMaterialBanner();
+        showBanner = false;
+        setState(() {});
+        // ScaffoldMessenger.of(context).hideCurrentMaterialBanner();
 
         if (isFirstTime) {
           _checkStartedTrip();
@@ -203,7 +296,9 @@ class _CustomSplashScreenState extends State<CustomSplashScreen> {
           _checkStartedTrip();
         }
         isFirstTime = false;
-        ScaffoldMessenger.of(context).hideCurrentMaterialBanner();
+        showBanner = false;
+        setState(() {});
+        // ScaffoldMessenger.of(context).hideCurrentMaterialBanner();
       }
     });
   }
