@@ -14,7 +14,12 @@ class DriverBloc extends Bloc<DriverEvent, DriverState> {
       try {
         final driver = await driverRepository.getDriverById(event.id);
         yield DriverLoadSuccess(driver);
-      } catch (_) {
+      } catch (e) {
+        if (e.toString().split(" ")[1] == "401") {
+          yield DriverUnAuthorised();
+        } else {
+          yield (DriverOperationFailure());
+        }
         yield DriverOperationFailure();
       }
     }
@@ -73,3 +78,5 @@ class DriverInitialState extends DriverState {}
 class DriverNotFoundState extends DriverState {}
 
 class DriverFoundState extends DriverState {}
+
+class DriverUnAuthorised extends DriverState {}

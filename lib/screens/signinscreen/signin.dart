@@ -78,7 +78,7 @@ class _SigninScreenState extends State<SigninScreen> {
         Auth(phoneNumber: _auth["phoneNumber"], password: _auth["password"]));
 
     BlocProvider.of<AuthBloc>(context).add(event);
-    BlocProvider.of<AuthBloc>(context).add(AuthDataLoad());
+    // BlocProvider.of<AuthBloc>(context).add(AuthDataLoad());
   }
 
   Widget _buildSigninForm() {

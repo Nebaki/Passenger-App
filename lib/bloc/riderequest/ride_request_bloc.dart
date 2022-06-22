@@ -14,8 +14,12 @@ class RideRequestBloc extends Bloc<RideRequestEvent, RideRequestState> {
       try {
         await rideRequestRepository.createRequest(event.rideRequest);
         yield RideRequestSuccess();
-      } catch (_) {
-        yield RideRequestOperationFailur();
+      } catch (e) {
+        if (e.toString().split(" ")[1] == "401") {
+          yield RideRequestTokentExpired();
+        } else {
+          yield (RideRequestOperationFailur());
+        }
       }
     }
 
@@ -24,8 +28,12 @@ class RideRequestBloc extends Bloc<RideRequestEvent, RideRequestState> {
       try {
         await rideRequestRepository.orderForOther(event.request);
         yield RideRequestSuccess();
-      } catch (_) {
-        yield RideRequestOperationFailur();
+      } catch (e) {
+        if (e.toString().split(" ")[1] == "401") {
+          yield RideRequestTokentExpired();
+        } else {
+          yield (RideRequestOperationFailur());
+        }
       }
     }
 
@@ -36,8 +44,12 @@ class RideRequestBloc extends Bloc<RideRequestEvent, RideRequestState> {
         await rideRequestRepository.changeRequestStatus(
             event.id, event.status, event.sendRequest);
         yield RideRequestStatusChangedSuccess();
-      } catch (_) {
-        yield RideRequestOperationFailur();
+      } catch (e) {
+        if (e.toString().split(" ")[1] == "401") {
+          yield RideRequestTokentExpired();
+        } else {
+          yield (RideRequestOperationFailur());
+        }
       }
     }
 
@@ -73,8 +85,12 @@ class RideRequestBloc extends Bloc<RideRequestEvent, RideRequestState> {
       try {
         await rideRequestRepository.sendNotification(event.request, event.id);
         yield RideRequestNotificationSent();
-      } catch (_) {
-        yield RideRequestOperationFailur();
+      } catch (e) {
+        if (e.toString().split(" ")[1] == "401") {
+          yield RideRequestTokentExpired();
+        } else {
+          yield (RideRequestOperationFailur());
+        }
       }
     }
     if (event is RideRequestCancell) {
@@ -83,8 +99,12 @@ class RideRequestBloc extends Bloc<RideRequestEvent, RideRequestState> {
         await rideRequestRepository.cancelRideRequest(event.id,
             event.cancelReason, event.passengerFcm, event.sendRequest);
         yield RideRequestCancelled();
-      } catch (_) {
-        yield RideRequestOperationFailur();
+      } catch (e) {
+        if (e.toString().split(" ")[1] == "401") {
+          yield RideRequestTokentExpired();
+        } else {
+          yield (RideRequestOperationFailur());
+        }
       }
     }
   }

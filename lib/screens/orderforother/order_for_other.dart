@@ -64,7 +64,7 @@ class _OrderForOtherScreenState extends State<OrderForOtherScreen> {
                       hintText:
                           getTranslation(context, "phone_number_of_passenger"),
                       hintStyle: const TextStyle(
-                          fontWeight: FontWeight.w300, color: Colors.black45),
+                          fontWeight: FontWeight.w300, ),
                     ),
                     onInputChanged: (PhoneNumber phoneNum) {},
                     initialValue: PhoneNumber(isoCode: "ET"),
@@ -73,7 +73,7 @@ class _OrderForOtherScreenState extends State<OrderForOtherScreen> {
                     ),
                     ignoreBlank: false,
                     autoValidateMode: AutovalidateMode.onUserInteraction,
-                    selectorTextStyle: const TextStyle(color: Colors.black),
+                    // selectorTextStyle: const TextStyle(color: Colors.black),
                     formatInput: true,
                     keyboardType: const TextInputType.numberWithOptions(
                         signed: true, decimal: true),

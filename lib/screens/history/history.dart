@@ -245,7 +245,7 @@ class _HistoryPageState extends State<HistoryPage> {
                     ],
                   ),
                   Text(
-                    "${request.price != 'null' ? double.parse(request.price!).truncate() : 0} ETB",
+                    "${request.price != 'null' ? double.parse(request.price!).truncate() : 0} ${getTranslation(context,"etb")}",
                     // style: const TextStyle(color: Colors.black),
                   )
                 ],

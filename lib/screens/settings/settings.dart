@@ -40,7 +40,7 @@ class SettingScreen extends StatelessWidget {
                       placeholder: (context, url) =>
                           const CircularProgressIndicator(),
                       errorWidget: (context, url, error) =>
-                          const Icon(Icons.error),
+                          const Icon(Icons.person,size: 85),
                     ),
                     title: Text(getTranslation(context, "settings")),
                   ),
@@ -62,11 +62,11 @@ class SettingScreen extends StatelessWidget {
                 const SizedBox(
                   height: 10,
                 ),
-                _buildPreferenceItems(
-                    context, getTranslation(context, "preference"), state),
-                const SizedBox(
-                  height: 10,
-                ),
+                // _buildPreferenceItems(
+                //     context, getTranslation(context, "preference"), state),
+                // const SizedBox(
+                //   height: 10,
+                // ),
                 _buildAppinfoItems(
                     context, getTranslation(context, "app_info")),
                 const SizedBox(
@@ -127,7 +127,7 @@ minVerticalPadding: 0,
               },
               contentPadding: EdgeInsets.zero,
               title: Text(
-                state.auth.phoneNumber!,
+                state.auth.phoneNumber??"loading",
               ),
               subtitle:
                   Text(getTranslation(context, "tap_to_change_phone_number")),
@@ -143,7 +143,7 @@ minVerticalPadding: 0,
               },
               contentPadding: EdgeInsets.zero,
               title: Text(
-                state.auth.name!,
+                state.auth.name??"loading",
               ),
               subtitle: Text(getTranslation(context, "name_textfield_hint_text")),
             ),
@@ -156,7 +156,7 @@ minVerticalPadding: 0,
               },
               contentPadding: EdgeInsets.zero,
               title: Text(
-                state.auth.email!,
+                state.auth.email??"loading",
               ),
               subtitle:
                   Text(getTranslation(context, "email_textfield_hint_text")),
@@ -170,7 +170,7 @@ minVerticalPadding: 0,
               },
               contentPadding: EdgeInsets.zero,
               title: Text(
-                state.auth.emergencyContact!,
+                state.auth.emergencyContact??"loading",
               ),
               subtitle: Text(
                   getTranslation(context, "emergency_contact_number_hint_text")),
@@ -271,59 +271,59 @@ minVerticalPadding: 0,
     );
   }
 
-  Widget _buildPreferenceItems(
-      BuildContext context, String title, AuthDataLoadSuccess state) {
-    return Card(
-            margin: const EdgeInsets.symmetric(horizontal: 0),
+  // Widget _buildPreferenceItems(
+  //     BuildContext context, String title, AuthDataLoadSuccess state) {
+  //   return Card(
+  //           margin: const EdgeInsets.symmetric(horizontal: 0),
 
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(
-              height: 20,
-            ),
-            Text(
-              title,
-              style: Theme.of(context)
-                  .textTheme
-                  .titleLarge!
-                  .copyWith(color: Colors.blueAccent),
-            ),
-            ListTile(
-              contentPadding: EdgeInsets.zero,
-              title: Text(
-                state.auth.pref!['gender'],
-              ),
-              subtitle: Text(getTranslation(context, "driver_gender")),
-            ),
-             const Divider(
-              height: 0,
-            ),
-            ListTile(
-              contentPadding: EdgeInsets.zero,
-              title: Text(
-                state.auth.pref!['min_rate'],
-              ),
-              subtitle: Text(getTranslation(context, "minimum_driver_rating")),
-            ),
-             const Divider(
-              height: 0,
-            ),
-            ListTile(
-              contentPadding: EdgeInsets.zero,
-              title: Text(
-                state.auth.pref!['car_type'],
-              ),
-              subtitle: Text(getTranslation(context, "car_type")),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+  //     child: Container(
+  //       padding: const EdgeInsets.symmetric(horizontal: 20),
+  //       child: Column(
+  //         mainAxisSize: MainAxisSize.min,
+  //         crossAxisAlignment: CrossAxisAlignment.start,
+  //         children: [
+  //           const SizedBox(
+  //             height: 20,
+  //           ),
+  //           Text(
+  //             title,
+  //             style: Theme.of(context)
+  //                 .textTheme
+  //                 .titleLarge!
+  //                 .copyWith(color: Colors.blueAccent),
+  //           ),
+  //           ListTile(
+  //             contentPadding: EdgeInsets.zero,
+  //             title: Text(
+  //               state.auth.pref!['gender'],
+  //             ),
+  //             subtitle: Text(getTranslation(context, "driver_gender")),
+  //           ),
+  //            const Divider(
+  //             height: 0,
+  //           ),
+  //           ListTile(
+  //             contentPadding: EdgeInsets.zero,
+  //             title: Text(
+  //               state.auth.pref!['min_rate'],
+  //             ),
+  //             subtitle: Text(getTranslation(context, "minimum_driver_rating")),
+  //           ),
+  //            const Divider(
+  //             height: 0,
+  //           ),
+  //           ListTile(
+  //             contentPadding: EdgeInsets.zero,
+  //             title: Text(
+  //               state.auth.pref!['car_type'],
+  //             ),
+  //             subtitle: Text(getTranslation(context, "car_type")),
+  //           ),
+  //         ],
+  //       ),
+  //     ),
+  //   );
+  // }
 
   Widget _buildAboutUsItems(BuildContext context, String title) {
     return Card(

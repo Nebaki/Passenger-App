@@ -70,7 +70,7 @@ class DetailHistoryScreen extends StatelessWidget {
                       child: Padding(
                         padding: const EdgeInsets.symmetric(vertical: 15),
                         child: Text(
-                          '${double.parse(args.request.price!).toStringAsFixed(2)} ETB',
+                          '${double.parse(args.request.price!).toStringAsFixed(2)} ${getTranslation(context,"etb")}',
                           style: const TextStyle(
                               color: Colors.green, fontSize: 26),
                         ),
@@ -212,7 +212,7 @@ class DetailHistoryScreen extends StatelessWidget {
                                 style: _greenTextStyle,
                               ),
                               Text(
-                                  "${double.parse(args.request.price!).toStringAsFixed(2)} ETB",
+                                  "${double.parse(args.request.price!).toStringAsFixed(2)} ${getTranslation(context,"etb")}",
                                   style: _greenTextStyle)
                             ],
                           ),

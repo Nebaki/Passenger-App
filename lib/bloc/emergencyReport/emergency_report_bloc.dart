@@ -19,7 +19,12 @@ class EmergencyReportBloc
         await emergencyReportRepository
             .createEmergencyReport(event.emergencyReport);
         yield EmergencyReportCreated();
-      } catch (_) {
+      } catch (e) {
+         if (e.toString().split(" ")[1] == "401") {
+          yield EmergencyReportUnAuthorised();
+        } else {
+          yield (EmergencyReportOperationFailur());
+        }
         yield EmergencyReportOperationFailur();
       }
     }
@@ -54,3 +59,6 @@ class EmergencyReportCreating extends EmergencyReportState {}
 class EmergencyReportCreated extends EmergencyReportState {}
 
 class EmergencyReportOperationFailur extends EmergencyReportState {}
+
+class EmergencyReportUnAuthorised extends EmergencyReportState {}
+

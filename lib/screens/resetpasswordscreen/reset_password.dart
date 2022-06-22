@@ -4,6 +4,7 @@ import 'package:passengerapp/bloc/bloc.dart';
 import 'package:passengerapp/helper/localization.dart';
 import 'package:passengerapp/rout.dart';
 import 'package:passengerapp/screens/signinscreen/signin.dart';
+import 'package:passengerapp/widgets/widgets.dart';
 
 class ResetPassword extends StatelessWidget {
   final ResetPasswordArgument arg;
@@ -18,13 +19,13 @@ class ResetPassword extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        elevation: 0.3,
-        backgroundColor: Colors.white,
-        iconTheme: const IconThemeData(color: Colors.black),
-        title: Text(getTranslation(context, "reset_password")),
-        centerTitle: true,
-      ),
+      // appBar: AppBar(
+      //   elevation: 0.3,
+      //   backgroundColor: Colors.white,
+      //   iconTheme: const IconThemeData(color: Colors.black),
+      //   title: Text(getTranslation(context, "reset_password")),
+      //   centerTitle: true,
+      // ),
       body: BlocConsumer<UserBloc, UserState>(
           builder: (context, state) => resetPasswordForm(context),
           listener: (context, state) {
@@ -73,13 +74,13 @@ class ResetPassword extends StatelessWidget {
                         hintText:
                             getTranslation(context, "new_password_hint_text"),
                         hintStyle: const TextStyle(
-                            fontWeight: FontWeight.bold, color: Colors.black45),
+                            fontWeight: FontWeight.bold, ),
                         prefixIcon: const Icon(
                           Icons.vpn_key,
                           size: 19,
                         ),
-                        fillColor: Colors.white,
-                        filled: true,
+                        // fillColor: Colors.white,
+                        // filled: true,
                         border: const OutlineInputBorder(
                             borderSide: BorderSide.none)),
                     validator: (value) {
@@ -108,13 +109,13 @@ class ResetPassword extends StatelessWidget {
                         hintText: getTranslation(
                             context, "confirm_password_hint_text"),
                         hintStyle: const TextStyle(
-                            fontWeight: FontWeight.bold, color: Colors.black45),
+                            fontWeight: FontWeight.bold,),
                         prefixIcon: const Icon(
                           Icons.vpn_key,
                           size: 19,
                         ),
-                        fillColor: Colors.white,
-                        filled: true,
+                        // fillColor: Colors.white,
+                        // filled: true,
                         border: const OutlineInputBorder(
                             borderSide: BorderSide.none)),
                     validator: (value) {
@@ -172,7 +173,22 @@ class ResetPassword extends StatelessWidget {
             ),
           ),
         ),
-      )
+      ),
+       const CustomeBackArrow(),
+        // Padding(
+        //   padding: const EdgeInsets.only(top: 50),
+        //   child: Column(
+        //     children: [
+        //       Align(
+        //           alignment: Alignment.topCenter,
+        //           child: Text(
+        //             getTranslation(context, "award"),
+        //             style: Theme.of(context).textTheme.titleLarge,
+        //           )),
+        //           const Divider(thickness: 0.5,)
+        //     ],
+        //   ),
+        // )
     ]);
   }
 }

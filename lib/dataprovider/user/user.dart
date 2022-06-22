@@ -62,8 +62,16 @@ class UserDataProvider {
           key: "car_type",
           value: output["passenger"]['preference']['car_type']);
       return User.fromJson(jsonDecode(response.body));
+    } else if (response.statusCode == 401) {
+      final res = await AuthDataProvider(httpClient: httpClient).refreshToken();
+
+      if (res.statusCode == 200) {
+        return createPassenger(user);
+      } else {
+        throw Exception(response.statusCode);
+      }
     } else {
-      throw Exception('Failed to create user.');
+      throw Exception(response.statusCode);
     }
   }
 
@@ -79,15 +87,22 @@ class UserDataProvider {
     final response = await request.send();
 
     if (response.statusCode == 200) {
-     
       response.stream.transform(utf8.decoder).listen((value) async {
         final data = jsonDecode(value);
 
         await authDataProvider
             .updateProfile(data['passenger']['profile_image']);
       });
+    } else if (response.statusCode == 401) {
+      final res = await AuthDataProvider(httpClient: httpClient).refreshToken();
+
+      if (res.statusCode == 200) {
+        return uploadImage(file);
+      } else {
+        throw Exception(response.statusCode);
+      }
     } else {
-      throw Exception('Failed to upload image.');
+      throw Exception(response.statusCode);
     }
   }
 
@@ -100,7 +115,7 @@ class UserDataProvider {
         body: {});
 
     if (response.statusCode != 204) {
-      throw Exception('Failed to delete user.');
+      throw Exception(response.statusCode);
     }
   }
 
@@ -126,8 +141,16 @@ class UserDataProvider {
       return User.fromJson(jsonDecode(response.body));
     } else if (response.statusCode != 204) {
       throw Exception('204 Failed to update user.');
+    } else if (response.statusCode == 401) {
+      final res = await AuthDataProvider(httpClient: httpClient).refreshToken();
+
+      if (res.statusCode == 200) {
+        return updatePassenger(user);
+      } else {
+        throw Exception(response.statusCode);
+      }
     } else {
-      throw Exception('Failed to update user.');
+      throw Exception(response.statusCode);
     }
   }
 
@@ -149,8 +172,16 @@ class UserDataProvider {
           data['passenger']['preference']['car_type']);
     } else if (response.statusCode != 204) {
       throw Exception('204 Failed to update user.');
+    } else if (response.statusCode == 401) {
+      final res = await AuthDataProvider(httpClient: httpClient).refreshToken();
+
+      if (res.statusCode == 200) {
+        return updatePreference(user);
+      } else {
+        throw Exception(response.statusCode);
+      }
     } else {
-      throw Exception('Failed to update user.');
+      throw Exception(response.statusCode);
     }
   }
 
@@ -166,8 +197,18 @@ class UserDataProvider {
               "new_password": passwordInfo['new_password'],
               "confirm_password": passwordInfo['confirm_password']
             }));
-    if (response.statusCode != 200) {
-      throw 'Unable to change password';
+    if (response.statusCode == 200) {
+      // throw 'Unable to change password';
+    } else if (response.statusCode == 401) {
+      final res = await AuthDataProvider(httpClient: httpClient).refreshToken();
+
+      if (res.statusCode == 200) {
+        return changePassword(passwordInfo);
+      } else {
+        throw Exception(response.statusCode);
+      }
+    } else {
+      throw Exception(response.statusCode);
     }
   }
 
@@ -182,8 +223,16 @@ class UserDataProvider {
       return true;
     } else if (response.statusCode == 404) {
       return false;
+    } else if (response.statusCode == 401) {
+      final res = await AuthDataProvider(httpClient: httpClient).refreshToken();
+
+      if (res.statusCode == 200) {
+        return checkPhoneNumber(phoneNumber);
+      } else {
+        throw Exception(response.statusCode);
+      }
     } else {
-      throw 'Unable to check the phonenumber';
+      throw Exception(response.statusCode);
     }
   }
 
@@ -197,8 +246,18 @@ class UserDataProvider {
               'phone_number': forgetPasswordInfo['phone_number'],
               'newPassword': forgetPasswordInfo['new_password']
             }));
-    if (response.statusCode != 200) {
-      throw 'Unable to rest password';
+    if (response.statusCode == 200) {
+      // throw 'Unable to rest password';
+    } else if (response.statusCode == 401) {
+      final res = await AuthDataProvider(httpClient: httpClient).refreshToken();
+
+      if (res.statusCode == 200) {
+        return forgetPassword(forgetPasswordInfo);
+      } else {
+        throw Exception(response.statusCode);
+      }
+    } else {
+      throw Exception(response.statusCode);
     }
   }
 
@@ -211,8 +270,18 @@ class UserDataProvider {
         },
         body: status ? json.encode({'location': location}) : json.encode({}));
 
-    if (response.statusCode != 200) {
-      throw 'Operation Failure';
+    if (response.statusCode == 200) {
+      // throw 'Operation Failure';
+    } else if (response.statusCode == 401) {
+      final res = await AuthDataProvider(httpClient: httpClient).refreshToken();
+
+      if (res.statusCode == 200) {
+        return setPassengerAvailablity(location, status);
+      } else {
+        throw Exception(response.statusCode);
+      }
+    } else {
+      throw Exception(response.statusCode);
     }
   }
 }

@@ -22,12 +22,21 @@ class EmergencyReportDataProvider {
         'location': [emergencyReport.location[0], emergencyReport.location[1]]
       }),
     );
-
     if (response.statusCode == 200) {
       // final data = jsonDecode(response.body);
       // return da
+    } else if (response.statusCode == 401) {
+
+      final res = await AuthDataProvider(httpClient: httpClient).refreshToken();
+      if (res.statusCode == 200) {
+
+        return createEmergencyReport(emergencyReport);
+      } else {
+
+        throw Exception(response.statusCode);
+      }
     } else {
-      throw Exception('Failed to create emergencyReport.');
+      throw Exception(response.statusCode);
     }
   }
 }

@@ -182,6 +182,7 @@
     "request_time_out":"Request Time Out",
     "looking_for_nearby_providers":"Looking for nearby providers",
     "award":"Award",
-    "point":"Point"
+    "point":"Point",
+    "etb":"ETB"
 
 }

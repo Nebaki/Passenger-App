@@ -65,6 +65,7 @@ class _EditProfileState extends State<EditProfile> {
           _isLoading = false;
           Future.delayed(const Duration(seconds: 1), () {
             BlocProvider.of<AuthBloc>(context).add(AuthDataLoad());
+            Navigator.pop(context);
           });
 
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -146,7 +147,7 @@ class _EditProfileState extends State<EditProfile> {
                                                   const CircularProgressIndicator(),
                                               errorWidget:
                                                   (context, url, error) =>
-                                                      const Icon(Icons.error),
+                                                      const  Icon(Icons.person,size: 45),
                                             );
                                           
                                           

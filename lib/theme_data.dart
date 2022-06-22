@@ -3,7 +3,7 @@ import 'package:passengerapp/helper/constants.dart';
 
 class ThemesData {
   static final darkTheme = ThemeData(
-    snackBarTheme: const SnackBarThemeData(backgroundColor: Colors.black),
+    snackBarTheme: const SnackBarThemeData(backgroundColor: Colors.black,contentTextStyle: TextStyle(color: Colors.white)),
     dividerColor: Colors.black,
     cardColor: Colors.black38,
       primaryIconTheme: const IconThemeData(color: Colors.white),
@@ -49,7 +49,7 @@ class ThemesData {
       colorScheme: const ColorScheme.dark());
 
   static final lightTheme = ThemeData(
-        snackBarTheme: const SnackBarThemeData(backgroundColor: Colors.white),
+        snackBarTheme: const SnackBarThemeData(backgroundColor: Colors.white,contentTextStyle: TextStyle(color: Colors.black)),
 
     dividerColor: Colors.grey.shade300,
     cardColor: Colors.white,

@@ -48,3 +48,5 @@ class UserPasswordChanged extends UserState {}
 class UserImageLoading extends UserState {}
 
 class UserAvailablitySuccess extends UserState {}
+
+class UserUnAuthorised extends UserState {}

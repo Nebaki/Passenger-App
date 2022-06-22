@@ -17,7 +17,12 @@ class TripHistoryBloc extends Bloc<TripHistoryEvent, TripHistoryState> {
             await rideRequestRepository.getRideRequests(event.skip, event.top);
 
         yield TripHstoriesLoadSuccess(requestes);
-      } catch (_) {
+      } catch (e) {
+          if (e.toString().split(" ")[1] == "401") {
+          yield TripHistoryUnAuthorised();
+        } else {
+          yield (TripHistoryOperationFailure());
+        }
         yield TripHistoryOperationFailure();
       }
     }
@@ -53,3 +58,5 @@ class TripHstoriesLoadSuccess extends TripHistoryState {
 }
 
 class TripHistoryOperationFailure extends TripHistoryState {}
+
+class TripHistoryUnAuthorised extends TripHistoryState {}

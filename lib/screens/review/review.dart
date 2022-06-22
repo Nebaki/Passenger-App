@@ -89,7 +89,7 @@ class ReviewScreen extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Center(
-                child: Text("${double.parse(arg.price).toStringAsFixed(2)} ETB",
+                child: Text("${double.parse(arg.price).toStringAsFixed(2)} ${getTranslation(context,"etb")}",
                     style: Theme.of(context).textTheme.titleLarge)),
           ),
           const Divider(),

@@ -280,29 +280,29 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
   }
 
   Widget _buildPredictedItem(LocationPrediction prediction, con) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: GestureDetector(
-        onTap: () {
-          locationController.text = prediction.mainText;
-          getPlaceDetail(prediction.placeId);
-        },
-        child: Container(
-          color: Colors.black.withOpacity(0),
-          width: MediaQuery.of(context).size.width,
-          child: Row(
-            children: [
-              const Icon(
+    return GestureDetector(
+      onTap: () {
+        locationController.text = prediction.mainText;
+        getPlaceDetail(prediction.placeId);
+      },
+      child: Container(
+        color: Colors.black.withOpacity(0),
+        width: MediaQuery.of(context).size.width,
+        child: Row(
+          children: [
+            const Flexible(
+              flex: 1,
+              fit: FlexFit.tight,
+              child: Icon(
                 Icons.arrow_forward_ios,
-                color: Colors.black,
+                // color: Colors.black,
                 size: 12,
               ),
-              const SizedBox(
-                width: 10,
-              ),
-              Text(prediction.mainText),
-            ],
-          ),
+            ),
+          
+            Flexible(
+                fit: FlexFit.tight, flex: 5, child: Text(prediction.mainText)),
+          ],
         ),
       ),
     );

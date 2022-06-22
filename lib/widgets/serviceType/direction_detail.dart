@@ -55,7 +55,7 @@ class _DirectionDetailState extends State<DirectionDetail> {
                           style: Theme.of(context).textTheme.subtitle1,
                           children: [
                             TextSpan(
-                                text: "$price ETB",
+                                text: "$price ${getTranslation(context,"etb")}",
                                 style: Theme.of(context).textTheme.labelMedium)
                           ])),
                       const SizedBox(

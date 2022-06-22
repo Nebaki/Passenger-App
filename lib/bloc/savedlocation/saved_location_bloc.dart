@@ -138,3 +138,5 @@ class SavedLocationOperationFailure extends SavedLocationState {
 }
 
 class SavedLocationOperationsuccess extends SavedLocationState {}
+
+class SavedLocationUnAuthorised extends SavedLocationState {}

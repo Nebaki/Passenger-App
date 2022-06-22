@@ -14,7 +14,12 @@ class ReviewBloc extends Bloc<ReviewEvent, ReviewState> {
       try {
         await reviewRepository.createReview(event.review);
         yield ReviewSent();
-      } catch (_) {
+      } catch (e) {
+          if (e.toString().split(" ")[1] == "401") {
+          yield ReviewUnAuthorised();
+        } else {
+          yield (ReviewSendingFailure());
+        }
         yield ReviewSendingFailure();
       }
     }
@@ -47,3 +52,5 @@ class ReviewSending extends ReviewState {}
 class ReviewSent extends ReviewState {}
 
 class ReviewSendingFailure extends ReviewState {}
+
+class ReviewUnAuthorised extends ReviewState {}

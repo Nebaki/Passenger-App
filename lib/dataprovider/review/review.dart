@@ -24,8 +24,16 @@ class ReviewDataProvider {
           "driver_id": driverId
         }));
     if (response.statusCode == 200) {
+    } else if (response.statusCode == 401) {
+      final res = await AuthDataProvider(httpClient: httpClient).refreshToken();
+      if (res.statusCode == 200) {
+        return createRideRequest(review);
+      } else {
+        // print(response.body);
+        throw Exception(response.statusCode);
+      }
     } else {
-      throw Exception('Failed to create review.');
+      throw Exception(response.statusCode);
     }
   }
 }

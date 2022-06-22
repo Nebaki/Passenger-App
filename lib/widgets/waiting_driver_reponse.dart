@@ -83,7 +83,7 @@ class _WaitingDriverResponseState extends State<WaitingDriverResponse> {
                         ),
                       ),
                       Flexible(
-                        flex: 1,
+                        flex: 2,
                         child: Padding(
                           padding: const EdgeInsets.symmetric(vertical: 10),
                           child: TextButton(

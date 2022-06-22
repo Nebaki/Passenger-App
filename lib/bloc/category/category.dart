@@ -16,6 +16,11 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
         List<Category> categories = await categoryRepository.getCategories();
         yield CategoryLoadSuccess(categories: categories);
       } catch (e) {
+        if (e.toString().split(" ")[1] == "401") {
+          yield CategoryUnAuthorised();
+        } else {
+          yield (CategoryOperationFailure());
+        }
         yield CategoryOperationFailure();
       }
     }
@@ -48,3 +53,5 @@ class CategoryLoadSuccess extends CategoryState {
 }
 
 class CategoryOperationFailure extends CategoryState {}
+
+class CategoryUnAuthorised extends CategoryState {}

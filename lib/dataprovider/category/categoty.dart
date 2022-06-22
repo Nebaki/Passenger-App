@@ -22,8 +22,15 @@ class CategoryDataProvider {
     if (response.statusCode == 200) {
       var jsonResponse = json.decode(response.body)['items'] as List;
       return jsonResponse.map((e) => Category.fromJson(e)).toList();
-    } else {
-      throw Exception('Can not get categories');
+    } else if (response.statusCode == 401) {
+      final res = await AuthDataProvider(httpClient: httpClient).refreshToken();
+      if (res.statusCode == 200) {
+        return getCategories();
+      } else {
+        throw Exception(response.statusCode);
+      }
+    }else {
+      throw Exception(response.statusCode);
     }
   }
 }
