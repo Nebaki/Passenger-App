@@ -16,6 +16,15 @@ class UserDataProvider {
   final _imageBaseUrl = 'https://safeway-api.herokuapp.com/';
 
   final secureStorage = const FlutterSecureStorage();
+  void updateCookie(http.Response response) async {
+    final rawCookie = response.headers['set-cookie'];
+    if (rawCookie != null) {
+      int index = rawCookie.indexOf(';');
+      await secureStorage.write(
+          key: "refresh_token",
+          value: (index == -1) ? rawCookie : rawCookie.substring(0, index));
+    }
+  }
 
   Future<User> createPassenger(User user) async {
     final response = await http.post(
@@ -31,7 +40,7 @@ class UserDataProvider {
 
     if (response.statusCode == 200) {
       final output = jsonDecode(response.body);
-
+      updateCookie(response);
       await secureStorage.write(key: 'id', value: output['passenger']['id']);
       await secureStorage.write(
           key: 'phone_number', value: output['passenger']['phone_number']);

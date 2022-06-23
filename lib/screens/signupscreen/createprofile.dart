@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:passengerapp/bloc/bloc.dart';
@@ -144,6 +145,32 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                     settings: state.settings,
                     isSelected: false,
                     isFromSplash: false));
+          }
+          if (state is SettingsOperationFailure) {
+            SystemNavigator.pop();
+          }
+          if (state is SettingsUnAuthorised) {
+            SystemNavigator.pop();
+          }
+          if (state is SettingsLoading) {
+            showDialog(
+                // barrierDismissible: false,
+                context: context,
+                builder: (BuildContext context) {
+                  return WillPopScope(
+                    onWillPop: () async => false,
+                    child: const Dialog(
+                        elevation: 0,
+                        insetPadding: EdgeInsets.all(0),
+                        backgroundColor: Colors.transparent,
+                        child: Center(
+                          child: SizedBox(
+                              height: 40,
+                              width: 40,
+                              child: CircularProgressIndicator(strokeWidth: 1)),
+                        )),
+                  );
+                });
           }
         },
         child: Padding(

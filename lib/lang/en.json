@@ -29,7 +29,7 @@
     "verification_resent_text":"Didn't receive the code?",
     "verification_resend_button_text":"RESEND",
     "verification_form_validator_text":"Must fill all fields",
-    "create_profile_title ":"Create Profile",
+    "create_profile_title":"Create Profile",
     "name_textfield_hint_text":"Full Name",
     "create_profile_password_textfield_hint_text":"Password",
     "confirm_password":"Confirm Password",

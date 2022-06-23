@@ -21,7 +21,6 @@ class AuthDataProvider {
         headers: <String, String>{
           'Cookie': '${await secureStorage.read(key: "refresh_token")}'
         });
-
     if (response.statusCode == 200) {
       final token = jsonDecode(response.body)['token'];
       secureStorage.write(key: "token", value: token);

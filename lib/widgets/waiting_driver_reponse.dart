@@ -74,9 +74,11 @@ class _WaitingDriverResponseState extends State<WaitingDriverResponse> {
                       Flexible(
                         flex: 5,
                         child: Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 20,horizontal: 10),
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 20, horizontal: 10),
                           child: Text(
-                            getTranslation(context, "looking_for_nearby_providers"),
+                            getTranslation(
+                                context, "looking_for_nearby_providers"),
                             textAlign: TextAlign.center,
                             style: Theme.of(context).textTheme.titleLarge,
                           ),
@@ -92,14 +94,15 @@ class _WaitingDriverResponseState extends State<WaitingDriverResponse> {
                                     context, CancelReason.routeName,
                                     arguments: CancelReasonArgument(
                                         sendRequest: true));
-                      
+
                                 // callback!(CancelTrip(
                                 //     callback, WaitingDriverResponse(callback)));
                               },
                               child: Text(
                                 getTranslation(context, "cancel"),
-                                style:
-                                    Theme.of(context).textTheme.titleLarge,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: Theme.of(context).textTheme.titleLarge,
                               )),
                         ),
                       )
