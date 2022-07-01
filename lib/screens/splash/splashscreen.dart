@@ -1,9 +1,11 @@
 import 'dart:async';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:passengerapp/bloc/bloc.dart';
+import 'package:passengerapp/cubit/theme_mode_cubit/theme_mode_cubit.dart';
 import 'package:passengerapp/helper/constants.dart';
 import 'package:passengerapp/helper/localization.dart';
 import 'package:passengerapp/rout.dart';
@@ -26,6 +28,16 @@ class _CustomSplashScreenState extends State<CustomSplashScreen> {
 
   @override
   void initState() {
+    if (context.read<ThemeModeCubit>().state == ThemeMode.system) {
+      var window = WidgetsBinding.instance.window;
+      window.onPlatformBrightnessChanged = () {
+        if (window.platformBrightness == Brightness.dark) {
+          BlocProvider.of<ThemeModeCubit>(context).ActivateDarkTheme();
+        } else {
+          BlocProvider.of<ThemeModeCubit>(context).ActivateLightTheme();
+        }
+      };
+    }
     super.initState();
     _toggleInternetServiceStatusStream();
   }
@@ -107,32 +119,39 @@ class _CustomSplashScreenState extends State<CustomSplashScreen> {
                     Navigator.pushReplacementNamed(
                         context, SigninScreen.routeName);
                   }
+                } else {
+                  SystemNavigator.pop();
                 }
               });
             }
             if (state is AuthOperationFailure) {
               _requestLocationPermission().then((value) {
-                Navigator.pushReplacementNamed(context, SigninScreen.routeName);
+                if (value) {
+                  Navigator.pushReplacementNamed(
+                      context, SigninScreen.routeName);
+                } else {
+                  SystemNavigator.pop();
+                }
               });
             }
           }),
           BlocConsumer<SettingsBloc, SettingsState>(
               builder: (context, settingsState) {
-                if (settingsState is SettingsLoading) {
+            if (settingsState is SettingsLoading) {
               return const Align(
+                alignment: Alignment.bottomCenter,
+                child: Padding(
+                  padding: EdgeInsets.only(bottom: 15),
+                  child: Align(
                     alignment: Alignment.bottomCenter,
-                    child: Padding(
-                      padding: EdgeInsets.only(bottom: 15),
-                      child: Align(
-                        alignment: Alignment.bottomCenter,
-                        child: LinearProgressIndicator(
-                          minHeight: 1,
-                          color: Colors.black,
-                          backgroundColor: Colors.white,
-                        ),
-                      ),
+                    child: LinearProgressIndicator(
+                      minHeight: 1,
+                      color: Colors.black,
+                      backgroundColor: Colors.white,
                     ),
-                  );
+                  ),
+                ),
+              );
             }
             if (settingsState is SettingsLoadSuccess) {
               return BlocConsumer<RideRequestBloc, RideRequestState>(
@@ -209,30 +228,28 @@ class _CustomSplashScreenState extends State<CustomSplashScreen> {
                 }
               });
             }
-            
 
             return Container();
           }, listener: (context, state) {
             if (state is SettingsUnAuthorised) {
               Navigator.pushReplacementNamed(context, SigninScreen.routeName);
-
             }
             if (state is SettingsOperationFailure) {
               ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                    duration: const Duration(minutes: 5),
-                    backgroundColor: Colors.black,
-                    content: Text(
-                      getTranslation(context, "check_internet_connection"),
-                      style: const TextStyle(color: Colors.white),
-                    ),
-                    action: SnackBarAction(
-                        textColor: Colors.white,
-                        label: getTranslation(context, "try_again"),
-                        onPressed: () {
-                          ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                          _getSettings();
-                        }),
-                  ));
+                duration: const Duration(minutes: 5),
+                backgroundColor: Colors.black,
+                content: Text(
+                  getTranslation(context, "check_internet_connection"),
+                  style: const TextStyle(color: Colors.white),
+                ),
+                action: SnackBarAction(
+                    textColor: Colors.white,
+                    label: getTranslation(context, "try_again"),
+                    onPressed: () {
+                      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                      _getSettings();
+                    }),
+              ));
             }
           }),
         ],

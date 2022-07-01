@@ -154,6 +154,8 @@ class MyApp extends StatelessWidget {
           RepositoryProvider.value(value: savedLocationRepository),
           RepositoryProvider.value(value: emergencyReportRepository),
           RepositoryProvider.value(value: categoryRepository),
+          RepositoryProvider.value(value: settingsRepository)
+
         ],
         child: MultiBlocProvider(
             providers: [

@@ -12,7 +12,7 @@ class ReviewScreen extends StatelessWidget {
   final ReviewScreenArgument arg;
   static const routeName = 'reviewscreen';
   final description = TextEditingController();
-  double minRate = 1;
+  double minRate = 0;
   bool _isLoading = false;
 
   ReviewScreen({Key? key, required this.arg}) : super(key: key);
@@ -89,7 +89,8 @@ class ReviewScreen extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Center(
-                child: Text("${double.parse(arg.price).toStringAsFixed(2)} ${getTranslation(context,"etb")}",
+                child: Text(
+                    "${double.parse(arg.price).toStringAsFixed(2)} ${getTranslation(context, "etb")}",
                     style: Theme.of(context).textTheme.titleLarge)),
           ),
           const Divider(),
@@ -141,17 +142,24 @@ class ReviewScreen extends StatelessWidget {
                         style: Theme.of(context).textTheme.bodyLarge,
                       ),
                     ),
-                    RatingBar.builder(
-                        itemSize: 20,
-                        initialRating: 4,
-                        minRating: 1,
-                        direction: Axis.horizontal,
-                        allowHalfRating: false,
-                        itemCount: 5,
-                        //itemPadding: EdgeInsets.symmetric(horizontal: 4.0),
-                        itemBuilder: (context, _) =>
-                            const Icon(Icons.star, color: Colors.green),
-                        onRatingUpdate: (rating) {}),
+                    BlocBuilder<DriverBloc, DriverState>(
+                      builder: (context, state) {
+                        if (state is DriverLoadSuccess) {
+                          return RatingBar.builder(
+                              itemSize: 20,
+                              initialRating: 1,
+                              minRating: 1,
+                              direction: Axis.horizontal,
+                              allowHalfRating: false,
+                              itemCount: 5,
+                              //itemPadding: EdgeInsets.symmetric(horizontal: 4.0),
+                              itemBuilder: (context, _) =>
+                                  const Icon(Icons.star, color: Colors.green),
+                              onRatingUpdate: (rating) {});
+                        }
+                        return Container();
+                      },
+                    )
                   ],
                 ),
                 const VerticalDivider(),
@@ -188,9 +196,6 @@ class ReviewScreen extends StatelessWidget {
                 maxLines: 4,
                 decoration: InputDecoration(
                     hintText: getTranslation(context, "leave_a_comment"),
-                    hintStyle: const TextStyle(
-                        fontWeight: FontWeight.bold, color: Colors.black45),
-                    fillColor: Colors.white,
                     filled: true,
                     border:
                         const OutlineInputBorder(borderSide: BorderSide.none)),

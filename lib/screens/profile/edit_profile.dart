@@ -173,9 +173,7 @@ class _EditProfileState extends State<EditProfile> {
                               focusedBorder: const OutlineInputBorder(
                                   borderSide: BorderSide(
                                       width: 0.6, color: Colors.orange)),
-                              hintStyle: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black45),
+                           
                               prefixIcon: const Icon(
                                 Icons.contact_mail,
                                 size: 19,
@@ -218,9 +216,7 @@ class _EditProfileState extends State<EditProfile> {
                               focusedBorder: const OutlineInputBorder(
                                   borderSide: BorderSide(
                                       width: 0.6, color: Colors.orange)),
-                              hintStyle: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black45),
+                              
                               prefixIcon: const Icon(
                                 Icons.phone_callback_outlined,
                                 size: 19,
@@ -263,9 +259,7 @@ class _EditProfileState extends State<EditProfile> {
                               focusedBorder: const OutlineInputBorder(
                                   borderSide: BorderSide(
                                       width: 0.6, color: Colors.orange)),
-                              hintStyle: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black45),
+                             
                               prefixIcon: const Icon(
                                 Icons.mail_outline,
                                 size: 19,
@@ -300,9 +294,7 @@ class _EditProfileState extends State<EditProfile> {
                               focusedBorder: const OutlineInputBorder(
                                   borderSide: BorderSide(
                                       width: 0.6, color: Colors.orange)),
-                              hintStyle: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black45),
+                              
                               prefixIcon: const Icon(
                                 Icons.contact_phone_outlined,
                                 size: 19,

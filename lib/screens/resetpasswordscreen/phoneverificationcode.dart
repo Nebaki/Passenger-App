@@ -55,6 +55,7 @@ class _MobileVerificationState extends State<MobileVerification> {
   void sendVerificationCode() async {
     await _auth.verifyPhoneNumber(
         phoneNumber: phoneController,
+        timeout: const Duration(seconds: 60),
         verificationCompleted: (phoneAuthCredential) async {
           // setState(() {
           //   showLoading = false;

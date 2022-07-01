@@ -144,7 +144,7 @@ class DriverProfile extends StatelessWidget {
                           ),
                           Row(
                             children: [
-                              Text(driverRating!.toString()),
+                              Text(driverRating!.toStringAsFixed(1)),
                               const SizedBox(
                                 width: 3,
                               ),

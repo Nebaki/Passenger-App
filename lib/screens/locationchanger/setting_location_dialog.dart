@@ -47,23 +47,24 @@ class SettingLocationDialog extends StatelessWidget {
               context: context,
               builder: (BuildContext context) {
                 return AlertDialog(
-                  content: Row(
-                    children: [
-                      const SizedBox(
-                        height: 20,
-                        width: 20,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 1,
-                          color: Colors.black,
-                        ),
+              content: Row(
+                children: [
+                  const Flexible(
+                    flex: 1,
+                    child:  SizedBox(
+                      height: 20,
+                      width: 20,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 1,
+                        color: Colors.black,
                       ),
-                      const SizedBox(
-                        width: 5,
-                      ),
-                      Text(getTranslation(context, "settingup_pickup_message")),
-                    ],
+                    ),
                   ),
-                );
+                  
+                  Flexible(flex: 5, child: Text(getTranslation(context, "settingup_pickup_message"),)),
+                ], 
+              ),
+            );
               });
         }
       },

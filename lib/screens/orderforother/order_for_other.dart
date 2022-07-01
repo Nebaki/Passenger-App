@@ -7,6 +7,7 @@ import 'package:passengerapp/bloc/bloc.dart';
 import 'package:passengerapp/helper/constants.dart';
 import 'package:passengerapp/helper/localization.dart';
 import 'package:passengerapp/repository/nearby_driver.dart';
+import 'package:passengerapp/screens/home/assistant/home_screen_assistant.dart';
 import 'package:passengerapp/widgets/widgets.dart';
 import '../../models/models.dart';
 
@@ -34,6 +35,7 @@ class _OrderForOtherScreenState extends State<OrderForOtherScreen> {
   late LatLng destinationLtlng;
   @override
   void initState() {
+    // pickupLatLng = LatLng(userPostion.latitude, userPostion.longitude);
     super.initState();
   }
 
@@ -382,19 +384,20 @@ class _OrderForOtherScreenState extends State<OrderForOtherScreen> {
             return AlertDialog(
               content: Row(
                 children: [
-                  const SizedBox(
-                    height: 20,
-                    width: 20,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 1,
-                      color: Colors.black,
+                  const Flexible(
+                    flex: 1,
+                    child:  SizedBox(
+                      height: 20,
+                      width: 20,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 1,
+                        color: Colors.black,
+                      ),
                     ),
                   ),
-                  const SizedBox(
-                    width: 5,
-                  ),
-                  Text(getTranslation(context, "settingup_pickup_message")),
-                ],
+                  
+                  Flexible(flex: 5, child: Text(getTranslation(context, "settingup_pickup_message"),)),
+                ], 
               ),
             );
           });
@@ -448,18 +451,19 @@ class _OrderForOtherScreenState extends State<OrderForOtherScreen> {
             return AlertDialog(
               content: Row(
                 children: [
-                  const SizedBox(
-                    height: 20,
-                    width: 20,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 1,
-                      color: Colors.black,
+                  const Flexible(
+                    flex: 1,
+                    child:  SizedBox(
+                      height: 20,
+                      width: 20,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 1,
+                        color: Colors.black,
+                      ),
                     ),
                   ),
-                  const SizedBox(
-                    width: 5,
-                  ),
-                  Text(getTranslation(context, "settingup_dropp_off_message")),
+               
+                  Flexible(flex: 5, child: Text(getTranslation(context, "settingup_dropp_off_message"))),
                 ],
               ),
             );

@@ -114,6 +114,7 @@ class _SigninScreenState extends State<SigninScreen> {
                       onInputChanged: (PhoneNumber number) {},
                       onInputValidated: (bool value) {},
                       selectorConfig: const SelectorConfig(
+                        
                           selectorType: PhoneInputSelectorType.BOTTOM_SHEET,
                           trailingSpace: false),
                       ignoreBlank: false,

@@ -36,7 +36,11 @@ class ResetPassword extends StatelessWidget {
                   content: Text(getTranslation(context, "password_changed")),
                   backgroundColor: Colors.green.shade900));
 
-              Navigator.pushReplacementNamed(context, SigninScreen.routeName);
+              Navigator.pushNamedAndRemoveUntil(
+                context,
+                SigninScreen.routeName,
+                ((Route<dynamic> route) => false),
+              );
               // Navigator.pop(context);
             }
             if (state is UserOperationFailure) {
@@ -74,7 +78,8 @@ class ResetPassword extends StatelessWidget {
                         hintText:
                             getTranslation(context, "new_password_hint_text"),
                         hintStyle: const TextStyle(
-                            fontWeight: FontWeight.bold, ),
+                          fontWeight: FontWeight.bold,
+                        ),
                         prefixIcon: const Icon(
                           Icons.vpn_key,
                           size: 19,
@@ -109,7 +114,8 @@ class ResetPassword extends StatelessWidget {
                         hintText: getTranslation(
                             context, "confirm_password_hint_text"),
                         hintStyle: const TextStyle(
-                            fontWeight: FontWeight.bold,),
+                          fontWeight: FontWeight.bold,
+                        ),
                         prefixIcon: const Icon(
                           Icons.vpn_key,
                           size: 19,
@@ -174,21 +180,21 @@ class ResetPassword extends StatelessWidget {
           ),
         ),
       ),
-       const CustomeBackArrow(),
-        // Padding(
-        //   padding: const EdgeInsets.only(top: 50),
-        //   child: Column(
-        //     children: [
-        //       Align(
-        //           alignment: Alignment.topCenter,
-        //           child: Text(
-        //             getTranslation(context, "award"),
-        //             style: Theme.of(context).textTheme.titleLarge,
-        //           )),
-        //           const Divider(thickness: 0.5,)
-        //     ],
-        //   ),
-        // )
+      const CustomeBackArrow(),
+      // Padding(
+      //   padding: const EdgeInsets.only(top: 50),
+      //   child: Column(
+      //     children: [
+      //       Align(
+      //           alignment: Alignment.topCenter,
+      //           child: Text(
+      //             getTranslation(context, "award"),
+      //             style: Theme.of(context).textTheme.titleLarge,
+      //           )),
+      //           const Divider(thickness: 0.5,)
+      //     ],
+      //   ),
+      // )
     ]);
   }
 }

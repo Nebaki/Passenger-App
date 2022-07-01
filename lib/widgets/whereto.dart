@@ -68,6 +68,8 @@ class _WhereToState extends State<WhereTo> {
                     child: InkWell(
                       onTap: () {
                         if (state is ReverseLocationLoadSuccess) {
+                          pickupLatLng = LatLng(
+                              userPostion.latitude, userPostion.longitude);
                           buttomSheet();
                           pickupAddress = state.location.address1;
                           currentLocation = state.location.address1;
@@ -85,9 +87,9 @@ class _WhereToState extends State<WhereTo> {
                               .add(const ReverseLocationLoad());
                           _buildReverseLocationLoadingDialog();
                         }
-                        whereToClicked = true;
-                        BlocProvider.of<LocationBloc>(context)
-                            .add(const ReverseLocationLoad());
+                        // whereToClicked = true;
+                        // BlocProvider.of<LocationBloc>(context)
+                        //     .add(const ReverseLocationLoad());
                       },
                       child: SizedBox(
                         height: 35,
@@ -194,7 +196,8 @@ class _WhereToState extends State<WhereTo> {
         barrierDismissible: false,
         context: context,
         builder: (BuildContext context) {
-          return BlocBuilder(builder: ((context, state) {
+          return BlocBuilder<LocationBloc, ReverseLocationState>(
+              builder: ((context, state) {
             if (state is ReverseLocationLoadSuccess) {
               Navigator.pop(context);
             }
@@ -401,19 +404,21 @@ class _WhereToState extends State<WhereTo> {
               return AlertDialog(
                 content: Row(
                   children: [
-                    const SizedBox(
-                      height: 20,
-                      width: 20,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 1,
-                        color: Colors.black,
+                    const Flexible(
+                      flex: 1,
+                      child: SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 1,
+                          color: Colors.black,
+                        ),
                       ),
                     ),
-                    const SizedBox(
-                      width: 5,
-                    ),
-                    Text(
-                        getTranslation(context, "settingup_dropp_off_message")),
+                    Flexible(
+                        flex: 5,
+                        child: Text(getTranslation(
+                            context, "settingup_dropp_off_message"))),
                   ],
                 ),
               );

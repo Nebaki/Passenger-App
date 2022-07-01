@@ -144,7 +144,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                 arguments: HomeScreenArgument(
                     settings: state.settings,
                     isSelected: false,
-                    isFromSplash: false));
+                    isFromSplash: true));
           }
           if (state is SettingsOperationFailure) {
             SystemNavigator.pop();

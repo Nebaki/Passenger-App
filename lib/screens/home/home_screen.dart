@@ -80,13 +80,14 @@ class _HomeScreenState extends State<HomeScreen> {
   late Position currentPostion;
   late LatLngBounds latLngBounds;
 
-  Future _loadMapStyles() async { _nightMapStyle =
+  Future _loadMapStyles() async {
+    _nightMapStyle =
         await rootBundle.loadString("assets/map_styles/night.json");
     // _aubergineMapStyle =
     //     await rootBundle.loadString('assets/map_styles/aubergine.json');
     //       _darkMapStyle =
     //     await rootBundle.loadString('assets/map_styles/dark.json');
-   
+
     //     _retroMapStyle =
     //     await rootBundle.loadString("assets/map_styles/retro.json");
   }
@@ -137,15 +138,15 @@ class _HomeScreenState extends State<HomeScreen> {
       var window = WidgetsBinding.instance.window;
       window.onPlatformBrightnessChanged = () {
         if (window.platformBrightness == Brightness.dark) {
-          BlocProvider.of<ThemeModeCubit>(context).ActivateDarkTheme();
-        } else {
-          BlocProvider.of<ThemeModeCubit>(context).ActivateLightTheme();
+          _controller.future.whenComplete(() {
+            outerController.setMapStyle(_nightMapStyle);
+          });
         }
       };
     } else if (context.read<ThemeModeCubit>().state == ThemeMode.dark) {
-
-      _controller.future
-          .whenComplete(() {  outerController.setMapStyle(_nightMapStyle);});
+      _controller.future.whenComplete(() {
+        outerController.setMapStyle(_nightMapStyle);
+      });
     }
 
     context.read<CurrentWidgetCubit>().changeWidget(widget.args.isSelected
@@ -200,6 +201,8 @@ class _HomeScreenState extends State<HomeScreen> {
                           _controller.complete(controller);
                           outerController = controller;
                           _determinePosition().then((value) {
+                            currentPostion = value;
+                            userPostion = currentPostion;
                             context.read<UserBloc>().add(UserSetAvailability(
                                 [value.longitude, value.latitude], true));
                             currentPostion = value;
@@ -364,7 +367,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                         : CameraUpdate.newCameraPosition(
                                             CameraPosition(
                                                 zoom: 16.4746,
-                                                target: pickupLatLng)));
+                                                target: LatLng(
+                                                    currentPostion.latitude,
+                                                    currentPostion
+                                                        .longitude))));
                                   },
                                   child: const Icon(Icons.gps_fixed, size: 20)),
                             ),
@@ -374,7 +380,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             child: SizedBox(
                               height: 45,
                               child: FloatingActionButton(
-                                onPressed: () async{
+                                onPressed: () async {
                                   makePhoneCall('9495');
                                 },
                                 child: const Icon(Icons.call, size: 20),
@@ -491,7 +497,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 Expanded(
                   flex: 0,
                   child: BlocBuilder<CurrentWidgetCubit, Widget>(
-                    builder: (context, state) => state,
+                    builder: (context, state) {
+                      return state;
+                    },
                   ),
                 ),
               ],
@@ -511,6 +519,8 @@ class _HomeScreenState extends State<HomeScreen> {
   void resetScreen(bool determinePosition, bool listenToNearbyTaxi) {
     if (determinePosition) {
       _determinePosition().then((value) {
+        currentPostion = value;
+        userPostion = currentPostion;
         outerController.animateCamera(CameraUpdate.newCameraPosition(
             CameraPosition(
                 zoom: 16.1746,
@@ -782,6 +792,8 @@ class _HomeScreenState extends State<HomeScreen> {
             if (isFirstTime) {
               Geolocator.getCurrentPosition().then((value) {
                 carTypeSelectorDialog(value);
+                currentPostion = value;
+                userPostion = currentPostion;
                 currentLatLng = LatLng(value.latitude, value.longitude);
                 // pickupLatLng = currentLatLng;
                 outerController.animateCamera(CameraUpdate.newCameraPosition(
@@ -806,6 +818,8 @@ class _HomeScreenState extends State<HomeScreen> {
       _connectivitySubscription ==
           _connectivity.onConnectivityChanged.listen((event) {
             if (event == ConnectivityResult.none) {
+                        internetServiceStatus = true;
+
               internetServiceButtomSheet();
             } else if (event == ConnectivityResult.wifi) {
               if (internetServiceStatus != null) {
@@ -1042,7 +1056,6 @@ class _HomeScreenState extends State<HomeScreen> {
         isDismissible: false,
         context: context,
         builder: (BuildContext context) {
-          internetServiceStatus = true;
           return WillPopScope(
             onWillPop: () async => false,
             child: Container(

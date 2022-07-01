@@ -14,7 +14,7 @@ late int costPerMinuteAssistant;
 late int initialFareAssistant;
 enum SelectedCar { taxi, truck, none }
 late SelectedCar selectedCar = SelectedCar.none;
-bool whereToClicked = false;
+// bool whereToClicked = false;
 List newDriversList = [];
 List? searchNearbyDriversList(String category) {
   if (repo.getNearbyDrivers().isEmpty) {
@@ -69,3 +69,4 @@ String? searchNearbyDriver(String category) {
 
 //// new updates
 bool showCarIcons = true;
+late Position userPostion;
