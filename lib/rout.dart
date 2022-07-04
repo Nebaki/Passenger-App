@@ -140,12 +140,14 @@ class HomeScreenArgument {
   LatLng? destinationlatlang;
   String? encodedPts;
   final Settings settings;
+  final String? status;
 
   HomeScreenArgument(
       {required this.isSelected,
       required this.settings,
       this.destinationlatlang,
       this.encodedPts,
+      this.status,
       required this.isFromSplash});
 }
 

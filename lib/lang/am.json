@@ -184,7 +184,8 @@
     "looking_for_nearby_providers":"በአቅራቢያ ያሉ አሽከርካሪዎችን በመፈለግ ላይ",
     "award":"ሽልማት",
     "point":"ነጥብ",
-    "etb":"ብር"
+    "etb":"ብር",
+    "incorrect_verification_code":"InCorrect Verification Code"
 
 
 }

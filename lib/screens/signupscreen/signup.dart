@@ -47,7 +47,7 @@ class _SignupScreenState extends State<SignupScreen> {
 
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
               backgroundColor: Colors.red.shade900,
-              content: Text(verificationFailed.message.toString())));
+              content: Text(getTranslation(context, "incorrect_verification_code"))));
         },
         codeSent: (verificationId, resendingToken) async {
           // setState(() {

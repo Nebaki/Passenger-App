@@ -28,7 +28,7 @@
     "verification_button_text":"Verify",
     "verification_resent_text":"Didn't receive the code?",
     "verification_resend_button_text":"RESEND",
-    "verification_form_validator_text":"Must fill all fields",
+    "verification_form_validator_text":"Enter Verification Code",
     "create_profile_title":"Create Profile",
     "name_textfield_hint_text":"Full Name",
     "create_profile_password_textfield_hint_text":"Password",
@@ -183,6 +183,7 @@
     "looking_for_nearby_providers":"Looking for nearby providers",
     "award":"Award",
     "point":"Point",
-    "etb":"ETB"
+    "etb":"ETB",
+    "incorrect_verification_code":"InCorrect Verification Code"
 
 }

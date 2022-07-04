@@ -66,7 +66,7 @@ class _MobileVerificationState extends State<MobileVerification> {
         verificationFailed: (verificationFailed) async {
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
               backgroundColor: Colors.red.shade900,
-              content: Text('Error: $verificationFailed')));
+              content: Text(getTranslation(context, "incorrect_verification_code"))));
           setState(() {
             showLoading = false;
           });

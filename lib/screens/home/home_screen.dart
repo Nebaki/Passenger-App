@@ -149,12 +149,6 @@ class _HomeScreenState extends State<HomeScreen> {
       });
     }
 
-    context.read<CurrentWidgetCubit>().changeWidget(widget.args.isSelected
-        ? const StartedTripPannel()
-        : const WhereTo(
-            key: Key("whereto"),
-          ));
-
     super.initState();
   }
 
@@ -818,7 +812,7 @@ class _HomeScreenState extends State<HomeScreen> {
       _connectivitySubscription ==
           _connectivity.onConnectivityChanged.listen((event) {
             if (event == ConnectivityResult.none) {
-                        internetServiceStatus = true;
+              internetServiceStatus = true;
 
               internetServiceButtomSheet();
             } else if (event == ConnectivityResult.wifi) {
@@ -1175,6 +1169,30 @@ class _HomeScreenState extends State<HomeScreen> {
   void loadStartedTrip() {
     if (widget.args.isSelected) {
       WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+        switch (widget.args.status) {
+          case "Accepted":
+            context
+                .read<CurrentWidgetCubit>()
+                .changeWidget(const DriverOnTheWay(fromBackGround: false));
+            break;
+          case "Arrived":
+            context
+                .read<CurrentWidgetCubit>()
+                .changeWidget(const DriverOnTheWay(fromBackGround: false));
+            break;
+          case "Started":
+            context
+                .read<CurrentWidgetCubit>()
+                .changeWidget(const StartedTripPannel());
+            break;
+          default:
+            const WhereTo(
+              key: Key("whereto"),
+            );
+        }
+
+        ///////////////////////
+
         _getPolyline(widget.args.encodedPts!);
         _addMarker(
             pickupLatLng,

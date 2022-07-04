@@ -139,7 +139,7 @@ class LocationChanger extends StatelessWidget {
   }
 
   void findPlace(BuildContext context, String placeName) {
-    if (placeName.isNotEmpty) {
+    if (placeName.length>=2) {
       LocationPredictionEvent event =
           LocationPredictionLoad(placeName: placeName);
       BlocProvider.of<LocationPredictionBloc>(context).add(event);

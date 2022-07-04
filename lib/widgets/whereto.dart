@@ -511,7 +511,7 @@ class _WhereToState extends State<WhereTo> {
   }
 
   void findPlace(String placeName) {
-    if (placeName.isNotEmpty) {
+    if (placeName.length>=2) {
       LocationPredictionEvent event =
           LocationPredictionLoad(placeName: placeName);
       BlocProvider.of<LocationPredictionBloc>(context).add(event);

@@ -197,6 +197,7 @@ class _CustomSplashScreenState extends State<CustomSplashScreen> {
                       context, SigninScreen.routeName);
                 }
                 if (st is RideRequestStartedTripChecked) {
+                  print("Yow we are here");
                   if (st.rideRequest.pickUpAddress == null) {
                     Navigator.pushReplacementNamed(
                         context, HomeScreen.routeName,
@@ -223,6 +224,7 @@ class _CustomSplashScreenState extends State<CustomSplashScreen> {
                             settings: settingsState.settings,
                             isFromSplash: false,
                             isSelected: true,
+                            status: st.rideRequest.status,
                             encodedPts: st.rideRequest.direction));
                   }
                 }
@@ -258,6 +260,8 @@ class _CustomSplashScreenState extends State<CustomSplashScreen> {
   }
 
   void _getSettings() {
+
+    print("Tomlalaw w  www w w");
     BlocProvider.of<SettingsBloc>(context).add(SettingsStarted());
   }
 
@@ -305,12 +309,12 @@ class _CustomSplashScreenState extends State<CustomSplashScreen> {
         // ScaffoldMessenger.of(context).hideCurrentMaterialBanner();
 
         if (isFirstTime) {
-          _checkStartedTrip();
+          _getSettings();
         }
         isFirstTime = false;
       } else if (event == ConnectivityResult.mobile) {
         if (isFirstTime) {
-          _checkStartedTrip();
+          _getSettings();
         }
         isFirstTime = false;
         showBanner = false;

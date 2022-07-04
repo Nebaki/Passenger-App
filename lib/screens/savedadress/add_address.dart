@@ -70,7 +70,7 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
   }
 
   void findPlace(String placeName) {
-    if (placeName.isNotEmpty) {
+    if (placeName.length>=2) {
       LocationPredictionEvent event =
           LocationPredictionLoad(placeName: placeName);
       BlocProvider.of<LocationPredictionBloc>(context).add(event);

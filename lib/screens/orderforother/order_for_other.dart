@@ -472,7 +472,7 @@ class _OrderForOtherScreenState extends State<OrderForOtherScreen> {
   }
 
   void findPlace(String placeName) {
-    if (placeName.isNotEmpty) {
+    if (placeName.length>=2) {
       LocationPredictionEvent event =
           LocationPredictionLoad(placeName: placeName);
       BlocProvider.of<LocationPredictionBloc>(context).add(event);
