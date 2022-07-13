@@ -147,7 +147,7 @@ class _CustomSplashScreenState extends State<CustomSplashScreen> {
                     child: LinearProgressIndicator(
                       minHeight: 1,
                       color: Colors.black,
-                      backgroundColor: Colors.white,
+                      backgroundColor: Colors.red,
                     ),
                   ),
                 ),
@@ -166,7 +166,7 @@ class _CustomSplashScreenState extends State<CustomSplashScreen> {
                         child: LinearProgressIndicator(
                           minHeight: 1,
                           color: Colors.black,
-                          backgroundColor: Colors.white,
+                          backgroundColor: Colors.red,
                         ),
                       ),
                     ),
@@ -260,7 +260,6 @@ class _CustomSplashScreenState extends State<CustomSplashScreen> {
   }
 
   void _getSettings() {
-
     print("Tomlalaw w  www w w");
     BlocProvider.of<SettingsBloc>(context).add(SettingsStarted());
   }

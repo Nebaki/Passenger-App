@@ -3,9 +3,11 @@ import 'package:passengerapp/helper/constants.dart';
 
 class ThemesData {
   static final darkTheme = ThemeData(
-    snackBarTheme: const SnackBarThemeData(backgroundColor: Colors.black,contentTextStyle: TextStyle(color: Colors.white)),
-    dividerColor: Colors.black,
-    cardColor: Colors.black38,
+      snackBarTheme: const SnackBarThemeData(
+          backgroundColor: Colors.black,
+          contentTextStyle: TextStyle(color: Colors.white)),
+      dividerColor: Colors.black,
+      cardColor: Colors.black38,
       primaryIconTheme: const IconThemeData(color: Colors.white),
       inputDecorationTheme: const InputDecorationTheme(fillColor: Colors.black),
       bottomSheetTheme:
@@ -17,8 +19,8 @@ class ThemesData {
           backgroundColor: Colors.grey.shade900,
           foregroundColor: Colors.white,
           extendedTextStyle: const TextStyle(color: Colors.white)),
-      progressIndicatorTheme: const ProgressIndicatorThemeData(
-          linearTrackColor: Colors.white, color: Colors.green),
+      // progressIndicatorTheme:
+      //     const ProgressIndicatorThemeData(color: Colors.green),
       scaffoldBackgroundColor: Colors.grey.shade900,
       textButtonTheme: TextButtonThemeData(
           style: ButtonStyle(
@@ -44,15 +46,15 @@ class ThemesData {
       backgroundColor: Colors.grey.shade900,
       textTheme: const TextTheme(
         button: TextStyle(color: Colors.white60),
-      
       ),
       colorScheme: const ColorScheme.dark());
 
   static final lightTheme = ThemeData(
-        snackBarTheme: const SnackBarThemeData(backgroundColor: Colors.white,contentTextStyle: TextStyle(color: Colors.black)),
-
-    dividerColor: Colors.grey.shade300,
-    cardColor: Colors.white,
+      snackBarTheme: const SnackBarThemeData(
+          backgroundColor: Colors.white,
+          contentTextStyle: TextStyle(color: Colors.black)),
+      dividerColor: Colors.grey.shade300,
+      cardColor: Colors.white,
       primaryIconTheme: const IconThemeData(color: Colors.black),
       inputDecorationTheme: const InputDecorationTheme(fillColor: Colors.white),
       bottomSheetTheme:
@@ -85,7 +87,6 @@ class ThemesData {
                   state.contains(MaterialState.disabled)
                       ? Colors.grey.shade300
                       : buttonColor),
-        
           shape: MaterialStateProperty.all<RoundedRectangleBorder>(
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
           foregroundColor: MaterialStateProperty.all<Color>(Colors.black),

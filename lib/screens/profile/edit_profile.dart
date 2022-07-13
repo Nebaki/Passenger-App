@@ -351,47 +351,47 @@ class _EditProfileState extends State<EditProfile> {
                             ),
                           ),
                         ),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        SizedBox(
-                          height: 40,
-                          width: double.infinity,
-                          child: TextButton(
-                              style: ButtonStyle(
-                                  shape: MaterialStateProperty.all<
-                                          RoundedRectangleBorder>(
-                                      RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(10))),
-                                  side: MaterialStateProperty.all<BorderSide>(
-                                      BorderSide(color: Colors.red.shade900))),
-                              onPressed: () {
-                                showDialog(
-                                    context: context,
-                                    builder: (BuildContext context) =>
-                                        AlertDialog(
-                                          title: const Text("Confirm"),
-                                          content: const Text.rich(TextSpan(
-                                            text:
-                                                "Are you sure you want to delete your accout? ",
-                                          )),
-                                          actions: [
-                                            TextButton(
-                                                onPressed: () {},
-                                                child: const Text("Yes")),
-                                            TextButton(
-                                                onPressed: () {
-                                                  Navigator.pop(context);
-                                                },
-                                                child: const Text("No")),
-                                          ],
-                                        ));
-                              },
-                              child: Text("Delete Account",
-                                  style:
-                                      TextStyle(color: Colors.red.shade900))),
-                        )
+                        // const SizedBox(
+                        //   height: 10,
+                        // ),
+                        // SizedBox(
+                        //   height: 40,
+                        //   width: double.infinity,
+                        //   child: TextButton(
+                        //       style: ButtonStyle(
+                        //           shape: MaterialStateProperty.all<
+                        //                   RoundedRectangleBorder>(
+                        //               RoundedRectangleBorder(
+                        //                   borderRadius:
+                        //                       BorderRadius.circular(10))),
+                        //           side: MaterialStateProperty.all<BorderSide>(
+                        //               BorderSide(color: Colors.red.shade900))),
+                        //       onPressed: () {
+                        //         showDialog(
+                        //             context: context,
+                        //             builder: (BuildContext context) =>
+                        //                 AlertDialog(
+                        //                   title: const Text("Confirm"),
+                        //                   content: const Text.rich(TextSpan(
+                        //                     text:
+                        //                         "Are you sure you want to delete your accout? ",
+                        //                   )),
+                        //                   actions: [
+                        //                     TextButton(
+                        //                         onPressed: () {},
+                        //                         child: const Text("Yes")),
+                        //                     TextButton(
+                        //                         onPressed: () {
+                        //                           Navigator.pop(context);
+                        //                         },
+                        //                         child: const Text("No")),
+                        //                   ],
+                        //                 ));
+                        //       },
+                        //       child: Text("Delete Account",
+                        //           style:
+                        //               TextStyle(color: Colors.red.shade900))),
+                        // )
                       ],
                     ),
                   ),

@@ -252,7 +252,7 @@ class MyApp extends StatelessWidget {
                         }
                         return supportedLocals.first;
                       },
-                      title: 'SafeWay',
+                      title: 'Mobile Transport',
                       themeMode: themeModeState,
                       darkTheme: ThemesData.darkTheme,
                       theme: ThemesData.lightTheme,

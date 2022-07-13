@@ -25,26 +25,21 @@ import 'package:passengerapp/repository/nearby_driver.dart';
 import 'package:passengerapp/rout.dart';
 import 'dart:async';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
-
 import 'package:passengerapp/screens/home/assistant/home_screen_assistant.dart';
 import 'package:passengerapp/screens/screens.dart';
 // ignore: unnecessary_import
 import 'package:flutter/services.dart' show rootBundle;
-
 import 'package:passengerapp/widgets/widgets.dart';
 
 class HomeScreen extends StatefulWidget {
   static const routeName = '/home';
-
   final HomeScreenArgument args;
-
   const HomeScreen({Key? key, required this.args}) : super(key: key);
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  //Location location = new Location();
   BitmapDescriptor? carMarkerIcon;
   final Completer<GoogleMapController> _controller = Completer();
   late GoogleMapController outerController;
@@ -807,19 +802,24 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  void _toggleInternetServiceStatusStream() {
+   void _toggleInternetServiceStatusStream() {
     if (_connectivitySubscription == null) {
       _connectivitySubscription ==
           _connectivity.onConnectivityChanged.listen((event) {
             if (event == ConnectivityResult.none) {
-              internetServiceStatus = true;
+              debugPrint("yow none");
 
               internetServiceButtomSheet();
+              internetServiceStatus = true;
             } else if (event == ConnectivityResult.wifi) {
+              debugPrint("yow wifi");
+
               if (internetServiceStatus != null) {
                 internetServiceStatus! ? Navigator.pop(context) : null;
               }
             } else if (event == ConnectivityResult.mobile) {
+              debugPrint("yow mobile");
+
               if (internetServiceStatus != null) {
                 internetServiceStatus! ? Navigator.pop(context) : null;
               }
@@ -1014,7 +1014,9 @@ class _HomeScreenState extends State<HomeScreen> {
                         width: double.infinity,
                         child: ElevatedButton(
                             onPressed: () async {
-                              await Geolocator.openLocationSettings();
+                              AppSettings.openLocationSettings(
+                                  asAnotherTask: true);
+                              // await Geolocator.openLocationSettings();
                             },
                             child: Text(
                               getTranslation(context,
