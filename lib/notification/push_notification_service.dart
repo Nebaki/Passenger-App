@@ -29,7 +29,7 @@ class PushNotificationService {
           driverId = message.data['myId'];
           BlocProvider.of<CurrentWidgetCubit>(context)
               .changeWidget(const DriverOnTheWay(
-            fromBackGround: false,
+            fromBackGround: false,appOpen: false,
           ));
           // context.read<CurrentWidgetCubit>().changeWidget(DriverOnTheWay());
 

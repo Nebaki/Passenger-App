@@ -211,6 +211,7 @@ class _CustomSplashScreenState extends State<CustomSplashScreen> {
                     BlocProvider.of<DriverBloc>(context).add(event);
                     price = st.rideRequest.price!;
                     distance = st.rideRequest.distance!;
+                    duration = "Uknown";
                     driverModel = st.rideRequest.driver!;
                     driverId = st.rideRequest.driver!.id;
                     rideRequestId = st.rideRequest.id!;

@@ -837,7 +837,7 @@ class _HomeScreenState extends State<HomeScreen> {
           driverId = message.data['myId'];
           BlocProvider.of<CurrentWidgetCubit>(context)
               .changeWidget(const DriverOnTheWay(
-            fromBackGround: true,
+            fromBackGround: true,appOpen: false,
           ));
           requestAccepted();
           break;
@@ -1175,12 +1175,12 @@ class _HomeScreenState extends State<HomeScreen> {
           case "Accepted":
             context
                 .read<CurrentWidgetCubit>()
-                .changeWidget(const DriverOnTheWay(fromBackGround: false));
+                .changeWidget(const DriverOnTheWay(fromBackGround: false,appOpen: true,));
             break;
           case "Arrived":
             context
                 .read<CurrentWidgetCubit>()
-                .changeWidget(const DriverOnTheWay(fromBackGround: false));
+                .changeWidget(const DriverOnTheWay(fromBackGround: false,appOpen: true,));
             break;
           case "Started":
             context

@@ -79,20 +79,20 @@ class RideRequestBloc extends Bloc<RideRequestEvent, RideRequestState> {
       }
     }
 
-    if (event is RideRequestSendNotification) {
-      yield RideRequestLoading();
+    // if (event is RideRequestSendNotification) {
+    //   yield RideRequestLoading();
 
-      try {
-        await rideRequestRepository.sendNotification(event.request, event.id);
-        yield RideRequestNotificationSent();
-      } catch (e) {
-        if (e.toString().split(" ")[1] == "401") {
-          yield RideRequestTokentExpired();
-        } else {
-          yield (RideRequestOperationFailur());
-        }
-      }
-    }
+    //   try {
+    //     await rideRequestRepository.sendNotification(event.request, event.id);
+    //     yield RideRequestNotificationSent();
+    //   } catch (e) {
+    //     if (e.toString().split(" ")[1] == "401") {
+    //       yield RideRequestTokentExpired();
+    //     } else {
+    //       yield (RideRequestOperationFailur());
+    //     }
+    //   }
+    // }
     if (event is RideRequestCancell) {
       yield RideRequestLoading();
       try {

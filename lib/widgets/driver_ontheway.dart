@@ -9,7 +9,8 @@ import 'package:passengerapp/widgets/widgets.dart';
 
 class DriverOnTheWay extends StatefulWidget {
   final bool fromBackGround;
-  const DriverOnTheWay({Key? key, required this.fromBackGround})
+  final bool appOpen;
+  const DriverOnTheWay({Key? key, required this.fromBackGround,required this.appOpen})
       : super(key: key);
 
   @override
@@ -19,9 +20,9 @@ class DriverOnTheWay extends StatefulWidget {
 class _DriverOnTheWayState extends State<DriverOnTheWay> {
   @override
   void initState() {
-    widget.fromBackGround
-        ? BlocProvider.of<DriverBloc>(context).add(DriverLoad(driverId!))
-        : null;
+    // widget.fromBackGround
+    //     ? BlocProvider.of<DriverBloc>(context).add(DriverLoad(driverId!))
+    //     : null;
     super.initState();
   }
 
@@ -30,9 +31,9 @@ class _DriverOnTheWayState extends State<DriverOnTheWay> {
     return WillPopScope(
       onWillPop: () async => false,
       child: Container(
-          height: MediaQuery.of(context).size.height *0.4,
-          padding: const EdgeInsets.only(
-              top: 10, left: 20, right: 20, bottom: 20),
+          height: MediaQuery.of(context).size.height * 0.4,
+          padding:
+              const EdgeInsets.only(top: 10, left: 20, right: 20, bottom: 20),
           decoration: BoxDecoration(
               color: Theme.of(context).backgroundColor,
               borderRadius: BorderRadius.circular(20)),
@@ -44,12 +45,16 @@ class _DriverOnTheWayState extends State<DriverOnTheWay> {
                   flex: 3,
                   child: DriverProfile(
                       assetImage: 'assets/icons/economyCarIcon.png')),
-      
+
               //CarDetail()
-             
+
               const Divider(),
-      
-              const Expanded(flex: 2, child: DirectionDetail()),
+
+              Expanded(
+                  flex: 2,
+                  child: DirectionDetail(
+                    fromBackGround: widget.appOpen,
+                  )),
               // Row(
               //   mainAxisAlignment: MainAxisAlignment.spaceAround,
               //   children: [
@@ -97,8 +102,7 @@ class _DriverOnTheWayState extends State<DriverOnTheWay> {
               //     )
               //   ],
               // ),
-      
-              
+
               Expanded(
                 flex: 1,
                 child: Padding(
@@ -108,14 +112,13 @@ class _DriverOnTheWayState extends State<DriverOnTheWay> {
                       width: MediaQuery.of(context).size.width,
                       child: ElevatedButton(
                           onPressed: () {
-                            Navigator.pushNamed(
-                                context, CancelReason.routeName,
-                                arguments: CancelReasonArgument(
-                                    sendRequest: true));
+                            Navigator.pushNamed(context, CancelReason.routeName,
+                                arguments:
+                                    CancelReasonArgument(sendRequest: true));
                             // widget.callback!(CancelTrip(widget.callback,
                             //     DriverOnTheWay(widget.callback)));
                           },
-                          child:  Text(getTranslation(context, "cancel")))),
+                          child: Text(getTranslation(context, "cancel")))),
                 ),
               ),
             ],

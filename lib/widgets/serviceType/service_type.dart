@@ -150,7 +150,7 @@ class _ServiceState extends State<Service> {
               ),
               const Divider(),
            
-              const Expanded(flex: 2, child:  DirectionDetail()),
+              const Expanded(flex: 2, child:  DirectionDetail(fromBackGround: false,)),
               
               BlocConsumer<DriverBloc, DriverState>(
                   builder: (context, state) => Container(),

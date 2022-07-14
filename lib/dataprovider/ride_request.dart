@@ -61,15 +61,15 @@ class RideRequestDataProvider {
       return data.isNotEmpty
           ? data.map((e) => RideRequest.fromJson(e)).toList()
           : [];
-    }else if (response.statusCode == 401) {
+    } else if (response.statusCode == 401) {
       final res = await AuthDataProvider(httpClient: httpClient).refreshToken();
 
       if (res.statusCode == 200) {
-        return getRideRequests(skip,top);
+        return getRideRequests(skip, top);
       } else {
         throw Exception(response.statusCode);
       }
-    }  else {
+    } else {
       throw Exception(response.statusCode);
     }
   }
@@ -103,7 +103,7 @@ class RideRequestDataProvider {
       final data = jsonDecode(response.body);
       rideRequestId = data["id"];
 
-      sendNotification(request, data["id"]);
+      sendNotification(request, data["id"], false);
       // return RideRequest.fromJson(data["rideRequest"]);
     } else if (response.statusCode == 401) {
       final res = await AuthDataProvider(httpClient: httpClient).refreshToken();
@@ -147,9 +147,9 @@ class RideRequestDataProvider {
       final data = jsonDecode(response.body);
       rideRequestId = data["rideRequest"]["id"];
 
-      sendNotification(request, data["rideRequest"]["id"]);
+      sendNotification(request, data["rideRequest"]["id"], true);
       // return RideRequest.fromJson(data["rideRequest"]);
-    }else if (response.statusCode == 401) {
+    } else if (response.statusCode == 401) {
       final res = await AuthDataProvider(httpClient: httpClient).refreshToken();
 
       if (res.statusCode == 200) {
@@ -157,7 +157,7 @@ class RideRequestDataProvider {
       } else {
         throw Exception(response.statusCode);
       }
-    }  else {
+    } else {
       throw Exception(response.statusCode);
     }
   }
@@ -172,7 +172,7 @@ class RideRequestDataProvider {
 
     if (response.statusCode != 204) {
       throw Exception('Failed to delete user.');
-    }else if (response.statusCode == 401) {
+    } else if (response.statusCode == 401) {
       final res = await AuthDataProvider(httpClient: httpClient).refreshToken();
 
       if (res.statusCode == 200) {
@@ -180,7 +180,7 @@ class RideRequestDataProvider {
       } else {
         throw Exception(response.statusCode);
       }
-    } 
+    }
   }
 
   Future sendCanceledNotification(String fcmToken) async {
@@ -208,7 +208,8 @@ class RideRequestDataProvider {
     }
   }
 
-  Future sendNotification(RideRequest request, String requestId) async {
+  Future sendNotification(
+      RideRequest request, String requestId, bool forOther) async {
     final fcmtoken = await FirebaseMessaging.instance.getToken();
 
     final response = await http.post(
@@ -231,7 +232,7 @@ class RideRequestDataProvider {
             request.dropOffLocation!.latitude,
             request.dropOffLocation!.longitude
           ],
-          "passengerName": name,
+          "passengerName": forOther ? request.passengerPhoneNumber : name,
           "pickupAddress": request.pickUpAddress,
           "droppOffAddress": request.droppOffAddress,
           "passengerPhoneNumber": request.passengerPhoneNumber,
@@ -275,15 +276,15 @@ class RideRequestDataProvider {
       if (sendRequest) {
         sendCanceledNotification(driverFcm);
       }
-    }else if (response.statusCode == 401) {
+    } else if (response.statusCode == 401) {
       final res = await AuthDataProvider(httpClient: httpClient).refreshToken();
 
       if (res.statusCode == 200) {
-        return changeRequestStatus(id,status,sendRequest);
+        return changeRequestStatus(id, status, sendRequest);
       } else {
         throw Exception(response.statusCode);
       }
-    }  else {
+    } else {
       throw Exception(response.statusCode);
     }
   }
@@ -302,15 +303,15 @@ class RideRequestDataProvider {
       if (sendRequest) {
         cancelNotification(fcmId!);
       }
-    }else if (response.statusCode == 401) {
+    } else if (response.statusCode == 401) {
       final res = await AuthDataProvider(httpClient: httpClient).refreshToken();
 
       if (res.statusCode == 200) {
-        return cancelRideRequest(id,cancelReason,fcmId,sendRequest);
+        return cancelRideRequest(id, cancelReason, fcmId, sendRequest);
       } else {
         throw Exception(response.statusCode);
       }
-    }  else {
+    } else {
       throw Exception(response.statusCode);
     }
   }
