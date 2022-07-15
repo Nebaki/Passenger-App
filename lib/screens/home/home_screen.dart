@@ -495,14 +495,14 @@ class _HomeScreenState extends State<HomeScreen> {
               ],
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.only(top: 40),
-            child: ElevatedButton(onPressed: () {
-              // print('Tokk ${FirebaseMessaging.instance.getToken()}');
-              FlutterBackgroundService().invoke("stopService");
-              // FlutterBackgroundService().startService();
-            }, child: const Text("Maintenance")),
-          )
+          // Padding(
+          //   padding: const EdgeInsets.only(top: 40),
+          //   child: ElevatedButton(onPressed: () {
+          //     // print('Tokk ${FirebaseMessaging.instance.getToken()}');
+          //     FlutterBackgroundService().invoke("stopService");
+          //     // FlutterBackgroundService().startService();
+          //   }, child: const Text("Maintenance")),
+          // )
         ],
       ),
     );
@@ -1246,7 +1246,7 @@ Future<void> initializeService() async {
       // this will be executed when app is in foreground or background in separated isolate
       onStart: onStart,
 
-      // auto start service
+      // auto start service 
       autoStart: true,
       isForegroundMode: true,
 
@@ -1264,6 +1264,8 @@ Future<void> initializeService() async {
   );
   // service.startService();
 }
+
+
 
 void onStart(ServiceInstance service) async {
   // Only available for flutter 3.0.0 and later

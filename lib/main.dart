@@ -69,7 +69,6 @@ void onStart(ServiceInstance service) async {
   // Only available for flutter 3.0.0 and later
   DartPluginRegistrant.ensureInitialized();
 
-  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
   // For flutter prior to version 3.0.0
   // We have to register the plugin manually
@@ -140,7 +139,7 @@ void main() async {
   await Firebase.initializeApp();
   await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
       alert: true, badge: true, sound: true);
-  // FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
   Bloc.observer = SimpleBlocObserver();
   final ReverseLocationRepository reverseLocationRepository =
