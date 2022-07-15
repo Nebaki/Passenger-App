@@ -7,6 +7,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_animarker/widgets/animarker.dart';
+import 'package:flutter_background_service/flutter_background_service.dart';
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_geofire/flutter_geofire.dart';
@@ -119,7 +120,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   @override
-  void initState() {
+  void initState()  {
     _loadMapStyles();
     _checkLocationServiceOnInit();
     _toggleLocationServiceStatusStream();
@@ -493,6 +494,14 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ],
             ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(top: 40),
+            child: ElevatedButton(onPressed: () {
+              // print('Tokk ${FirebaseMessaging.instance.getToken()}');
+              FlutterBackgroundService().invoke("stopService");
+              // FlutterBackgroundService().startService();
+            }, child: const Text("Maintenance")),
           )
         ],
       ),
@@ -802,7 +811,7 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-   void _toggleInternetServiceStatusStream() {
+  void _toggleInternetServiceStatusStream() {
     if (_connectivitySubscription == null) {
       _connectivitySubscription ==
           _connectivity.onConnectivityChanged.listen((event) {
@@ -831,13 +840,15 @@ class _HomeScreenState extends State<HomeScreen> {
   void _listenBackGroundMessage() {
     IsolateNameServer.registerPortWithName(_port.sendPort, portName);
     _port.listen((message) {
+      print("Dataaaaaaaaaaaaaa Has Arrivedd Bruhhhhhhhh ${message.data['response']}");
       switch (message.data['response']) {
         case "Accepted":
           Geofire.stopListener();
           driverId = message.data['myId'];
           BlocProvider.of<CurrentWidgetCubit>(context)
               .changeWidget(const DriverOnTheWay(
-            fromBackGround: true,appOpen: false,
+            fromBackGround: true,
+            appOpen: false,
           ));
           requestAccepted();
           break;
@@ -1175,12 +1186,18 @@ class _HomeScreenState extends State<HomeScreen> {
           case "Accepted":
             context
                 .read<CurrentWidgetCubit>()
-                .changeWidget(const DriverOnTheWay(fromBackGround: false,appOpen: true,));
+                .changeWidget(const DriverOnTheWay(
+                  fromBackGround: false,
+                  appOpen: true,
+                ));
             break;
           case "Arrived":
             context
                 .read<CurrentWidgetCubit>()
-                .changeWidget(const DriverOnTheWay(fromBackGround: false,appOpen: true,));
+                .changeWidget(const DriverOnTheWay(
+                  fromBackGround: false,
+                  appOpen: true,
+                ));
             break;
           case "Started":
             context
@@ -1213,6 +1230,110 @@ class _HomeScreenState extends State<HomeScreen> {
       });
     }
   }
+
+
+bool onIosBackground(ServiceInstance service) {
+  WidgetsFlutterBinding.ensureInitialized();
+  print('FLUTTER BACKGROUND FETCH');
+
+  return true;
+}
+
+Future<void> initializeService() async {
+  final service = FlutterBackgroundService();
+  await service.configure(
+    androidConfiguration: AndroidConfiguration(
+      // this will be executed when app is in foreground or background in separated isolate
+      onStart: onStart,
+
+      // auto start service
+      autoStart: true,
+      isForegroundMode: true,
+
+    ),
+    iosConfiguration: IosConfiguration(
+      // auto start service
+      autoStart: true,
+
+      // this will be executed when app is in foreground in separated isolate
+      onForeground: onStart,
+
+      // you have to enable background fetch capability on xcode project
+      onBackground: onIosBackground,
+    ),
+  );
+  // service.startService();
+}
+
+void onStart(ServiceInstance service) async {
+  // Only available for flutter 3.0.0 and later
+  DartPluginRegistrant.ensureInitialized();
+
+  service.on('method').listen((event) {
+  });
+
+  // For flutter prior to version 3.0.0
+  // We have to register the plugin manually
+
+  // SharedPreferences preferences = await SharedPreferences.getInstance();
+  // await preferences.setString("hello", "world");
+
+  // if (service is AndroidServiceInstance) {
+  // service.on('setAsForeground').listen((event) {
+  //   print("Yow Herererr as forground");
+  //   // service.setAsForegroundService();
+  // });
+
+  // service.on('setAsBackground').listen((event) {
+  //   print("Yow Herererr as background");
+
+  //   // service.setAsBackgroundService();
+  // });
+  // }
+
+  service.on('stopService').listen((event) {
+    print("Hereeeeeeeeeexx");
+    service.stopSelf();
+  });
+
+  // bring to foreground
+  // Timer.periodic(const Duration(seconds: 1), (timer) async {
+  //   final hello = preferences.getString("hello");
+  //   print(hello);
+
+  //   if (service is AndroidServiceInstance) {
+  //     service.setForegroundNotificationInfo(
+  //       title: "My App Service",
+  //       content: "Updated at ${DateTime.now()}",
+  //     );
+  //   }
+
+  //   /// you can see this log in logcat
+  //   print('FLUTTER BACKGROUND SERVICE: ${DateTime.now()}');
+
+  //   // test using external plugin
+  //   final deviceInfo = DeviceInfoPlugin();
+  //   String? device;
+  //   if (Platform.isAndroid) {
+  //     final androidInfo = await deviceInfo.androidInfo;
+  //     device = androidInfo.model;
+  //   }
+
+  //   if (Platform.isIOS) {
+  //     final iosInfo = await deviceInfo.iosInfo;
+  //     device = iosInfo.model;
+  //   }
+
+  //   service.invoke(
+  //     'update',
+  //     {
+  //       "current_date": DateTime.now().toIso8601String(),
+  //       "device": device,
+  //     },
+  //   );
+  // });
+}
+
 }
 
 
