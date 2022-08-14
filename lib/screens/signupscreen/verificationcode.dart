@@ -8,6 +8,10 @@ import 'package:passengerapp/bloc/bloc.dart';
 import 'package:passengerapp/rout.dart';
 import 'package:passengerapp/screens/screens.dart';
 import 'package:passengerapp/widgets/widgets.dart';
+import 'package:provider/provider.dart';
+
+import '../../utils/waver.dart';
+import '../theme/theme_provider.dart';
 
 class PhoneVerification extends StatefulWidget {
   static const routeName = '/phoneverification';
@@ -61,10 +65,10 @@ class _PhoneVerificationState extends State<PhoneVerification> {
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   // void moveToNextScreen(context) {
-
+  late ThemeProvider themeProvider;
   @override
   void initState() {
-    // TODO: implement initState
+    themeProvider = Provider.of<ThemeProvider>(context, listen: false);
     startTimer();
     super.initState();
   }
@@ -122,12 +126,47 @@ class _PhoneVerificationState extends State<PhoneVerification> {
     return Scaffold(
       body: Stack(
         children: [
+          Opacity(
+            opacity: 0.5,
+            child: ClipPath(
+              clipper: WaveClipper(),
+              child: Container(
+                height: 180,
+                color: themeProvider.getColor,
+              ),
+            ),
+          ),
+          ClipPath(
+            clipper: WaveClipper(),
+            child: Container(
+              height: 160,
+              color: themeProvider.getColor,
+            ),
+          ),
+          Opacity(
+            opacity: 0.5,
+            child: Align(
+              alignment: Alignment.bottomCenter,
+              child: Container(
+                height: 100,
+                color: themeProvider.getColor,
+                child: ClipPath(
+                  clipper: WaveClipperBottom(),
+                  child: Container(
+                    height: 100,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ),
+          ),
           CustomeBackArrow(),
           Container(
             margin: const EdgeInsets.only(left: 25.0, right: 25.0),
             padding: const EdgeInsets.only(top: 100),
             child: Form(
               key: _formKey,
+              autovalidateMode: AutovalidateMode.onUserInteraction,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,

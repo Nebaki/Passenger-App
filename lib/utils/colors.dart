@@ -21,4 +21,13 @@ class ColorProvider{
   var yellow = Colors.yellow;
   var orange = Colors.orange;
   var white = Colors.white;
+  var primaryDeepOrange = Colors.deepOrangeAccent;
+  var primaryDeepGreen = Colors.green;
+  var primaryDeepPurple = Colors.deepPurpleAccent;
+  var primaryDeepRed = Colors.red;
+  var primaryDeepBlue = Colors.blue;
+  var primaryDeepBlack = Colors.black54;
+  var primaryDeepTeal = Colors.teal;
+  var primaryDeepCheetah = Color(0xFF00cd34);
+
 }

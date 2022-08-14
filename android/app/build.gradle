@@ -49,7 +49,7 @@ android {
         applicationId "com.example.passengerapp"
         minSdkVersion 21
         //targetSdkVersion flutter.targetSdkVersion
-        targetSdkVersion 32
+        targetSdkVersion 33
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
     }
