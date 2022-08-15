@@ -18,6 +18,7 @@ class SigninScreen extends StatefulWidget {
   static const routeName = '/signin';
 
   const SigninScreen({Key? key}) : super(key: key);
+
   @override
   _SigninScreenState createState() => _SigninScreenState();
 }
@@ -32,82 +33,89 @@ class _SigninScreenState extends State<SigninScreen> {
 
   final _formkey = GlobalKey<FormState>();
   late ThemeProvider themeProvider;
+
+  late bool _visiblePassword;
+  late IconData icon;
   @override
   void initState() {
+    _visiblePassword = true;
+    icon = Icons.visibility;
     themeProvider = Provider.of<ThemeProvider>(context, listen: false);
     super.initState();
   }
+
   bool _isLoading = false;
+
   void _getSettings() {
     context.read<SettingsBloc>().add(SettingsStarted());
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         // backgroundColor: const Color.fromRGBO(240, 241, 241, 1),
         body: Stack(
-          children: [
-            Opacity(
-              opacity: 0.5,
+      children: [
+        Opacity(
+          opacity: 0.5,
+          child: ClipPath(
+            clipper: WaveClipper(),
+            child: Container(
+              height: 180,
+              color: themeProvider.getColor,
+            ),
+          ),
+        ),
+        ClipPath(
+          clipper: WaveClipper(),
+          child: Container(
+            height: 160,
+            color: themeProvider.getColor,
+          ),
+        ),
+        Opacity(
+          opacity: 0.5,
+          child: Align(
+            alignment: Alignment.bottomCenter,
+            child: Container(
+              height: 100,
+              color: themeProvider.getColor,
               child: ClipPath(
-                clipper: WaveClipper(),
-                child: Container(
-                  height: 180,
-                  color: themeProvider.getColor,
-                ),
-              ),
-            ),
-            ClipPath(
-              clipper: WaveClipper(),
-              child: Container(
-                height: 160,
-                color: themeProvider.getColor,
-              ),
-            ),
-            Opacity(
-              opacity: 0.5,
-              child: Align(
-                alignment: Alignment.bottomCenter,
+                clipper: WaveClipperBottom(),
                 child: Container(
                   height: 100,
-                  color: themeProvider.getColor,
-                  child: ClipPath(
-                    clipper: WaveClipperBottom(),
-                    child: Container(
-                      height: 100,
-                      color: Colors.white,
-                    ),
-                  ),
+                  color: Colors.white,
                 ),
               ),
             ),
-            BlocConsumer<AuthBloc, AuthState>(builder: (_, state) {
-      return _buildSignInForm();
-    }, listener: (_, state) {
-      if (state is AuthDataLoadSuccess) {
+          ),
+        ),
+        BlocConsumer<AuthBloc, AuthState>(builder: (_, state) {
+          return _buildSignInForm();
+        }, listener: (_, state) {
+          if (state is AuthDataLoadSuccess) {
             name = state.auth.name!;
             number = state.auth.phoneNumber!;
             myId = state.auth.id!;
             _getSettings();
-
-      }
-      if (state is AuthSigningIn) {
+          }
+          if (state is AuthSigningIn) {
             _isLoading = true;
-      }
-      if (state is AuthLoginSuccess) {
+          }
+          if (state is AuthLoginSuccess) {
             context.read<AuthBloc>().add(AuthDataLoad());
-      }
-      if (state is AuthOperationFailure) {
+          }
+          if (state is AuthOperationFailure) {
             _isLoading = false;
 
             ScaffoldMessenger.of(context).showSnackBar(SnackBar(
               content: Text(getTranslation("signin_error_message")),
               backgroundColor: Colors.red.shade900,
             ));
-      }
-    }),
-          ],
-        ));
+          }
+        }),
+      ],
+    ));
   }
 
   void signIn() async {
@@ -130,31 +138,39 @@ class _SigninScreenState extends State<SigninScreen> {
 
   Widget _buildSignInForm() {
     return Stack(children: [
-      BlocConsumer<SettingsBloc,SettingsState>(builder: (context, state) => Container(), listener: (context, state){
-        if (state is SettingsLoadSuccess){
-          Navigator.pushNamedAndRemoveUntil(
-            context, HomeScreen.routeName, ((Route<dynamic> route) => false),
-            arguments:
-                HomeScreenArgument(settings: state.settings, isSelected: false, isFromSplash: true));
-        }
-      }),
+      BlocConsumer<SettingsBloc, SettingsState>(
+          builder: (context, state) => Container(),
+          listener: (context, state) {
+            if (state is SettingsLoadSuccess) {
+              Navigator.pushNamedAndRemoveUntil(context, HomeScreen.routeName,
+                  ((Route<dynamic> route) => false),
+                  arguments: HomeScreenArgument(
+                      settings: state.settings,
+                      isSelected: false,
+                      isFromSplash: true));
+            }
+          }),
       Form(
         key: _formkey,
+        autovalidateMode: AutovalidateMode.onUserInteraction,
         child: SizedBox(
-          height: 600,
+          height: MediaQuery.of(context).size.height,
           child: Padding(
-              padding: const EdgeInsets.fromLTRB(20, 60, 20, 20),
+              padding: const EdgeInsets.all(8),
               child: ListView(
                 children: [
-                  Text(
-                    Localization.of(context).getTranslation("signin_title"),
-                    style: const TextStyle(
-                      fontSize: 25,
+                  Padding(
+                    padding: const EdgeInsets.only(left: 20.0,top: 150),
+                    child: Text(
+                      Localization.of(context).getTranslation("signin_title"),
+                      style: const TextStyle(
+                        fontSize: 25,
+                      ),
                     ),
                   ),
-
                   Padding(
-                    padding: const EdgeInsets.only(left: 15, right: 15, top: 10),
+                    padding:
+                        const EdgeInsets.only(left: 15, right: 15, top: 10),
                     child: TextFormField(
                       autofocus: true,
                       maxLength: 9,
@@ -172,10 +188,10 @@ class _SigninScreenState extends State<SigninScreen> {
                         ),*/
                         counterText: "",
                         prefixIconConstraints:
-                        const BoxConstraints(minWidth: 0, minHeight: 0),
+                            const BoxConstraints(minWidth: 0, minHeight: 0),
                         alignLabelWithHint: true,
                         //hintText: "Phone number",
-                        labelText:  Localization.of(context)
+                        labelText: Localization.of(context)
                             .getTranslation("phone_number"),
                         hintStyle: const TextStyle(
                             fontWeight: FontWeight.bold, color: Colors.black45),
@@ -197,15 +213,15 @@ class _SigninScreenState extends State<SigninScreen> {
                       ),
                       validator: (value) {
                         if (value!.isEmpty) {
-                          return  Localization.of(context)
+                          return Localization.of(context)
                               .getTranslation("phone_number_required");
                         } else if (value.length < 9) {
-                          return  Localization.of(context)
+                          return Localization.of(context)
                               .getTranslation("phone_number_short");
                         } else if (value.length > 9) {
-                          return  Localization.of(context)
+                          return Localization.of(context)
                               .getTranslation("phone_number_exceed");
-                        } else if(value.length == 9){
+                        } else if (value.length == 9) {
                           return null;
                         }
                         return null;
@@ -258,24 +274,38 @@ class _SigninScreenState extends State<SigninScreen> {
                   ),
                   */
                   Padding(
-                    padding: const EdgeInsets.all(10),
+                    padding: const EdgeInsets.only(
+                        left: 15, top: 10, right: 15, bottom: 10),
                     child: TextFormField(
+                      obscureText: _visiblePassword,
+                      style: const TextStyle(fontSize: 18),
                       decoration: InputDecoration(
-                          alignLabelWithHint: true,
-                          hintText: Localization.of(context)
-                              .getTranslation("password_hint_text"),
-                          hintStyle: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            // color: Colors.black45
-                          ),
-                          prefixIcon: const Icon(
-                            Icons.vpn_key,
-                            size: 19,
-                          ),
-                          // fillColor: Colors.white,
-                          filled: true,
-                          border: const OutlineInputBorder(
-                              borderSide: BorderSide.none)),
+                        alignLabelWithHint: true,
+                        labelText: Localization.of(context)
+                            .getTranslation("password_hint_text"),
+                        labelStyle: TextStyle(color: themeProvider.getColor
+                          // color: Colors.black45
+                        ),
+                        prefixIcon: const Icon(
+                          Icons.vpn_key,
+                          size: 19,
+                        ),
+                        filled: true,
+                        fillColor: Colors.white,
+                        border: const OutlineInputBorder(
+                            borderSide: BorderSide(style: BorderStyle.solid)),
+                        suffixIcon: IconButton(
+                            onPressed: () {
+                              setState(() {
+                                _visiblePassword = !_visiblePassword;
+
+                                icon = _visiblePassword
+                                    ? Icons.visibility
+                                    : Icons.visibility_off;
+                              });
+                            },
+                            icon: Icon(icon)),
+                      ),
                       validator: (value) {
                         if (value!.isEmpty) {
                           return Localization.of(context).getTranslation(
@@ -295,9 +325,9 @@ class _SigninScreenState extends State<SigninScreen> {
                     ),
                   ),
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    padding: const EdgeInsets.symmetric(horizontal: 15),
                     child: SizedBox(
-                      height: 40,
+                      height: 50,
                       width: MediaQuery.of(context).size.width,
                       child: ElevatedButton(
                         onPressed: _isLoading
@@ -375,13 +405,13 @@ class _SigninScreenState extends State<SigninScreen> {
                       ),
                       BlocBuilder<LocaleCubit, Locale>(
                         builder: (context, state) => DropdownButton(
-                            dropdownColor: Theme.of(context).backgroundColor,
+                            dropdownColor: Colors.white,
                             value: state == const Locale("en", "US")
                                 ? "English"
                                 : "Amharic",
                             items: dropDownItems
                                 .map((e) => DropdownMenuItem(
-                                      child: Text(e),
+                                      child: Text(e,style: TextStyle(color: Colors.black),),
                                       value: e,
                                     ))
                                 .toList(),
@@ -424,9 +454,6 @@ class _SigninScreenState extends State<SigninScreen> {
   var textLength = 0;
   var phoneEnabled = true;
 }
-
-
-
 
 // Navigator.pushNamedAndRemoveUntil(
 //             context, HomeScreen.routeName, ((Route<dynamic> route) => false),

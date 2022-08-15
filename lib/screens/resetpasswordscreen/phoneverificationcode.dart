@@ -1,3 +1,4 @@
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -9,6 +10,7 @@ import 'package:passengerapp/screens/screens.dart';
 import 'package:passengerapp/widgets/widgets.dart';
 import 'package:provider/provider.dart';
 
+import '../../localization/localization.dart';
 import '../../utils/waver.dart';
 import '../theme/theme_provider.dart';
 
@@ -26,7 +28,7 @@ class MobileVerification extends StatefulWidget {
 class _MobileVerificationState extends State<MobileVerification> {
   ResetMobileVerficationState currentState =
       ResetMobileVerficationState.SHOW_MOBILE_FORM_STATE;
-  late String phoneController;
+  late String phoneNumber;
   bool isCorrect = false;
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -34,6 +36,8 @@ class _MobileVerificationState extends State<MobileVerification> {
   String userInput = "";
   bool showLoading = false;
 
+  final Connectivity _connectivity = Connectivity();
+  late ConnectivityResult result;
   void signInWithPhoneAuthCredential(
       PhoneAuthCredential phoneAuthCredential) async {
     setState(() {
@@ -63,7 +67,7 @@ class _MobileVerificationState extends State<MobileVerification> {
   }
   void sendVerificationCode() async {
     await _auth.verifyPhoneNumber(
-        phoneNumber: phoneController,
+        phoneNumber: phoneNumber,
         timeout: const Duration(seconds: 60),
         verificationCompleted: (phoneAuthCredential) async {
           // setState(() {
@@ -89,7 +93,7 @@ class _MobileVerificationState extends State<MobileVerification> {
           Navigator.pushNamed(context, PhoneVerification.routeName,
               arguments: VerificationArgument(
                   from: 'ForgetPassword',
-                  phoneNumber: phoneController,
+                  phoneNumber: phoneNumber,
                   resendingToken: resendingToken,
                   verificationId: verificationId));
         },
@@ -139,13 +143,13 @@ class _MobileVerificationState extends State<MobileVerification> {
           const CustomeBackArrow(),
           Form(
             key: _formkey,
+            autovalidateMode: AutovalidateMode.onUserInteraction,
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(20, 100, 20, 0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              padding: const EdgeInsets.all(8),
+              child: ListView(
                 children: [
                   Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    padding: const EdgeInsets.only(left: 20.0,top: 200),
                     child: Text(
                       getTranslation(context, "signup_action"),
                       style: const TextStyle(
@@ -155,6 +159,7 @@ class _MobileVerificationState extends State<MobileVerification> {
                       ),
                     ),
                   ),
+/*
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 10),
                     child: InternationalPhoneNumberInput(
@@ -169,7 +174,7 @@ class _MobileVerificationState extends State<MobileVerification> {
                               borderSide: BorderSide.none)),
                       onInputChanged: (PhoneNumber number) {
                         setState(() {
-                          phoneController = number.phoneNumber!;
+                          phoneNumber = number.phoneNumber!;
                         });
                       },
                       onInputValidated: (bool value) {},
@@ -190,11 +195,86 @@ class _MobileVerificationState extends State<MobileVerification> {
                       spaceBetweenSelectorAndTextField: 0,
                     ),
                   ),
+*/
+
+
+                  Padding(
+                    padding: const EdgeInsets.only(left: 15, right: 15, top: 10),
+                    child: TextFormField(
+                      autofocus: true,
+                      maxLength: 9,
+                      maxLines: 1,
+                      cursorColor: themeProvider.getColor,
+                      keyboardType: const TextInputType.numberWithOptions(
+                          signed: true, decimal: true),
+                      style: const TextStyle(fontSize: 18),
+                      enabled: phoneEnabled,
+                      decoration: InputDecoration(
+                        labelStyle: TextStyle(color: themeProvider.getColor),
+
+                        /*enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.red, width: 5.0),
+                        ),*/
+                        counterText: "",
+                        prefixIconConstraints:
+                        const BoxConstraints(minWidth: 0, minHeight: 0),
+                        alignLabelWithHint: true,
+                        //hintText: "Phone number",
+                        labelText:  Localization.of(context)
+                            .getTranslation("phone_number"),
+                        hintStyle: const TextStyle(
+                            fontWeight: FontWeight.bold, color: Colors.black45),
+                        prefixIcon: Padding(
+                          padding: const EdgeInsets.only(left: 5.0, right: 5.0),
+                          child: Text(
+                            "+251",
+                            style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: themeProvider.getColor),
+                          ),
+                        ),
+                        suffix: Text("$textLength/9"),
+                        fillColor: Colors.white,
+                        filled: true,
+                        border: const OutlineInputBorder(
+                            borderSide: BorderSide(style: BorderStyle.solid)),
+                      ),
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return  Localization.of(context)
+                              .getTranslation("phone_number_required");
+                        } else if (value.length < 9) {
+                          return  Localization.of(context)
+                              .getTranslation("phone_number_short");
+                        } else if (value.length > 9) {
+                          return  Localization.of(context)
+                              .getTranslation("phone_number_exceed");
+                        } else if(value.length == 9){
+                          return null;
+                        }
+                        return null;
+                      },
+                      onChanged: (value) {
+                        phoneNumber = "+251$value";
+                        if (value.length >= 9) {}
+                        setState(() {
+                          textLength = value.length;
+                        });
+                      },
+                      onSaved: (value) {
+                        //_auth["phoneNumber"] = "+251$value";
+                        phoneNumber = "+251$value";
+                      },
+                    ),
+                  ),
+                  
                   const SizedBox(height: 20),
                   Center(
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      padding: const EdgeInsets.symmetric(horizontal: 15),
                       child: SizedBox(
+                        height: 50,
                         width: MediaQuery.of(context).size.width,
                         child: ElevatedButton(
                             onPressed: showLoading
@@ -203,46 +283,7 @@ class _MobileVerificationState extends State<MobileVerification> {
                                     final form = _formkey.currentState;
                                     if (form!.validate()) {
                                       form.save();
-                                      showDialog(
-                                          context: context,
-                                          builder: (BuildContext context) =>
-                                              AlertDialog(
-                                                title: Text(getTranslation(
-                                                    context,
-                                                    "signup_confirmation_dialog_title")),
-                                                content: Text.rich(TextSpan(
-                                                    text: getTranslation(
-                                                        context,
-                                                        "signup_confirmation_dialog_text"),
-                                                    children: [
-                                                      TextSpan(
-                                                          text: phoneController)
-                                                    ])),
-                                                actions: [
-                                                  TextButton(
-                                                      onPressed: () async {
-                                                        Navigator.pop(context);
-                                                        checkPhoneNumber(
-                                                            phoneController);
-                                                        // Navigator
-                                                        //     .pushReplacementNamed(
-                                                        //         context,
-                                                        //         PhoneVerification
-                                                        //             .routeName);
-                                                      },
-                                                      child: Text(getTranslation(
-                                                          context,
-                                                          "signup_confirmation_dialog_action_approval"))),
-                                                  TextButton(
-                                                      onPressed: () {
-                                                        Navigator.pop(
-                                                            context, "Cancel");
-                                                      },
-                                                      child: Text(getTranslation(
-                                                          context,
-                                                          "signup_confirmation_dialog_action_cancelation"))),
-                                                ],
-                                              ));
+                                      _showDialog();
                                     }
                                   },
                             child: Row(
@@ -261,7 +302,7 @@ class _MobileVerificationState extends State<MobileVerification> {
                                           width: 20,
                                           child: CircularProgressIndicator(
                                             strokeWidth: 2,
-                                            color: Colors.black,
+                                            color: Colors.white,
                                           ),
                                         )
                                       : Container(),
@@ -304,6 +345,64 @@ class _MobileVerificationState extends State<MobileVerification> {
     );
   }
 
+  _showDialog(){
+    checkInternet().then((value) {
+      if (value) {
+        showDialog(
+            context: context,
+            builder: (BuildContext context) =>
+                AlertDialog(
+                  title: Text(getTranslation(
+                      context,
+                      "signup_confirmation_dialog_title"),style: TextStyle(color: themeProvider.getColor)),
+                  content: Text.rich(TextSpan(
+                      text: getTranslation(
+                          context,
+                          "signup_confirmation_dialog_text"),
+                      children: [
+                        TextSpan(
+                            text: phoneNumber)
+                      ]),style: TextStyle(fontWeight: FontWeight.bold)),
+                  actions: [
+                    TextButton(
+                        onPressed: () {
+                          Navigator.pop(
+                              context, "Cancel");
+                        },
+                        child: Text(getTranslation(
+                            context,
+                            "signup_confirmation_dialog_action_cancelation"))),
+                    TextButton(
+                        onPressed: () async {
+                          Navigator.pop(context);
+                          checkPhoneNumber(
+                              phoneNumber);
+                          // Navigator
+                          //     .pushReplacementNamed(
+                          //         context,
+                          //         PhoneVerification
+                          //             .routeName);
+                        },
+                        child: Text(getTranslation(
+                            context,
+                            "signup_confirmation_dialog_action_approval"))),
+                  ],
+                ));
+      }});
+  }
+  Future<bool> checkInternet() async {
+    result = await _connectivity.checkConnectivity();
+    if (result == ConnectivityResult.none) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: const Text("No Internet Connection"),
+        backgroundColor: Colors.red.shade900,
+      ));
+      return false;
+    } else {
+      return true;
+    }
+  }
+
   void checkPhoneNumber(String phoneNumber) {
     setState(() {
       showLoading = true;
@@ -329,4 +428,7 @@ class _MobileVerificationState extends State<MobileVerification> {
           );
         });
   }
+
+  var textLength = 0;
+  var phoneEnabled = true;
 }

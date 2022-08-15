@@ -8,6 +8,7 @@ import 'package:passengerapp/bloc/bloc.dart';
 import 'package:passengerapp/helper/localization.dart';
 import 'package:passengerapp/rout.dart';
 import 'package:passengerapp/screens/screens.dart';
+import 'package:passengerapp/utils/session.dart';
 import 'package:passengerapp/widgets/widgets.dart';
 
 import 'package:provider/provider.dart';
@@ -39,20 +40,24 @@ class _SignupScreenState extends State<SignupScreen> {
   late ConnectivityResult result;
 
   void sendVerificationCode() async {
+    Session().logSession("register", "sending code to: $phoneNumber");
     await _auth.verifyPhoneNumber(
         timeout: const Duration(seconds: 60),
         phoneNumber: phoneNumber,
         verificationCompleted: (phoneAuthCredential) async {
           // signInWithPhoneAuthCredential(phoneAuthCredential);
+          Session().logSession("register", "$phoneNumber Verified");
         },
         verificationFailed: (verificationFailed) async {
           setState(() {
             _isLoading = false;
           });
 
+          Session().logSession("register",
+              "Can't verify $phoneNumber \n error: ${verificationFailed.message}");
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
               backgroundColor: Colors.red.shade900,
-              content: Text(getTranslation(context, "incorrect_verification_code"))));
+              content: Text(verificationFailed.message ?? "Error Happened"/*getTranslation(context, "incorrect_verification_code")*/)));
         },
         codeSent: (verificationId, resendingToken) async {
           // setState(() {
@@ -60,6 +65,7 @@ class _SignupScreenState extends State<SignupScreen> {
           currentState = MobileVerficationState.SHOW_OTP_FORM_STATE;
           //   this.verificationId = verificationId;
           // });
+          Session().logSession("register", "Code sent to: $phoneNumber");
           setState(() {
             _isLoading = false;
           });
@@ -85,6 +91,7 @@ class _SignupScreenState extends State<SignupScreen> {
       return true;
     }
   }
+
 
   bool _isLoading = false;
 
@@ -138,13 +145,13 @@ class _SignupScreenState extends State<SignupScreen> {
           const CustomeBackArrow(),
           Form(
             key: _formkey,
+            autovalidateMode: AutovalidateMode.onUserInteraction,
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(20, 100, 20, 0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              padding: const EdgeInsets.all(8),
+              child: ListView(
                 children: [
                   Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    padding: const EdgeInsets.only(left: 20.0,top: 200),
                     child: Text(
                       getTranslation(context, "signup_action"),
                       style: const TextStyle(
@@ -153,7 +160,7 @@ class _SignupScreenState extends State<SignupScreen> {
                       ),
                     ),
                   ),
-
+/*
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 10),
                     child: InternationalPhoneNumberInput(
@@ -201,8 +208,7 @@ class _SignupScreenState extends State<SignupScreen> {
                       spaceBetweenSelectorAndTextField: 0,
                     ),
                   ),
-
-
+*/
                   Padding(
                     padding: const EdgeInsets.only(left: 15, right: 15, top: 10),
                     child: TextFormField(
@@ -261,6 +267,7 @@ class _SignupScreenState extends State<SignupScreen> {
                         return null;
                       },
                       onChanged: (value) {
+                        phoneNumber = "+251$value";
                         if (value.length >= 9) {}
                         setState(() {
                           textLength = value.length;
@@ -268,7 +275,7 @@ class _SignupScreenState extends State<SignupScreen> {
                       },
                       onSaved: (value) {
                         //_auth["phoneNumber"] = "+251$value";
-                        phoneNumber = value.toString();
+                        phoneNumber = "+251$value";
                       },
                     ),
                   ),
@@ -288,8 +295,9 @@ class _SignupScreenState extends State<SignupScreen> {
                   ),
                   Center(
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      padding: const EdgeInsets.symmetric(horizontal: 15),
                       child: SizedBox(
+                        height: 50,
                         width: MediaQuery.of(context).size.width,
                         child: ElevatedButton(
                             onPressed: _isLoading
@@ -297,53 +305,8 @@ class _SignupScreenState extends State<SignupScreen> {
                                 : () {
                                     final form = _formkey.currentState;
                                     if (form!.validate()) {
-                                      checkInternet().then((value) {
-                                        if (value) {
-                                          showDialog(
-                                              context: context,
-                                              builder: (BuildContext context) {
-                                                return AlertDialog(
-                                                  title: Text(getTranslation(
-                                                      context,
-                                                      "signup_confirmation_dialog_title")),
-                                                  content: Text.rich(TextSpan(
-                                                      text: getTranslation(
-                                                          context,
-                                                          "signup_confirmation_dialog_text"),
-                                                      children: [
-                                                        TextSpan(
-                                                            text:
-                                                                phoneNumber)
-                                                      ])),
-                                                  actions: [
-                                                    TextButton(
-                                                        onPressed: () async {
-                                                          setState(() {
-                                                            _isLoading = true;
-                                                          });
-
-                                                          Navigator.pop(
-                                                              context);
-
-                                                          checkPhoneNumber(
-                                                              phoneNumber);
-                                                        },
-                                                        child: Text(getTranslation(
-                                                            context,
-                                                            "signup_confirmation_dialog_action_approval"))),
-                                                    TextButton(
-                                                        onPressed: () {
-                                                          Navigator.pop(context,
-                                                              "Cancel");
-                                                        },
-                                                        child: Text(getTranslation(
-                                                            context,
-                                                            "signup_confirmation_dialog_action_cancelation"))),
-                                                  ],
-                                                );
-                                              });
-                                        }
-                                      });
+                                      form.save();
+                                      _createAccount();
                                     }
                                   },
                             child: Row(
@@ -431,7 +394,54 @@ class _SignupScreenState extends State<SignupScreen> {
       ),
     );
   }
+  _createAccount(){
+    checkInternet().then((value) {
+      if (value) {
+        showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: Text(getTranslation(
+                    context,
+                    "signup_confirmation_dialog_title"),style: TextStyle(color: themeProvider.getColor),),
+                content: Text.rich(TextSpan(
+                    text: getTranslation(
+                        context,
+                        "signup_confirmation_dialog_text"),
+                    children: [
+                      TextSpan(
+                          text:
+                          phoneNumber)
+                    ]),style: TextStyle(fontWeight: FontWeight.bold),),
+                actions: [
+                  TextButton(
+                      onPressed: () {
+                        Navigator.pop(context,
+                            "Cancel");
+                      },
+                      child: Text(getTranslation(
+                          context,
+                          "signup_confirmation_dialog_action_cancelation"))),
+                  TextButton(
+                      onPressed: () async {
+                        setState(() {
+                          _isLoading = true;
+                        });
 
+                        Navigator.pop(
+                            context);
+                        checkPhoneNumber(
+                            phoneNumber);
+                      },
+                      child: Text(getTranslation(
+                          context,
+                          "signup_confirmation_dialog_action_approval")))
+                ],
+              );
+            });
+      }
+    });
+  }
   void checkPhoneNumber(String phoneNumber) {
     setState(() {
       _isLoading = true;

@@ -408,7 +408,7 @@ class MyApp extends StatelessWidget {
             return supportedLocals.first;
           },
           title: 'Mobile Transport',
-          darkTheme: ThemesData.darkTheme,
+          //darkTheme: ThemesData.darkTheme,
               theme: ThemeData(
                   inputDecorationTheme: InputDecorationTheme(
                       suffixIconColor: themeProvider.getColor,

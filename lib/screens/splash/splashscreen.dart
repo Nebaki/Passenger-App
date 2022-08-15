@@ -12,6 +12,8 @@ import 'package:passengerapp/rout.dart';
 import 'package:passengerapp/screens/home/assistant/home_screen_assistant.dart';
 import 'package:passengerapp/screens/home/variables.dart';
 import 'package:passengerapp/screens/screens.dart';
+import 'package:provider/provider.dart';
+import '../theme/theme_provider.dart';
 
 class CustomSplashScreen extends StatefulWidget {
   static const routeName = "/splashscreen";
@@ -67,7 +69,7 @@ class _CustomSplashScreenState extends State<CustomSplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.red,
+      backgroundColor: Provider.of<ThemeProvider>(context, listen: false).getColor,
       body: Stack(
         fit: StackFit.loose,
         children: [
