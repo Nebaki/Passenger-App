@@ -1,278 +1,326 @@
 import 'dart:async';
-import 'dart:developer' as developer;
-
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:passengerapp/bloc/bloc.dart';
+import 'package:passengerapp/cubit/theme_mode_cubit/theme_mode_cubit.dart';
 import 'package:passengerapp/helper/constants.dart';
+import 'package:passengerapp/helper/localization.dart';
 import 'package:passengerapp/rout.dart';
+import 'package:passengerapp/screens/home/assistant/home_screen_assistant.dart';
 import 'package:passengerapp/screens/home/variables.dart';
 import 'package:passengerapp/screens/screens.dart';
 
 class CustomSplashScreen extends StatefulWidget {
   static const routeName = "/splashscreen";
-  CustomSplashScreen({Key? key}) : super(key: key);
+  const CustomSplashScreen({Key? key}) : super(key: key);
 
   @override
   State<CustomSplashScreen> createState() => _CustomSplashScreenState();
 }
 
 class _CustomSplashScreenState extends State<CustomSplashScreen> {
-  ConnectivityResult? _connectionStatus;
   final Connectivity _connectivity = Connectivity();
-  late StreamSubscription<ConnectivityResult> _connectivitySubscription;
-  bool isSuccess = false;
+  StreamSubscription<ConnectivityResult>? _connectivitySubscription;
+  bool isFirstTime = false;
 
   @override
   void initState() {
+    if (context.read<ThemeModeCubit>().state == ThemeMode.system) {
+      var window = WidgetsBinding.instance.window;
+      window.onPlatformBrightnessChanged = () {
+        if (window.platformBrightness == Brightness.dark) {
+          BlocProvider.of<ThemeModeCubit>(context).ActivateDarkTheme();
+        } else {
+          BlocProvider.of<ThemeModeCubit>(context).ActivateLightTheme();
+        }
+      };
+    }
     super.initState();
-    // requestLocationPermission();
-    initConnectivity();
-
-    _connectivitySubscription =
-        _connectivity.onConnectivityChanged.listen(_updateConnectionStatus);
+    _toggleInternetServiceStatusStream();
   }
 
   @override
   void dispose() {
-    _connectivitySubscription.cancel();
+    _connectivitySubscription!.cancel();
     super.dispose();
   }
 
-  // Platform messages are asynchronous, so we initialize in an async method.
-  Future<void> initConnectivity() async {
-    late ConnectivityResult result;
-    try {
-      result = await _connectivity.checkConnectivity();
-    } on PlatformException catch (e) {
-      developer.log('Couldn\'t check connectivity status', error: e);
-      return;
+  Future<bool> _requestLocationPermission() async {
+    LocationPermission permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        // return Future.error('Location permissions are denied');
+        return false;
+      } else {
+        return true;
+      }
+    } else {
+      return true;
     }
-
-    // If the widget was removed from the tree while the asynchronous platform
-    // message was in flight, we want to discard the reply rather than calling
-    // setState to update our non-existent appearance.
-    if (!mounted) {
-      return Future.value(null);
-    }
-
-    return _updateConnectionStatus(result);
   }
 
-  Future<void> _updateConnectionStatus(ConnectivityResult result) async {
-    setState(() {
-      _connectionStatus = result;
-    });
-  }
-
-  // void requestLocationPermission() async {
-  //   LocationPermission permission = await Geolocator.checkPermission();
-  //   if (permission == LocationPermission.denied) {
-  //     permission = await Geolocator.requestPermission();
-  //     if (permission == LocationPermission.denied) {
-  //       return Future.error('Location permissions are denied');
-  //     }
-  //   }
-  // }
-
+  bool showBanner = false;
   @override
   Widget build(BuildContext context) {
-    final _snackBar = SnackBar(
-      content: const Text("No Internet Connection"),
-      duration: const Duration(seconds: 3),
-      action: SnackBarAction(
-        label: "Try Again",
-        onPressed: () {
-          initConnectivity();
-        },
-        textColor: Colors.white,
-      ),
-    );
-    // WidgetsBinding.instance!.addPostFrameCallback((_) {
-    //   print(_connectionStatus);
-    //   if (_connectionStatus == ConnectivityResult.none) {
-    //     print("false");
-    //     ScaffoldMessenger.of(context).showSnackBar(_snackBar);
-
-    //     //initConnectivity();
-    //   } else if (_connectionStatus == ConnectivityResult.wifi ||
-    //       _connectionStatus == ConnectivityResult.mobile) {
-    //     Navigator.pushReplacementNamed(context, SigninScreen.routeName);
-    //   }
-    // });
-
-    // Future.delayed(Duration(seconds: 3), () {
-    //   if (_connectionStatus == ConnectivityResult.none) {
-    //     print("false");
-    //     ScaffoldMessenger.of(context).showSnackBar(_snackBar);
-
-    //     //initConnectivity();
-    //   } else if (_connectionStatus == ConnectivityResult.wifi ||
-    //       _connectionStatus == ConnectivityResult.mobile) {
-    //     Navigator.pushReplacementNamed(context, SigninScreen.routeName);
-    //   }
-    // });
-
     return Scaffold(
       backgroundColor: Colors.red,
       body: Stack(
+        fit: StackFit.loose,
         children: [
-          const Align(
-            alignment: Alignment.center,
-            child: Center(
+          showBanner
+              ? Padding(
+                  child: Container(
+                      height: 20,
+                      color: Colors.black,
+                      width: double.infinity,
+                      child: Center(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(
+                                Icons
+                                    .signal_wifi_statusbar_connected_no_internet_4_outlined,
+                                size: 15,
+                                color: Colors.white),
+                            const SizedBox(
+                              width: 10,
+                            ),
+                            Text(
+                              getTranslation(context, "no_internet_connection"),
+                              style: const TextStyle(color: Colors.white),
+                            ),
+                          ],
+                        ),
+                      )),
+                  padding: EdgeInsets.only(
+                      top: MediaQuery.of(context).viewPadding.top))
+              : Container(),
+          BlocConsumer<AuthBloc, AuthState>(builder: (_, state) {
+            return const Center(
               child: Image(
                 height: 150,
                 image: AssetImage("assets/icons/logo.png"),
               ),
-            ),
-          ),
-          _connectionStatus == ConnectivityResult.none
-              ? Stack(
-                  children: [
-                    Align(
-                      alignment: Alignment.topCenter,
-                      child: Padding(
-                        padding: const EdgeInsets.only(top: 20),
-                        child: Container(
-                          height: 20,
-                          width: MediaQuery.of(context).size.width,
+            );
+          }, listener: (_, state) {
+            if (state is AuthDataLoadSuccess) {
+              _requestLocationPermission().then((value) {
+                if (value) {
+                  if (state.auth.token != null) {
+                    name = state.auth.name!;
+                    number = state.auth.phoneNumber!;
+                    myId = state.auth.id!;
+                    checkInterNetServiceOnInit();
+                  } else {
+                    Navigator.pushReplacementNamed(
+                        context, SigninScreen.routeName);
+                  }
+                } else {
+                  SystemNavigator.pop();
+                }
+              });
+            }
+            if (state is AuthOperationFailure) {
+              _requestLocationPermission().then((value) {
+                if (value) {
+                  Navigator.pushReplacementNamed(
+                      context, SigninScreen.routeName);
+                } else {
+                  SystemNavigator.pop();
+                }
+              });
+            }
+          }),
+          BlocConsumer<SettingsBloc, SettingsState>(
+              builder: (context, settingsState) {
+            if (settingsState is SettingsLoading) {
+              return const Align(
+                alignment: Alignment.bottomCenter,
+                child: Padding(
+                  padding: EdgeInsets.only(bottom: 15),
+                  child: Align(
+                    alignment: Alignment.bottomCenter,
+                    child: LinearProgressIndicator(
+                      minHeight: 1,
+                      color: Colors.black,
+                      backgroundColor: Colors.red,
+                    ),
+                  ),
+                ),
+              );
+            }
+            if (settingsState is SettingsLoadSuccess) {
+              return BlocConsumer<RideRequestBloc, RideRequestState>(
+                  builder: (context, state) {
+                if (state is RideRequestLoading) {
+                  return const Align(
+                    alignment: Alignment.bottomCenter,
+                    child: Padding(
+                      padding: EdgeInsets.only(bottom: 15),
+                      child: Align(
+                        alignment: Alignment.bottomCenter,
+                        child: LinearProgressIndicator(
+                          minHeight: 1,
                           color: Colors.black,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: const [
-                              Icon(
-                                Icons.signal_wifi_connected_no_internet_4,
-                                size: 13,
-                              ),
-                              SizedBox(
-                                width: 5,
-                              ),
-                              Text(
-                                "No Internet Connection",
-                                style: TextStyle(
-                                    fontSize: 13,
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.w300),
-                              ),
-                            ],
-                          ),
+                          backgroundColor: Colors.red,
                         ),
                       ),
                     ),
-                    const Align(
-                      alignment: Alignment.bottomCenter,
-                      child: Padding(
-                        padding: EdgeInsets.only(bottom: 15),
-                        child: Align(
-                          alignment: Alignment.bottomCenter,
-                          child: LinearProgressIndicator(
-                            minHeight: 1,
-                            color: Colors.black,
-                            backgroundColor: Colors.red,
-                          ),
-                        ),
-                      ),
-                    )
-                  ],
-                )
-              : _connectionStatus == null
-                  ? Container()
-                  : BlocConsumer<AuthBloc, AuthState>(builder: (_, state) {
-                      // if (state is AuthDataLoading) {
-                      //   print("Loadloadloadloadloadload");
-                      //   return const Align(
-                      //     alignment: Alignment.bottomCenter,
-                      //     child: LinearProgressIndicator(),
-                      //   );
-                      // }
-                      return const Center(
-                        child: Image(
-                          height: 150,
-                          image: AssetImage("assets/icons/logo.png"),
-                        ),
-                      );
-                    }, listener: (_, state) {
-                      if (state is AuthDataLoading) {
-                        const Align(
-                          alignment: Alignment.bottomCenter,
-                          child: LinearProgressIndicator(),
-                        );
-                      }
-                      if (state is AuthDataLoadSuccess) {
-                        print(state.auth.token);
-                        if (state.auth.token != null) {
-                          name = state.auth.name!;
-                          number = state.auth.phoneNumber;
-                          myId = state.auth.id!;
-                        }
+                  );
+                }
 
-                        state.auth.token != null
-                            ? setState(() {
-                                isSuccess = true;
-                              })
-                            : Navigator.pushReplacementNamed(
-                                context, SigninScreen.routeName);
-
-                        //0967543215
-
-                      }
-                    }),
-          isSuccess
-              ? BlocConsumer<RideRequestBloc, RideRequestState>(
-                  builder: (context, state) {
-                  return Container();
-                }, listener: (context, st) {
-                  print("Yoyoyoyoyoyoyoyoyoyooyqqq $st");
-                  if (st is RideRequestStartedTripChecked) {
-                    print(st.rideRequest);
-                    print("data is is is is ${st.rideRequest.pickUpAddress}");
-
-                    if (st.rideRequest.pickUpAddress == null) {
-                      BlocProvider.of<RideRequestBloc>(context)
-                          .add(RideRequestLoad());
-
-                      Navigator.pushReplacementNamed(
-                          context, HomeScreen.routeName,
-                          arguments: HomeScreenArgument(isSelected: false));
-                    } else {
-                      DriverEvent event = DriverLoad(st.rideRequest.driver!.id);
-                      BlocProvider.of<DriverBloc>(context).add(event);
-                      price = st.rideRequest.price!;
-                      distance = st.rideRequest.distance!;
-                      driverModel = st.rideRequest.driver!;
-                      Navigator.pushReplacementNamed(
-                          context, HomeScreen.routeName,
-                          arguments: HomeScreenArgument(
-                              isSelected: true,
-                              encodedPts: st.rideRequest.direction));
-                    }
-                    // loadRideRequest();
+                return Container();
+              }, listener: (context, st) {
+                if (st is RideRequestOperationFailur) {
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    duration: const Duration(minutes: 5),
+                    backgroundColor: Colors.black,
+                    content: Text(
+                      getTranslation(context, "check_internet_connection"),
+                      style: const TextStyle(color: Colors.white),
+                    ),
+                    action: SnackBarAction(
+                        textColor: Colors.white,
+                        label: getTranslation(context, "try_again"),
+                        onPressed: () {
+                          ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                          _checkStartedTrip();
+                        }),
+                  ));
+                }
+                if (st is RideRequestTokentExpired) {
+                  Navigator.pushReplacementNamed(
+                      context, SigninScreen.routeName);
+                }
+                if (st is RideRequestStartedTripChecked) {
+                  print("Yow we are here");
+                  if (st.rideRequest.pickUpAddress == null) {
+                    Navigator.pushReplacementNamed(
+                        context, HomeScreen.routeName,
+                        arguments: HomeScreenArgument(
+                            settings: settingsState.settings,
+                            isFromSplash: true,
+                            isSelected: false));
+                  } else {
+                    selectedCar = SelectedCar.taxi;
+                    DriverEvent event = DriverLoad(st.rideRequest.driver!.id);
+                    BlocProvider.of<DriverBloc>(context).add(event);
+                    price = st.rideRequest.price!;
+                    distance = st.rideRequest.distance!;
+                    duration = "Uknown";
+                    driverModel = st.rideRequest.driver!;
+                    driverId = st.rideRequest.driver!.id;
+                    rideRequestId = st.rideRequest.id!;
+                    pickupAddress = st.rideRequest.pickUpAddress!;
+                    droppOffAddress = st.rideRequest.droppOffAddress!;
+                    droppOffLatLng = st.rideRequest.dropOffLocation!;
+                    pickupLatLng = st.rideRequest.pickupLocation!;
+                    Navigator.pushReplacementNamed(
+                        context, HomeScreen.routeName,
+                        arguments: HomeScreenArgument(
+                            settings: settingsState.settings,
+                            isFromSplash: false,
+                            isSelected: true,
+                            status: st.rideRequest.status,
+                            encodedPts: st.rideRequest.direction));
                   }
-                })
-              : Container()
+                }
+              });
+            }
+
+            return Container();
+          }, listener: (context, state) {
+            if (state is SettingsUnAuthorised) {
+              Navigator.pushReplacementNamed(context, SigninScreen.routeName);
+            }
+            if (state is SettingsOperationFailure) {
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                duration: const Duration(minutes: 5),
+                backgroundColor: Colors.black,
+                content: Text(
+                  getTranslation(context, "check_internet_connection"),
+                  style: const TextStyle(color: Colors.white),
+                ),
+                action: SnackBarAction(
+                    textColor: Colors.white,
+                    label: getTranslation(context, "try_again"),
+                    onPressed: () {
+                      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                      _getSettings();
+                    }),
+              ));
+            }
+          }),
         ],
       ),
     );
   }
 
-  void loadRideRequest() {
-    // RideRequestEvent event = RideRequestLoad();
-    BlocProvider.of<RideRequestBloc>(context).add(RideRequestLoad());
+  void _getSettings() {
+    print("Tomlalaw w  www w w");
+    BlocProvider.of<SettingsBloc>(context).add(SettingsStarted());
+  }
+
+  void _checkStartedTrip() {
+    BlocProvider.of<RideRequestBloc>(context)
+        .add(RideRequestCheckStartedTrip());
+  }
+
+  void checkInterNetServiceOnInit() async {
+    ConnectivityResult result;
+    result = await _connectivity.checkConnectivity();
+
+    if (result == ConnectivityResult.none) {
+      isFirstTime = true;
+      showBanner = true;
+      setState(() {});
+      // ScaffoldMessenger.of(context).showMaterialBanner(MaterialBanner(
+      //     content: Center(
+      //         child: Text(getTranslation(context, "no_internet_connection"))),
+      //     actions: [Container()]));
+    } else {
+      showBanner = false;
+      setState(() {});
+      // ScaffoldMessenger.of(context).hideCurrentMaterialBanner();
+
+      // _checkStartedTrip();
+      _getSettings();
+    }
+  }
+
+  void _toggleInternetServiceStatusStream() {
+    _connectivitySubscription ??=
+        _connectivity.onConnectivityChanged.listen((event) {
+      if (event == ConnectivityResult.none) {
+        showBanner = true;
+        setState(() {});
+        // ScaffoldMessenger.of(context).showMaterialBanner(MaterialBanner(
+
+        //     content: Center(
+        //         child: Text(getTranslation(context, "no_internet_connection"))),
+        //     actions: [Container()]));
+      } else if (event == ConnectivityResult.wifi) {
+        showBanner = false;
+        setState(() {});
+        // ScaffoldMessenger.of(context).hideCurrentMaterialBanner();
+
+        if (isFirstTime) {
+          _getSettings();
+        }
+        isFirstTime = false;
+      } else if (event == ConnectivityResult.mobile) {
+        if (isFirstTime) {
+          _getSettings();
+        }
+        isFirstTime = false;
+        showBanner = false;
+        setState(() {});
+        // ScaffoldMessenger.of(context).hideCurrentMaterialBanner();
+      }
+    });
   }
 }
-
-
-
-//  _connectionStatus == ConnectivityResult.none
-//             ? const Center(
-//                 child: Image(
-//                   height: 150,
-//                   image: AssetImage("assets/icons/logo.png"),
-//                 ),
-//               )
-//             // ScaffoldMessenger.of(context).showSnackBar(_snackBar);
-//             : 

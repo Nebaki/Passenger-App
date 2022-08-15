@@ -14,17 +14,17 @@ class RideRequestRepository {
     return await dataProvider.changeRequestStatus(id, status, sendRequest);
   }
 
-  Future<List<RideRequest>> getRideRequests() async {
-    return await dataProvider.getRideRequests();
+  Future<List<RideRequest?>> getRideRequests(int skip, int top) async {
+    return await dataProvider.getRideRequests(skip, top);
   }
 
   Future<RideRequest> checkStartedTrip() async {
     return await dataProvider.checkStartedTrip();
   }
 
-  Future<void> sendNotification(RideRequest request, String requestId) async {
-    return await dataProvider.sendNotification(request, requestId);
-  }
+  // Future<void> sendNotification(RideRequest request, String requestId) async {
+  //   return await dataProvider.sendNotification(request, requestId);
+  // }
 
   Future cancelRideRequest(String id, String cancelReason, String? passengerFcm,
       bool sendRequest) async {

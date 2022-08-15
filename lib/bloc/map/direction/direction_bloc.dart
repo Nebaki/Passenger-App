@@ -20,5 +20,26 @@ class DirectionBloc extends Bloc<DirectionEvent, DirectionState> {
         yield DirectionOperationFailure();
       }
     }
+    if (event is DirectionLoadFromDiffrentPickupLocation) {
+      yield DirectionLoading();
+
+      try {
+        final direction =
+            await directionRepository.getDirectionFromDifferentPickupLocation(
+                event.pickup, event.destination);
+        yield DirectionLoadSuccess(direction: direction);
+      } catch (_) {
+        yield DirectionOperationFailure();
+      }
+    }
+
+    if (event is DirectionChangeToInitialState) {
+      yield DirectionLoading();
+      try {
+        yield DirectionInitialState(
+            loadCurrentLocation: event.loadCurrentLocation,
+            listenToNearbyDriver: event.listenToNearbyDriver);
+      } catch (_) {}
+    }
   }
 }

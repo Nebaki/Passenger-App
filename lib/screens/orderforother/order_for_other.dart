@@ -1,82 +1,81 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_geofire/flutter_geofire.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:passengerapp/bloc/bloc.dart';
-import 'package:passengerapp/bloc/notificationrequest/notification_request_bloc.dart';
 import 'package:passengerapp/helper/constants.dart';
-import 'package:passengerapp/helper/helper_functions.dart';
-import 'package:passengerapp/widgets/custome_back_arrow.dart';
-
+import 'package:passengerapp/helper/localization.dart';
+import 'package:passengerapp/repository/nearby_driver.dart';
+import 'package:passengerapp/screens/home/assistant/home_screen_assistant.dart';
+import 'package:passengerapp/widgets/widgets.dart';
 import '../../models/models.dart';
 
 class OrderForOtherScreen extends StatefulWidget {
   static const routeName = "/orderforothers";
+
+  const OrderForOtherScreen({Key? key}) : super(key: key);
 
   @override
   _OrderForOtherScreenState createState() => _OrderForOtherScreenState();
 }
 
 class _OrderForOtherScreenState extends State<OrderForOtherScreen> {
-  int _isSelected = 0;
-  PlaceDetail? _droppOffPlaceDetail;
-  PlaceDetail? _pickUpPlaceDetail;
   int _currentStep = 0;
   int selected = -1;
-  String? pickupAddress;
-  String? droppOffAddress;
-  late LatLng pickupLatLng;
-  late LatLng dropOffLatLng;
-  GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
-  String? name;
-  String? number;
-  bool _isLoading = false;
-  String? driverId;
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+  FocusNode pickupLocationNode = FocusNode();
+  FocusNode droppOffLocationNode = FocusNode();
+  final pickupController = TextEditingController();
+  final droppOffController = TextEditingController();
+  bool pickupSetted = false;
+  bool droppOffSetted = false;
+
+  late LatLng destinationLtlng;
+  @override
+  void initState() {
+    // pickupLatLng = LatLng(userPostion.latitude, userPostion.longitude);
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    pickupLocationNode.dispose();
+    droppOffLocationNode.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    FocusNode dropOffNode = new FocusNode();
     List<Step> steps = [
       Step(
           isActive: _currentStep >= 0,
-          title: Text("Passenger Information"),
+          title: Text(getTranslation(context, "passenger_information")),
           content: Form(
             key: _formKey,
             child: Column(
               children: [
-                TextFormField(
-                  onSaved: (value) {
-                    name = value;
-                  },
-                  validator: (value) {
-                    if (value!.isEmpty) {
-                      return "Name Can't be empity";
-                    }
-                  },
-                  decoration:
-                      InputDecoration(hintText: "Full Name of the passenger"),
-                ),
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 10),
                   child: InternationalPhoneNumberInput(
                     onSaved: (value) {
-                      number = value.phoneNumber;
+                      number = value.phoneNumber!;
                     },
-                    inputDecoration: const InputDecoration(
-                      hintText: "Phone Number of the passenger",
-                      hintStyle: TextStyle(
-                          fontWeight: FontWeight.w300, color: Colors.black45),
+                    inputDecoration: InputDecoration(
+                      hintText:
+                          getTranslation(context, "phone_number_of_passenger"),
+                      hintStyle: const TextStyle(
+                          fontWeight: FontWeight.w300, ),
                     ),
-                    onInputChanged: (PhoneNumber number) {},
+                    onInputChanged: (PhoneNumber phoneNum) {},
                     initialValue: PhoneNumber(isoCode: "ET"),
                     selectorConfig: const SelectorConfig(
                       selectorType: PhoneInputSelectorType.BOTTOM_SHEET,
                     ),
                     ignoreBlank: false,
                     autoValidateMode: AutovalidateMode.onUserInteraction,
-                    selectorTextStyle: const TextStyle(color: Colors.black),
+                    // selectorTextStyle: const TextStyle(color: Colors.black),
                     formatInput: true,
                     keyboardType: const TextInputType.numberWithOptions(
                         signed: true, decimal: true),
@@ -90,320 +89,91 @@ class _OrderForOtherScreenState extends State<OrderForOtherScreen> {
           )),
       Step(
           isActive: _currentStep >= 1,
-          title: Text("Location"),
+          title: Text(getTranslation(context, "location")),
           content: Column(
             children: [
-              const SizedBox(
-                height: 10,
-              ),
               SizedBox(
-                height: 50,
-                child: TextField(
-                  onTap: () {
-                    setState(() {
-                      selected = 0;
-                    });
-                  },
+                height: 60,
+                child: TextFormField(
                   onChanged: (value) {
                     findPlace(value);
                   },
-                  // focusNode: FocusNode.a,
+                  focusNode: pickupLocationNode,
+                  controller: pickupController,
                   decoration: InputDecoration(
-                      labelText: pickupAddress != null ? pickupAddress! : null,
-                      hintText: "PickUp Address",
-                      prefixIcon: const Padding(
-                        padding: EdgeInsets.only(left: 20, right: 10),
-                        child: Icon(
-                          Icons.location_on,
-                          color: Colors.blue,
-                        ),
+                    suffixIcon: IconButton(
+                        onPressed: () {
+                          pickupController.clear();
+                        },
+                        icon: const Icon(
+                          Icons.clear,
+                          color: Colors.black,
+                          size: 15,
+                        )),
+                    hintText:
+                        getTranslation(context, "pickup_address_hint_text"),
+                    prefixIcon: const Padding(
+                      padding: EdgeInsets.only(left: 20, right: 10),
+                      child: Icon(
+                        Icons.location_on,
+                        color: Colors.blue,
                       ),
-                      fillColor: Colors.white,
-                      filled: true,
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: BorderSide.none)),
+                    ),
+                  ),
                 ),
               ),
-              selected == 0
-                  ? BlocBuilder<LocationPredictionBloc,
-                      LocationPredictionState>(builder: (context, state) {
-                      if (state is LocationPredictionLoading) {
-                        return const Center(child: CircularProgressIndicator());
-                      }
-                      if (state is LocationPredictionLoadSuccess) {
-                        return ClipRRect(
-                          borderRadius: BorderRadius.circular(20),
-                          child: Container(
-                            padding: const EdgeInsets.only(top: 30, bottom: 20),
-                            // height: 200,
-                            constraints: const BoxConstraints(
-                                maxHeight: 400, minHeight: 30),
-
-                            width: double.infinity,
-                            child: ListView.separated(
-                                physics: const ClampingScrollPhysics(),
-                                shrinkWrap: true,
-                                itemBuilder: (cont, index) {
-                                  return _buildPredictedItem(
-                                      state.placeList[index], context);
-                                },
-                                separatorBuilder: (context, index) =>
-                                    const Padding(
-                                      padding:
-                                          EdgeInsets.symmetric(horizontal: 20),
-                                      child: Divider(color: Colors.black38),
-                                    ),
-                                itemCount: state.placeList.length),
-                          ),
-                        );
-                      }
-
-                      if (state is LocationPredictionOperationFailure) {}
-
-                      return const Center(
-                        child: Text("Enter The location"),
-                      );
-                    })
-                  : Container(),
               const SizedBox(
                 height: 10,
               ),
-              Container(
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                    boxShadow: const [
-                      BoxShadow(
-                          color: Colors.black38,
-                          blurRadius: 4,
-                          spreadRadius: 2,
-                          offset: Offset(0, 4))
-                    ]),
-                height: 50,
-                child: TextField(
-                  onTap: () {
-                    setState(() {
-                      selected = 1;
-                    });
-                  },
-                  onChanged: (value) {
-                    findPlace(value);
-                  },
-                  decoration: InputDecoration(
-                      labelText:
-                          droppOffAddress != null ? droppOffAddress! : null,
-                      hintText: "DropOff Address",
-                      prefixIcon: const Padding(
-                        padding: EdgeInsets.only(left: 20, right: 10),
-                        child: Icon(Icons.location_on, color: Colors.green),
-                      ),
-                      fillColor: Colors.white,
-                      filled: true,
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: BorderSide.none)),
+              TextFormField(
+                focusNode: droppOffLocationNode,
+                controller: droppOffController,
+                onChanged: (value) {
+                  findPlace(value);
+                },
+                decoration: InputDecoration(
+                  hintText:
+                      getTranslation(context, "droppoff_address_hint_text"),
+                  prefixIcon: const Padding(
+                    padding: EdgeInsets.only(left: 20, right: 10),
+                    child: Icon(Icons.location_on, color: Colors.green),
+                  ),
                 ),
               ),
-              selected == 1
-                  ? BlocBuilder<LocationPredictionBloc,
-                      LocationPredictionState>(builder: (context, state) {
-                      if (state is LocationPredictionLoading) {
-                        return const Center(child: CircularProgressIndicator());
-                      }
-                      if (state is LocationPredictionLoadSuccess) {
-                        return ClipRRect(
-                          borderRadius: BorderRadius.circular(20),
-                          child: Container(
-                            padding: const EdgeInsets.only(top: 30, bottom: 20),
-                            // height: 200,
-                            constraints: const BoxConstraints(
-                                maxHeight: 400, minHeight: 30),
+              BlocBuilder<LocationPredictionBloc, LocationPredictionState>(
+                  builder: (context, state) {
+                if (state is LocationPredictionLoading) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+                if (state is LocationPredictionLoadSuccess) {
+                  return Container(
+                    padding: const EdgeInsets.only(top: 30, bottom: 22),
+                    // height: 200,
+                    constraints:
+                        const BoxConstraints(maxHeight: 400, minHeight: 30),
+                    width: double.infinity,
+                    child: ListView.separated(
+                        physics: const ClampingScrollPhysics(),
+                        shrinkWrap: true,
+                        itemBuilder: (context, index) {
+                          return _buildPredictedItem(state.placeList[index]);
+                        },
+                        separatorBuilder: (context, index) => const Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 20),
+                              child: Divider(color: Colors.black38),
+                            ),
+                        itemCount: state.placeList.length),
+                  );
+                }
 
-                            width: double.infinity,
-                            child: ListView.separated(
-                                physics: const ClampingScrollPhysics(),
-                                shrinkWrap: true,
-                                itemBuilder: (cont, index) {
-                                  return _buildPredictedItem(
-                                      state.placeList[index], context);
-                                },
-                                separatorBuilder: (context, index) =>
-                                    const Padding(
-                                      padding:
-                                          EdgeInsets.symmetric(horizontal: 20),
-                                      child: Divider(color: Colors.black38),
-                                    ),
-                                itemCount: state.placeList.length),
-                          ),
-                        );
-                      }
+                if (state is LocationPredictionOperationFailure) {}
 
-                      if (state is LocationPredictionOperationFailure) {}
-
-                      return const Center(
-                        child: Text("Enter The location"),
-                      );
-                    })
-                  : Container(),
+                return const Center(
+                  child: Text("Enter The location"),
+                );
+              }),
             ],
           )),
-      Step(
-        isActive: _currentStep >= 2,
-        title: Text("Car Type"),
-        content: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            GestureDetector(
-              onTap: () {
-                geofireListener();
-
-                setState(() {
-                  _isSelected = 1;
-                  // DriverEvent event = DriverLoad(widget.searchNeabyDriver());
-                  // BlocProvider.of<DriverBloc>(context).add(event);
-                });
-              },
-              child: Column(
-                children: [
-                  Container(
-                    decoration: _isSelected == 1
-                        ? BoxDecoration(
-                            boxShadow: const [
-                                BoxShadow(
-                                    color: Color.fromRGBO(244, 201, 60, 1)),
-                              ],
-                            borderRadius: BorderRadius.circular(10),
-                            border: Border.all(width: 0.5, color: Colors.black))
-                        : null,
-                    child: const Image(
-                        height: 50,
-                        image: AssetImage("assets/icons/economyCarIcon.png")),
-                  ),
-                  const SizedBox(
-                    height: 5,
-                  ),
-                  const Text("Standart")
-                ],
-              ),
-            ),
-            const SizedBox(
-              width: 20,
-            ),
-            GestureDetector(
-              onTap: () {
-                setState(() {
-                  _isSelected = 2;
-                  // DriverEvent event = DriverLoad(widget.searchNeabyDriver());
-                  // BlocProvider.of<DriverBloc>(context).add(event);
-                });
-              },
-              child: Column(
-                children: [
-                  Container(
-                    decoration: _isSelected == 2
-                        ? BoxDecoration(
-                            boxShadow: const [
-                                BoxShadow(
-                                    color: Color.fromRGBO(244, 201, 60, 1)),
-                              ],
-                            borderRadius: BorderRadius.circular(10),
-                            border: Border.all(width: 0.5, color: Colors.black))
-                        : null,
-                    child: const Image(
-                        height: 50,
-                        image: AssetImage("assets/icons/lexuryCarIcon.png")),
-                  ),
-                  const SizedBox(
-                    height: 5,
-                  ),
-                  const Text("XL")
-                ],
-              ),
-            ),
-            const SizedBox(
-              width: 20,
-            ),
-            GestureDetector(
-              onTap: () {
-                setState(() {
-                  _isSelected = 3;
-                  // DriverEvent event = DriverLoad(widget.searchNeabyDriver());
-                  // BlocProvider.of<DriverBloc>(context).add(event);
-                });
-              },
-              child: Column(
-                children: [
-                  Container(
-                    decoration: _isSelected == 3
-                        ? BoxDecoration(
-                            boxShadow: const [
-                                BoxShadow(
-                                    color: Color.fromRGBO(244, 201, 60, 1)),
-                              ],
-                            borderRadius: BorderRadius.circular(10),
-                            border: Border.all(width: 0.5, color: Colors.black))
-                        : null,
-                    child: const Image(
-                        height: 50,
-                        image: AssetImage("assets/icons/familyCarIcon.png")),
-                  ),
-                  const SizedBox(
-                    height: 5,
-                  ),
-                  const Text("Family")
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-      Step(
-          isActive: _currentStep >= 3,
-          title: Text("Request"),
-          content: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(),
-              BlocConsumer<RideRequestBloc, RideRequestState>(
-                  builder: (context, state) => Container(),
-                  listener: (context, state) {
-                    if (state is RideRequestSuccess) {
-                      setState(() {
-                        _isLoading = false;
-                      });
-                      Navigator.pop(context);
-                    }
-                    if (state is RideRequestOperationFailur) {
-                      setState(() {
-                        _isLoading = false;
-                      });
-                    }
-                  }),
-              Text.rich(
-                TextSpan(
-                    text: "Pickup Address:  ",
-                    style: Theme.of(context).textTheme.titleSmall,
-                    children: [
-                      TextSpan(
-                          text: pickupAddress,
-                          style: Theme.of(context).textTheme.bodySmall)
-                    ]),
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              Text.rich(
-                TextSpan(
-                    text: "DropOff Address:  ",
-                    style: Theme.of(context).textTheme.titleSmall,
-                    children: [
-                      TextSpan(
-                          text: droppOffAddress,
-                          style: Theme.of(context).textTheme.bodySmall)
-                    ]),
-              ),
-            ],
-          ))
     ];
 
     return Scaffold(
@@ -411,164 +181,104 @@ class _OrderForOtherScreenState extends State<OrderForOtherScreen> {
         child: Stack(
           children: [
             Padding(
-              padding: const EdgeInsets.only(top: 100),
+              padding: EdgeInsets.only(
+                top: 100,
+                bottom: MediaQuery.of(context).viewInsets.bottom,
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: Text(
-                      "Order For Others",
+                      getTranslation(context, "order_for_other"),
                       style: Theme.of(context).textTheme.headlineSmall,
                     ),
                   ),
                   // 0996635512
                   Stepper(
+                      physics:
+                          const ScrollPhysics(parent: ClampingScrollPhysics()),
                       controlsBuilder: ((context, details) {
                         if (_currentStep == 0) {
                           return Row(
                             children: [
                               ElevatedButton(
-                                  onPressed: details.onStepContinue,
+                                  onPressed: () {
+                                    final form = _formKey.currentState;
+                                    if (form!.validate()) {
+                                      form.save();
+                                      details.onStepContinue!();
+                                    }
+                                  },
                                   child: Text(
-                                    "Next",
-                                    style: TextStyle(color: Colors.black),
+                                    getTranslation(context, "next"),
+                                    style: const TextStyle(color: Colors.black),
                                   )),
                               TextButton(
                                   onPressed: details.onStepCancel,
-                                  child: Text("Back"))
-                            ],
-                          );
-                        }
-                        if (_currentStep == 2) {
-                          return Row(
-                            children: [
-                              ElevatedButton(
-                                  onPressed: driverId != null
-                                      ? details.onStepContinue
-                                      : null,
-                                  child: Text(
-                                    "Next",
-                                    style: TextStyle(color: Colors.black),
-                                  )),
-                              TextButton(
-                                  onPressed: details.onStepCancel,
-                                  child: Text("Back"))
+                                  child: Text(getTranslation(context, "back")))
                             ],
                           );
                         } else if (_currentStep == 1) {
                           return Row(
                             children: [
                               ElevatedButton(
-                                  onPressed: _droppOffPlaceDetail == null ||
-                                          _pickUpPlaceDetail == null
-                                      ? null
-                                      : () {
+                                  style: ButtonStyle(
+                                    backgroundColor:
+                                        // MaterialStateProperty.all<Color>(
+                                        //     Colors.black),
+                                        MaterialStateProperty.resolveWith<
+                                                Color?>(
+                                            (Set<MaterialState> state) =>
+                                                state.contains(
+                                                        MaterialState.disabled)
+                                                    ? Colors.grey
+                                                    : null),
+                                  ),
+                                  onPressed: pickupSetted && droppOffSetted
+                                      ? () {
+                                          Geofire.stopListener().then((value) {
+                                            NearbyDriverRepository()
+                                                .resetList();
+                                            Geofire.queryAtLocation(
+                                                pickupLatLng.latitude,
+                                                pickupLatLng.longitude,
+                                                1);
+                                          });
+                                          DirectionEvent event =
+                                              DirectionLoadFromDiffrentPickupLocation(
+                                                  pickup: pickupLatLng,
+                                                  destination:
+                                                      destinationLtlng);
                                           BlocProvider.of<DirectionBloc>(
                                                   context)
-                                              .add(DirectionLoad(
-                                                  destination: droppOffLatLng));
-                                          details.onStepContinue!();
-                                        },
+                                              .add(event);
+
+                                          context
+                                              .read<CurrentWidgetCubit>()
+                                              .changeWidget(
+                                                  const Service(false, true));
+
+                                          Navigator.pop(context);
+                                        }
+                                      : null,
                                   child: Text(
-                                    "Next",
-                                    style: TextStyle(color: Colors.black),
+                                    getTranslation(context, "next"),
+                                    style: const TextStyle(color: Colors.black),
                                   )),
                               TextButton(
                                   onPressed: details.onStepCancel,
-                                  child: Text("Back"))
+                                  child: Text(getTranslation(context, "back")))
                             ],
                           );
                         } else {
-                          return BlocBuilder<DriverBloc, DriverState>(
-                              builder: (_, state) {
-                            print(state);
-                            if (state is DriverLoadSuccess) {
-                              return Row(
-                                children: [
-                                  ElevatedButton(
-                                    onPressed: _isLoading
-                                        ? null
-                                        : () {
-                                            setState(() {
-                                              _isLoading = true;
-                                            });
-                                            RideRequestEvent event =
-                                                RideRequestOrderForOther(
-                                                    RideRequest(
-                                                        driverFcm:
-                                                            state.driver.fcmId,
-                                                        pickUpAddress:
-                                                            pickupAddress!,
-                                                        droppOffAddress:
-                                                            droppOffAddress!,
-                                                        pickupLocation:
-                                                            pickupLatLng,
-                                                        dropOffLocation:
-                                                            dropOffLatLng,
-                                                        passengerPhoneNumber:
-                                                            number));
-                                            BlocProvider.of<RideRequestBloc>(
-                                                    context)
-                                                .add(event);
-                                            // NotificationRequestEvent event =
-                                            //     NotificationRequestSend(
-                                            //         NotificationRequest(
-                                            //             requestId: "d",
-                                            //             pickupAddress:
-                                            //                 pickupAddress!,
-                                            //             dropOffAddress:
-                                            //                 droppOffAddress!,
-                                            //             passengerName: "name!",
-                                            //             pickupLocation:
-                                            //                 pickupLatLng,
-                                            //             fcmToken:
-                                            //                 state.driver.fcmId));
-                                            // BlocProvider.of<
-                                            //             NotificationRequestBloc>(
-                                            //         context)
-                                            //     .add(event);
-                                            // Navigator.pop(context);
-                                            // geofireListener();
-                                          },
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        const Text(
-                                          "Confirm",
-                                        ),
-                                        Align(
-                                          alignment: Alignment.centerRight,
-                                          child: _isLoading
-                                              ? const SizedBox(
-                                                  height: 20,
-                                                  width: 20,
-                                                  child:
-                                                      CircularProgressIndicator(
-                                                    strokeWidth: 2,
-                                                    color: Colors.black,
-                                                  ),
-                                                )
-                                              : Container(),
-                                        )
-                                      ],
-                                    ),
-                                  ),
-                                  TextButton(
-                                      onPressed: details.onStepCancel,
-                                      child: const Text("Back"))
-                                ],
-                              );
-                            }
-                            return Container();
-                          });
+                          return Container();
                         }
                       }),
                       onStepContinue: () {
                         final isLastStep = _currentStep == steps.length - 1;
                         if (isLastStep) {
-                          print("Steps Completed");
                         } else {
                           setState(() => _currentStep += 1);
                         }
@@ -583,88 +293,53 @@ class _OrderForOtherScreenState extends State<OrderForOtherScreen> {
                 ],
               ),
             ),
-            CustomeBackArrow(),
-            BlocConsumer<DirectionBloc, DirectionState>(
-                builder: (context, state) => Container(),
-                listener: (context, state) {
-                  if (state is DirectionLoadSuccess) {
-                    double timeTraveledFare =
-                        (state.direction.durationValue / 60) * 0.20;
-                    double distanceTraveldFare =
-                        (state.direction.distanceValue / 100) * 0.20;
-                    double totalFareAmount =
-                        timeTraveledFare + distanceTraveldFare;
-
-                    double localFareAmount = totalFareAmount * 1;
-                    price = (localFareAmount * 1).truncate().toString();
-                    distance = (state.direction.distanceValue / 1000)
-                        .truncate()
-                        .toString();
-                    duration = ((state.direction.durationValue / 60) * 1)
-                        .truncate()
-                        .toString();
-                  }
-                }),
-            BlocConsumer<PlaceDetailBloc, PlaceDetailState>(
-              listener: (_, state) {
-                if (state is PlaceDetailLoadSuccess) {
-                  print("Yeah Yeah it's succesfull");
-
-                  if (selected == 0) {
-                    print("Pickup Selected");
-                    setState(() {
-                      pickupAddress = state.placeDetail.placeName;
-                      _pickUpPlaceDetail = state.placeDetail;
-                      pickupLatLng =
-                          LatLng(state.placeDetail.lat, state.placeDetail.lng);
-                    });
-                  } else if (selected == 1) {
-                    print("drop Of Selected");
-                    setState(() {
-                      droppOffAddress = state.placeDetail.placeName;
-                      _droppOffPlaceDetail = state.placeDetail;
-                      droppOffLatLng =
-                          LatLng(state.placeDetail.lat, state.placeDetail.lng);
-                      dropOffLatLng =
-                          LatLng(state.placeDetail.lat, state.placeDetail.lng);
-                    });
-                  }
-                }
-              },
-              builder: (_, state) {
-                return Container();
-              },
-            )
+            const CustomeBackArrow(),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildPredictedItem(LocationPrediction prediction, con) {
+  Widget _buildPredictedItem(LocationPrediction prediction) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: GestureDetector(
         onTap: () {
-          getPlaceDetail(prediction.placeId);
-          // settingDropOffDialog(con);
-          // LocationHistoryEvent event = LocationHistoryAdd(location: prediction);
-          // BlocProvider.of<LocationHistoryBloc>(context).add(event);
+          if (droppOffLocationNode.hasFocus) {
+            FocusScope.of(context).requestFocus(pickupLocationNode);
+
+            getPlaceDetail(prediction.placeId);
+
+            settingDropOffDialog();
+            droppOffController.text = prediction.mainText;
+          } else if (pickupLocationNode.hasFocus) {
+            FocusScope.of(context).requestFocus(droppOffLocationNode);
+
+            getPlaceDetail(prediction.placeId);
+            settingPickupDialog();
+
+            pickupController.text = prediction.mainText;
+
+            pickupAddress = prediction.mainText;
+          }
         },
         child: Container(
           color: Colors.black.withOpacity(0),
           width: MediaQuery.of(context).size.width,
           child: Row(
             children: [
-              const Icon(
-                Icons.arrow_forward_ios,
-                color: Colors.black,
-                size: 12,
+              const Flexible(
+                flex: 1,
+                child: Icon(
+                  Icons.arrow_forward_ios,
+                  color: Colors.black,
+                  size: 12,
+                ),
               ),
               const SizedBox(
                 width: 10,
               ),
-              Text(prediction.mainText),
+              Flexible(flex: 5, child: Text(prediction.mainText)),
             ],
           ),
         ),
@@ -672,34 +347,135 @@ class _OrderForOtherScreenState extends State<OrderForOtherScreen> {
     );
   }
 
-  void findPlace(String placeName) {
-    if (placeName.isNotEmpty) {
-      LocationPredictionEvent event =
-          LocationPredictionLoad(placeName: placeName);
-      BlocProvider.of<LocationPredictionBloc>(context).add(event);
-    }
-  }
-
   void getPlaceDetail(String placeId) {
     PlaceDetailEvent event = PlaceDetailLoad(placeId: placeId);
     BlocProvider.of<PlaceDetailBloc>(context).add(event);
   }
 
-  void geofireListener() async {
-    Geofire.stopListener();
-    final loc = await Geolocator.getCurrentPosition();
-    final data = await Geofire.queryAtLocation(loc.latitude, loc.longitude, 1)!
-        .elementAt(0);
+  void settingPickupDialog() {
+    showDialog(
+        context: context,
+        builder: (BuildContext cont) {
+          return BlocBuilder<PlaceDetailBloc, PlaceDetailState>(
+              builder: (context, state) {
+            if (state is PlaceDetailLoadSuccess) {
+              // FocusScope.of(context).requestFocus(droppOffLocationNode);
+              WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+                setState(() {
+                  pickupSetted = true;
+                });
+              });
 
-    String driver = data['key'];
-    nextDrivers = [];
+              pickupAddress = state.placeDetail.placeName;
+              pickupLatLng =
+                  LatLng(state.placeDetail.lat, state.placeDetail.lng);
+              Navigator.pop(context);
+            }
 
-    print("Hey yow ${data}");
-    setState(() {
-      driverId = driver.split(',')[0];
-    });
+            if (state is PlaceDetailOperationFailure) {
+              WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    backgroundColor: Colors.red.shade900,
+                    content: Text(getTranslation(
+                        context, "settingup_pickup_failure_message"))));
+              });
+              _changePlaceDetailBlocToInitialState();
+            }
+            return AlertDialog(
+              content: Row(
+                children: [
+                  const Flexible(
+                    flex: 1,
+                    child:  SizedBox(
+                      height: 20,
+                      width: 20,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 1,
+                        color: Colors.black,
+                      ),
+                    ),
+                  ),
+                  
+                  Flexible(flex: 5, child: Text(getTranslation(context, "settingup_pickup_message"),)),
+                ], 
+              ),
+            );
+          });
+        });
+  }
 
-    DriverEvent event = DriverLoad(driver.split(',')[0]);
-    BlocProvider.of<DriverBloc>(context).add(event);
+  void _changePlaceDetailBlocToInitialState() {
+    context
+        .read<LocationPredictionBloc>()
+        .add(LocationPredicationChangeToInitalState());
+  }
+
+  void settingDropOffDialog() {
+    showDialog(
+        context: context,
+        builder: (BuildContext cont) {
+          return BlocBuilder<PlaceDetailBloc, PlaceDetailState>(
+              builder: (context, state) {
+            if (state is PlaceDetailLoadSuccess) {
+              WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+                setState(() {
+                  droppOffSetted = true;
+                });
+              });
+
+              droppOffLocationNode.nextFocus();
+
+              droppOffAddress = state.placeDetail.placeName;
+              // widget.setDroppOffAdress(state.placeDetail.placeName);
+
+              destinationLtlng =
+                  LatLng(state.placeDetail.lat, state.placeDetail.lng);
+              droppOffLatLng = destinationLtlng;
+
+              WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+                droppOffLatLng = destinationLtlng;
+
+                Navigator.pop(context);
+              });
+              _changePlaceDetailBlocToInitialState();
+            }
+
+            if (state is PlaceDetailOperationFailure) {
+              WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    backgroundColor: Colors.red.shade900,
+                    content: Text(getTranslation(
+                        context, "settingup_dropp_off_failure_message"))));
+              });
+            }
+            return AlertDialog(
+              content: Row(
+                children: [
+                  const Flexible(
+                    flex: 1,
+                    child:  SizedBox(
+                      height: 20,
+                      width: 20,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 1,
+                        color: Colors.black,
+                      ),
+                    ),
+                  ),
+               
+                  Flexible(flex: 5, child: Text(getTranslation(context, "settingup_dropp_off_message"))),
+                ],
+              ),
+            );
+          });
+        });
+  }
+
+  void findPlace(String placeName) {
+    if (placeName.length>=2) {
+      LocationPredictionEvent event =
+          LocationPredictionLoad(placeName: placeName);
+      BlocProvider.of<LocationPredictionBloc>(context).add(event);
+    }
   }
 }

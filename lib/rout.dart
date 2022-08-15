@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:passengerapp/main.dart';
 import 'package:passengerapp/screens/screens.dart';
-
 import 'models/models.dart';
 import 'screens/settings/pages/feedbacks.dart';
 import 'screens/settings/pages/privacy.dart';
@@ -11,10 +9,10 @@ import 'screens/settings/pages/terms.dart';
 class AppRoute {
   static Route generateRoute(RouteSettings settings) {
     if (settings.name == SigninScreen.routeName) {
-      return MaterialPageRoute(builder: (context) => SigninScreen());
+      return MaterialPageRoute(builder: (context) => const SigninScreen());
     }
     if (settings.name == SignupScreen.routeName) {
-      return MaterialPageRoute(builder: (context) => SignupScreen());
+      return MaterialPageRoute(builder: (context) => const SignupScreen());
     }
     if (settings.name == PhoneVerification.routeName) {
       VerificationArgument arguments =
@@ -37,28 +35,6 @@ class AppRoute {
                 args: argument,
               ));
     }
-    if (settings.name == SearchScreen.routeName) {
-      SearchScreenArgument argument =
-          settings.arguments as SearchScreenArgument;
-      return MaterialPageRoute(
-          builder: (context) => SearchScreen(
-                args: argument,
-              ));
-    }
-    if (settings.name == ProfileDetail.routeName) {
-      return MaterialPageRoute(builder: (context) => ProfileDetail());
-    }
-
-    if (settings.name == FeedbackScreen.routeName) {
-      return MaterialPageRoute(builder: (context) => FeedbackScreen());
-    }
-    if (settings.name == PrivacyScreen.routeName) {
-      return MaterialPageRoute(builder: (context) => PrivacyScreen());
-    }
-    if (settings.name == TermsAndConditionScreen.routeName) {
-      return MaterialPageRoute(builder: (context) => TermsAndConditionScreen());
-    }
-
     if (settings.name == EditProfile.routeName) {
       EditProfileArgument argumnet = settings.arguments as EditProfileArgument;
       return MaterialPageRoute(
@@ -67,16 +43,21 @@ class AppRoute {
               ));
     }
     if (settings.name == SavedAddress.routeName) {
-      return MaterialPageRoute(builder: (context) => SavedAddress());
+      return MaterialPageRoute(builder: (context) => const SavedAddress());
     }
     if (settings.name == HistoryPage.routeName) {
-      return MaterialPageRoute(builder: (context) => HistoryPage());
+      return MaterialPageRoute(builder: (context) => const HistoryPage());
     }
     if (settings.name == SettingScreen.routeName) {
-      return MaterialPageRoute(builder: (context) => SettingScreen());
+      return MaterialPageRoute(builder: (context) => const SettingScreen());
     }
     if (settings.name == ResetPassword.routeName) {
-      return MaterialPageRoute(builder: (context) => ResetPassword());
+      ResetPasswordArgument argument =
+          settings.arguments as ResetPasswordArgument;
+      return MaterialPageRoute(
+          builder: (context) => ResetPassword(
+                arg: argument,
+              ));
     }
     if (settings.name == CancelReason.routeName) {
       CancelReasonArgument argument =
@@ -87,13 +68,17 @@ class AppRoute {
               ));
     }
     if (settings.name == SigninScreen.routeName) {
-      return MaterialPageRoute(builder: (context) => SigninScreen());
+      return MaterialPageRoute(builder: (context) => const SigninScreen());
     }
     if (settings.name == MobileVerification.routeName) {
-      return MaterialPageRoute(builder: (context) => MobileVerification());
+      return MaterialPageRoute(
+          builder: (context) => const MobileVerification());
     }
     if (settings.name == ChangePassword.routeName) {
       return MaterialPageRoute(builder: (context) => ChangePassword());
+    }
+    if (settings.name == AwardScreen.routeName) {
+      return MaterialPageRoute(builder: (context) => const AwardScreen());
     }
     if (settings.name == DetailHistoryScreen.routeName) {
       DetailHistoryArgument argument =
@@ -103,9 +88,7 @@ class AppRoute {
                 args: argument,
               ));
     }
-    if (settings.name == ContactUsScreen.routeName) {
-      return MaterialPageRoute(builder: (context) => ContactUsScreen());
-    }
+
     if (settings.name == PreferenceScreen.routeNAme) {
       PreferenceArgument argument = settings.arguments as PreferenceArgument;
       return MaterialPageRoute(
@@ -114,17 +97,18 @@ class AppRoute {
               ));
     }
     if (settings.name == OrderForOtherScreen.routeName) {
-      return MaterialPageRoute(builder: (context) => OrderForOtherScreen());
+      return MaterialPageRoute(
+          builder: (context) => const OrderForOtherScreen());
     }
     if (settings.name == ReviewScreen.routeName) {
-      return MaterialPageRoute(builder: (context) => ReviewScreen());
+      ReviewScreenArgument argument =
+          settings.arguments as ReviewScreenArgument;
+      return MaterialPageRoute(
+          builder: (context) => ReviewScreen(
+                arg: argument,
+              ));
     }
-    if (settings.name == PlacePickerScreen.routeName) {
-      return MaterialPageRoute(builder: (context) => PlacePickerScreen());
-    }
-    if (settings.name == PlacePickerScreen.routeName) {
-      return MaterialPageRoute(builder: (context) => PlacePickerScreen());
-    }
+
     if (settings.name == AddAddressScreen.routeName) {
       AddAdressScreenArgument argument =
           settings.arguments as AddAdressScreenArgument;
@@ -133,28 +117,53 @@ class AppRoute {
                 args: argument,
               ));
     }
-    return MaterialPageRoute(builder: (context) => CustomSplashScreen());
+
+    if (settings.name == LocationChanger.routName) {
+      LocationChangerArgument argument =
+          settings.arguments as LocationChangerArgument;
+      return MaterialPageRoute(
+          builder: (context) => LocationChanger(
+                args: argument,
+              ));
+    }
+    if (settings.name == Language.routName) {
+      LanguageArgument argument = settings.arguments as LanguageArgument;
+      return MaterialPageRoute(
+          builder: (context) => Language(
+                args: argument,
+              ));
+    }
+    return MaterialPageRoute(builder: (context) => const CustomSplashScreen());
   }
 }
 
 class HomeScreenArgument {
-  //String widgetName;
+  final bool isFromSplash;
   bool isSelected = false;
   LatLng? destinationlatlang;
   String? encodedPts;
+  final Settings settings;
+  final String? status;
 
   HomeScreenArgument(
-      {required this.isSelected, this.destinationlatlang, this.encodedPts});
+      {required this.isSelected,
+      required this.settings,
+      this.destinationlatlang,
+      this.encodedPts,
+      this.status,
+      required this.isFromSplash});
 }
 
 class VerificationArgument {
   String verificationId;
   int? resendingToken;
   String phoneNumber;
+  String from;
   VerificationArgument(
       {required this.verificationId,
       required this.resendingToken,
-      required this.phoneNumber});
+      required this.phoneNumber,
+      required this.from});
 }
 
 class SearchScreenArgument {
@@ -175,11 +184,11 @@ class EditProfileArgument {
 
 class PreferenceArgument {
   String gender;
-  double min_rate;
+  double minRate;
   String carType;
 
   PreferenceArgument(
-      {required this.gender, required this.min_rate, required this.carType});
+      {required this.gender, required this.minRate, required this.carType});
 }
 
 class AddAdressScreenArgument {
@@ -197,4 +206,35 @@ class CancelReasonArgument {
 class DetailHistoryArgument {
   final RideRequest request;
   DetailHistoryArgument({required this.request});
+}
+
+class ResetPasswordArgument {
+  final String phoneNumber;
+  ResetPasswordArgument({required this.phoneNumber});
+}
+
+class ReviewScreenArgument {
+  final String price;
+  ReviewScreenArgument({required this.price});
+}
+
+class LocationChangerArgument {
+  final String droppOffLocationAddressName;
+  final String pickupLocationAddressName;
+  final LatLng pickupLocationLatLng;
+  final LatLng droppOffLocationLatLng;
+  final String fromWhere;
+
+  LocationChangerArgument({
+    required this.droppOffLocationAddressName,
+    required this.droppOffLocationLatLng,
+    required this.pickupLocationAddressName,
+    required this.pickupLocationLatLng,
+    required this.fromWhere,
+  });
+}
+
+class LanguageArgument {
+  final int index;
+  LanguageArgument({required this.index});
 }

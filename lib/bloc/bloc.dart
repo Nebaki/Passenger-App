@@ -9,3 +9,8 @@ export 'driver/driver_bloc.dart';
 export 'review/review.dart';
 export 'savedlocation/saved_location_bloc.dart';
 export 'emergencyReport/emergency_report_bloc.dart';
+export 'category/category.dart';
+export 'tripHistory/trip_history.dart';
+export 'servicetype/service_type.dart';
+export 'currentwidget/current_widget_bloc.dart';
+export 'settings/settings_bloc.dart';

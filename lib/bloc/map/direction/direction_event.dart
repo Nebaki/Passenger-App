@@ -12,3 +12,22 @@ class DirectionLoad extends DirectionEvent {
   @override
   List<Object> get props => [];
 }
+
+class DirectionChangeToInitialState extends DirectionEvent {
+  final bool loadCurrentLocation;
+  final bool listenToNearbyDriver;
+  const DirectionChangeToInitialState(
+      {required this.loadCurrentLocation, required this.listenToNearbyDriver});
+  @override
+  List<Object?> get props => [];
+}
+
+class DirectionLoadFromDiffrentPickupLocation extends DirectionEvent {
+  final LatLng destination;
+  final LatLng pickup;
+  const DirectionLoadFromDiffrentPickupLocation(
+      {required this.pickup, required this.destination});
+
+  @override
+  List<Object> get props => [];
+}

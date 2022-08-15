@@ -1,20 +1,23 @@
 import 'dart:isolate';
+import 'dart:math';
 import 'dart:ui';
 import 'package:app_settings/app_settings.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_animarker/widgets/animarker.dart';
+import 'package:flutter_background_service/flutter_background_service.dart';
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_geofire/flutter_geofire.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:intl/intl.dart';
 import 'package:passengerapp/bloc/bloc.dart';
-import 'package:passengerapp/bloc/driver/driver_bloc.dart';
+import 'package:passengerapp/cubit/cubits.dart';
 import 'package:passengerapp/drawer/drawer.dart';
 import 'package:passengerapp/helper/constants.dart';
+import 'package:passengerapp/helper/localization.dart';
 import 'package:passengerapp/helper/url_launcher.dart';
 import 'package:passengerapp/models/models.dart';
 import 'package:passengerapp/models/nearby_driver.dart';
@@ -23,82 +26,66 @@ import 'package:passengerapp/repository/nearby_driver.dart';
 import 'package:passengerapp/rout.dart';
 import 'dart:async';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
-import 'package:passengerapp/helper/helper_functions.dart';
-
-import 'package:passengerapp/helper/constants.dart';
-
-// import 'package:location/location.dart';
-import 'package:geolocator_platform_interface/src/enums/location_accuracy.dart'
-    as La;
-import 'package:passengerapp/screens/home/test.dart';
+import 'package:passengerapp/screens/home/assistant/home_screen_assistant.dart';
 import 'package:passengerapp/screens/screens.dart';
-
+// ignore: unnecessary_import
+import 'package:flutter/services.dart' show rootBundle;
 import 'package:passengerapp/widgets/widgets.dart';
 
 class HomeScreen extends StatefulWidget {
   static const routeName = '/home';
-
-  HomeScreenArgument args;
-
-  HomeScreen({Key? key, required this.args}) : super(key: key);
+  final HomeScreenArgument args;
+  const HomeScreen({Key? key, required this.args}) : super(key: key);
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  //Location location = new Location();
-  late Widget _currentWidget;
-  double currentLat = 3;
-  late double currentLng = 4;
-  Completer<GoogleMapController> _controller = Completer();
+  BitmapDescriptor? carMarkerIcon;
+  final Completer<GoogleMapController> _controller = Completer();
   late GoogleMapController outerController;
   NearbyDriverRepository repo = NearbyDriverRepository();
   NearbyTrucksRepository truckRepo = NearbyTrucksRepository();
-  GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   List<LatLng> polylineCoordinates = [];
   PolylinePoints polylinePoints = PolylinePoints();
   Map<PolylineId, Polyline> polylines = {};
   Map<MarkerId, Marker> markers = {};
-  Map<MarkerId, Marker> driverMarkers = {};
-  late List<NearbyDriver> drivers;
-  LatLng currentLatLng = _addissAbaba.target;
-  bool isSelectedd = false;
-  late LatLng dtn;
+  Map<MarkerId, Marker> carMarker = {};
+  late LatLng currentLatLng;
   PushNotificationService pushNotificationService = PushNotificationService();
-
   final GeolocatorPlatform _geolocatorPlatform = GeolocatorPlatform.instance;
   StreamSubscription<ServiceStatus>? _serviceStatusStreamSubscription;
-  late StreamSubscription<ConnectivityResult> _connectivitySubscription;
-  ConnectivityResult _connectionStatus = ConnectivityResult.bluetooth;
+  StreamSubscription<ConnectivityResult>? _connectivitySubscription;
   final Connectivity _connectivity = Connectivity();
   final ReceivePort _port = ReceivePort();
-
-  bool? isLocationOn;
-  bool isModal = false;
-  bool isConModal = false;
-
+  DatabaseReference databaseReference =
+      FirebaseDatabase.instance.ref('bookedDrivers');
   static const CameraPosition _addissAbaba = CameraPosition(
     target: LatLng(8.9806, 38.7578),
     zoom: 16.4746,
   );
+  // late String _darkMapStyle;
+  late String _nightMapStyle;
+  // late String _retroMapStyle;
+  // late String _aubergineMapStyle;
+  late String serviceStatusValue;
+  bool? internetServiceStatus;
+  late bool isFirstTime;
+  late String brightness;
+  late Position currentPostion;
+  late LatLngBounds latLngBounds;
 
-  Future<void> initConnectivity() async {
-    late ConnectivityResult result;
-    try {
-      result = await _connectivity.checkConnectivity();
-    } on PlatformException catch (e) {
-      return;
-    }
-    if (!mounted) {
-      return Future.value(null);
-    }
-    return _updateConnectionStatus(result);
-  }
+  Future _loadMapStyles() async {
+    _nightMapStyle =
+        await rootBundle.loadString("assets/map_styles/night.json");
+    // _aubergineMapStyle =
+    //     await rootBundle.loadString('assets/map_styles/aubergine.json');
+    //       _darkMapStyle =
+    //     await rootBundle.loadString('assets/map_styles/dark.json');
 
-  Future<void> _updateConnectionStatus(ConnectivityResult result) async {
-    setState(() {
-      _connectionStatus = result;
-    });
+    //     _retroMapStyle =
+    //     await rootBundle.loadString("assets/map_styles/retro.json");
   }
 
   Future<Position> _determinePosition() async {
@@ -107,11 +94,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
     serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
-      //serviceEnabled = await location.requestService();
       if (!serviceEnabled) {
-        setState(() {
-          isLocationOn = false;
-        });
         return Future.error("NoLocation Enabled");
       }
 
@@ -133,480 +116,462 @@ class _HomeScreenState extends State<HomeScreen> {
     }
 
     return await Geolocator.getCurrentPosition(
-        desiredAccuracy: La.LocationAccuracy.high);
+        desiredAccuracy: LocationAccuracy.high);
   }
 
   @override
-  void initState() {
-    super.initState();
-    listenBackGroundMessage();
-    initConnectivity();
-    _connectivitySubscription =
-        _connectivity.onConnectivityChanged.listen(_updateConnectionStatus);
-    _toggleServiceStatusStream();
-    pushNotificationService.initialize(context, callback, searchNearbyDriver);
+  void initState()  {
+    _loadMapStyles();
+    _checkLocationServiceOnInit();
+    _toggleLocationServiceStatusStream();
+    _toggleInternetServiceStatusStream();
+    _listenBackGroundMessage();
+    pushNotificationService.initialize(context);
     pushNotificationService.seubscribeTopic();
-    widget.args.isSelected
-        ? _currentWidget = DriverOnTheWay(callback)
-        : _currentWidget = WhereTo(
-            setPickUpAdress: setPickUpAddress,
-            setDroppOffAdress: setDroppOffAddress,
-            setIsSelected: setIsSelected,
-            callback: callback,
-            service: Service(callback, searchNearbyDriver));
+    loadStartedTrip();
 
-    widget.args.isSelected ? _getPolyline(widget.args.encodedPts!) : null;
+    if (context.read<ThemeModeCubit>().state == ThemeMode.system) {
+      var window = WidgetsBinding.instance.window;
+      window.onPlatformBrightnessChanged = () {
+        if (window.platformBrightness == Brightness.dark) {
+          _controller.future.whenComplete(() {
+            outerController.setMapStyle(_nightMapStyle);
+          });
+        }
+      };
+    } else if (context.read<ThemeModeCubit>().state == ThemeMode.dark) {
+      _controller.future.whenComplete(() {
+        outerController.setMapStyle(_nightMapStyle);
+      });
+    }
 
-    _determinePosition().then((value) {
-      geofireListener(value.latitude, value.longitude);
-      Geofire.stopListener();
-      geofireListener(value.latitude, value.longitude);
-    });
+    super.initState();
   }
 
   @override
   void dispose() {
+    // context.read<UserBloc>().add(UserSetAvailability([], false));
     IsolateNameServer.removePortNameMapping(portName);
     _serviceStatusStreamSubscription!.cancel();
-    _connectivitySubscription.cancel();
+    _connectivitySubscription!.cancel();
     Geofire.stopListener();
-
     super.dispose();
-  }
-
-  void setIsSelected(LatLng destination) {
-    setState(() {
-      dtn = destination;
-    });
-  }
-
-  void setPickUpAddress(String address) {
-    pickupAddress = address;
-  }
-
-  void setDroppOffAddress(String address) {
-    droppOffAddress = address;
-  }
-
-  void callback(Widget nextwidget) {
-    setState(() {
-      _currentWidget = nextwidget;
-    });
   }
 
   @override
   Widget build(BuildContext context) {
-    if (isLocationOn != null) {
-      if (isLocationOn! && isModal) {
-        setState(() {
-          isModal = false;
-        });
-
-        Navigator.pop(context);
-      }
-    }
-    if (isLocationOn != null) {
-      if (isLocationOn == false && isModal == false) {
-        WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
-          setState(() {
-            isModal = true;
-          });
-          showModalBottomSheet(
-              enableDrag: false,
-              isDismissible: false,
-              context: context,
-              shape: const RoundedRectangleBorder(
-                  borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(10),
-                      topRight: Radius.circular(10))),
-              builder: (BuildContext ctx) {
-                return WillPopScope(
-                  onWillPop: () async => false,
-                  child: Container(
-                    height: MediaQuery.of(context).size.height * 0.4,
-                    padding: const EdgeInsets.fromLTRB(30, 30, 20, 20),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(
-                          child: Text("Location Services are off",
-                              style: Theme.of(context).textTheme.headline5),
-                        ),
-                        Expanded(
-                            child: Text(
-                                "Please enable Location Service to allow us finding your location.",
-                                style: Theme.of(context).textTheme.bodyText2)),
-                        Expanded(
-                            child: SizedBox(
-                          width: double.infinity,
-                          child: ElevatedButton(
-                              onPressed: () async {
-                                await Geolocator.openLocationSettings();
-                              },
-                              child: Text("Go to Location Services")),
-                        )),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        Expanded(
-                            child: SizedBox(
-                          width: double.infinity,
-                          child: ElevatedButton(
-                              onPressed: () async {
-                                SystemNavigator.pop();
-                              },
-                              child: Text("Close App")),
-                        ))
-                      ],
-                    ),
-                  ),
-                );
-              });
-        });
-      }
-    }
-
-    if (_connectionStatus == ConnectivityResult.wifi && isConModal == true ||
-        _connectionStatus == ConnectivityResult.mobile && isConModal == true) {
-      // setState(() {
-      isConModal = false;
-      // });
-      Navigator.pop(context);
-    }
-
-    if (_connectionStatus == ConnectivityResult.none && isConModal == false) {
-      WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
-        // setState(() {
-        isConModal = true;
-        // });
-        showModalBottomSheet(
-            enableDrag: false,
-            isDismissible: false,
-            context: context,
-            builder: (BuildContext context) {
-              return WillPopScope(
-                onWillPop: () async => false,
-                child: Container(
-                  height: MediaQuery.of(context).size.height * 0.4,
-                  padding: const EdgeInsets.fromLTRB(30, 30, 20, 20),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        child: Text("No Internet Connection",
-                            style: Theme.of(context).textTheme.headline5),
-                      ),
-                      Expanded(
-                          child: Text(
-                              "Please enable WIFI or Mobile Data to allow us finding your location.",
-                              style: Theme.of(context).textTheme.bodyText2)),
-                      Expanded(
-                          child: SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton(
-                            onPressed: () {
-                              AppSettings.openDeviceSettings(
-                                  asAnotherTask: true);
-                            },
-                            child: const Text("Go to Settings")),
-                      )),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      Expanded(
-                          child: SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton(
-                            onPressed: () async {
-                              SystemNavigator.pop();
-                            },
-                            child: const Text("Close App")),
-                      ))
-                    ],
-                  ),
-                ),
-              );
-            });
-      });
-    }
-
-    setWillScreenPop = () {
-      setState(() {
-        willScreenPop = false;
-      });
-    };
-
+    createMarkerIcon();
+    requestAccepted = showBookedDriver;
     return Scaffold(
+      backgroundColor: backGroundColor,
       key: _scaffoldKey,
       drawer: NavDrawer(),
-      body: WillPopScope(
-        onWillPop: () async => willScreenPop,
-        child: Stack(
-          children: [
-            BlocConsumer<DirectionBloc, DirectionState>(builder: (_, state) {
-              return Animarker(
-                mapId: _controller.future.then((value) => value.mapId),
-                curve: Curves.ease,
-                // markers: Set<Marker>.of(markers.values),
-                shouldAnimateCamera: true,
-                child: GoogleMap(
-                  padding: EdgeInsets.only(top: 100, right: 10, bottom: 250),
-                  // scrollGesturesEnabled: false,
-                  // zoomGesturesEnabled: false,
-                  // rotateGesturesEnabled: false,
+      body: Stack(
+        children: [
+          BlocConsumer<ThemeModeCubit, ThemeMode>(
+              builder: (context, themeModeState) =>
+                  BlocConsumer<DirectionBloc, DirectionState>(
+                      builder: (_, state) {
+                    return Animarker(
+                      mapId: _controller.future.then((value) => value.mapId),
+                      curve: Curves.ease,
+                      markers: Set<Marker>.of(carMarker.values),
+                      shouldAnimateCamera: true,
+                      child: GoogleMap(
+                        padding: const EdgeInsets.only(
+                            top: 100, right: 10, bottom: 250),
+                        zoomControlsEnabled: false,
+                        mapType: MapType.normal,
+                        myLocationButtonEnabled: false,
+                        initialCameraPosition: _addissAbaba,
+                        myLocationEnabled: true,
+                        polylines: Set<Polyline>.of(polylines.values),
+                        markers: Set<Marker>.of(markers.values),
+                        onMapCreated: (GoogleMapController controller) {
+                          _controller.complete(controller);
+                          outerController = controller;
+                          _determinePosition().then((value) {
+                            currentPostion = value;
+                            userPostion = currentPostion;
+                            context.read<UserBloc>().add(UserSetAvailability(
+                                [value.longitude, value.latitude], true));
+                            currentPostion = value;
+                            if (widget.args.isFromSplash) {
+                              carTypeSelectorDialog(value);
+                            }
+                            // MediaQuery.of(context).platformBrightness ==
+                            //         Brightness.dark
+                            //     ? controller.setMapStyle(_darkMapStyle)
+                            //     : null;
+                            currentLatLng =
+                                LatLng(value.latitude, value.longitude);
+                            pickupLatLng = currentLatLng;
+                            controller.animateCamera(
+                                CameraUpdate.newCameraPosition(CameraPosition(
+                                    zoom: 16.1746, target: currentLatLng)));
+                          });
+                        },
+                      ),
+                    );
+                  }, listener: (_, state) {
+                    if (state is DirectionInitialState) {
+                      Navigator.pop(context);
 
-                  zoomControlsEnabled: false,
-                  mapType: MapType.normal,
-                  myLocationButtonEnabled: false,
-                  initialCameraPosition: _addissAbaba,
-                  myLocationEnabled: true,
-                  polylines: Set<Polyline>.of(polylines.values),
-                  markers: Set<Marker>.of(markers.values),
-                  onMapCreated: (GoogleMapController controller) {
-                    _controller.complete(controller);
-                    outerController = controller;
-                    // controller.setMapStyle(mapStyle);
-                    _determinePosition().then((value) {
-                      pickupLatLng = LatLng(value.latitude, value.longitude);
+                      resetScreen(state.loadCurrentLocation,
+                          state.listenToNearbyDriver);
+                    }
+                    if (state is DirectionLoading) {
+                      showDialog(
+                          // barrierDismissible: false,
+                          context: context,
+                          builder: (BuildContext context) {
+                            return WillPopScope(
+                              onWillPop: () async => false,
+                              child: const Dialog(
+                                  elevation: 0,
+                                  insetPadding: EdgeInsets.all(0),
+                                  backgroundColor: Colors.transparent,
+                                  child: Center(
+                                    child: SizedBox(
+                                        height: 40,
+                                        width: 40,
+                                        child: CircularProgressIndicator(
+                                            strokeWidth: 1)),
+                                  )),
+                            );
+                          });
+                    }
+                    if (state is DirectionLoadSuccess) {
+                      direction = state.direction.encodedPoints;
+                      //tre
 
-                      currentLatLng = LatLng(value.latitude, value.longitude);
+                      markers.clear();
+                      setState(() {
+                        _getPolyline(state.direction.encodedPoints);
+                        _addMarker(
+                            droppOffLatLng,
+                            "destination",
+                            BitmapDescriptor.defaultMarkerWithHue(
+                                BitmapDescriptor.hueRed),
+                            InfoWindow(
+                                title: droppOffAddress,
+                                onTap: () {
+                                  Navigator.pushNamed(
+                                      context, LocationChanger.routName,
+                                      arguments: LocationChangerArgument(
+                                        droppOffLocationAddressName:
+                                            droppOffAddress,
+                                        droppOffLocationLatLng: droppOffLatLng,
+                                        pickupLocationAddressName:
+                                            pickupAddress,
+                                        pickupLocationLatLng: pickupLatLng,
+                                        fromWhere: 'DroppOff',
+                                      ));
+                                }));
+                        _addMarker(
+                            LatLng(
+                                pickupLatLng.latitude, pickupLatLng.longitude),
+                            "pickup",
+                            BitmapDescriptor.defaultMarkerWithHue(
+                                BitmapDescriptor.hueGreen),
+                            InfoWindow(
+                                title: pickupAddress,
+                                onTap: () {
+                                  Navigator.pushNamed(
+                                      context, LocationChanger.routName,
+                                      arguments: LocationChangerArgument(
+                                        droppOffLocationAddressName:
+                                            droppOffAddress,
+                                        droppOffLocationLatLng: droppOffLatLng,
+                                        pickupLocationAddressName:
+                                            pickupAddress,
+                                        pickupLocationLatLng: pickupLatLng,
+                                        fromWhere: 'PickUp',
+                                      ));
+                                }));
+                      });
 
-                      controller.animateCamera(CameraUpdate.newCameraPosition(
-                          CameraPosition(
-                              zoom: 16.1746,
-                              target: LatLng(currentLatLng.latitude,
-                                  currentLatLng.longitude))));
-                    });
-                  },
-                ),
-              );
-            }, listener: (_, state) {
-              print("Yow we are around here");
+                      changeCameraView();
 
-              if (state is DirectionLoadSuccess) {
-                direction = state.direction.encodedPoints;
+                      Navigator.pop(context);
+                    }
 
-                markers.clear();
-                setState(() {
-                  _getPolyline(state.direction.encodedPoints);
-                  _addMarker(
-                      dtn,
-                      "destination",
-                      BitmapDescriptor.defaultMarkerWithHue(
-                          BitmapDescriptor.hueGreen));
-                  _addMarker(
-                      LatLng(currentLatLng.latitude, currentLatLng.longitude),
-                      "pickup",
-                      BitmapDescriptor.defaultMarkerWithHue(
-                          BitmapDescriptor.hueRed));
-                });
-
-                changeCameraView();
-              }
-            }),
-            Padding(
-              padding: const EdgeInsets.only(top: 40, left: 10),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(100),
-                child: Container(
-                  color: Colors.black,
-                  child: IconButton(
-                    onPressed: () => _scaffoldKey.currentState!.openDrawer(),
-                    icon: const Icon(
-                      Icons.format_align_center,
-                      size: 20,
-                      color: Colors.white,
-                    ),
+                    if (state is DirectionOperationFailure) {
+                      Navigator.pop(context);
+                    }
+                  }),
+              listener: (context, themeModeState) {
+                themeModeState == ThemeMode.dark
+                    ? outerController.setMapStyle(_nightMapStyle)
+                    : outerController.setMapStyle('[]');
+              }),
+          Padding(
+            padding: const EdgeInsets.only(top: 40, left: 10),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(100),
+              child: Container(
+                color: Colors.black,
+                child: IconButton(
+                  onPressed: () => _scaffoldKey.currentState!.openDrawer(),
+                  icon: const Icon(
+                    Icons.format_align_center,
+                    size: 20,
+                    color: Colors.white,
                   ),
                 ),
               ),
             ),
-            _currentWidget,
-
-            Align(
-              alignment: Alignment.centerLeft,
-              child: Text(repo.getNearbyDrivers().length.toString()),
-            ),
-            // Padding(
-            //   padding: const EdgeInsets.only(top: 20),
-            //   child: Align(
-            //     alignment: Alignment.topRight,
-            //     child: ElevatedButton(
-            //         onPressed: () async {}, child: Text("Maintenance")),
-            //   ),
-            // ),
-            // Padding(
-            //   padding: const EdgeInsets.only(top: 60),
-            //   child: Align(
-            //     alignment: Alignment.topRight,
-            //     child: ElevatedButton(
-            //         onPressed: () async {
-            //           print(
-            //               "Truckkkk is ${truckRepo.getNearbyDrivers().length}");
-            //           print("drivers is ${repo.getNearbyDrivers().length}");
-            //           // Navigator.push(
-            //           //     context,
-            //           //     MaterialPageRoute(
-            //           //         builder: (context) => TestScreen()));
-            //         },
-            //         child: Text("Maintenance")),
-            //   ),
-            // ),
-            Align(
-              alignment: Alignment.centerRight,
-              child: SizedBox(
-                height: 300,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: SizedBox(
-                        height: 45,
-                        child: FloatingActionButton(
-                            heroTag: 'Mylocation',
-                            backgroundColor: Colors.grey.shade300,
-                            onPressed: () {
-                              outerController.animateCamera(
-                                  CameraUpdate.newCameraPosition(CameraPosition(
-                                      zoom: 16.4746,
-                                      target: LatLng(currentLatLng.latitude,
-                                          currentLatLng.longitude))));
-                            },
-                            child: Icon(
-                              Icons.gps_fixed,
-                              color: Colors.indigo.shade900,
-                            )),
-                      ),
-                    ),
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: ClipRRect(
-                        borderRadius: const BorderRadius.only(
-                            bottomLeft: Radius.circular(30),
-                            topLeft: Radius.circular(30)),
-                        child: Container(
-                          color: Colors.black,
-                          child: IconButton(
-                              onPressed: () {
-                                makePhoneCall('9495');
-                              },
-                              icon: const Icon(
-                                Icons.call,
-                                color: Colors.white,
-                                size: 30,
-                              )),
-                        ),
-                      ),
-                    ),
-                    BlocConsumer<EmergencyReportBloc, EmergencyReportState>(
-                        builder: (context, state) => Align(
-                              alignment: Alignment.centerRight,
-                              child: SizedBox(
-                                height: 45,
-                                child: FloatingActionButton(
-                                    heroTag: 'sos',
-                                    backgroundColor: Colors.grey.shade300,
-                                    onPressed: () {
-                                      EmergencyReportEvent event =
-                                          EmergencyReportCreate(EmergencyReport(
-                                              location: [
-                                            currentLatLng.latitude,
-                                            currentLatLng.longitude
-                                          ]));
-
-                                      BlocProvider.of<EmergencyReportBloc>(
-                                              context)
-                                          .add(event);
-                                    },
-                                    child: Text(
-                                      'SOS',
-                                      style: TextStyle(
-                                          color: Colors.indigo.shade900,
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 18),
-
-                                      // color: Colors.indigo.shade900,
-                                      // size: 35,
-                                    )),
+          ),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: Text(repo.getNearbyDrivers().length.toString()),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(top: 50),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: Align(
+                    alignment: Alignment.centerRight,
+                    child: SizedBox(
+                      height: 300,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Align(
+                            alignment: Alignment.centerRight,
+                            child: SizedBox(
+                              height: 45,
+                              child: FloatingActionButton(
+                                  heroTag: 'Mylocation',
+                                  // backgroundColor: Colors.grey.shade300,
+                                  onPressed: () {
+                                    outerController.animateCamera(context
+                                                .read<CurrentWidgetCubit>()
+                                                .state
+                                                .key !=
+                                            const Key("whereto")
+                                        ? CameraUpdate.newLatLngBounds(
+                                            latLngBounds, 100)
+                                        : CameraUpdate.newCameraPosition(
+                                            CameraPosition(
+                                                zoom: 16.4746,
+                                                target: LatLng(
+                                                    currentPostion.latitude,
+                                                    currentPostion
+                                                        .longitude))));
+                                  },
+                                  child: const Icon(Icons.gps_fixed, size: 20)),
+                            ),
+                          ),
+                          Align(
+                            alignment: Alignment.centerRight,
+                            child: SizedBox(
+                              height: 45,
+                              child: FloatingActionButton(
+                                onPressed: () async {
+                                  makePhoneCall('9495');
+                                },
+                                child: const Icon(Icons.call, size: 20),
                               ),
                             ),
-                        listener: (context, state) {
-                          if (state is EmergencyReportCreating) {
-                            showDialog(
-                                context: context,
-                                builder: (BuildContext context) {
-                                  return AlertDialog(
-                                    content: Row(
-                                      children: const [
-                                        SizedBox(
-                                          height: 20,
-                                          width: 20,
-                                          child: CircularProgressIndicator(
-                                            strokeWidth: 1,
-                                            color: Colors.red,
-                                          ),
-                                        ),
-                                        SizedBox(
-                                          width: 5,
-                                        ),
-                                        Text("Reporting.."),
-                                      ],
-                                    ),
-                                  );
-                                });
-                          }
-                          if (state is EmergencyReportCreated) {
-                            Navigator.pop(context);
-
-                            showDialog(
-                                context: context,
-                                builder: (BuildContext context) {
-                                  return AlertDialog(
-                                    content: Row(
-                                      children: const [
-                                        SizedBox(
-                                            height: 20,
-                                            width: 20,
-                                            child: Icon(Icons.done,
-                                                color: Colors.green)),
-                                        SizedBox(
-                                          width: 5,
-                                        ),
-                                        Text("Emergency report has been sent"),
-                                      ],
-                                    ),
-                                    actions: [
-                                      TextButton(
+                          ),
+                          BlocConsumer<EmergencyReportBloc,
+                                  EmergencyReportState>(
+                              builder: (context, state) => Align(
+                                    alignment: Alignment.centerRight,
+                                    child: SizedBox(
+                                      height: 45,
+                                      child: FloatingActionButton(
+                                          heroTag: 'sos',
+                                          // backgroundColor: Colors.grey.shade300,
                                           onPressed: () {
-                                            Navigator.pop(context);
+                                            EmergencyReportEvent event =
+                                                EmergencyReportCreate(
+                                                    EmergencyReport(location: [
+                                              currentLatLng.latitude,
+                                              currentLatLng.longitude
+                                            ]));
+
+                                            BlocProvider.of<
+                                                        EmergencyReportBloc>(
+                                                    context)
+                                                .add(event);
                                           },
-                                          child: const Text('Okay'))
-                                    ],
-                                  );
-                                });
-                          }
-                          if (state is EmergencyReportOperationFailur) {
-                            Navigator.pop(context);
-                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                                content: const Text("Reporting Failed."),
-                                backgroundColor: Colors.red.shade900));
-                          }
-                        }),
-                  ],
+                                          child: const Text(
+                                            'SOS',
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 18),
+
+                                            // color: Colors.indigo.shade900,
+                                            // size: 35,
+                                          )),
+                                    ),
+                                  ),
+                              listener: (context, state) {
+                                if (state is EmergencyReportCreating) {
+                                  showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        return AlertDialog(
+                                          content: Row(
+                                            children: [
+                                              const SizedBox(
+                                                height: 20,
+                                                width: 20,
+                                                child:
+                                                    CircularProgressIndicator(
+                                                  strokeWidth: 1,
+                                                  color: Colors.red,
+                                                ),
+                                              ),
+                                              const SizedBox(
+                                                width: 5,
+                                              ),
+                                              Text(getTranslation(context,
+                                                  "emergency_reporting_message")),
+                                            ],
+                                          ),
+                                        );
+                                      });
+                                }
+                                if (state is EmergencyReportCreated) {
+                                  Navigator.pop(context);
+
+                                  showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        return AlertDialog(
+                                          content: Row(
+                                            children: [
+                                              const SizedBox(
+                                                  height: 20,
+                                                  width: 20,
+                                                  child: Icon(Icons.done,
+                                                      color: Colors.green)),
+                                              const SizedBox(
+                                                width: 5,
+                                              ),
+                                              Text(getTranslation(context,
+                                                  "emergency_report_success_message")),
+                                            ],
+                                          ),
+                                          actions: [
+                                            TextButton(
+                                                onPressed: () {
+                                                  Navigator.pop(context);
+                                                },
+                                                child: Text(getTranslation(
+                                                    context, "okay_action")))
+                                          ],
+                                        );
+                                      });
+                                }
+                                if (state is EmergencyReportOperationFailur) {
+                                  Navigator.pop(context);
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                          content: Text(getTranslation(context,
+                                              "emergency_report_failure_message")),
+                                          backgroundColor:
+                                              Colors.red.shade900));
+                                }
+                              }),
+                        ],
+                      ),
+                    ),
+                  ),
                 ),
-              ),
+                Expanded(
+                  flex: 0,
+                  child: BlocBuilder<CurrentWidgetCubit, Widget>(
+                    builder: (context, state) {
+                      return state;
+                    },
+                  ),
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+          // Padding(
+          //   padding: const EdgeInsets.only(top: 40),
+          //   child: ElevatedButton(onPressed: () {
+          //     // print('Tokk ${FirebaseMessaging.instance.getToken()}');
+          //     FlutterBackgroundService().invoke("stopService");
+          //     // FlutterBackgroundService().startService();
+          //   }, child: const Text("Maintenance")),
+          // )
+        ],
       ),
     );
   }
 
-  _addMarker(LatLng position, String id, BitmapDescriptor descriptor) {
+  String generateRandomId() {
+    var r = Random();
+    final list = List.generate(3, (index) => r.nextInt(33) + 89);
+    return String.fromCharCodes(list);
+  }
+
+  void resetScreen(bool determinePosition, bool listenToNearbyTaxi) {
+    if (determinePosition) {
+      _determinePosition().then((value) {
+        currentPostion = value;
+        userPostion = currentPostion;
+        outerController.animateCamera(CameraUpdate.newCameraPosition(
+            CameraPosition(
+                zoom: 16.1746,
+                target: LatLng(value.latitude, value.longitude))));
+        switch (selectedCar) {
+          case SelectedCar.taxi:
+            listenTaxi(value);
+            break;
+          case SelectedCar.truck:
+            listenTruck(value);
+            break;
+          case SelectedCar.none:
+            break;
+        }
+      });
+    } else if (!determinePosition && !listenToNearbyTaxi) {
+      outerController.animateCamera(CameraUpdate.newCameraPosition(
+          CameraPosition(zoom: 16.1746, target: currentLatLng)));
+    } else if (listenToNearbyTaxi) {
+      outerController.animateCamera(CameraUpdate.newCameraPosition(
+          CameraPosition(zoom: 16.1746, target: currentLatLng)));
+      switch (selectedCar) {
+        case SelectedCar.taxi:
+          listenTaxi(currentPostion);
+          break;
+        case SelectedCar.truck:
+          listenTruck(currentPostion);
+          break;
+        case SelectedCar.none:
+          break;
+      }
+    }
+    context.read<CurrentWidgetCubit>().changeWidget(const WhereTo(
+          key: Key("whereto"),
+        ));
+
+    setState(() {
+      // _currentWidget = WhereTo();
+      markers.clear();
+      polylines.clear();
+      carMarker.clear();
+      showCarIcons = true;
+    });
+  }
+
+  _addMarker(LatLng position, String id, BitmapDescriptor descriptor,
+      InfoWindow infoWindow) {
     MarkerId markerId = MarkerId(id);
-    Marker marker =
-        Marker(markerId: markerId, icon: descriptor, position: position);
+    Marker marker = Marker(
+        markerId: markerId,
+        icon: descriptor,
+        position: position,
+        infoWindow: infoWindow);
     markers[markerId] = marker;
   }
 
@@ -624,14 +589,14 @@ class _HomeScreenState extends State<HomeScreen> {
 
   _addPolyLine() {
     polylines.clear();
-    PolylineId id = PolylineId("poly");
+    PolylineId id = const PolylineId("poly");
     Polyline polyline = Polyline(
         width: 4,
         polylineId: id,
         jointType: JointType.round,
         startCap: Cap.roundCap,
         endCap: Cap.roundCap,
-        color: Colors.indigo,
+        color: Theme.of(context).canvasColor,
         geodesic: true,
         points: polylineCoordinates);
 
@@ -640,129 +605,108 @@ class _HomeScreenState extends State<HomeScreen> {
     //Future.delayed(Duration(seconds: 1), () {});
   }
 
-  void geofireListener(double lat, double lng) async {
-    Geofire.initialize('availableDrivers');
+  void geofireListener(
+      double lat, double lng, String type, double radius) async {
     repo.resetList();
-    print("Mapppppppppppppppppppppppppppppppppppppppppppppppppppppppaaa");
 
     try {
-      //print(await Geofire.queryAtLocation(lat, lng, 1));
+      switch (type) {
+        case 'Taxi':
+          Geofire.queryAtLocation(lat, lng, radius)!.listen((data) {
+            if (data != null) {
+              var callback = data['callBack'];
+              switch (callback) {
+                case Geofire.onKeyEntered:
+                  debugPrint('Added');
 
-      await Geofire.queryAtLocation(lat, lng, 1)?.listen((map) {
-        print("Mapppppppppppppppppppppppppppppppppppppppppppppppppppppppsss");
-        print("adeddd ${repo.getIdList()}");
-
-        print('herer is your length ${repo.getNearbyDrivers().length}');
-
-        print(map);
-        print("Mappppppppppppppppppppppppppppppppppppppppppppppppppppppp");
-        if (map != null) {
-          var callBack = map['callBack'];
-          print('callBack = $callBack');
-          switch (callBack) {
-            case Geofire.onKeyEntered:
-              String driver = map['key'];
-
-              final cat = driver.split(',')[1];
-              final id = driver.split(',')[0];
-              if (cat == "Truck") {
-                print("Truckkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk");
-                truckRepo.addDriver(NearbyDriver(
-                    id: id,
-                    latitude: map['latitude'],
-                    longitude: map['longitude']));
-                showTrucksOnMap();
-              } else {
-                print("driverrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr");
-
-                repo.addDriver(NearbyDriver(
-                    id: id,
-                    latitude: map['latitude'],
-                    longitude: map['longitude']));
-                showDriversOnMap();
+                  repo.addDriver(NearbyDriver(
+                      id: data['key'],
+                      latitude: data['latitude'],
+                      longitude: data['longitude']));
+                  if (showCarIcons) {
+                    showDriversOnMap();
+                  }
+                  break;
+                case Geofire.onKeyExited:
+                  debugPrint('Removed');
+                  repo.removeDriver(data['key']);
+                  setState(() {
+                    markers.remove(MarkerId(data['key']));
+                  });
+                  break;
+                case Geofire.onKeyMoved:
+                  debugPrint('Moved');
+                  repo.updateDriver(NearbyDriver(
+                      id: data['key'],
+                      latitude: data['latitude'],
+                      longitude: data['longitude']));
+                  if (showCarIcons) {
+                    showDriversOnMap();
+                  }
+                  break;
+                case Geofire.onGeoQueryReady:
+                  break;
               }
+            }
+          });
 
-              print("adeddd ${repo.getIdList()}");
-
-              break;
-
-            case Geofire.onKeyExited:
-              String driver = map['key'];
-
-              final cat = driver.split(',')[1];
-              final id = driver.split(',')[0];
-              if (cat == "Truck") {
-                truckRepo.removeDriver(id);
-                setState(() {
-                  markers.remove(MarkerId(id));
-                });
-                // showTrucksOnMap();
-              } else {
-                repo.removeDriver(id);
-                setState(() {
-                  markers.remove(MarkerId(id));
-                });
-                // showDriversOnMap();
+          break;
+        case 'Truck':
+          Geofire.queryAtLocation(lat, lng, radius)!.listen((data) {
+            if (data != null) {
+              var callback = data['callBack'];
+              switch (callback) {
+                case Geofire.onKeyEntered:
+                  debugPrint('Added');
+                  truckRepo.addDriver(NearbyDriver(
+                      id: data['key'],
+                      latitude: data['latitude'],
+                      longitude: data['longitude']));
+                  if (showCarIcons) {
+                    showTrucksOnMap();
+                  }
+                  break;
+                case Geofire.onKeyExited:
+                  debugPrint('Removed');
+                  truckRepo.removeDriver(data['key']);
+                  setState(() {
+                    markers.remove(MarkerId(data['key']));
+                  });
+                  break;
+                case Geofire.onKeyMoved:
+                  debugPrint('Moved');
+                  truckRepo.updateDriver(NearbyDriver(
+                      id: data['key'],
+                      latitude: data['latitude'],
+                      longitude: data['longitude']));
+                  if (showCarIcons) {
+                    showTrucksOnMap();
+                  }
+                  break;
+                case Geofire.onGeoQueryReady:
+                  break;
               }
-
-              print("now");
-
-              break;
-
-            case Geofire.onKeyMoved:
-              String driver = map['key'];
-
-              final cat = driver.split(',')[1];
-              final id = driver.split(',')[0];
-              if (cat == "Truck") {
-                repo.updateDriver(NearbyDriver(
-                    id: id,
-                    latitude: map['latitude'],
-                    longitude: map['longitude']));
-                showTrucksOnMap();
-              } else {
-                print("moved");
-                print(map['key']);
-
-                repo.updateDriver(NearbyDriver(
-                    id: id,
-                    latitude: map['latitude'],
-                    longitude: map['longitude']));
-                showDriversOnMap();
-              }
-
-              print("Yeah Moved");
-              break;
-
-            case Geofire.onGeoQueryReady:
-              // showTrucksOnMap();
-              // showDriversOnMap();
-              print(map['result']);
-
-              break;
-          }
-          if (!mounted) {
-            return;
-          }
-        }
-      });
+            }
+          });
+          break;
+      }
     } on PlatformException {
-      print("platform exceprionnnnnnnnnnnnnnnnnnnnnnnnnnnnnn");
+      throw Exception('platform Eceprion');
     } catch (_) {
-      print("here");
+      throw Exception(_);
     }
   }
 
   void showDriversOnMap() {
     ImageConfiguration imageConfiguration =
-        createLocalImageConfiguration(context, size: Size(1, 2));
+        createLocalImageConfiguration(context, size: const Size(0.5, 1));
     Map<MarkerId, Marker> newMarker = {};
     for (NearbyDriver driver in repo.getNearbyDrivers()) {
       LatLng driverPosition = LatLng(driver.latitude, driver.longitude);
       MarkerId markerId = MarkerId(driver.id);
 
       BitmapDescriptor.fromAssetImage(
-              imageConfiguration, 'assets/icons/luxury.png')
+              imageConfiguration, 'assets/icons/standard.png')
           .then((value) {
         Marker marker =
             Marker(markerId: markerId, position: driverPosition, icon: value);
@@ -781,9 +725,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void showTrucksOnMap() {
     ImageConfiguration imageConfiguration =
-        createLocalImageConfiguration(context, size: Size(1, 2));
+        createLocalImageConfiguration(context, size: const Size(0.5, 1));
     Map<MarkerId, Marker> newMarker = {};
-    for (NearbyDriver driver in truckRepo.getNearbyDrivers()) {
+    for (NearbyDriver driver in repo.getNearbyDrivers()) {
       LatLng driverPosition = LatLng(driver.latitude, driver.longitude);
       MarkerId markerId = MarkerId(driver.id);
 
@@ -805,40 +749,10 @@ class _HomeScreenState extends State<HomeScreen> {
     // });
   }
 
-  String? searchNearbyDriver() {
-    if (repo.getNearbyDrivers().isEmpty) {
-      return null;
-    }
-    var nearest;
-    var nearestDriver;
-
-    for (NearbyDriver driver in repo.getNearbyDrivers()) {
-      print("drivers ::");
-      print(driver.id);
-      double distance = Geolocator.distanceBetween(
-          8.9966827, 38.7675547, driver.latitude, driver.longitude);
-
-      nearest ??= distance;
-
-      print(distance);
-
-      if (distance <= nearest) {
-        nearest = distance;
-        nearestDriver = driver;
-      }
-    }
-
-    print(nearestDriver.id);
-
-    return nearestDriver.id;
-  }
-
   void changeCameraView() {
-    LatLngBounds latLngBounds;
-
-    final destinationLatLng = dtn;
-    final pickupLatLng =
-        LatLng(currentLatLng.latitude, currentLatLng.longitude);
+    final destinationLatLng = droppOffLatLng;
+    // final pickupLatLng = pickUp;
+    // pickupLatLng = LatLng(currentLatLng.latitude, currentLatLng.longitude);
     if (pickupLatLng.latitude > destinationLatLng.latitude &&
         pickupLatLng.longitude > destinationLatLng.longitude) {
       latLngBounds =
@@ -862,45 +776,34 @@ class _HomeScreenState extends State<HomeScreen> {
         .animateCamera(CameraUpdate.newLatLngBounds(latLngBounds, 100));
   }
 
-  void _toggleServiceStatusStream() {
+  void _toggleLocationServiceStatusStream() {
     if (_serviceStatusStreamSubscription == null) {
-      print("yeah it's enabled");
-
       final serviceStatusStream = _geolocatorPlatform.getServiceStatusStream();
       _serviceStatusStreamSubscription =
           serviceStatusStream.handleError((error) {
-        print("yeah it's the error bruhh $error");
-
         _serviceStatusStreamSubscription?.cancel();
         _serviceStatusStreamSubscription = null;
       }).listen((serviceStatus) {
-        String serviceStatusValue;
         if (serviceStatus == ServiceStatus.enabled) {
-          print("yeah it's enabled");
-          setState(() {
-            isLocationOn = true;
-          });
-          _determinePosition().then((value) {
-            pickupLatLng = LatLng(value.latitude, value.longitude);
-
-            currentLatLng = LatLng(value.latitude, value.longitude);
-
-            outerController.animateCamera(CameraUpdate.newCameraPosition(
-                CameraPosition(
-                    zoom: 16.1746,
-                    target: LatLng(
-                        currentLatLng.latitude, currentLatLng.longitude))));
-          });
-          // if (positionStreamStarted) {
-          //   _toggleListening();
-          // }
+          if (serviceStatusValue == "disabled") {
+            Navigator.pop(context);
+            if (isFirstTime) {
+              Geolocator.getCurrentPosition().then((value) {
+                carTypeSelectorDialog(value);
+                currentPostion = value;
+                userPostion = currentPostion;
+                currentLatLng = LatLng(value.latitude, value.longitude);
+                // pickupLatLng = currentLatLng;
+                outerController.animateCamera(CameraUpdate.newCameraPosition(
+                    CameraPosition(zoom: 16.1746, target: currentLatLng)));
+              });
+            }
+            isFirstTime = false;
+          }
           serviceStatusValue = 'enabled';
         } else {
-          setState(() {
-            isLocationOn = false;
-          });
-
-          print("nope ist's disabled");
+          debugPrint("Disableddddd");
+          locationServiceButtomSheet();
 
           serviceStatusValue = 'disabled';
         }
@@ -908,23 +811,46 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  void removeQueryListener() async {
-    bool? response = await Geofire.stopListener();
+  void _toggleInternetServiceStatusStream() {
+    if (_connectivitySubscription == null) {
+      _connectivitySubscription ==
+          _connectivity.onConnectivityChanged.listen((event) {
+            if (event == ConnectivityResult.none) {
+              debugPrint("yow none");
 
-    repo.resetList();
-    setState(() {});
+              internetServiceButtomSheet();
+              internetServiceStatus = true;
+            } else if (event == ConnectivityResult.wifi) {
+              debugPrint("yow wifi");
 
-    print(response);
+              if (internetServiceStatus != null) {
+                internetServiceStatus! ? Navigator.pop(context) : null;
+              }
+            } else if (event == ConnectivityResult.mobile) {
+              debugPrint("yow mobile");
+
+              if (internetServiceStatus != null) {
+                internetServiceStatus! ? Navigator.pop(context) : null;
+              }
+            }
+          });
+    }
   }
 
-  void listenBackGroundMessage() {
+  void _listenBackGroundMessage() {
     IsolateNameServer.registerPortWithName(_port.sendPort, portName);
     _port.listen((message) {
+      print("Dataaaaaaaaaaaaaa Has Arrivedd Bruhhhhhhhh ${message.data['response']}");
       switch (message.data['response']) {
         case "Accepted":
-          BlocProvider.of<DriverBloc>(context)
-              .add(DriverLoad(message.data['myId']));
-          callback(DriverOnTheWay(callback));
+          Geofire.stopListener();
+          driverId = message.data['myId'];
+          BlocProvider.of<CurrentWidgetCubit>(context)
+              .changeWidget(const DriverOnTheWay(
+            fromBackGround: true,
+            appOpen: false,
+          ));
+          requestAccepted();
           break;
         case "Arrived":
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -933,173 +859,485 @@ class _HomeScreenState extends State<HomeScreen> {
           ));
           break;
         case "Completed":
-          Navigator.pushNamed(context, ReviewScreen.routeName);
+          BlocProvider.of<DirectionBloc>(context).add(
+              const DirectionChangeToInitialState(
+                  loadCurrentLocation: true, listenToNearbyDriver: false));
+          Navigator.pushNamed(context, ReviewScreen.routeName,
+              arguments: ReviewScreenArgument(price: message.data['price']));
           break;
-
+        case 'Started':
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: const Text(" Trip Started"),
+            backgroundColor: Colors.indigo.shade900,
+          ));
+          BlocProvider.of<CurrentWidgetCubit>(context)
+              .changeWidget(const StartedTripPannel());
+          break;
         case "TimeOut":
-          callback(Service(callback, searchNearbyDriver));
+          BlocProvider.of<CurrentWidgetCubit>(context)
+              .changeWidget(const Service(true, false));
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
             content: const Text("Time out"),
             backgroundColor: Colors.indigo.shade900,
           ));
           break;
         default:
-          print(message);
       }
     });
   }
+
+  void showBookedDriver() {
+    MarkerId markerId = MarkerId(generateRandomId());
+    databaseReference.onValue.listen((event) {
+      debugPrint(event.snapshot.value.toString());
+      if (event.snapshot.child('$driverId/lat').value != null) {
+        final position = LatLng(
+            double.parse(
+                event.snapshot.child('$driverId/lat').value.toString()),
+            double.parse(
+                event.snapshot.child('$driverId/lng').value.toString()));
+
+        Marker marker = Marker(
+            markerId: markerId, position: position, icon: carMarkerIcon!);
+        setState(() {
+          carMarker[markerId] = marker;
+        });
+      }
+    });
+  }
+
+  void createMarkerIcon() {
+    if (carMarkerIcon == null) {
+      ImageConfiguration imageConfiguration =
+          createLocalImageConfiguration(context, size: const Size(0.5, 1));
+      BitmapDescriptor.fromAssetImage(
+              imageConfiguration, 'assets/icons/car.png')
+          .then((value) {
+        carMarkerIcon = value;
+      });
+    }
+  }
+
+  void carTypeSelectorDialog(Position value) {
+    showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: (BuildContext context) {
+          return WillPopScope(
+            onWillPop: () async => false,
+            child: Dialog(
+              elevation: 0,
+              insetPadding: EdgeInsets.only(
+                  top: MediaQuery.of(context).size.height * 0.3),
+              backgroundColor: Colors.transparent,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  FilterChip(
+                      backgroundColor: Theme.of(context).backgroundColor,
+                      label: Text(
+                        getTranslation(context, "truck"),
+                        style: Theme.of(context).textTheme.titleMedium,
+                      ),
+                      onSelected: (selexted) {
+                        selectedCar = SelectedCar.truck;
+                        listenTruck(value);
+                        Navigator.pop(context);
+                      }),
+                  FilterChip(
+                      backgroundColor: Theme.of(context).backgroundColor,
+                      label: Text(
+                        getTranslation(context, "taxi"),
+                        style: Theme.of(context).textTheme.titleMedium,
+                      ),
+                      onSelected: (selexted) {
+                        selectedCar = SelectedCar.taxi;
+                        listenTaxi(value);
+                        Navigator.pop(context);
+                      }),
+                  // FilterChip(label: Text("Taxi"), onSelected: (selexted) {}),
+                  // ElevatedButton(
+                  //     onPressed: () {
+                  //       selectedCar = SelectedCar.truck;
+                  //       listenTruck(value);
+                  //       Navigator.pop(context);
+                  //     },
+                  //     child: const Text('Truck')),
+                  // ElevatedButton(
+                  //     onPressed: () {
+                  //       selectedCar = SelectedCar.taxi;
+                  //       listenTaxi(value);
+                  //       Navigator.pop(context);
+                  //     },
+                  //     child: const Text('Taxi')),
+                ],
+              ),
+            ),
+          );
+        });
+  }
+
+  void locationServiceButtomSheet() {
+    showModalBottomSheet(
+        enableDrag: false,
+        isDismissible: false,
+        context: context,
+        shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(10), topRight: Radius.circular(10))),
+        builder: (BuildContext ctx) {
+          return WillPopScope(
+            onWillPop: () async => false,
+            child: Container(
+              height: MediaQuery.of(context).size.height * 0.4,
+              padding: const EdgeInsets.fromLTRB(30, 30, 20, 20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    flex: 2,
+                    child: Text(
+                        getTranslation(
+                            context, "location_service_off_buttom_sheet_title"),
+                        style: Theme.of(context).textTheme.headline5),
+                  ),
+                  const Expanded(
+                      flex: 2,
+                      child: Center(
+                        child: Icon(Icons.location_off_outlined,
+                            color: buttonColor, size: 60),
+                      )),
+                  // const Expanded(child: SizedBox()),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  Expanded(
+                      flex: 3,
+                      child: Text(
+                          getTranslation(context,
+                              "location_service_off_buttom_sheet_text"),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: Theme.of(context).textTheme.bodyText2)),
+                  Expanded(
+                      flex: 2,
+                      child: SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                            onPressed: () async {
+                              AppSettings.openLocationSettings(
+                                  asAnotherTask: true);
+                              // await Geolocator.openLocationSettings();
+                            },
+                            child: Text(
+                              getTranslation(context,
+                                  "location_service_off_buttom_sheet_acction_button_top"),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              textAlign: TextAlign.center,
+                            )),
+                      )),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  Expanded(
+                      flex: 2,
+                      child: SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                            onPressed: () async {
+                              SystemNavigator.pop();
+                            },
+                            child: Text(getTranslation(context, "cancel"))),
+                      ))
+                ],
+              ),
+            ),
+          );
+        });
+  }
+
+  void internetServiceButtomSheet() {
+    showModalBottomSheet(
+        enableDrag: false,
+        isDismissible: false,
+        context: context,
+        builder: (BuildContext context) {
+          return WillPopScope(
+            onWillPop: () async => false,
+            child: Container(
+              height: MediaQuery.of(context).size.height * 0.4,
+              padding: const EdgeInsets.fromLTRB(30, 30, 20, 20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    flex: 2,
+                    child: Text(
+                        getTranslation(
+                            context, "internet_service_off_buttom_sheet_title"),
+                        style: Theme.of(context).textTheme.headline5),
+                  ),
+                  const Expanded(
+                      flex: 2,
+                      child: Center(
+                        child: Icon(
+                            Icons
+                                .signal_wifi_statusbar_connected_no_internet_4_rounded,
+                            color: buttonColor,
+                            size: 60),
+                      )),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  Expanded(
+                      flex: 3,
+                      child: Text(
+                          getTranslation(context,
+                              "internet_service_off_buttom_sheet_text"),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: Theme.of(context).textTheme.bodyText2)),
+                  // Expanded(
+                  //     child: Text(
+                  //         "For better accuracy,please turn on both GPS and WIFI location services",
+                  //         style: Theme.of(context).textTheme.bodyText2)),
+                  Expanded(
+                      flex: 2,
+                      child: SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                            onPressed: () {
+                              AppSettings.openDeviceSettings(
+                                  asAnotherTask: true);
+                            },
+                            child: Text(getTranslation(context,
+                                "internet_service_off_buttom_sheet_acction_button_top"))),
+                      )),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  Expanded(
+                      flex: 2,
+                      child: SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                            onPressed: () async {
+                              SystemNavigator.pop();
+                            },
+                            child: Text(getTranslation(context, "cancel"))),
+                      ))
+                ],
+              ),
+            ),
+          );
+        });
+  }
+
+  void listenTaxi(Position value) {
+    Geofire.initialize('availableDrivers');
+    geofireListener(value.latitude, value.longitude, 'Taxi',
+        widget.args.settings.radius.taxiRadius);
+    geofireListener(value.latitude, value.longitude, 'Taxi',
+        widget.args.settings.radius.taxiRadius);
+  }
+
+  void listenTruck(Position value) {
+    Geofire.initialize('availableTrucks');
+    geofireListener(value.latitude, value.longitude, 'Truck',
+        widget.args.settings.radius.truckRadius);
+    geofireListener(value.latitude, value.longitude, 'Truck',
+        widget.args.settings.radius.truckRadius);
+  }
+
+  void _checkLocationServiceOnInit() async {
+    bool serviceEnabled;
+
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      if (!serviceEnabled) {
+        isFirstTime = true;
+
+        locationServiceButtomSheet();
+        serviceStatusValue = 'disabled';
+
+        return Future.error("NoLocation Enabled");
+      }
+
+      return Future.error('Location services are disabled.');
+    } else {
+      isFirstTime = false;
+    }
+  }
+
+  void checkInterNetServiceOnInit() async {
+    ConnectivityResult result;
+    result = await _connectivity.checkConnectivity();
+
+    if (result == ConnectivityResult.none) {
+      internetServiceButtomSheet();
+    }
+  }
+
+  void loadStartedTrip() {
+    if (widget.args.isSelected) {
+      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+        switch (widget.args.status) {
+          case "Accepted":
+            context
+                .read<CurrentWidgetCubit>()
+                .changeWidget(const DriverOnTheWay(
+                  fromBackGround: false,
+                  appOpen: true,
+                ));
+            break;
+          case "Arrived":
+            context
+                .read<CurrentWidgetCubit>()
+                .changeWidget(const DriverOnTheWay(
+                  fromBackGround: false,
+                  appOpen: true,
+                ));
+            break;
+          case "Started":
+            context
+                .read<CurrentWidgetCubit>()
+                .changeWidget(const StartedTripPannel());
+            break;
+          default:
+            const WhereTo(
+              key: Key("whereto"),
+            );
+        }
+
+        ///////////////////////
+
+        _getPolyline(widget.args.encodedPts!);
+        _addMarker(
+            pickupLatLng,
+            "pickup",
+            BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen),
+            InfoWindow(title: pickupAddress));
+        _addMarker(
+            droppOffLatLng,
+            "droppoff",
+            BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
+            InfoWindow(title: droppOffAddress));
+        _controller.future.whenComplete(() => changeCameraView());
+
+        showBookedDriver();
+        setState(() {});
+      });
+    }
+  }
+
+
+bool onIosBackground(ServiceInstance service) {
+  WidgetsFlutterBinding.ensureInitialized();
+  print('FLUTTER BACKGROUND FETCH');
+
+  return true;
+}
+
+Future<void> initializeService() async {
+  final service = FlutterBackgroundService();
+  await service.configure(
+    androidConfiguration: AndroidConfiguration(
+      // this will be executed when app is in foreground or background in separated isolate
+      onStart: onStart,
+
+      // auto start service 
+      autoStart: true,
+      isForegroundMode: true,
+
+    ),
+    iosConfiguration: IosConfiguration(
+      // auto start service
+      autoStart: true,
+
+      // this will be executed when app is in foreground in separated isolate
+      onForeground: onStart,
+
+      // you have to enable background fetch capability on xcode project
+      onBackground: onIosBackground,
+    ),
+  );
+  // service.startService();
 }
 
 
 
-//for maintenance
+void onStart(ServiceInstance service) async {
+  // Only available for flutter 3.0.0 and later
+  DartPluginRegistrant.ensureInitialized();
+
+  service.on('method').listen((event) {
+  });
+
+  // For flutter prior to version 3.0.0
+  // We have to register the plugin manually
+
+  // SharedPreferences preferences = await SharedPreferences.getInstance();
+  // await preferences.setString("hello", "world");
+
+  // if (service is AndroidServiceInstance) {
+  // service.on('setAsForeground').listen((event) {
+  //   print("Yow Herererr as forground");
+  //   // service.setAsForegroundService();
+  // });
+
+  // service.on('setAsBackground').listen((event) {
+  //   print("Yow Herererr as background");
+
+  //   // service.setAsBackgroundService();
+  // });
+  // }
+
+  service.on('stopService').listen((event) {
+    print("Hereeeeeeeeeexx");
+    service.stopSelf();
+  });
+
+  // bring to foreground
+  // Timer.periodic(const Duration(seconds: 1), (timer) async {
+  //   final hello = preferences.getString("hello");
+  //   print(hello);
+
+  //   if (service is AndroidServiceInstance) {
+  //     service.setForegroundNotificationInfo(
+  //       title: "My App Service",
+  //       content: "Updated at ${DateTime.now()}",
+  //     );
+  //   }
+
+  //   /// you can see this log in logcat
+  //   print('FLUTTER BACKGROUND SERVICE: ${DateTime.now()}');
+
+  //   // test using external plugin
+  //   final deviceInfo = DeviceInfoPlugin();
+  //   String? device;
+  //   if (Platform.isAndroid) {
+  //     final androidInfo = await deviceInfo.androidInfo;
+  //     device = androidInfo.model;
+  //   }
+
+  //   if (Platform.isIOS) {
+  //     final iosInfo = await deviceInfo.iosInfo;
+  //     device = iosInfo.model;
+  //   }
+
+  //   service.invoke(
+  //     'update',
+  //     {
+  //       "current_date": DateTime.now().toIso8601String(),
+  //       "device": device,
+  //     },
+  //   );
+  // });
+}
+
+}
 
 
-//           isSelectedd
-//               ? BlocBuilder<DirectionBloc, DirectionState>(
-//                   builder: (context, state) {
-//                   bool isDialog = true;
 
-//                   if (state is DirectionLoadSuccess) {
-//                     isDialog = false;
-
-//                     print("Welcome");
-
-//                     _getPolyline(state.direction.encodedPoints);
-//                     _addMarker(
-//                         dtn,
-//                         "destination",
-//                         BitmapDescriptor.defaultMarkerWithHue(
-//                             BitmapDescriptor.hueGreen));
-
-//                     return GoogleMap(
-//                       mapType: MapType.normal,
-//                       myLocationButtonEnabled: true,
-//                       initialCameraPosition: _addissAbaba,
-//                       myLocationEnabled: true,
-//                       polylines: Set<Polyline>.of(polylines.values),
-//                       markers: Set<Marker>.of(markers.values),
-//                       onMapCreated: (GoogleMapController controller) {
-//                         // _controller.complete(controller);
-
-
-//                         _determinePosition().then((value) {
-//                           currentLatLng =
-//                               LatLng(value.latitude, value.longitude);
-//                           setState(() {
-//                             _addMarker(
-//                                 LatLng(value.latitude, value.longitude),
-//                                 "pickup",
-//                                 BitmapDescriptor.defaultMarkerWithHue(
-//                                     BitmapDescriptor.hueRed));
-//                           });
-
-//                           LatLngBounds latLngBounds;
-
-//                           final destinationLatLng = dtn;
-//                           final pickupLatLng =
-//                               LatLng(value.latitude, value.longitude);
-//                           if (pickupLatLng.latitude >
-//                                   destinationLatLng.latitude &&
-//                               pickupLatLng.longitude >
-//                                   destinationLatLng.longitude) {
-//                             latLngBounds = LatLngBounds(
-//                                 southwest: destinationLatLng,
-//                                 northeast: pickupLatLng);
-//                           } else if (pickupLatLng.longitude >
-//                               destinationLatLng.longitude) {
-//                             latLngBounds = LatLngBounds(
-//                                 southwest: LatLng(pickupLatLng.latitude,
-//                                     destinationLatLng.longitude),
-//                                 northeast: LatLng(destinationLatLng.latitude,
-//                                     pickupLatLng.longitude));
-//                           } else if (pickupLatLng.latitude >
-//                               destinationLatLng.latitude) {
-//                             latLngBounds = LatLngBounds(
-//                                 southwest: LatLng(destinationLatLng.latitude,
-//                                     pickupLatLng.longitude),
-//                                 northeast: LatLng(pickupLatLng.latitude,
-//                                     destinationLatLng.longitude));
-//                           } else {
-//                             latLngBounds = LatLngBounds(
-//                                 southwest: pickupLatLng,
-//                                 northeast: destinationLatLng);
-//                           }
-
-//                           controller.animateCamera(
-//                               CameraUpdate.newLatLngBounds(latLngBounds, 70));
-//                         });
-//                       },
-//                     );
-//                   }
-//                   if (state is DirectionOperationFailure) {
-//                     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-//                       content: const Text("Unable to find direction"),
-//                       backgroundColor: Colors.red.shade900,
-//                     ));
-//                     return GoogleMap(
-//                       mapType: MapType.terrain,
-//                       buildingsEnabled: false,
-//                       indoorViewEnabled: true,
-//                       tiltGesturesEnabled: false,
-//                       trafficEnabled: false,
-//                       myLocationButtonEnabled: true,
-//                       initialCameraPosition: _addissAbaba,
-//                       myLocationEnabled: true,
-//                       onMapCreated: (GoogleMapController controller) {
-//                         _controller.complete(controller);
-
-//                         _determinePosition().then((value) {
-//                           currentLatLng =
-//                               LatLng(value.latitude, value.longitude);
-//                           controller.animateCamera(
-//                               CameraUpdate.newCameraPosition(CameraPosition(
-//                                   zoom: 14.4746,
-//                                   target: LatLng(
-//                                       value.latitude, value.longitude))));
-//                         });
-//                       },
-//                     );
-//                   }
-//                   return isDialog
-//                       ? AlertDialog(
-//                           content: Row(
-//                             children: const [
-//                               CircularProgressIndicator(),
-//                               Text("finding direction")
-//                             ],
-//                           ),
-//                         )
-//                       : Container();
-//                 })
-//               : GoogleMap(
-//                   mapType: MapType.terrain,
-//                   buildingsEnabled: false,
-//                   indoorViewEnabled: true,
-//                   tiltGesturesEnabled: false,
-//                   trafficEnabled: false,
-//                   myLocationButtonEnabled: true,
-//                   initialCameraPosition: _addissAbaba,
-//                   markers: Set<Marker>.of(driverMarkers.values),
-//                   myLocationEnabled: true,
-//                   onMapCreated: (GoogleMapController controller) {
-//                     print(driverMarkers);
-//                     _controller.complete(controller);
-
-//                     _determinePosition().then((value) async {
-//                       currentLatLng = LatLng(value.latitude, value.longitude);
-//                       geofireListener(value.latitude, value.longitude);
-
-//                       WidgetsBinding.instance!
-//                           .addPostFrameCallback((timeStamp) {
-//                         geofireListener(value.latitude, value.longitude);
-//                       });
-
-//                       controller.animateCamera(CameraUpdate.newCameraPosition(
-//                           CameraPosition(
-//                               zoom: 14.4746,
-//                               target:
-//                                   LatLng(value.latitude, value.longitude))));
-//                     });
-//                   },
-//                 ),
+// x-refresh-token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MjllMTkwNGM4YzA0ZTY4OTVhNDRkZTgiLCJuYW1lIjoiVGhvbWFzIFNhbmthcmEiLCJlbWFpbCI6InRvbWlsaUBnbWFpbC5jb20iLCJwaG9uZV9udW1iZXIiOiIrMjUxOTU0OTk5NzcyIiwicm9sZSI6WyJQYXNzZW5nZXIiXSwiZmNtX2lkIjoiY0lyZDNOa0xSLS1CQlBaR0hqMXlvQjpBUEE5MWJIbDllVXBRRzRaLTI4d3RRT21VU29Nam1aaXB5VEp6dElTUUFMWHgzbDA1NGRPZXh6NTNuaE9Tekx6Z0t0ZlBXTE9zclpaQWVjN1BsbE9PWWhIT3JNc052Ykg5eUVBLXotTDJXT2pQMlM3Z3pUTjNZME4wRi1Ra0FtZmFTUHlHQ2x5V3VDbCIsInRvcGljcyI6W10sImlhdCI6MTY1NTcyODYyMSwiZXhwIjoxNjY2MDk2NjIxfQ.qe11fRC98aF9ZlwPG4Poejj4koa1tfkmZBDCjtHhJ2U

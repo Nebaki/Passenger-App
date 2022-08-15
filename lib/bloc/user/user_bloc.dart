@@ -1,6 +1,4 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-
-import 'package:meta/meta.dart';
 import 'package:passengerapp/repository/repositories.dart';
 import 'bloc.dart';
 
@@ -17,7 +15,11 @@ class UserBloc extends Bloc<UserEvent, UserState> {
         final users = await userRepository.createPassenger(event.user);
         yield UsersLoadSuccess(users);
       } catch (_) {
-        yield UserOperationFailure();
+        if (_.toString().split(" ")[1] == "401") {
+          yield UserUnAuthorised();
+        } else {
+          yield UserOperationFailure();
+        }
       }
     }
 
@@ -27,7 +29,11 @@ class UserBloc extends Bloc<UserEvent, UserState> {
         final passenger = await userRepository.updatePassenger(event.user);
         yield UsersLoadSuccess(passenger);
       } catch (_) {
-        yield UserOperationFailure();
+         if (_.toString().split(" ")[1] == "401") {
+          yield UserUnAuthorised();
+        } else {
+          yield UserOperationFailure();
+        }
       }
     }
 
@@ -37,7 +43,11 @@ class UserBloc extends Bloc<UserEvent, UserState> {
         await userRepository.updatePreference(event.user);
         yield UserPreferenceUploadSuccess();
       } catch (_) {
-        yield UserOperationFailure();
+         if (_.toString().split(" ")[1] == "401") {
+          yield UserUnAuthorised();
+        } else {
+          yield UserOperationFailure();
+        }
       }
     }
 
@@ -46,18 +56,26 @@ class UserBloc extends Bloc<UserEvent, UserState> {
         await userRepository.deletePassenger(event.user.id!);
         yield const UsersDeleteSuccess(true);
       } catch (_) {
-        yield UserOperationFailure();
+         if (_.toString().split(" ")[1] == "401") {
+          yield UserUnAuthorised();
+        } else {
+          yield UserOperationFailure();
+        }
       }
     }
 
     if (event is UploadProfile) {
-      yield UserLoading();
+      yield UserImageLoading();
 
       try {
         await userRepository.uploadProfilePicture(event.file);
         yield ImageUploadSuccess();
       } catch (_) {
-        yield UserOperationFailure();
+         if (_.toString().split(" ")[1] == "401") {
+          yield UserUnAuthorised();
+        } else {
+          yield UserOperationFailure();
+        }
       }
     }
 
@@ -68,7 +86,58 @@ class UserBloc extends Bloc<UserEvent, UserState> {
         await userRepository.changePassword(event.passwordInfo);
         yield UserPasswordChanged();
       } catch (_) {
-        yield UserOperationFailure();
+         if (_.toString().split(" ")[1] == "401") {
+          yield UserUnAuthorised();
+        } else {
+          yield UserOperationFailure();
+        }
+      }
+    }
+
+    if (event is UserForgetPassword) {
+      yield UserLoading();
+
+      try {
+        await userRepository.forgetPassword(event.forgetPasswordInfo);
+        yield UserPasswordChanged();
+      } catch (_) {
+         if (_.toString().split(" ")[1] == "401") {
+          yield UserUnAuthorised();
+        } else {
+          yield UserOperationFailure();
+        }
+      }
+    }
+
+    if (event is UserCheckPhoneNumber) {
+      yield UserLoading();
+
+      try {
+        final phoneNumberExist =
+            await userRepository.checkPhoneNumber(event.phoneNumber);
+        yield UserPhoneNumbeChecked(phoneNumberExist);
+      } catch (_) {
+         if (_.toString().split(" ")[1] == "401") {
+          yield UserUnAuthorised();
+        } else {
+          yield UserOperationFailure();
+        }
+      }
+    }
+
+    if (event is UserSetAvailability) {
+      yield UserLoading();
+
+      try {
+        await userRepository.setPassengerAvailablity(
+            event.location, event.status);
+        yield UserAvailablitySuccess();
+      } catch (_) {
+         if (_.toString().split(" ")[1] == "401") {
+          yield UserUnAuthorised();
+        } else {
+          yield UserOperationFailure();
+        }
       }
     }
   }

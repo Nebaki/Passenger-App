@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class VerificationCodeField extends StatelessWidget {
+  const VerificationCodeField({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     final node = FocusScope.of(context);

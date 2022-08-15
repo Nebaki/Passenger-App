@@ -3,19 +3,21 @@ import 'package:flutter/material.dart';
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:passengerapp/bloc/bloc.dart';
+import 'package:passengerapp/bloc/database/location_history_bloc.dart';
+import 'package:passengerapp/cubit/cubits.dart';
+import 'package:passengerapp/cubit/favorite_location.dart';
 import 'package:passengerapp/dataprovider/auth/auth.dart';
 import 'package:passengerapp/drawer/custome_paint.dart';
-import 'package:passengerapp/rout.dart';
+import 'package:passengerapp/helper/localization.dart';
 import 'package:passengerapp/screens/screens.dart';
 import 'package:http/http.dart' as http;
 
 class NavDrawer extends StatelessWidget {
-  AuthDataProvider authDataProvider =
-      AuthDataProvider(httpClient: http.Client());
+  final authDataProvider = AuthDataProvider(httpClient: http.Client());
 
-  Future<String?> getImageUrl() async {
-    return await authDataProvider.getImageUrl();
-  }
+  NavDrawer({Key? key}) : super(key: key);
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +25,7 @@ class NavDrawer extends StatelessWidget {
         child: Material(
       color: const Color.fromRGBO(240, 241, 241, 1),
       child: CustomPaint(
-        painter: DrawerBackGround(),
+        painter: DrawerBackGround(context),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -33,40 +35,88 @@ class NavDrawer extends StatelessWidget {
                 builder: (_, state) {
                   if (state is AuthDataLoadSuccess) {
                     return Column(
-                      // mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        CircleAvatar(
-                            radius: 40,
-                            backgroundColor: Colors.grey.shade300,
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(100),
-                              child: CachedNetworkImage(
-                                  imageUrl: state.auth.profilePicture!,
-                                  imageBuilder: (context, imageProvider) =>
-                                      Container(
-                                        decoration: BoxDecoration(
-                                          image: DecorationImage(
-                                            image: imageProvider,
-                                            fit: BoxFit.cover,
-                                            //colorFilter:
-                                            //     const ColorFilter.mode(
-                                            //   Colors.red,
-                                            //   BlendMode.colorBurn,
-                                            // ),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            CircleAvatar(
+                                radius: 40,
+                                backgroundColor: Colors.grey.shade300,
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(100),
+                                  child: BlocBuilder<ProfilePictureCubit,String>(builder:  (context, state) =>  CachedNetworkImage(
+                                      imageUrl: state,
+                                      imageBuilder: (context, imageProvider) =>
+                                          Container(
+                                            decoration: BoxDecoration(
+                                              image: DecorationImage(
+                                                image: imageProvider,
+                                                fit: BoxFit.cover,
+                                              ),
+                                            ),
                                           ),
-                                        ),
-                                      ),
-                                  placeholder: (context, url) =>
-                                      const CircularProgressIndicator(),
-                                  errorWidget: (context, url, error) {
-                                    return const Icon(
-                                      Icons.person,
-                                      color: Colors.black,
-                                      size: 50,
-                                    );
-                                  }),
-                            )),
+                                      placeholder: (context, url) =>
+                                          const CircularProgressIndicator(),
+                                      errorWidget: (context, url, error) {
+                                        return const Icon(
+                                          Icons.person,
+                                          color: Colors.black,
+                                          size: 50,
+                                        );
+                                      }),)
+                                )),
+                            BlocBuilder<ThemeModeCubit, ThemeMode>(
+                                builder: (context, state) {
+                              if (state == ThemeMode.light) {
+                                return IconButton(
+                                    onPressed: () {
+                                      context
+                                          .read<ThemeModeCubit>()
+                                          .ActivateDarkTheme();
+                                    },
+                                    color: Colors.black,
+                                    icon: const Icon(Icons.dark_mode_outlined));
+                              }
+                              if (state == ThemeMode.dark) {
+                                return IconButton(
+                                    onPressed: () {
+                                      context
+                                          .read<ThemeModeCubit>()
+                                          .ActivateLightTheme();
+                                    },
+                                    color: Colors.white,
+                                    icon:
+                                        const Icon(Icons.light_mode_outlined));
+                              }
+                              if (state == ThemeMode.system) {
+                                Brightness brightness =
+                                    MediaQuery.of(context).platformBrightness;
+                                return brightness == Brightness.dark
+                                    ? IconButton(
+                                        onPressed: () {
+                                          context
+                                              .read<ThemeModeCubit>()
+                                              .ActivateLightTheme();
+                                        },
+                                        color: Colors.white,
+                                        icon: const Icon(
+                                            Icons.light_mode_outlined))
+                                    : IconButton(
+                                        onPressed: () {
+                                          context
+                                              .read<ThemeModeCubit>()
+                                              .ActivateDarkTheme();
+                                        },
+                                        color: Colors.black,
+                                        icon: const Icon(
+                                            Icons.dark_mode_outlined));
+                              }
+                              return Container();
+                            }),
+                          ],
+                        ),
                         const SizedBox(
                           height: 15,
                         ),
@@ -81,7 +131,7 @@ class NavDrawer extends StatelessWidget {
                 },
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 20,
             ),
             Container(
@@ -92,102 +142,85 @@ class NavDrawer extends StatelessWidget {
                 children: [
                   GestureDetector(
                     onTap: () {
-                      Navigator.pushReplacementNamed(
-                          context, HomeScreen.routeName,
-                          arguments: HomeScreenArgument(isSelected: false));
-                    },
-                    child: _menuItem(
-                        divider: true,
-                        context: context,
-                        icon: Icons.home_max_outlined,
-                        text: "Home"),
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.pushNamed(context, SavedAddress.routeName);
+                      Navigator.popAndPushNamed(
+                          context, SavedAddress.routeName);
                     },
                     child: _menuItem(
                         divider: true,
                         context: context,
                         icon: Icons.favorite_outline_outlined,
-                        text: "Saved Addreses"),
+                        text: getTranslation(context, "saved_addresses")),
                   ),
                   GestureDetector(
                     onTap: () {
-                      Navigator.pushNamed(context, HistoryPage.routeName);
+                      Navigator.popAndPushNamed(context, HistoryPage.routeName);
                     },
                     child: _menuItem(
                         divider: true,
                         context: context,
                         icon: Icons.history,
-                        text: "History"),
+                        text: getTranslation(context, "history_title")),
                   ),
                   GestureDetector(
-                    onTap: () {
-                      Navigator.pushNamed(
-                          context, OrderForOtherScreen.routeName);
-                    },
+                    onTap: context.read<CurrentWidgetCubit>().state.key ==
+                            const Key("whereto")
+                        ? () {
+                            Navigator.popAndPushNamed(
+                                context, OrderForOtherScreen.routeName);
+                          }
+                        : null,
                     child: _menuItem(
                         divider: true,
                         context: context,
                         icon: Icons.border_outer_rounded,
-                        text: "Order for other"),
+                        text: getTranslation(context, "order_for_other")),
                   ),
-                  // GestureDetector(
-                  //   onTap: () {
-                  //     Navigator.pushNamed(context, ReviewScreen.routeName);
-                  //   },
-                  //   child: _menuItem(
-                  //       divider: true,
-                  //       context: context,
-                  //       icon: Icons.person,
-                  //       text: "Award"),
-                  // ),
-                  // GestureDetector(
-                  //   onTap: () {
-                  //     // BlocProvider.of<AuthBloc>(context).add(AuthDataLoad());
-                  //     Navigator.pushNamed(context, PlacePickerScreen.routeName);
-                  //   },
-                  //   child: _menuItem(
-                  //       divider: true,
-                  //       context: context,
-                  //       icon: Icons.person,
-                  //       text: "Contact us"),
-                  // ),
                   GestureDetector(
                     onTap: () {
-                      Navigator.pushNamed(context, SettingScreen.routeName);
+                      Navigator.popAndPushNamed(
+                          context, SettingScreen.routeName);
                     },
                     child: _menuItem(
                         divider: true,
                         context: context,
                         icon: Icons.settings_outlined,
-                        text: "Settings"),
+                        text: getTranslation(context, "settings")),
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.popAndPushNamed(
+                          context, AwardScreen.routeName);
+                    },
+                    child: _menuItem(
+                        divider: true,
+                        context: context,
+                        icon: Icons.wallet_giftcard_outlined,
+                        text: getTranslation(context, "award")),
                   ),
                   const SizedBox(height: 20),
                   GestureDetector(
                     onTap: () {
                       BlocProvider.of<AuthBloc>(context).add(LogOut());
-                      Navigator.pushReplacementNamed(
-                          context, SigninScreen.routeName);
+                      BlocProvider.of<LocationHistoryBloc>(context)
+                          .add(LocationHistoryClear());
+                      BlocProvider.of<FavoriteLocationCubit>(context)
+                          .clearFavoriteLocations();
+
+                      Navigator.pushNamedAndRemoveUntil(
+                        context,
+                        SigninScreen.routeName,
+                        ((Route<dynamic> route) => false),
+                      );
                     },
                     child: _menuItem(
                         divider: false,
                         context: context,
                         icon: Icons.logout,
-                        text: "Logout"),
+                        text: getTranslation(context, "logout")),
                   ),
                 ],
               ),
             ),
-            // const SizedBox(
-            //   height: 15,
-            //   child: Center(
-            //     child: Text("Safe Way By Vintage Technologies",
-            //         style: TextStyle(
-            //             fontWeight: FontWeight.w100, color: Colors.black45)),
-            //   ),
-            // ),
           ],
         ),
       ),
@@ -205,7 +238,7 @@ class NavDrawer extends StatelessWidget {
     return ListTile(
       horizontalTitleGap: 0,
       leading: Icon(icon, color: color),
-      title: Text(text, style: Theme.of(context).textTheme.bodyLarge),
+      title: Text(text, style: const TextStyle(color: Colors.black)),
       hoverColor: hoverColor,
     );
   }

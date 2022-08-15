@@ -6,26 +6,26 @@ import 'package:passengerapp/models/models.dart';
 
 @immutable
 class RideRequest extends Equatable {
-  String? id;
-  String? driverId;
-  String? driverFcm;
-  LatLng? pickupLocation;
-  LatLng? dropOffLocation;
-  String? passengerName;
-  String? pickUpAddress;
-  String? passengerPhoneNumber;
-  String? droppOffAddress;
-  String? status;
-  String? cancelReason;
-  String? price;
-  String? distance;
-  String? duration;
-  String? direction;
-  String? date;
-  String? time;
-  DriverModel? driver;
+  final String? id;
+  final String? driverId;
+  final String? driverFcm;
+  final LatLng? pickupLocation;
+  final LatLng? dropOffLocation;
+  final String? passengerName;
+  final String? pickUpAddress;
+  final String? passengerPhoneNumber;
+  final String? droppOffAddress;
+  final String? status;
+  final String? cancelReason;
+  final String? price;
+  final String? distance;
+  final String? duration;
+  final String? direction;
+  final String? date;
+  final String? time;
+  final DriverModel? driver;
 
-  RideRequest(
+  const RideRequest(
       {this.id,
       this.date,
       this.time,
@@ -51,33 +51,27 @@ class RideRequest extends Equatable {
 
   factory RideRequest.fromJson(Map<String, dynamic> json) {
     DateTime? now = DateTime.parse(json["created_at"] ?? DateTime.now());
-    print("this is the response data ${json["driver_id"]}");
 
     return RideRequest(
         id: json["id"],
-        driver: json["driver_id"] != null
-            ? DriverModel.fromJson(json["driver_id"])
-            : DriverModel(
-                id: 'id',
-                firstName: 'firstName',
-                lastName: 'lastName',
-                phoneNumber: 'phoneNumber',
-                gender: 'gender',
-                rating: 4,
-                profileImage: 'profileImage',
-                fcmId: 'fcmId'),
-        // pickupLocation: LatLng(json["pickup_location"][0],json["pickup_location"][1]),
-        // dropOffLocation: LatLng(json["droppoff_location"][0],json["droppoff_location"][1]),
+        driver: json.containsKey("driver")
+            ? DriverModel.fromJson(json["driver"])
+            : null,
+        pickupLocation:
+            LatLng(json["pickup_location"][0], json["pickup_location"][1]),
+        dropOffLocation:
+            LatLng(json["drop_off_location"][0], json["drop_off_location"][1]),
         direction: json['direction'],
         pickUpAddress: json["pickup_address"] ?? '',
-        droppOffAddress: json["droppoff_address"] ?? '',
+        droppOffAddress: json["drop_off_address"] ?? '',
         status: json['status'],
         price: json['price'].toString(),
         distance: json['distance'].toString(),
-        date: DateFormat.yMMMMEEEEd().format(now),
+        date: DateFormat.yMMMEd().format(now),
         time: DateFormat.jm().format(now));
   }
 
   @override
-  String toString() => 'RideRequest {DriverId: $driverId, $id }';
+  String toString() =>
+      'RideRequest {DriverId: $driverId, $id , PickupLocation: $pickupLocation, DroppOffLocaiton: $dropOffLocation, PickupAddress:$pickUpAddress, DroppOffLocation: $droppOffAddress,Direction:$direction,Status: $status,Price:$price,Distance:$distance,Date:$date,Time:$time}';
 }

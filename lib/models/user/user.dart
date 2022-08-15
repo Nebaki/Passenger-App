@@ -3,21 +3,19 @@ import 'package:equatable/equatable.dart';
 
 @immutable
 class User extends Equatable {
-  String? id;
-  String? firstName;
-  String? lastName;
-  String? password;
-  String? email;
-  String? phoneNumber;
-  String? gender;
-  String? emergencyContact;
-  String? profileImage;
-  Map<String, dynamic>? preference;
+  final String? id;
+  final String? name;
+  final String? password;
+  final String? email;
+  final String? phoneNumber;
+  final String? gender;
+  final String? emergencyContact;
+  final String? profileImage;
+  final Map<String, dynamic>? preference;
 
-  User(
+  const User(
       {this.id,
-      this.firstName,
-      this.lastName,
+      this.name,
       this.email,
       this.password,
       this.phoneNumber,
@@ -29,20 +27,19 @@ class User extends Equatable {
   @override
   List<Object?> get props => [
         id,
-        firstName,
-        lastName,
+        name,
         password,
         email,
         phoneNumber,
         gender,
-        // emergencyContact,
-        // profileImage,
+        emergencyContact,
+        profileImage,
       ];
 
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
       id: json["passenger"]["id"],
-      firstName: json["passenger"]["name"],
+      name: json["passenger"]["name"],
       email: json["passenger"]["email"],
       gender: json["passenger"]["gender"],
       phoneNumber: json["passenger"]["phone_number"],
@@ -52,5 +49,5 @@ class User extends Equatable {
   }
 
   @override
-  String toString() => 'User {First Name: $firstName }';
+  String toString() => 'User {First Name: $name }';
 }

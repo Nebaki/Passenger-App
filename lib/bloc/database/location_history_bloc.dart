@@ -13,7 +13,6 @@ class LocationHistoryBloc
   Stream<LocationHistoryState> mapEventToState(
       LocationHistoryEvent event) async* {
     if (event is LocationHistoryLoad) {
-      print("yow yow yow");
       yield LocationHistoryLoading();
 
       try {
@@ -34,6 +33,12 @@ class LocationHistoryBloc
         yield LocationHistoryLoadFailure();
       }
     }
+
+    if (event is LocationHistoryClear) {
+      try {
+        // final data = await dataBaseHelperRepository.clearHistory();
+      } catch (_) {}
+    }
   }
 }
 
@@ -51,6 +56,11 @@ class LocationHistoryAdd extends LocationHistoryEvent {
   const LocationHistoryAdd({required this.location});
   @override
   List<Object?> get props => [location];
+}
+
+class LocationHistoryClear extends LocationHistoryEvent {
+  @override
+  List<Object?> get props => [];
 }
 
 class LocationHistoryState extends Equatable {

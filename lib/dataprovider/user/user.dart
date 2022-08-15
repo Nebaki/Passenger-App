@@ -1,79 +1,86 @@
 import 'dart:convert';
-
 // import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:meta/meta.dart';
-import 'dart:io';
 import 'package:http_parser/http_parser.dart';
 import 'package:http/http.dart' as http;
 import 'package:passengerapp/dataprovider/auth/auth.dart';
-import 'package:passengerapp/helper/constants.dart';
 import 'package:passengerapp/models/models.dart';
-import 'package:passengerapp/repository/auth.dart';
 
 class UserDataProvider {
   final _baseUrl = 'https://safeway-api.herokuapp.com/api/passengers';
   final http.Client httpClient;
   AuthDataProvider authDataProvider =
       AuthDataProvider(httpClient: http.Client());
-  UserDataProvider({required this.httpClient}) : assert(httpClient != null);
+  UserDataProvider({required this.httpClient});
   final _imageBaseUrl = 'https://safeway-api.herokuapp.com/';
 
-  final secure_storage = new FlutterSecureStorage();
+  final secureStorage = const FlutterSecureStorage();
+  void updateCookie(http.Response response) async {
+    final rawCookie = response.headers['set-cookie'];
+    if (rawCookie != null) {
+      int index = rawCookie.indexOf(';');
+      await secureStorage.write(
+          key: "refresh_token",
+          value: (index == -1) ? rawCookie : rawCookie.substring(0, index));
+    }
+  }
 
   Future<User> createPassenger(User user) async {
-    print(user.firstName);
-    print(user.email);
-    print(user.gender);
-    print(user.password);
-    print(user.phoneNumber);
-    //print(user.emergencyContact);
     final response = await http.post(
       Uri.parse('$_baseUrl/create-passenger'),
       headers: <String, String>{'Content-Type': 'application/json'},
       body: json.encode({
-        'name': user.firstName,
+        'name': user.name,
         'gender': user.gender,
         'password': user.password,
         'phone_number': user.phoneNumber,
       }),
     );
-    print("Hererersetttttttttttttttttttttttttttttttttttttt");
-    print(response.body);
 
     if (response.statusCode == 200) {
       final output = jsonDecode(response.body);
-      await secure_storage.write(key: 'id', value: output['passenger']['id']);
-      await secure_storage.write(
+      updateCookie(response);
+      await secureStorage.write(key: 'id', value: output['passenger']['id']);
+      await secureStorage.write(
           key: 'phone_number', value: output['passenger']['phone_number']);
-      await secure_storage.write(
+      await secureStorage.write(
           key: 'name', value: output['passenger']['name']);
-      await secure_storage.write(key: 'token', value: output['token'] ?? "");
-      await secure_storage.write(
+      await secureStorage.write(key: 'token', value: output['token'] ?? "");
+      await secureStorage.write(
           key: "email", value: output['passenger']['email'] ?? "");
-      await secure_storage.write(
+      await secureStorage.write(
           key: "emergency_contact",
           value: output['passenger']['emergency_contact'] ?? "");
 
-      await secure_storage.write(
+      // prefs.setString('profile_picture_url', _imageBaseUrl + output['passenger']['profile_image']);
+      // print(_imageBaseUrl + output['passenger']['profile_image']);
+      await secureStorage.write(
           key: 'profile_image',
           value: output['passenger']['profile_image'] != null
               ? _imageBaseUrl + output['passenger']['profile_image']
               : '');
 
-      await secure_storage.write(
+      await secureStorage.write(
           key: "driver_gender",
           value: output["passenger"]['preference']['gender']);
-      await secure_storage.write(
+      await secureStorage.write(
           key: "min_rate",
           value: output["passenger"]['preference']['min_rate'].toString());
-      await secure_storage.write(
+      await secureStorage.write(
           key: "car_type",
           value: output["passenger"]['preference']['car_type']);
       return User.fromJson(jsonDecode(response.body));
+    } else if (response.statusCode == 401) {
+      final res = await AuthDataProvider(httpClient: httpClient).refreshToken();
+
+      if (res.statusCode == 200) {
+        return createPassenger(user);
+      } else {
+        throw Exception(response.statusCode);
+      }
     } else {
-      throw Exception('Failed to create user.');
+      throw Exception(response.statusCode);
     }
   }
 
@@ -89,19 +96,22 @@ class UserDataProvider {
     final response = await request.send();
 
     if (response.statusCode == 200) {
-      await response.stream.transform(utf8.decoder).listen((value) async {
+      response.stream.transform(utf8.decoder).listen((value) async {
         final data = jsonDecode(value);
+
         await authDataProvider
             .updateProfile(data['passenger']['profile_image']);
       });
+    } else if (response.statusCode == 401) {
+      final res = await AuthDataProvider(httpClient: httpClient).refreshToken();
 
-      // var resp = await response.stream.transform(utf8.decoder).listen.;
-      // print(resp);
-
-      //final data = jsonDecode(response.);
-      //return User.fromJson(jsonDecode(response.body));
+      if (res.statusCode == 200) {
+        return uploadImage(file);
+      } else {
+        throw Exception(response.statusCode);
+      }
     } else {
-      throw Exception('Failed to upload image.');
+      throw Exception(response.statusCode);
     }
   }
 
@@ -114,12 +124,11 @@ class UserDataProvider {
         body: {});
 
     if (response.statusCode != 204) {
-      throw Exception('Failed to delete user.');
+      throw Exception(response.statusCode);
     }
   }
 
   Future<User> updatePassenger(User user) async {
-    print("heree");
     final http.Response response = await http.post(
       Uri.parse('$_baseUrl/update-profile'),
       headers: <String, String>{
@@ -127,7 +136,7 @@ class UserDataProvider {
         'x-access-token': '${await authDataProvider.getToken()}'
       },
       body: jsonEncode(<String, dynamic>{
-        'name': '${user.firstName} ${user.lastName}',
+        'name': '${user.name} ',
         'email': user.email,
         'gender': user.gender,
         'phone_number': user.phoneNumber,
@@ -136,22 +145,25 @@ class UserDataProvider {
       }),
     );
 
-    print(response.statusCode);
-    print(response.body);
-
     if (response.statusCode == 200) {
       authDataProvider.updateUserData(user);
       return User.fromJson(jsonDecode(response.body));
     } else if (response.statusCode != 204) {
       throw Exception('204 Failed to update user.');
+    } else if (response.statusCode == 401) {
+      final res = await AuthDataProvider(httpClient: httpClient).refreshToken();
+
+      if (res.statusCode == 200) {
+        return updatePassenger(user);
+      } else {
+        throw Exception(response.statusCode);
+      }
     } else {
-      throw Exception('Failed to update user.');
+      throw Exception(response.statusCode);
     }
   }
 
   Future updatePreference(User user) async {
-    print("Comeonnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn");
-    print(user.preference);
     final http.Response response = await http.post(
       Uri.parse('$_baseUrl/update-profile'),
       headers: <String, String>{
@@ -160,26 +172,31 @@ class UserDataProvider {
       },
       body: jsonEncode(<String, dynamic>{'preference': user.preference}),
     );
-    print(response.statusCode);
-    print(response.body);
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
-      print(data['passenger']['preference']['car_type']);
       authDataProvider.updatePreference(
           data['passenger']['preference']['gender'],
           data['passenger']['preference']['min_rate'].toString(),
           data['passenger']['preference']['car_type']);
     } else if (response.statusCode != 204) {
       throw Exception('204 Failed to update user.');
+    } else if (response.statusCode == 401) {
+      final res = await AuthDataProvider(httpClient: httpClient).refreshToken();
+
+      if (res.statusCode == 200) {
+        return updatePreference(user);
+      } else {
+        throw Exception(response.statusCode);
+      }
     } else {
-      throw Exception('Failed to update user.');
+      throw Exception(response.statusCode);
     }
   }
 
   Future changePassword(Map<String, String> passwordInfo) async {
     final http.Response response =
-        await http.post(Uri.parse('$maintenanceUrl/passengers/change-password'),
+        await http.post(Uri.parse('$_baseUrl/change-password'),
             headers: <String, String>{
               'Content-Type': 'application/json',
               'x-access-token': '${await authDataProvider.getToken()}',
@@ -189,9 +206,91 @@ class UserDataProvider {
               "new_password": passwordInfo['new_password'],
               "confirm_password": passwordInfo['confirm_password']
             }));
-    print('response ${response.statusCode}');
-    if (response.statusCode != 200) {
-      throw 'Unable to change password';
+    if (response.statusCode == 200) {
+      // throw 'Unable to change password';
+    } else if (response.statusCode == 401) {
+      final res = await AuthDataProvider(httpClient: httpClient).refreshToken();
+
+      if (res.statusCode == 200) {
+        return changePassword(passwordInfo);
+      } else {
+        throw Exception(response.statusCode);
+      }
+    } else {
+      throw Exception(response.statusCode);
+    }
+  }
+
+  Future<bool> checkPhoneNumber(String phoneNumber) async {
+    final http.Response response = await http.get(
+      Uri.parse('$_baseUrl/check-phone-number?phone_number=$phoneNumber'),
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+      },
+    );
+    if (response.statusCode == 200) {
+      return true;
+    } else if (response.statusCode == 404) {
+      return false;
+    } else if (response.statusCode == 401) {
+      final res = await AuthDataProvider(httpClient: httpClient).refreshToken();
+
+      if (res.statusCode == 200) {
+        return checkPhoneNumber(phoneNumber);
+      } else {
+        throw Exception(response.statusCode);
+      }
+    } else {
+      throw Exception(response.statusCode);
+    }
+  }
+
+  Future forgetPassword(Map<String, String> forgetPasswordInfo) async {
+    final http.Response response =
+        await http.post(Uri.parse('$_baseUrl/forget-password'),
+            headers: <String, String>{
+              'Content-Type': 'application/json',
+            },
+            body: json.encode({
+              'phone_number': forgetPasswordInfo['phone_number'],
+              'newPassword': forgetPasswordInfo['new_password']
+            }));
+    if (response.statusCode == 200) {
+      // throw 'Unable to rest password';
+    } else if (response.statusCode == 401) {
+      final res = await AuthDataProvider(httpClient: httpClient).refreshToken();
+
+      if (res.statusCode == 200) {
+        return forgetPassword(forgetPasswordInfo);
+      } else {
+        throw Exception(response.statusCode);
+      }
+    } else {
+      throw Exception(response.statusCode);
+    }
+  }
+
+  Future setPassengerAvailablity(List location, bool status) async {
+    final http.Response response = await http.post(
+        Uri.parse('$_baseUrl/set-passenger-availability'),
+        headers: <String, String>{
+          'Content-Type': 'application/json',
+          'x-access-token': '${await authDataProvider.getToken()}',
+        },
+        body: status ? json.encode({'location': location}) : json.encode({}));
+
+    if (response.statusCode == 200) {
+      // throw 'Operation Failure';
+    } else if (response.statusCode == 401) {
+      final res = await AuthDataProvider(httpClient: httpClient).refreshToken();
+
+      if (res.statusCode == 200) {
+        return setPassengerAvailablity(location, status);
+      } else {
+        throw Exception(response.statusCode);
+      }
+    } else {
+      throw Exception(response.statusCode);
     }
   }
 }

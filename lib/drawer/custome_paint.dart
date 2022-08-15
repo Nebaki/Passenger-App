@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
 
 class DrawerBackGround extends CustomPainter {
+  BuildContext context;
+  DrawerBackGround(this.context);
   @override
   void paint(Canvas canvas, Size size) {
-    // TODO: implement paint
     final height = size.height;
     final width = size.width;
     Paint paint = Paint();
 
     Path mainbackround = Path();
     mainbackround.addRect(Rect.fromLTRB(0, 0, width, height));
-    paint.color = const Color.fromRGBO(230, 230, 234, 1);
+    paint.color = Theme.of(context).scaffoldBackgroundColor;
     canvas.drawPath(mainbackround, paint);
 
     Path bottomPath = Path();
@@ -37,7 +38,6 @@ class DrawerBackGround extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) {
-    // TODO: implement shouldRepaint
     return oldDelegate != this;
   }
 }

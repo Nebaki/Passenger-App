@@ -5,34 +5,35 @@ import 'package:passengerapp/repository/repositories.dart';
 class RideRequestBloc extends Bloc<RideRequestEvent, RideRequestState> {
   final RideRequestRepository rideRequestRepository;
 
-  RideRequestBloc({required this.rideRequestRepository})
-      : super(RideRequestLoading());
+  RideRequestBloc({required this.rideRequestRepository}) : super(InitState());
 
   @override
   Stream<RideRequestState> mapEventToState(RideRequestEvent event) async* {
     if (event is RideRequestCreate) {
-      print("i'm arround here");
       yield RideRequestLoading();
       try {
         await rideRequestRepository.createRequest(event.rideRequest);
         yield RideRequestSuccess();
-      } catch (_) {
-        print("i'm'nt arround here $_");
-
-        yield RideRequestOperationFailur();
+      } catch (e) {
+        if (e.toString().split(" ")[1] == "401") {
+          yield RideRequestTokentExpired();
+        } else {
+          yield (RideRequestOperationFailur());
+        }
       }
     }
 
     if (event is RideRequestOrderForOther) {
-      print("i'm arround here");
       yield RideRequestLoading();
       try {
         await rideRequestRepository.orderForOther(event.request);
         yield RideRequestSuccess();
-      } catch (_) {
-        print("i'm'nt arround here $_");
-
-        yield RideRequestOperationFailur();
+      } catch (e) {
+        if (e.toString().split(" ")[1] == "401") {
+          yield RideRequestTokentExpired();
+        } else {
+          yield (RideRequestOperationFailur());
+        }
       }
     }
 
@@ -43,21 +44,25 @@ class RideRequestBloc extends Bloc<RideRequestEvent, RideRequestState> {
         await rideRequestRepository.changeRequestStatus(
             event.id, event.status, event.sendRequest);
         yield RideRequestStatusChangedSuccess();
-      } catch (_) {
-        yield RideRequestOperationFailur();
+      } catch (e) {
+        if (e.toString().split(" ")[1] == "401") {
+          yield RideRequestTokentExpired();
+        } else {
+          yield (RideRequestOperationFailur());
+        }
       }
     }
 
-    if (event is RideRequestLoad) {
-      yield RideRequestLoading();
+    // if (event is RideRequestLoad) {
+    //   yield RideRequestLoading();
 
-      try {
-        final rideRequests = await rideRequestRepository.getRideRequests();
-        yield RideRequestLoadSuccess(rideRequests);
-      } catch (_) {
-        RideRequestOperationFailur();
-      }
-    }
+    //   try {
+    //     final rideRequests = await rideRequestRepository.getRideRequests();
+    //     yield RideRequestLoadSuccess(rideRequests);
+    //   } catch (_) {
+    //     RideRequestOperationFailur();
+    //   }
+    // }
 
     if (event is RideRequestCheckStartedTrip) {
       yield RideRequestLoading();
@@ -66,28 +71,40 @@ class RideRequestBloc extends Bloc<RideRequestEvent, RideRequestState> {
         final rideRequest = await rideRequestRepository.checkStartedTrip();
         yield RideRequestStartedTripChecked(rideRequest);
       } catch (_) {
-        RideRequestOperationFailur();
+        if (_.toString().split(" ")[1] == "401") {
+          yield RideRequestTokentExpired();
+        } else {
+          yield RideRequestOperationFailur();
+        }
       }
     }
 
-    if (event is RideRequestSendNotification) {
-      yield RideRequestLoading();
+    // if (event is RideRequestSendNotification) {
+    //   yield RideRequestLoading();
 
-      try {
-        await rideRequestRepository.sendNotification(event.request, event.id);
-        yield RideRequestNotificationSent();
-      } catch (_) {
-        yield RideRequestOperationFailur();
-      }
-    }
+    //   try {
+    //     await rideRequestRepository.sendNotification(event.request, event.id);
+    //     yield RideRequestNotificationSent();
+    //   } catch (e) {
+    //     if (e.toString().split(" ")[1] == "401") {
+    //       yield RideRequestTokentExpired();
+    //     } else {
+    //       yield (RideRequestOperationFailur());
+    //     }
+    //   }
+    // }
     if (event is RideRequestCancell) {
       yield RideRequestLoading();
       try {
         await rideRequestRepository.cancelRideRequest(event.id,
             event.cancelReason, event.passengerFcm, event.sendRequest);
         yield RideRequestCancelled();
-      } catch (_) {
-        yield RideRequestOperationFailur();
+      } catch (e) {
+        if (e.toString().split(" ")[1] == "401") {
+          yield RideRequestTokentExpired();
+        } else {
+          yield (RideRequestOperationFailur());
+        }
       }
     }
   }

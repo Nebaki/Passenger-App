@@ -1,7 +1,6 @@
 import 'package:image_picker/image_picker.dart';
 import 'package:passengerapp/dataprovider/dataproviders.dart';
 import 'package:passengerapp/models/models.dart';
-import 'dart:io';
 
 class UserRepository {
   final UserDataProvider dataProvider;
@@ -25,10 +24,22 @@ class UserRepository {
   }
 
   Future uploadProfilePicture(XFile file) async {
-    await dataProvider.uploadImage(file);
+     await dataProvider.uploadImage(file);
   }
 
   Future changePassword(Map<String, String> passwordInfo) async {
     await dataProvider.changePassword(passwordInfo);
+  }
+
+  Future<bool> checkPhoneNumber(String phoneNumber) async {
+    return await dataProvider.checkPhoneNumber(phoneNumber);
+  }
+
+  Future forgetPassword(Map<String, String> forgetPasswordInfo) async {
+    await dataProvider.forgetPassword(forgetPasswordInfo);
+  }
+
+  Future setPassengerAvailablity(List location, bool status) async {
+    await dataProvider.setPassengerAvailablity(location, status);
   }
 }

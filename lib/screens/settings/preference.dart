@@ -11,7 +11,7 @@ class PreferenceScreen extends StatefulWidget {
   static const routeNAme = "/preferencescreen";
   final PreferenceArgument args;
 
-  PreferenceScreen({Key? key, required this.args}) : super(key: key);
+  const PreferenceScreen({Key? key, required this.args}) : super(key: key);
   @override
   _PreferenceScreenState createState() => _PreferenceScreenState();
 }
@@ -21,16 +21,14 @@ class _PreferenceScreenState extends State<PreferenceScreen> {
 
   //int serviceName = -1;
   late String serviceName;
-  late double min_rate;
+  late double minRate;
   bool _isLoading = false;
   RangeValues rangeValues = const RangeValues(0, 60);
 
   @override
   void initState() {
-    // TODO: implement initState
-    print(widget.args.carType);
     serviceName = widget.args.carType;
-    min_rate = widget.args.min_rate;
+    minRate = widget.args.minRate;
     switch (widget.args.gender) {
       case "Male":
         setState(() {
@@ -48,6 +46,7 @@ class _PreferenceScreenState extends State<PreferenceScreen> {
         });
         break;
     }
+    super.initState();
   }
 
   @override
@@ -68,7 +67,7 @@ class _PreferenceScreenState extends State<PreferenceScreen> {
             backgroundColor: Colors.green,
           ));
 
-          Future.delayed(Duration(seconds: 1), () {
+          Future.delayed(const Duration(seconds: 1), () {
             BlocProvider.of<AuthBloc>(context).add(AuthDataLoad());
           });
         }
@@ -119,7 +118,6 @@ class _PreferenceScreenState extends State<PreferenceScreen> {
                                 groupValue: _gender,
                                 onChanged: (Gender? value) {
                                   setState(() {
-                                    print(value);
                                     _gender = value!;
                                   });
                                 }),
@@ -179,17 +177,16 @@ class _PreferenceScreenState extends State<PreferenceScreen> {
                       ),
                     ),
                     RatingBar.builder(
-                        initialRating: widget.args.min_rate,
+                        initialRating: widget.args.minRate,
                         minRating: 1,
                         direction: Axis.horizontal,
                         allowHalfRating: true,
                         itemCount: 5,
                         //itemPadding: EdgeInsets.symmetric(horizontal: 4.0),
                         itemBuilder: (context, _) =>
-                            Icon(Icons.star, color: Colors.white),
+                            const Icon(Icons.star, color: Colors.white),
                         onRatingUpdate: (rating) {
-                          min_rate = rating;
-                          print(rating);
+                          minRate = rating;
                         }),
                     //_buildVihcleTypeList(),
                     const Padding(
@@ -282,64 +279,14 @@ class _PreferenceScreenState extends State<PreferenceScreen> {
   void updatePreference() {
     UserEvent event = UserPreferenceUpdate(User(preference: {
       "gender": _gender == Gender.male ? "Male" : "Female",
-      "min_rate": min_rate,
+      "minRate": minRate,
       "car_type": serviceName
     }));
 
     BlocProvider.of<UserBloc>(context).add(event);
   }
 
-  Widget _buildVihcleTypeList() {
-    return Column(
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            const Icon(
-              Icons.local_taxi_rounded,
-              color: Colors.white,
-              size: 35,
-            ),
-            Checkbox(
-              side: const BorderSide(width: 1, color: Colors.white),
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(5)),
-              value: true,
-              onChanged: (value) {},
-              fillColor: MaterialStateProperty.all<Color>(Colors.white),
-              checkColor: Colors.red,
-            )
-          ],
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            const Icon(
-              Icons.car_rental,
-              color: Colors.white,
-              size: 35,
-            ),
-            Checkbox(
-              side: const BorderSide(width: 1, color: Colors.white),
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(5)),
-              value: false,
-              onChanged: (value) {},
-              fillColor: MaterialStateProperty.all<Color>(Colors.white),
-              checkColor: Colors.red,
-            )
-          ],
-        ),
-      ],
-    );
-  }
-
   Widget _buildServiceTypeItems() {
-    final _selectedDecoration = BoxDecoration(
-        color: Colors.white, border: Border.all(color: Colors.red, width: 1));
-    final _unselectedDecoration = BoxDecoration(
-        color: Colors.transparent,
-        border: Border.all(color: Colors.white24, width: 1));
     return Padding(
       padding: const EdgeInsets.only(right: 30),
       child: Row(

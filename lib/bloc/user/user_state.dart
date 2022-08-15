@@ -1,8 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:passengerapp/models/models.dart';
 
-//import '../place.dart';
-
 class UserState extends Equatable {
   const UserState();
 
@@ -30,10 +28,25 @@ class UsersDeleteSuccess extends UserState {
   List<Object> get props => [isSuccessfull];
 }
 
-class ImageUploadSuccess extends UserState {}
+class ImageUploadSuccess extends UserState {
+
+}
 
 class UserPreferenceUploadSuccess extends UserState {}
 
 class UserOperationFailure extends UserState {}
 
+class UserPhoneNumbeChecked extends UserState {
+  final bool phoneNumberExist;
+  const UserPhoneNumbeChecked(this.phoneNumberExist);
+  @override
+  List<Object> get props => [phoneNumberExist];
+}
+
 class UserPasswordChanged extends UserState {}
+
+class UserImageLoading extends UserState {}
+
+class UserAvailablitySuccess extends UserState {}
+
+class UserUnAuthorised extends UserState {}

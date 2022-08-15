@@ -2,53 +2,88 @@ import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:geolocator/geolocator.dart';
+import 'package:flutter_geofire/flutter_geofire.dart';
 import 'package:passengerapp/bloc/bloc.dart';
-import 'package:passengerapp/models/models.dart';
+import 'package:passengerapp/helper/localization.dart';
 import 'package:passengerapp/repository/repositories.dart';
+import 'package:passengerapp/rout.dart';
+import 'package:passengerapp/screens/home/assistant/home_screen_assistant.dart';
 import 'package:passengerapp/screens/screens.dart';
-
 import '../helper/constants.dart';
-import '../models/nearby_driver.dart';
 import '../widgets/widgets.dart';
 
 class PushNotificationService {
   NearbyDriverRepository repo = NearbyDriverRepository();
   final player = AssetsAudioPlayer();
 
-  Future initialize(context, callback, searchNearbyDriver) async {
+  Future initialize(context) async {
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      RemoteNotification? notification = message.notification;
-      AndroidNotification? android = message.notification?.android;
-      print('this is the respomse : ${message.data['response']}');
+      // RemoteNotification? notification = message.notification;
+      // AndroidNotification? android = message.notification?.android;
       player.open(Audio("assets/sounds/announcement-sound.mp3"));
       switch (message.data['response']) {
         case 'Accepted':
+          Geofire.stopListener();
           BlocProvider.of<DriverBloc>(context)
               .add(DriverLoad(message.data['myId']));
-          callback(DriverOnTheWay(callback));
+          driverId = message.data['myId'];
+          BlocProvider.of<CurrentWidgetCubit>(context)
+              .changeWidget(const DriverOnTheWay(
+            fromBackGround: false,appOpen: false,
+          ));
+          // context.read<CurrentWidgetCubit>().changeWidget(DriverOnTheWay());
+
+          requestAccepted();
           break;
         case 'Arrived':
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: const Text(" Driver Arrived"),
-            backgroundColor: Colors.indigo.shade900,
+            content: Text(getTranslation(context, "driver_arrived")),
+            // backgroundColor: Colors.indigo.shade900,
           ));
           break;
         case 'Cancelled':
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: const Text(" Request cancelled"),
-            backgroundColor: Colors.indigo.shade900,
+          BlocProvider.of<CurrentWidgetCubit>(context)
+              .changeWidget(const WhereTo(
+            key: Key("whereto"),
           ));
-          callback(Service(callback, searchNearbyDriver));
+
+          BlocProvider.of<DirectionBloc>(context).add(
+              const DirectionChangeToInitialState(
+                  loadCurrentLocation: false, listenToNearbyDriver: false));
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text(getTranslation(context, "trip_cancelled")),
+            // backgroundColor: Colors.indigo.shade900,
+          ));
+          // context.read<CurrentWidgetCubit>().changeWidget(Service(true,false));
+
+          break;
+        case 'Started':
+          BlocProvider.of<CurrentWidgetCubit>(context)
+              .changeWidget(const StartedTripPannel());
+          // context
+          //     .read<CurrentWidgetCubit>()
+          //     .changeWidget(const StartedTripPannel());
+
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text(getTranslation(context, "trip_started")),
+            // backgroundColor: Colors.indigo.shade900,
+          ));
           break;
         case 'Completed':
-          Navigator.pushNamed(context, ReviewScreen.routeName);
+          BlocProvider.of<DirectionBloc>(context).add(
+              const DirectionChangeToInitialState(
+                  loadCurrentLocation: true, listenToNearbyDriver: false));
+          // resetScreen();
+          Navigator.pushNamed(context, ReviewScreen.routeName,
+              arguments: ReviewScreenArgument(price: message.data['price']));
           break;
         case "TimeOut":
-          callback(Service(callback, searchNearbyDriver));
+          BlocProvider.of<CurrentWidgetCubit>(context)
+              .changeWidget(const Service(true, false));
+
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: const Text("Time out"),
-            backgroundColor: Colors.indigo.shade900,
+            content: Text((getTranslation(context, "request_time_out"))),
+            // backgroundColor: Colors.indigo.shade900,
           ));
           break;
         default:
@@ -56,21 +91,17 @@ class PushNotificationService {
     });
 
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-      print('A new onMessageOpenedApp event was published!');
-      // Navigator.pushNamed(
-      //   context,
-      //   '/message',
-      //   arguments: MessageArguments(message, true),
-      // );
+      debugPrint('A new onMessageOpenedApp event was published!');
     });
   }
 
   void seubscribeTopic() async {
-    await FirebaseMessaging.instance.subscribeToTopic('driver');
+    await FirebaseMessaging.instance.subscribeToTopic('global');
+    await FirebaseMessaging.instance.subscribeToTopic('passenger');
 
     final token = await FirebaseMessaging.instance.getToken();
 
-    print("The token is:: ");
-    print(token);
+    debugPrint("The token is:: ");
+    debugPrint(token);
   }
 }

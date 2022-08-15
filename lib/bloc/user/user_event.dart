@@ -1,7 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:passengerapp/models/models.dart';
-import 'dart:io';
 
 abstract class UserEvent extends Equatable {
   const UserEvent();
@@ -9,7 +8,6 @@ abstract class UserEvent extends Equatable {
 
 class UserLoad extends UserEvent {
   @override
-  // TODO: implement props
   List<Object> get props => [];
 }
 
@@ -78,4 +76,26 @@ class UserChangePassword extends UserEvent {
   const UserChangePassword(this.passwordInfo);
   @override
   List<Object?> get props => [passwordInfo];
+}
+
+class UserForgetPassword extends UserEvent {
+  final Map<String, String> forgetPasswordInfo;
+  const UserForgetPassword(this.forgetPasswordInfo);
+  @override
+  List<Object?> get props => [forgetPasswordInfo];
+}
+
+class UserCheckPhoneNumber extends UserEvent {
+  final String phoneNumber;
+  const UserCheckPhoneNumber(this.phoneNumber);
+  @override
+  List<Object?> get props => [phoneNumber];
+}
+
+class UserSetAvailability extends UserEvent {
+  final List location;
+  final bool status;
+  const UserSetAvailability(this.location, this.status);
+  @override
+  List<Object?> get props => [location];
 }

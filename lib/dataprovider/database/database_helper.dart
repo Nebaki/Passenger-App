@@ -5,8 +5,8 @@ import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 
 class DatabaseHelper {
-  static final _databaseName = "MyDatabase.db";
-  static final _databaseVersion = 1;
+  static const _databaseName = "MyNewDatabase.db";
+  static const _databaseVersion = 1;
 
   static Database? _database;
   Future<Database> get database async {
@@ -39,6 +39,14 @@ class DatabaseHelper {
                 secondaryText TEXT
               )
               ''');
+    await db.execute('''
+              CREATE TABLE SavedLocations (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                placeId TEXT UNIQUE,
+                name TEXT NOT NULL,
+                address TEXT NOT NULL
+              )
+              ''');
   }
 
 
@@ -50,7 +58,6 @@ class DatabaseHelper {
   Future<List<LocationPrediction>> insert(LocationPrediction location) async {
     Database db = await database;
     try {
-      print("trying");
       final res = await db
           .insert("LocationHistory", location.toMap())
           .catchError((err) {
@@ -58,7 +65,6 @@ class DatabaseHelper {
             where: 'placeId = ?', whereArgs: [location.placeId]);
         db.insert("LocationHistory", location.toMap());
       });
-      print("yow insert me $res");
       return queryLocation();
     } catch (_) {
       return queryLocation();
@@ -66,18 +72,73 @@ class DatabaseHelper {
   }
 
   Future<List<LocationPrediction>> queryLocation() async {
-    print("yow yow yows");
     Database db = await database;
     List<Map<String, dynamic>> maps = await db.query("LocationHistory",
         columns: ["placeId", "mainText", "secondaryText"]);
-    if (maps.length > 0) {
-      print("that's true");
+    if (maps.isNotEmpty) {
       return maps.reversed.map((e) => LocationPrediction.fromMap(e)).toList();
       // LocationPrediction.fromMap(maps.first);
     } else {
-      print("that's not true");
       throw "";
     }
   }
 
+
+  Future clearLocations() async {
+    Database db = await database;
+    await db.delete("LocationHistory");
+  }
+
+  Future<List<SavedLocation?>> insertFavoriteLocation(
+      SavedLocation location) async {
+    Database db = await database;
+    try {
+      final res =
+          await db.insert("SavedLocations", location.toMap()).catchError((err) {
+        db.delete("SavedLocations",
+            where: 'placeId = ?', whereArgs: [location.placeId]);
+        db.insert("SavedLocations", location.toMap());
+      });
+      return queryFavoriteLocation();
+    } catch (_) {
+      return queryFavoriteLocation();
+    }
+  }
+
+  Future<List<SavedLocation?>> queryFavoriteLocation() async {
+    Database db = await database;
+    List<Map<String, dynamic>> maps = await db
+        .query("SavedLocations", columns: ["id", "placeId", "name", "address"]);
+    if (maps.isNotEmpty) {
+      return maps.reversed.map((e) => SavedLocation.fromJson(e)).toList();
+      // LocationPrediction.fromMap(maps.first);
+    } else {
+      return [];
+    }
+  }
+
+  Future clearFavoriteLocations() async {
+    Database db = await database;
+    await db.delete("SavedLocations");
+  }
+
+  Future deleteFavoriteLocation(int id) async {
+    Database db = await database;
+    await db.delete("SavedLocations", where: 'id = ?', whereArgs: [id]);
+  }
+
+  Future<List<SavedLocation?>> deleteFavoriteLocationByPLaceId(
+      String placeId) async {
+    Database db = await database;
+    await db
+        .delete("SavedLocations", where: 'placeId = ?', whereArgs: [placeId]);
+
+    return queryFavoriteLocation();
+  }
+
+  Future updateFavoriteLocation(SavedLocation location) async {
+    Database db = await database;
+    await db.update("SavedLocations", location.toMap(),
+        where: 'id = ?', whereArgs: [location.id]);
+  }
 }

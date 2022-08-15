@@ -186,7 +186,7 @@ late LatLng pickupLatLng;
 late LatLng droppOffLatLng;
 late String name;
 late String number;
-late List<dynamic> nextDrivers;
+List<dynamic>? nextDrivers;
 String price = 'Loading';
 String duration = 'Loading';
 String distance = 'Loading';
@@ -207,7 +207,43 @@ const String apiKey = "AIzaSyB8z8UeyROt2-ay24jiHrrcMXaEAlPUvdQ";
 
 late String rideRequestId;
 bool willScreenPop = true;
-late Function setWillScreenPop;
 
 String portName = 'PASSENGER_BACKGROUND_LISTENER';
-const maintenanceUrl = 'https://mobiletaxi-api.herokuapp.com/api';
+String baseUrl = 'https://safeway-api.herokuapp.com/api';
+String pictureUrl = 'https://safeway-api.herokuapp.com';
+
+const shimmerGradient = LinearGradient(
+  colors: [
+    Color(0xFFEBEBF4),
+    Color(0xFFF4F4F4),
+    Color.fromARGB(255, 180, 180, 186),
+  ],
+  stops: [
+    0.1,
+    0.3,
+    0.4,
+  ],
+  begin: Alignment(-1.0, -0.3),
+  end: Alignment(1.0, 0.3),
+  tileMode: TileMode.clamp,
+);
+
+class Strings {
+  static const String noIntertConnection = 'No Internet Connection';
+  static const String tryAgain = 'Try Again';
+  static const String signInIncorrectTrialMessage =
+      "Incorrect Phone Number or Password";
+
+  static const String signInTitle = "Sign In";
+  static const String phoneNumberHintText = "Phone Number";
+  static const String passwordHintText = "Password";
+  static const String signInEmptyPasswordErrorText =
+      'Please enter Your Password';
+  static const String signInPasswordShortLengthErrorText =
+      'Password length must not be less than 4';
+  static const String signInPasswordLongLengthErrorText =
+      'Password length must not be greater than 25';
+  static const String forgotPasswordButtonText = "Forgot Password";
+  static const String dontHaveAnAccount = "don't have an account? ";
+  static const String signUpInkWell = "SIGN UP";
+}

@@ -1,11 +1,10 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:passengerapp/bloc/bloc.dart';
 import 'package:passengerapp/helper/constants.dart';
+import 'package:passengerapp/helper/localization.dart';
 import 'package:passengerapp/models/models.dart';
 import 'package:passengerapp/rout.dart';
 import 'package:passengerapp/screens/screens.dart';
@@ -21,7 +20,7 @@ class CreateProfileScreen extends StatefulWidget {
   static const routeName = "/createprofile";
   final CreateProfileScreenArgument args;
 
-  CreateProfileScreen({Key? key, required this.args}) : super(key: key);
+  const CreateProfileScreen({Key? key, required this.args}) : super(key: key);
 
   @override
   State<CreateProfileScreen> createState() => _CreateProfileScreenState();
@@ -29,46 +28,39 @@ class CreateProfileScreen extends StatefulWidget {
 
 class _CreateProfileScreenState extends State<CreateProfileScreen> {
   final password = TextEditingController();
-  GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  XFile? _image;
-  final Map<String, dynamic?> _user = {};
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final Map<String, dynamic> _user = {};
   bool _isLoading = false;
 
-  _showModalNavigation() {
-    showModalBottomSheet(
-        context: context,
-        builder: (BuildContext ctx) {
-          return Container(
-            child: ListTile(
-              leading: Icon(Icons.image),
-              title: Text("Gallery"),
-              onTap: () async {
-                XFile? image = (await ImagePicker.platform.getImage(
-                  source: ImageSource.gallery,
-                )
+  // _showModalNavigation() {
+  //   showModalBottomSheet(
+  //       context: context,
+  //       builder: (BuildContext ctx) {
+  //         return ListTile(
+  //           leading: const Icon(Icons.image),
+  //           title: const Text("Gallery"),
+  //           onTap: () async {
+  //             XFile? image = (await ImagePicker.platform.getImage(
+  //               source: ImageSource.gallery,
+  //             )
 
-                    // .pickImage(
-                    //   source:
-                    //   maxHeight: 400,
-                    //   maxWidth: 400,
-                    // )
-                    );
+  //                 // .pickImage(
+  //                 //   source:
+  //                 //   maxHeight: 400,
+  //                 //   maxWidth: 400,
+  //                 // )
+  //                 );
 
-                setState(() {
-                  _image = image;
-                });
-                Navigator.pop(context);
-              },
-            ),
-          );
-        });
-  }
-  late ThemeProvider themeProvider;
-  @override
-  void initState() {
-    themeProvider = Provider.of<ThemeProvider>(context, listen: false);
-    super.initState();
-  }
+  //             setState(() {
+  //             });
+  //             UserEvent event = UploadProfile(image!);
+
+  //             BlocProvider.of<UserBloc>(ctx).add(event);
+  //             Navigator.pop(context);
+  //           },
+  //         );
+  //       });
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -83,31 +75,43 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
           showDialog(
               barrierDismissible: false,
               context: context,
-              builder: (BuildContext con) => AlertDialog(
-                    title: const Text("Thank you"),
-                    content: const Text.rich(TextSpan(
-                      text:
-                          "Thank you for registering with SafeWay. Please complete your registration and be activated by visiting our office.",
-                    )),
-                    actions: [
-                      TextButton(
-                          onPressed: () {
-                            // ignore: avoid_single_cascade_in_expression_statements
-                            BlocProvider.of<AuthBloc>(context)
-                              ..add(AuthDataLoad());
-                            Navigator.pop(con);
-                            Navigator.pushNamed(context, HomeScreen.routeName,
-                                arguments:
-                                    HomeScreenArgument(isSelected: false));
-                          },
-                          child: const Text("Okay")),
-                    ],
-                  ));
+              builder: (BuildContext con) => WillPopScope(
+                  onWillPop: () async => false,
+                  child: BlocListener<AuthBloc, AuthState>(
+                    listener: (context, state) {
+                      if (state is AuthDataLoadSuccess) {
+                        name = state.auth.name!;
+                        number = state.auth.phoneNumber!;
+                        myId = state.auth.id!;
+                        Navigator.pop(con);
+
+                        context.read<SettingsBloc>().add(SettingsStarted());
+                      }
+                    },
+                    child: AlertDialog(
+                      title: Text(getTranslation(context,
+                          "create_profile_register_successful_dialog_title")),
+                      content: Text.rich(TextSpan(
+                        text: getTranslation(context,
+                            "create_profile_register_successful_dialog_text"),
+                      )),
+                      actions: [
+                        TextButton(
+                            onPressed: () {
+                              BlocProvider.of<AuthBloc>(context)
+                                  .add(AuthDataLoad());
+                            },
+                            child:
+                                Text(getTranslation(context, "okay_action"))),
+                      ],
+                    ),
+                  )));
         }
         if (state is UserOperationFailure) {
           _isLoading = false;
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: const Text("Failed To Create profile"),
+            content: Text(getTranslation(
+                context, "create_profile_register_failure_message")),
             backgroundColor: Colors.red.shade900,
             action:
                 SnackBarAction(label: "Try Again", onPressed: createProfile),
@@ -116,7 +120,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
       },
       builder: (_, state) {
         return Scaffold(
-            backgroundColor: const Color.fromRGBO(240, 241, 241, 1),
+            // backgroundColor: const Color.fromRGBO(240, 241, 241, 1),
             body: _buildProfileForm());
       },
     ));
@@ -127,12 +131,9 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
       _isLoading = true;
     });
     UserEvent event = UserCreate(User(
-        firstName: _user["first_name"],
+        name: _user["name"],
         password: _user["password"],
         phoneNumber: widget.args.phoneNumber,
-        //phoneNumber: "+251986099831",
-
-        //lastName: _user["last_name"],
         gender: "Male",
         email: _user["email"],
         emergencyContact: _user["phone_number"]));
@@ -141,47 +142,48 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
   }
 
   Widget _buildProfileForm() {
-    return Stack(
-      children: [
-        Opacity(
-          opacity: 0.5,
-          child: ClipPath(
-            clipper: WaveClipper(),
-            child: Container(
-              height: 180,
-              color: themeProvider.getColor,
-            ),
-          ),
-        ),
-        ClipPath(
-          clipper: WaveClipper(),
-          child: Container(
-            height: 160,
-            color: themeProvider.getColor,
-          ),
-        ),
-        Opacity(
-          opacity: 0.5,
-          child: Align(
-            alignment: Alignment.bottomCenter,
-            child: Container(
-              height: 100,
-              color: themeProvider.getColor,
-              child: ClipPath(
-                clipper: WaveClipperBottom(),
-                child: Container(
-                  height: 100,
-                  color: Colors.white,
-                ),
-              ),
-            ),
-          ),
-        ),
-        CustomeBackArrow(),
-        Padding(
+    return BlocListener<SettingsBloc, SettingsState>(
+        listener: (context, state) {
+          if (state is SettingsLoadSuccess) {
+            Navigator.pushNamedAndRemoveUntil(context, HomeScreen.routeName,
+                ((Route<dynamic> route) => false),
+                arguments: HomeScreenArgument(
+                    settings: state.settings,
+                    isSelected: false,
+                    isFromSplash: true));
+          }
+          if (state is SettingsOperationFailure) {
+            SystemNavigator.pop();
+          }
+          if (state is SettingsUnAuthorised) {
+            SystemNavigator.pop();
+          }
+          if (state is SettingsLoading) {
+            showDialog(
+                // barrierDismissible: false,
+                context: context,
+                builder: (BuildContext context) {
+                  return WillPopScope(
+                    onWillPop: () async => false,
+                    child: const Dialog(
+                        elevation: 0,
+                        insetPadding: EdgeInsets.all(0),
+                        backgroundColor: Colors.transparent,
+                        child: Center(
+                          child: SizedBox(
+                              height: 40,
+                              width: 40,
+                              child: CircularProgressIndicator(strokeWidth: 1)),
+                        )),
+                  );
+                });
+          }
+        },
+        child: Padding(
           padding:
               const EdgeInsets.only(top: 80, right: 20, left: 20, bottom: 10),
           child: Form(
+            // autovalidateMode: AutovalidateMode.onUserInteraction,
             key: _formKey,
             autovalidateMode: AutovalidateMode.onUserInteraction,
             child: SizedBox(
@@ -195,78 +197,26 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Padding(
-                          padding: EdgeInsets.only(bottom: 10),
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 10),
                           child: Text(
-                            "Create Profle",
-                            style: TextStyle(
+                            getTranslation(context, "create_profile_title"),
+                            style: const TextStyle(
                                 fontWeight: FontWeight.bold, fontSize: 24.0),
-                          ),
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            _showModalNavigation();
-                          },
-                          child: CircleAvatar(
-                            backgroundColor: Colors.grey.shade300,
-                            radius: 40,
-                            child: _image == null
-                                ? const Icon(
-                                    Icons.person,
-                                    size: 50,
-                                    color: Colors.black,
-                                  )
-                                : ClipRRect(
-                                    borderRadius: BorderRadius.circular(100),
-                                    child: Stack(
-                                      children: [
-                                        SizedBox(
-                                          child: Image.file(
-                                            File(_image!.path),
-                                            fit: BoxFit.cover,
-                                          ),
-                                          width: 300,
-                                          height: 300,
-                                        ),
-                                        Positioned(
-                                          top: 6.0,
-                                          right: 6.0,
-                                          child: GestureDetector(
-                                            onTap: () {
-                                              setState(() {
-                                                _image = null;
-                                              });
-                                            },
-                                            child: Container(
-                                              padding: EdgeInsets.zero,
-                                              decoration: BoxDecoration(
-                                                  // color: Colors.white,
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          100)),
-                                              child: const Icon(
-                                                Icons.close,
-                                                color: Colors.white,
-                                                size: 25,
-                                              ),
-                                            ),
-                                          ),
-                                        )
-                                      ],
-                                    ),
-                                  ),
                           ),
                         ),
                         const SizedBox(
                           height: 10,
                         ),
                         TextFormField(
-                          decoration: const InputDecoration(
-                            hintText: "Full Name",
-                            hintStyle: TextStyle(
-                                fontWeight: FontWeight.w300,
-                                color: Colors.black45),
-                            prefixIcon: Icon(
+                          decoration: InputDecoration(
+                            hintText: getTranslation(
+                                context, "name_textfield_hint_text"),
+                            hintStyle: const TextStyle(
+                              fontWeight: FontWeight.w300,
+                              // color: Colors.black45
+                            ),
+                            prefixIcon: const Icon(
                               Icons.contacts_rounded,
                               size: 19,
                             ),
@@ -277,21 +227,21 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                           ),
                           validator: (value) {
                             if (value!.isEmpty) {
-                              return 'Please enter Your Name';
+                              return getTranslation(context,
+                                  "create_profile_empity_name_validation");
                             } else if (value.length > 25) {
-                              return 'Full name must not be longer than 25 charachters';
+                              return getTranslation(context,
+                                  "create_profile_long_name_validation");
                             } else if (value.length < 4) {
-                              return 'Full name must not be shorter than 4 charachters';
-                            } else if (value.split(" ").length == 1) {
-                              return ' Last Name required';
+                              return getTranslation(context,
+                                  "create_profile_short_name_validation");
                             }
                             return null;
                           },
                           onSaved: (value) {
                             //final val = value!.split("")[0];
                             //print();
-                            _user["first_name"] = value!.split(" ")[0];
-                            _user["last_name"] = value.split(" ")[1];
+                            _user['name'] = value;
                           },
                         ),
                         const SizedBox(
@@ -299,23 +249,27 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                         ),
                         TextFormField(
                             controller: password,
-                            decoration: const InputDecoration(
-                              hintText: "Password",
-                              hintStyle: TextStyle(
-                                  fontWeight: FontWeight.w300,
-                                  color: Colors.black45),
-                              prefixIcon: Icon(
+                            decoration: InputDecoration(
+                              hintText:
+                                  getTranslation(context, "password_hint_text"),
+                              hintStyle: const TextStyle(
+                                fontWeight: FontWeight.w300,
+                                // color: Colors.black45
+                              ),
+                              prefixIcon: const Icon(
                                 Icons.lock,
                                 size: 19,
                               ),
                             ),
                             validator: (value) {
                               if (value!.isEmpty) {
-                                return 'Please enter Your Password';
+                                return getTranslation(context,
+                                    "create_profile_empity_password_validation");
                               } else if (value.length > 25) {
-                                return 'Full name must not be longer than 25 charachters';
-                              } else if (value.length < 8) {
-                                return 'Full name must not be shorter than 8 charachters';
+                                return 'Password must not be longer than 25 charachters';
+                              } else if (value.length < 4) {
+                                return getTranslation(context,
+                                    "create_profile_long_password_validation");
                               }
                               return null;
                             },
@@ -326,19 +280,22 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                           height: 10,
                         ),
                         TextFormField(
-                          decoration: const InputDecoration(
-                            hintText: "Confirm Password",
-                            hintStyle: TextStyle(
-                                fontWeight: FontWeight.w300,
-                                color: Colors.black45),
-                            prefixIcon: Icon(
+                          decoration: InputDecoration(
+                            hintText:
+                                getTranslation(context, "confirm_password"),
+                            hintStyle: const TextStyle(
+                              fontWeight: FontWeight.w300,
+                              // color: Colors.black45
+                            ),
+                            prefixIcon: const Icon(
                               Icons.confirmation_num,
                               size: 19,
                             ),
                           ),
                           validator: (value) {
                             if (value != password.text) {
-                              return 'Password must match';
+                              return getTranslation(context,
+                                  "create_profile_password_match_validation_error");
                             }
                             return null;
                           },
@@ -346,75 +303,15 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                         const SizedBox(
                           height: 10,
                         ),
-                        // InternationalPhoneNumberInput(
-                        //   inputDecoration: const InputDecoration(
-                        //       hintText: "Phone Number",
-                        //       hintStyle: TextStyle(
-                        //           fontWeight: FontWeight.w300,
-                        //           color: Colors.black45),
-                        //       fillColor: Colors.white,
-                        //       filled: true,
-                        //       border: OutlineInputBorder(
-                        //           borderSide: BorderSide.none)),
-                        //   onInputChanged: (val) {},
-                        //   hintText: "Emergency Contact number",
-                        //   onSaved: (value) {
-                        //     _user["emergency_contact"] = value;
-                        //   },
-                        //   selectorConfig: const SelectorConfig(
-                        //     selectorType: PhoneInputSelectorType.BOTTOM_SHEET,
-                        //   ),
-                        //   ignoreBlank: false,
-                        //   autoValidateMode: AutovalidateMode.onUserInteraction,
-                        //   selectorTextStyle:
-                        //       const TextStyle(color: Colors.black),
-                        //   initialValue: PhoneNumber(isoCode: "ET"),
-                        //   formatInput: false,
-                        //   keyboardType: const TextInputType.numberWithOptions(
-                        //       signed: true, decimal: true),
-                        // ),
-                        // const SizedBox(
-                        //   height: 10,
-                        // ),
-                        // Container(
-                        //   decoration: BoxDecoration(boxShadow: [
-                        //     BoxShadow(
-                        //         color: Colors.grey.shade300,
-                        //         blurRadius: 4,
-                        //         spreadRadius: 2,
-                        //         blurStyle: BlurStyle.normal)
-                        //   ]),
-                        //   child: TextFormField(
-                        //       decoration: const InputDecoration(
-                        //           hintText: "Email",
-                        //           hintStyle: TextStyle(
-                        //               fontWeight: FontWeight.w300,
-                        //               color: Colors.black45),
-                        //           fillColor: Colors.white,
-                        //           filled: true,
-                        //           border: OutlineInputBorder(
-                        //               borderSide: BorderSide.none)),
-                        //       validator: (value) {
-                        //         if (value!.isNotEmpty) {
-                        //           return EmailValidator.validate(value)
-                        //               ? null
-                        //               : "Please enter a valid email";
-                        //         }
-                        //       },
-                        //       onSaved: (value) {
-                        //         _user["email"] = value;
-                        //       }),
-                        // ),
-                        // const SizedBox(
-                        //   height: 10,
-                        // ),
                         TextFormField(
-                          decoration: const InputDecoration(
-                              hintText: "Promo/Referal Code (Optional)",
-                              hintStyle: TextStyle(
-                                  fontWeight: FontWeight.w300,
-                                  color: Colors.black45),
-                              prefixIcon: Icon(
+                          decoration: InputDecoration(
+                              hintText: getTranslation(
+                                  context, "create_profile_promo_text"),
+                              hintStyle: const TextStyle(
+                                fontWeight: FontWeight.w300,
+                                // color: Colors.black45
+                              ),
+                              prefixIcon: const Icon(
                                 Icons.gif,
                                 size: 19,
                               )),
@@ -427,7 +324,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                               overflow: TextOverflow.fade,
                               textAlign: TextAlign.center,
                               style: TextStyle(
-                                  color: Colors.black54,
+                                  // color: Colors.black54,
                                   fontWeight: FontWeight.w300,
                                   letterSpacing: 0),
                             ),
@@ -452,8 +349,9 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
                                       const Spacer(),
-                                      const Text(
-                                        "Register",
+                                      Text(
+                                        getTranslation(
+                                            context, "create_profile_button"),
                                       ),
                                       const Spacer(),
                                       Align(
@@ -482,8 +380,6 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
               ),
             ),
           ),
-        ),
-      ],
-    );
+        ));
   }
 }

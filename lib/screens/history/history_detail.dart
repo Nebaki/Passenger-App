@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:passengerapp/helper/localization.dart';
 import 'package:passengerapp/rout.dart';
 
 class DetailHistoryScreen extends StatelessWidget {
   static const routeName = "/detailhistory";
   final DetailHistoryArgument args;
 
-  DetailHistoryScreen({Key? key, required this.args}) : super(key: key);
+  const DetailHistoryScreen({Key? key, required this.args}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -13,7 +14,7 @@ class DetailHistoryScreen extends StatelessWidget {
         elevation: 0,
         centerTitle: true,
         backgroundColor: Colors.black,
-        title: const Text("Trip Details"),
+        title: Text(getTranslation(context, "history_title")),
         actions: [
           Padding(
             padding: const EdgeInsets.all(8.0),
@@ -34,7 +35,7 @@ class DetailHistoryScreen extends StatelessWidget {
             Card(
               child: Container(
                 padding: const EdgeInsets.fromLTRB(20, 10, 20, 5),
-                color: Colors.white,
+                color: Theme.of(context).backgroundColor,
                 child: Column(
                   children: [
                     Row(
@@ -43,8 +44,11 @@ class DetailHistoryScreen extends StatelessWidget {
                           Icons.location_on_outlined,
                           color: Colors.blue,
                         ),
-                        Text(
-                          args.request.pickUpAddress!,
+                        Flexible(
+                          child: Text(
+                            args.request.pickUpAddress!,
+                            overflow: TextOverflow.ellipsis,
+                          ),
                         )
                       ],
                     ),
@@ -55,24 +59,29 @@ class DetailHistoryScreen extends StatelessWidget {
                       children: [
                         const Icon(Icons.location_on_outlined,
                             color: Colors.green),
-                        Text(args.request.droppOffAddress!)
+                        Flexible(
+                            child: Text(
+                          args.request.droppOffAddress!,
+                          overflow: TextOverflow.ellipsis,
+                        ))
                       ],
                     ),
                     Center(
                       child: Padding(
                         padding: const EdgeInsets.symmetric(vertical: 15),
                         child: Text(
-                          '${args.request.price!} ETB',
-                          style: TextStyle(color: Colors.green, fontSize: 26),
+                          '${double.parse(args.request.price!).toStringAsFixed(2)} ${getTranslation(context,"etb")}',
+                          style: const TextStyle(
+                              color: Colors.green, fontSize: 26),
                         ),
                       ),
                     ),
                     Center(
                       child: Text(
                           args.request.status == "Completed"
-                              ? 'Payment made sucessfully by Cash'
-                              : "Not Paid Yet",
-                          style: _greyTextStyle),
+                              ? getTranslation(context, "payment_made")
+                              : getTranslation(context, "not_paid_yet"),
+                          style: Theme.of(context).textTheme.overline),
                     ),
                     const SizedBox(
                       height: 10,
@@ -83,10 +92,10 @@ class DetailHistoryScreen extends StatelessWidget {
                       children: [
                         Column(
                           children: [
-                            const Text("15 min"),
+                            Text("${args.request.duration} min"),
                             Text(
-                              "Time",
-                              style: _greyTextStyle,
+                              getTranslation(context, "duration"),
+                              style: Theme.of(context).textTheme.overline,
                             )
                           ],
                         ),
@@ -94,7 +103,8 @@ class DetailHistoryScreen extends StatelessWidget {
                         Column(
                           children: [
                             Text('${args.request.distance} Km'),
-                            Text("Distance", style: _greyTextStyle)
+                            Text(getTranslation(context, "distance"),
+                                style: Theme.of(context).textTheme.overline)
                           ],
                         )
                       ],
@@ -109,7 +119,8 @@ class DetailHistoryScreen extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text("Date & Time"),
+                        Text(getTranslation(
+                            context, "history_detail_date_and_time")),
                         Text('${args.request.date!} at ${args.request.time!}')
                       ],
                     ),
@@ -118,7 +129,10 @@ class DetailHistoryScreen extends StatelessWidget {
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: const [Text("Service Type"), Text("Sedan")],
+                      children: [
+                        Text(getTranslation(context, "history_detail_status")),
+                        Text('${args.request.status}')
+                      ],
                     ),
                     const SizedBox(
                       height: 10,
@@ -126,7 +140,7 @@ class DetailHistoryScreen extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text("Distance"),
+                        Text(getTranslation(context, "distance")),
                         Text('${args.request.distance} Km')
                       ],
                     ),
@@ -134,57 +148,56 @@ class DetailHistoryScreen extends StatelessWidget {
                       height: 10,
                     ),
                     const Divider(),
-                    // Center(
-                    //   child: Row(
-                    //     mainAxisAlignment: MainAxisAlignment.center,
-                    //     children: const [
-                    //       Text("You rated: Yonas Kebede"),
-                    //       SizedBox(
-                    //         width: 10,
-                    //       ),
-                    //       CircleAvatar(
-                    //         radius: 10,
-                    //       )
-                    //     ],
-                    //   ),
-                    // )
                   ],
                 ),
               ),
             ),
-            const Padding(
-              padding: EdgeInsets.only(left: 20, top: 10, bottom: 0),
-              child: Text("Driver & Vehicle"),
+            Padding(
+              padding: const EdgeInsets.only(left: 20, top: 10, bottom: 0),
+              child: Text(getTranslation(
+                  context, "history_detail_date_driver_and_vehicle")),
             ),
             args.request.status != 'Cancelled' &&
-                    args.request.status != 'Searching'
+                    args.request.status != 'Pending' &&
+                    args.request.status != 'Time Out'
                 ? Card(
                     child: Container(
                       padding: const EdgeInsets.fromLTRB(20, 10, 20, 5),
-                      color: Colors.white,
+                      color: Theme.of(context).backgroundColor,
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           _buildReciept(
-                              title: "Driver ",
+                              title: getTranslation(
+                                  context, "history_detail_driver"),
                               value: args.request.driver!.firstName),
                           const SizedBox(
                             height: 15,
                           ),
                           _buildReciept(
-                              title: "Phone number",
+                              title: getTranslation(
+                                  context, "history_detail_driver_phone"),
                               value: args.request.driver!.phoneNumber),
                           const SizedBox(
                             height: 15,
                           ),
                           _buildReciept(
-                              title: "Vehicle ",
+                              title: getTranslation(
+                                  context, "history_detail_vehicle"),
                               value: args.request.driver!.vehicle!['model']),
                           const SizedBox(
                             height: 15,
                           ),
                           _buildReciept(
-                              title: "Plate Number",
+                              title: getTranslation(
+                                  context, "history_detail_color"),
+                              value: args.request.driver!.vehicle!['color']),
+                          const SizedBox(
+                            height: 15,
+                          ),
+                          _buildReciept(
+                              title: getTranslation(
+                                  context, "history_detail_plate_number"),
                               value: args
                                   .request.driver!.vehicle!['plate_number']),
                           const SizedBox(
@@ -194,31 +207,34 @@ class DetailHistoryScreen extends StatelessWidget {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
-                                "Your Payment",
+                                getTranslation(
+                                    context, "history_detail_your_payment"),
                                 style: _greenTextStyle,
                               ),
-                              Text("\$${args.request.price!}",
+                              Text(
+                                  "${double.parse(args.request.price!).toStringAsFixed(2)} ${getTranslation(context,"etb")}",
                                   style: _greenTextStyle)
                             ],
                           ),
                           const SizedBox(
                             height: 20,
                           ),
-                          const Text(
-                            "This trip was towards your destination you recieved Guaranted fare",
-                            style: TextStyle(
-                                fontSize: 9,
-                                color: Colors.black26,
-                                fontWeight: FontWeight.bold),
-                            textAlign: TextAlign.start,
-                          )
+                          // const Text(
+                          //   "This trip was towards your destination you recieved Guaranted fare",
+                          //   style: TextStyle(
+                          //       fontSize: 9,
+                          //       color: Colors.black26,
+                          //       fontWeight: FontWeight.bold),
+                          //   textAlign: TextAlign.start,
+                          // )
                         ],
                       ),
                     ),
                   )
-                : const Padding(
-                    padding: EdgeInsets.fromLTRB(20, 10, 20, 5),
-                    child: Text('Not Accpeted Yet'),
+                : Padding(
+                    padding: const EdgeInsets.fromLTRB(20, 10, 20, 5),
+                    child: Text(getTranslation(
+                        context, "history_detail_not_accepted_yet")),
                   )
           ],
         ),
@@ -230,9 +246,6 @@ class DetailHistoryScreen extends StatelessWidget {
     color: Colors.green,
     fontWeight: FontWeight.bold,
   );
-  final _greyTextStyle = const TextStyle(
-    color: Colors.black38,
-  );
 
   Widget _buildReciept({required String title, required String value}) {
     return Row(
@@ -240,9 +253,10 @@ class DetailHistoryScreen extends StatelessWidget {
       children: [
         Text(
           title,
-          style: _greyTextStyle,
         ),
-        Text("$value", style: _greyTextStyle)
+        Text(
+          value,
+        )
       ],
     );
   }

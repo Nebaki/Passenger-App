@@ -3,23 +3,23 @@ import 'package:equatable/equatable.dart';
 
 @immutable
 class Auth extends Equatable {
-  String? token;
-  String? id;
-  String? name;
-  String phoneNumber;
-  String? password;
-  String? email;
-  String? emergencyContact;
-  String? profilePicture;
-  Map<String?, dynamic?>? pref;
+  final String? token;
+  final String? id;
+  final String? name;
+  final String? phoneNumber;
+  final String? password;
+  final String? email;
+  final String? emergencyContact;
+  final String? profilePicture;
+  final Map<String?, dynamic>? pref;
 
-  Auth(
+  const Auth(
       {this.id,
       this.token,
       this.email,
       this.emergencyContact,
       this.name,
-      required this.phoneNumber,
+      this.phoneNumber,
       this.password,
       this.pref,
       this.profilePicture});

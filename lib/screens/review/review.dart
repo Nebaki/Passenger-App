@@ -4,34 +4,36 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:passengerapp/bloc/bloc.dart';
 import 'package:passengerapp/helper/constants.dart';
+import 'package:passengerapp/helper/localization.dart';
 import 'package:passengerapp/models/models.dart';
 import 'package:passengerapp/rout.dart';
-import 'package:passengerapp/screens/screens.dart';
-import 'package:passengerapp/widgets/widgets.dart';
 
 class ReviewScreen extends StatelessWidget {
+  final ReviewScreenArgument arg;
   static const routeName = 'reviewscreen';
   final description = TextEditingController();
-  double min_rate = 1;
+  double minRate = 0;
   bool _isLoading = false;
+
+  ReviewScreen({Key? key, required this.arg}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: const Color.fromRGBO(240, 241, 241, 1),
+        backgroundColor: Theme.of(context).backgroundColor,
         body: BlocConsumer<ReviewBloc, ReviewState>(
             builder: ((context, state) => buildScreen(context)),
             listener: (context, state) {
               if (state is ReviewSent) {
-                                _isLoading = false;
+                _isLoading = false;
 
-                Navigator.pushNamed(context, HomeScreen.routeName,
-                    arguments: HomeScreenArgument(isSelected: false));
+                Navigator.pop(context);
               }
               if (state is ReviewSendingFailure) {
                 _isLoading = false;
                 ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                  content: const Text("Review not Sent please try again"),
+                  content:
+                      Text(getTranslation(context, "review_not_sent_message")),
                   backgroundColor: Colors.red.shade900,
                 ));
               }
@@ -53,13 +55,8 @@ class ReviewScreen extends StatelessWidget {
                   height: 30,
                   width: 30,
                   child: TextButton(
-                    //padding: EdgeInsets.zero,
-                    //color: Colors.white,
-                    //shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
                     onPressed: () {
-                      Navigator.pushReplacementNamed(
-                          context, HomeScreen.routeName,
-                          arguments: HomeScreenArgument(isSelected: false));
+                      Navigator.pop(context);
                     },
                     child: const Icon(
                       Icons.clear,
@@ -72,7 +69,7 @@ class ReviewScreen extends StatelessWidget {
               // CustomeBackArrow(),
             ],
           ),
-          SizedBox(
+          const SizedBox(
             height: 60,
           ),
           Center(
@@ -92,14 +89,15 @@ class ReviewScreen extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Center(
-                child: Text("130.55",
+                child: Text(
+                    "${double.parse(arg.price).toStringAsFixed(2)} ${getTranslation(context, "etb")}",
                     style: Theme.of(context).textTheme.titleLarge)),
           ),
           const Divider(),
           Padding(
               padding: const EdgeInsets.all(8.0),
               child: Text(
-                "How was your trip?",
+                getTranslation(context, "how_was_you_trip"),
                 style: Theme.of(context).textTheme.titleLarge,
               )),
           Padding(
@@ -116,7 +114,7 @@ class ReviewScreen extends StatelessWidget {
                           borderRadius: BorderRadius.circular(100),
                           child: CachedNetworkImage(
                               imageUrl:
-                                  'https://safeway-api.herokuapp.com/${driverImage}',
+                                  'https://safeway-api.herokuapp.com/$driverImage',
                               imageBuilder: (context, imageProvider) =>
                                   Container(
                                     decoration: BoxDecoration(
@@ -140,21 +138,28 @@ class ReviewScreen extends StatelessWidget {
                     Padding(
                       padding: const EdgeInsets.all(5.0),
                       child: Text(
-                        driverName ?? "Miki",
+                        driverName ?? "Driver",
                         style: Theme.of(context).textTheme.bodyLarge,
                       ),
                     ),
-                    RatingBar.builder(
-                        itemSize: 20,
-                        initialRating: 4,
-                        minRating: 1,
-                        direction: Axis.horizontal,
-                        allowHalfRating: false,
-                        itemCount: 5,
-                        //itemPadding: EdgeInsets.symmetric(horizontal: 4.0),
-                        itemBuilder: (context, _) =>
-                            Icon(Icons.star, color: Colors.green),
-                        onRatingUpdate: (rating) {}),
+                    BlocBuilder<DriverBloc, DriverState>(
+                      builder: (context, state) {
+                        if (state is DriverLoadSuccess) {
+                          return RatingBar.builder(
+                              itemSize: 20,
+                              initialRating: 1,
+                              minRating: 1,
+                              direction: Axis.horizontal,
+                              allowHalfRating: false,
+                              itemCount: 5,
+                              //itemPadding: EdgeInsets.symmetric(horizontal: 4.0),
+                              itemBuilder: (context, _) =>
+                                  const Icon(Icons.star, color: Colors.green),
+                              onRatingUpdate: (rating) {});
+                        }
+                        return Container();
+                      },
+                    )
                   ],
                 ),
                 const VerticalDivider(),
@@ -167,14 +172,14 @@ class ReviewScreen extends StatelessWidget {
                     itemCount: 5,
                     //itemPadding: EdgeInsets.symmetric(horizontal: 4.0),
                     itemBuilder: (context, _) =>
-                        Icon(Icons.star, color: Colors.green),
+                        const Icon(Icons.star, color: Colors.green),
                     onRatingUpdate: (rating) {
-                      min_rate = rating;
+                      minRate = rating;
                     }),
               ],
             ),
           ),
-          Divider(),
+          const Divider(),
           Padding(
             padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
             child: Container(
@@ -189,54 +194,49 @@ class ReviewScreen extends StatelessWidget {
                 controller: description,
                 minLines: 4,
                 maxLines: 4,
-                decoration: const InputDecoration(
-                    hintText: "Leave a comment..",
-                    hintStyle: TextStyle(
-                        fontWeight: FontWeight.bold, color: Colors.black45),
-                    fillColor: Colors.white,
+                decoration: InputDecoration(
+                    hintText: getTranslation(context, "leave_a_comment"),
                     filled: true,
-                    border: OutlineInputBorder(borderSide: BorderSide.none)),
-                validator: (value) {
-                  if (value!.isEmpty) {
-                    return 'Please enter The Old password';
-                  }
-                  return null;
-                },
+                    border:
+                        const OutlineInputBorder(borderSide: BorderSide.none)),
               ),
             ),
           ),
           Center(
             child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 30),
+              padding: const EdgeInsets.symmetric(horizontal: 30),
               width: double.infinity,
               child: ElevatedButton(
-                  onPressed: _isLoading?null:() {
-                    createReview(context);
-                    // print(driverId);
-                  },
-                  child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const Spacer(),
-                            const Text(
-                              "Finish",
-                            ),
-                            const Spacer(),
-                            Align(
-                              alignment: Alignment.centerRight,
-                              child: _isLoading
-                                  ? const SizedBox(
-                                      height: 20,
-                                      width: 20,
-                                      child: CircularProgressIndicator(
-                                        strokeWidth: 2,
-                                        color: Colors.black,
-                                      ),
-                                    )
-                                  : Container(),
+                onPressed: _isLoading
+                    ? null
+                    : () {
+                        createReview(context);
+                        // print(driverId);
+                      },
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Spacer(),
+                    Text(
+                      getTranslation(context, "submit"),
+                    ),
+                    const Spacer(),
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: _isLoading
+                          ? const SizedBox(
+                              height: 20,
+                              width: 20,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: Colors.black,
+                              ),
                             )
-                          ],
-                        ),),
+                          : Container(),
+                    )
+                  ],
+                ),
+              ),
             ),
           ),
         ],
@@ -247,7 +247,7 @@ class ReviewScreen extends StatelessWidget {
   void createReview(BuildContext context) {
     _isLoading = true;
     ReviewEvent event =
-        ReviewCreate(Review(description: description.text, rating: min_rate));
+        ReviewCreate(Review(description: description.text, rating: minRate));
     BlocProvider.of<ReviewBloc>(context).add(event);
   }
 }

@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:http/http.dart' as http;
 import 'package:passengerapp/dataprovider/auth/auth.dart';
+import 'package:passengerapp/helper/api_end_points.dart';
 import 'package:passengerapp/helper/constants.dart';
 import 'package:passengerapp/models/models.dart';
 
@@ -9,9 +10,7 @@ class RideRequestDataProvider {
   final _fcmUrl = 'https://fcm.googleapis.com/fcm/send';
 
   final _baseUrl = 'https://safeway-api.herokuapp.com/api/ride-requests';
-  final _maintenanceUrl =
-      'https://mobiletaxi-api.herokuapp.com/api/ride-requests';
-  final _secondUrl = 'https://mobiletaxi-api.herokuapp.com/api/ride-requests';
+
   final http.Client httpClient;
   AuthDataProvider authDataProvider =
       AuthDataProvider(httpClient: http.Client());
@@ -23,30 +22,34 @@ class RideRequestDataProvider {
 
   Future<RideRequest> checkStartedTrip() async {
     final http.Response response = await http.get(
-        Uri.parse(
-            'https://mobiletaxi-api.herokuapp.com/api/ride-requests/check-started-trip'),
+        Uri.parse(RideRequestEndPoints.checkStartedTripEndPoint()),
         headers: <String, String>{
           'Content-Type': "application/json",
           'x-access-token': '${await authDataProvider.getToken()}'
         });
 
-    print('status code ${response.statusCode}');
-
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
-
       return data['isEmpty'] != true
           ? RideRequest.fromJson(data['ride_Request'])
-          : RideRequest(
+          : const RideRequest(
               pickUpAddress: null, droppOffAddress: null, driverId: null);
+    } else if (response.statusCode == 401) {
+      final res = await AuthDataProvider(httpClient: httpClient).refreshToken();
+
+      if (res.statusCode == 200) {
+        return checkStartedTrip();
+      } else {
+        throw Exception(response.statusCode);
+      }
     } else {
-      throw 'Unable to get Started Trips';
+      throw Exception(response.statusCode);
     }
   }
 
-  Future<List<RideRequest>> getRideRequests() async {
+  Future<List<RideRequest?>> getRideRequests(int skip, int top) async {
     final http.Response response = await http.get(
-        Uri.parse('$_maintenanceUrl/get-ride-requests'),
+        Uri.parse(RideRequestEndPoints.getRideRequestsEndPoint(skip, top)),
         headers: <String, String>{
           'Content-Type': "application/json",
           'x-access-token': '${await authDataProvider.getToken()}'
@@ -54,17 +57,26 @@ class RideRequestDataProvider {
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body)['items'] as List;
-      print("e is $data");
-      return data.map((e) => RideRequest.fromJson(e)).toList();
+
+      return data.isNotEmpty
+          ? data.map((e) => RideRequest.fromJson(e)).toList()
+          : [];
+    } else if (response.statusCode == 401) {
+      final res = await AuthDataProvider(httpClient: httpClient).refreshToken();
+
+      if (res.statusCode == 200) {
+        return getRideRequests(skip, top);
+      } else {
+        throw Exception(response.statusCode);
+      }
     } else {
-      throw 'Unable to fetch RideRequests';
+      throw Exception(response.statusCode);
     }
   }
 
   Future createRequest(RideRequest request) async {
-    print("yow yow ");
     final response = await http.post(
-      Uri.parse('$_secondUrl/create-ride-request'),
+      Uri.parse(RideRequestEndPoints.createRideRequestEndPoint()),
       headers: <String, String>{
         'Content-Type': 'application/json',
         "x-access-token": "${await authDataProvider.getToken()}"
@@ -75,35 +87,40 @@ class RideRequestDataProvider {
           request.pickupLocation!.latitude,
           request.pickupLocation!.longitude
         ],
-        'droppoff_location': [
-          request.dropOffLocation!.longitude,
-          request.dropOffLocation!.latitude
+        'drop_off_location': [
+          request.dropOffLocation!.latitude,
+          request.dropOffLocation!.longitude
         ],
-        'droppoff_address': droppOffAddress,
+        'drop_off_address': request.droppOffAddress,
         'direction': direction,
         'price': int.parse(price),
         'duration': duration,
         'distance': int.parse(distance)
       }),
     );
-    print('my datas are this bruhhh ${response.statusCode} ${response.body}');
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
-      rideRequestId = data["rideRequest"]["id"];
-      print('my data is this bruhhh $rideRequestId');
+      rideRequestId = data["id"];
 
-      sendNotification(request, data["rideRequest"]["id"]);
+      sendNotification(request, data["id"], false);
       // return RideRequest.fromJson(data["rideRequest"]);
+    } else if (response.statusCode == 401) {
+      final res = await AuthDataProvider(httpClient: httpClient).refreshToken();
+
+      if (res.statusCode == 200) {
+        return createRequest(request);
+      } else {
+        throw Exception(response.statusCode);
+      }
     } else {
-      throw Exception('Failed to create request.');
+      throw Exception(response.statusCode);
     }
   }
 
   Future orderForOther(RideRequest request) async {
-    print("yow yow ");
     final response = await http.post(
-      Uri.parse('$_secondUrl/order-for-other'),
+      Uri.parse(RideRequestEndPoints.orderForOtherEndPoint()),
       headers: <String, String>{
         'Content-Type': 'application/json',
         "x-access-token": "${await authDataProvider.getToken()}"
@@ -114,28 +131,34 @@ class RideRequestDataProvider {
           request.pickupLocation!.latitude,
           request.pickupLocation!.longitude
         ],
-        'droppoff_location': [
-          request.dropOffLocation!.longitude,
-          request.dropOffLocation!.latitude
+        'drop_off_location': [
+          request.dropOffLocation!.latitude,
+          request.dropOffLocation!.longitude
         ],
-        'droppoff_address': request.droppOffAddress,
+        'drop_off_address': request.droppOffAddress,
         'direction': direction,
         'price': int.parse(price),
         'duration': duration,
         'distance': int.parse(distance)
       }),
     );
-    print('my datas are this bruhhh ${response.statusCode} ${response.body}');
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
       rideRequestId = data["rideRequest"]["id"];
-      print('my data is this bruhhh $rideRequestId');
 
-      sendNotification(request, data["rideRequest"]["id"]);
+      sendNotification(request, data["rideRequest"]["id"], true);
       // return RideRequest.fromJson(data["rideRequest"]);
+    } else if (response.statusCode == 401) {
+      final res = await AuthDataProvider(httpClient: httpClient).refreshToken();
+
+      if (res.statusCode == 200) {
+        return orderForOther(request);
+      } else {
+        throw Exception(response.statusCode);
+      }
     } else {
-      throw Exception('Failed to create request.');
+      throw Exception(response.statusCode);
     }
   }
 
@@ -149,12 +172,18 @@ class RideRequestDataProvider {
 
     if (response.statusCode != 204) {
       throw Exception('Failed to delete user.');
+    } else if (response.statusCode == 401) {
+      final res = await AuthDataProvider(httpClient: httpClient).refreshToken();
+
+      if (res.statusCode == 200) {
+        return cancelRequest(id);
+      } else {
+        throw Exception(response.statusCode);
+      }
     }
   }
 
   Future sendCanceledNotification(String fcmToken) async {
-    print(
-        "come on come on turn the radio on it;s friday night status ${driverFcm}");
     final response = await http.post(
       Uri.parse(_fcmUrl),
       headers: <String, String>{
@@ -171,25 +200,18 @@ class RideRequestDataProvider {
         }
       }),
     );
-    print(
-        "come on come on turn the radio on it;s friday night status ${response.statusCode}");
 
     if (response.statusCode == 200) {
-      print("Bodyyyyyyyyyyyyyyyyyyy ${response.body}");
-      final data = (response.body);
-      //return NotificationRequest.fromJson(data);
+      // final data = (response.body);
     } else {
       throw Exception('Failed to send notification.');
     }
   }
 
-  Future sendNotification(RideRequest request, String requestId) async {
+  Future sendNotification(
+      RideRequest request, String requestId, bool forOther) async {
     final fcmtoken = await FirebaseMessaging.instance.getToken();
 
-    print("Sending notification $nextDrivers");
-    print(fcmtoken);
-    print(request.driverFcm);
-    print(requestId);
     final response = await http.post(
       Uri.parse(_fcmUrl),
       headers: <String, String>{
@@ -199,7 +221,7 @@ class RideRequestDataProvider {
       body: json.encode({
         "data": {
           "nextDrivers": nextDrivers,
-          "response": "Cancelled",
+          "response": "Searching",
           "requestId": requestId,
           "passengerFcm": fcmtoken,
           "pickupLocation": [
@@ -210,7 +232,7 @@ class RideRequestDataProvider {
             request.dropOffLocation!.latitude,
             request.dropOffLocation!.longitude
           ],
-          "passengerName": name,
+          "passengerName": forOther ? request.passengerPhoneNumber : name,
           "pickupAddress": request.pickUpAddress,
           "droppOffAddress": request.droppOffAddress,
           "passengerPhoneNumber": request.passengerPhoneNumber,
@@ -232,11 +254,8 @@ class RideRequestDataProvider {
 
     // dxGQlHGETnWjGYmlVy8Utn:APA91bErJaqPmsqfQOcStX6MYcBxfIAMr9kofXqF7bOBhftlZ3qo327e3PQ1jinm6o7FmtTy1LX4e0SE-dCUc2NwcyL6OJqKW7dagp6uTs8k-m6ynhp7NBotpPMaioTNxBuJFPz_RUif
 
-    print("Status code is ${response.body}");
-
     if (response.statusCode == 200) {
-      print("come on come on turn the radio on it;s friday night");
-      final data = (response.body);
+      // final data = (response.body);
       //return NotificationRequest.fromJson(data);
     } else {
       throw Exception('Failed to send notification.');
@@ -253,17 +272,20 @@ class RideRequestDataProvider {
         },
         body: json.encode({'status': 'Canceled'}));
 
-    print("this is the status codesssssssss: ${response.statusCode}");
     if (response.statusCode == 200) {
-      print("finally we are here: ${response.statusCode} ${sendRequest}");
-
       if (sendRequest) {
-        print("finally we are here and here: ${response.statusCode}");
-
         sendCanceledNotification(driverFcm);
       }
+    } else if (response.statusCode == 401) {
+      final res = await AuthDataProvider(httpClient: httpClient).refreshToken();
+
+      if (res.statusCode == 200) {
+        return changeRequestStatus(id, status, sendRequest);
+      } else {
+        throw Exception(response.statusCode);
+      }
     } else {
-      throw Exception('Failed to respond to the request.');
+      throw Exception(response.statusCode);
     }
   }
 
@@ -277,14 +299,20 @@ class RideRequestDataProvider {
             },
             body: json.encode({'cancel_reason': cancelReason}));
 
-    print("response ${response.statusCode} ${response.body}");
-
     if (response.statusCode == 200) {
       if (sendRequest) {
         cancelNotification(fcmId!);
       }
+    } else if (response.statusCode == 401) {
+      final res = await AuthDataProvider(httpClient: httpClient).refreshToken();
+
+      if (res.statusCode == 200) {
+        return cancelRideRequest(id, cancelReason, fcmId, sendRequest);
+      } else {
+        throw Exception(response.statusCode);
+      }
     } else {
-      throw 'Unable to cancel the request';
+      throw Exception(response.statusCode);
     }
   }
 
@@ -305,10 +333,8 @@ class RideRequestDataProvider {
       }),
     );
 
-    print(response.statusCode);
-
     if (response.statusCode == 200) {
-      final data = (response.body);
+      // final data = (response.body);
     } else {
       throw Exception('Failed to send notification.');
     }

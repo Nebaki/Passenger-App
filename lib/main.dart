@@ -1,11 +1,11 @@
 import 'dart:isolate';
 import 'dart:ui';
-
+import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-
 import 'package:flutter/material.dart';
 
+import 'package:flutter_background_service/flutter_background_service.dart';
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -13,34 +13,139 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:passengerapp/bloc/bloc.dart';
 import 'package:passengerapp/bloc/database/location_history_bloc.dart';
-import 'package:passengerapp/bloc/notificationrequest/notification_request_bloc.dart';
-import 'package:passengerapp/bloc/savedlocation/saved_location_bloc.dart';
 import 'package:passengerapp/bloc_observer.dart';
+import 'package:passengerapp/cubit/cubits.dart';
+import 'package:passengerapp/cubit/favorite_location.dart';
 import 'package:passengerapp/dataprovider/dataproviders.dart';
 import 'package:passengerapp/helper/constants.dart';
+import 'package:passengerapp/localization/localization.dart';
 import 'package:passengerapp/repository/repositories.dart';
 import 'package:passengerapp/rout.dart';
 import 'package:http/http.dart' as http;
+import 'package:passengerapp/theme_data.dart';
 import 'package:wakelock/wakelock.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'package:provider/provider.dart';
 import 'screens/theme/theme_provider.dart';
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  // If you're going to use other Firebase services in the background, such as Firestore,
+  // If you're going to use other Firebase services in the background, such as Firestore,http
   // make sure you call `initializeApp` before using other Firebase services.
-  await Firebase.initializeApp();
-
+  // await Firebase.initializeApp();
+  // AssetsAudioPlayer().open(Audio("assets/sounds/announcement-sound.mp3"));
   final SendPort? send = IsolateNameServer.lookupPortByName(portName);
   send!.send(message);
 
-  print('Handling a background message ${message.messageId}');
+  debugPrint('Handling a background message ${message.messageId}');
+}
+
+bool onIosBackground(ServiceInstance service) {
+  WidgetsFlutterBinding.ensureInitialized();
+  print('FLUTTER BACKGROUND FETCH');
+
+  return true;
+}
+
+Future<void> initializeService() async {
+  final service = FlutterBackgroundService();
+  await service.configure(
+    androidConfiguration: AndroidConfiguration(
+      // this will be executed when app is in foreground or background in separated isolate
+      onStart: onStart,
+
+      // auto start service
+      autoStart: false,
+      isForegroundMode: true,
+    ),
+    iosConfiguration: IosConfiguration(
+      // auto start service
+      autoStart: false,
+
+      // this will be executed when app is in foreground in separated isolate
+      onForeground: onStart,
+
+      // you have to enable background fetch capability on xcode project
+      onBackground: onIosBackground,
+    ),
+  );
+  // service.startService();
+}
+
+void onStart(ServiceInstance service) async {
+  // Only available for flutter 3.0.0 and later
+  DartPluginRegistrant.ensureInitialized();
+
+
+  // For flutter prior to version 3.0.0
+  // We have to register the plugin manually
+
+  // SharedPreferences preferences = await SharedPreferences.getInstance();
+  // await preferences.setString("hello", "world");
+
+  // if (service is AndroidServiceInstance) {
+  // service.on('setAsForeground').listen((event) {
+  //   print("Yow Herererr as forground");
+  //   // service.setAsForegroundService();
+  // });
+
+  // service.on('setAsBackground').listen((event) {
+  //   print("Yow Herererr as background");
+
+  //   // service.setAsBackgroundService();
+  // });
+  // }
+
+  service.on('stopService').listen((event) {
+    print("Hereeeeeeeeee");
+    service.stopSelf();
+  });
+
+  // bring to foreground
+  // Timer.periodic(const Duration(seconds: 1), (timer) async {
+  //   final hello = preferences.getString("hello");
+  //   print(hello);
+
+  //   if (service is AndroidServiceInstance) {
+  //     service.setForegroundNotificationInfo(
+  //       title: "My App Service",
+  //       content: "Updated at ${DateTime.now()}",
+  //     );
+  //   }
+
+  //   /// you can see this log in logcat
+  //   print('FLUTTER BACKGROUND SERVICE: ${DateTime.now()}');
+
+  //   // test using external plugin
+  //   final deviceInfo = DeviceInfoPlugin();
+  //   String? device;
+  //   if (Platform.isAndroid) {
+  //     final androidInfo = await deviceInfo.androidInfo;
+  //     device = androidInfo.model;
+  //   }
+
+  //   if (Platform.isIOS) {
+  //     final iosInfo = await deviceInfo.iosInfo;
+  //     device = iosInfo.model;
+  //   }
+
+  //   service.invoke(
+  //     'update',
+  //     {
+  //       "current_date": DateTime.now().toIso8601String(),
+  //       "device": device,
+  //     },
+  //   );
+  // });
 }
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await initializeService();
 
   await Firebase.initializeApp();
+  await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
+      alert: true, badge: true, sound: true);
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
   Bloc.observer = SimpleBlocObserver();
@@ -64,11 +169,7 @@ void main() async {
   UserRepository(dataProvider: UserDataProvider(httpClient: http.Client()));
 
   final AuthRepository authRepository =
-  AuthRepository(dataProvider: AuthDataProvider(httpClient: http.Client()));
-  final NotificationRequestRepository notificationRequestRepository =
-  NotificationRequestRepository(
-      dataProvider:
-      NotificationRequestDataProvider(httpClient: http.Client()));
+      AuthRepository(dataProvider: AuthDataProvider(httpClient: http.Client()));
 
   final DataBaseHelperRepository dataBaseHelperRepository =
   DataBaseHelperRepository(dataProvider: DatabaseHelper());
@@ -83,93 +184,65 @@ void main() async {
       savedLocationDataProvider:
       SavedLocationDataProvider(httpClient: http.Client()));
   final EmergencyReportRepository emergencyReportRepository =
-  EmergencyReportRepository(
-      dataProvider: EmergencyReportDataProvider(httpClient: http.Client()));
+      EmergencyReportRepository(
+          dataProvider: EmergencyReportDataProvider(httpClient: http.Client()));
 
-  const secureStorage = FlutterSecureStorage();
-  String? theme = await secureStorage.read(key: "theme");
-  runApp(
-      ChangeNotifierProvider(
-          create: (context) => ThemeProvider(theme: int.parse(theme ?? "3")),
-          child: MyApp(
-            notificationRequestRepository: notificationRequestRepository,
-            rideRequestRepository: rideRequestRepository,
-            authRepository: authRepository,
-            userRepository: userRepository,
-            driverRepository: driverRepository,
-            reverseLocationRepository: reverseLocationRepository,
-            locationPredictionRepository: locationPredictionRepository,
-            placeDetailRepository: placeDetailRepository,
-            directionRepository: directionRepository,
-            dataBaseHelperRepository: dataBaseHelperRepository,
-            reviewRepository: reviewRepository,
-            savedLocationRepository: savedLocationRepository,
-            emergencyReportRepository: emergencyReportRepository,
-          )));
+  final CategoryRepository categoryRepository = CategoryRepository(
+      categoryDataProvider: CategoryDataProvider(httpClient: http.Client()));
+
+  final SettingsRepository settingsRepository = SettingsRepository(
+      settingsDataProvider: SettingsDataProvider(httpClient: http.Client()));
+
+  runApp(MyApp(
+    rideRequestRepository: rideRequestRepository,
+    authRepository: authRepository,
+    userRepository: userRepository,
+    driverRepository: driverRepository,
+    reverseLocationRepository: reverseLocationRepository,
+    locationPredictionRepository: locationPredictionRepository,
+    placeDetailRepository: placeDetailRepository,
+    directionRepository: directionRepository,
+    dataBaseHelperRepository: dataBaseHelperRepository,
+    reviewRepository: reviewRepository,
+    savedLocationRepository: savedLocationRepository,
+    emergencyReportRepository: emergencyReportRepository,
+    categoryRepository: categoryRepository,
+    settingsRepository: settingsRepository,
+  ));
 }
 
 class MyApp extends StatelessWidget {
-  Future<Position> _determinePosition() async {
-    bool serviceEnabled;
-    LocationPermission permission;
-
-    serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) {
-      if (!serviceEnabled) {
-        return Future.error("NoLocation Enabled");
-      }
-
-      return Future.error('Location services are disabled.');
-    }
-
-    permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied) {
-        return Future.error('Location permissions are denied');
-      }
-    }
-
-    if (permission == LocationPermission.deniedForever) {
-      return Future.error(
-          'Location permissions are permanently denied, we cannot request permissions.');
-    }
-
-    return await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high);
-  }
-
   final ReverseLocationRepository reverseLocationRepository;
   final LocationPredictionRepository locationPredictionRepository;
   final PlaceDetailRepository placeDetailRepository;
   final DirectionRepository directionRepository;
   final UserRepository userRepository;
   final DriverRepository driverRepository;
-
   final AuthRepository authRepository;
   final RideRequestRepository rideRequestRepository;
-  final NotificationRequestRepository notificationRequestRepository;
   final DataBaseHelperRepository dataBaseHelperRepository;
-
   final ReviewRepository reviewRepository;
-
   final SavedLocationRepository savedLocationRepository;
   final EmergencyReportRepository emergencyReportRepository;
+  final CategoryRepository categoryRepository;
+  final SettingsRepository settingsRepository;
 
-  const MyApp({Key? key,
-    required this.notificationRequestRepository,
-    required this.rideRequestRepository,
-    required this.userRepository,
-    required this.driverRepository,
-    required this.authRepository,
-    required this.reverseLocationRepository,
-    required this.locationPredictionRepository,
-    required this.placeDetailRepository,
-    required this.directionRepository,
-    required this.dataBaseHelperRepository,
-    required this.reviewRepository,
-    required this.savedLocationRepository,
-    required this.emergencyReportRepository})
+  const MyApp(
+      {Key? key,
+      required this.rideRequestRepository,
+      required this.userRepository,
+      required this.driverRepository,
+      required this.authRepository,
+      required this.reverseLocationRepository,
+      required this.locationPredictionRepository,
+      required this.placeDetailRepository,
+      required this.directionRepository,
+      required this.dataBaseHelperRepository,
+      required this.reviewRepository,
+      required this.savedLocationRepository,
+      required this.emergencyReportRepository,
+      required this.categoryRepository,
+      required this.settingsRepository})
       : super(key: key);
 
   @override
@@ -179,7 +252,6 @@ class MyApp extends StatelessWidget {
 
     return MultiRepositoryProvider(
         providers: [
-          RepositoryProvider.value(value: notificationRequestRepository),
           RepositoryProvider.value(value: rideRequestRepository),
           RepositoryProvider.value(value: reverseLocationRepository),
           RepositoryProvider.value(value: locationPredictionRepository),
@@ -191,7 +263,9 @@ class MyApp extends StatelessWidget {
           RepositoryProvider.value(value: dataBaseHelperRepository),
           RepositoryProvider.value(value: reviewRepository),
           RepositoryProvider.value(value: savedLocationRepository),
-          RepositoryProvider.value(value: emergencyReportRepository)
+          RepositoryProvider.value(value: emergencyReportRepository),
+          RepositoryProvider.value(value: categoryRepository),
+          RepositoryProvider.value(value: settingsRepository)
         ],
         child: MultiBlocProvider(
             providers: [
@@ -226,11 +300,6 @@ class MyApp extends StatelessWidget {
                     ..add(RideRequestCheckStartedTrip())),
               BlocProvider(
                   create: (context) =>
-                      NotificationRequestBloc(
-                          notificationRequestRepository:
-                          notificationRequestRepository)),
-              BlocProvider(
-                  create: (context) =>
                       DriverBloc(driverRepository: driverRepository)),
               BlocProvider(
                   create: (context) =>
@@ -246,129 +315,68 @@ class MyApp extends StatelessWidget {
                       savedLocationRepository: savedLocationRepository)
                     ..add(SavedLocationsLoad())),
               BlocProvider(
+                  create: (context) => EmergencyReportBloc(
+                      emergencyReportRepository: emergencyReportRepository)),
+              BlocProvider(
+                  create: ((context) =>
+                      CategoryBloc(categoryRepository: categoryRepository)
+                        ..add(CategoryLoad()))),
+              BlocProvider(
+                  create: ((context) => TripHistoryBloc(
+                      rideRequestRepository: rideRequestRepository))),
+              BlocProvider(
+                  create: ((context) =>
+                      SelectedCategoryBloc(SelectedCategoryLoading()))),
+              BlocProvider(
+                  create: ((context) => ThemeModeCubit()..getThemeMode())),
+              BlocProvider(create: (context) => CurrentWidgetCubit()),
+              BlocProvider(
+                create: (context) => FavoriteLocationCubit(
+                    favoriteLocationRepository: dataBaseHelperRepository)
+                  ..getFavoriteLocations(),
+              ),
+              BlocProvider(create: (context) => LocaleCubit()..getLocal()),
+              BlocProvider(
                   create: (context) =>
-                      EmergencyReportBloc(
-                          emergencyReportRepository: emergencyReportRepository)),
+                      ProfilePictureCubit()..getProfilePictureUrl()),
+              BlocProvider(
+                create: (context) =>
+                    SettingsBloc(settingsRepository: settingsRepository),
+              )
             ],
-            child: Consumer<ThemeProvider>(
-                builder: (context, themeProvider, child) {
-                  return MaterialApp(
-                    title: 'SafeWay',
-                    theme: ThemeData(
-                      //F48221
-                        /*scaffoldBackgroundColor: backGroundColor,
-                        primaryColor: themeProvider.getColor,
-                        textTheme: TextTheme(
-                            button: const TextStyle(
-                              color: Color.fromRGBO(254, 79, 5, 1),
-                            ),
-                            subtitle1:
-                            const TextStyle(
-                                color: Colors.black38, fontSize: 14),
-                            headline5: const TextStyle(
-                                fontWeight: FontWeight.bold),
-                            bodyText2: TextStyle(color: Colors.grey.shade700)),
-                        iconTheme: const IconThemeData(
-                          color: Colors.white,
-                        ),
-                        textButtonTheme: TextButtonThemeData(
-                            style: ButtonStyle(
-                              foregroundColor:
-                              MaterialStateProperty.all<Color>(Colors.red),
-                              textStyle: MaterialStateProperty.all<TextStyle>(
-                                  const TextStyle(color: Colors.black)),
-                            )),
-                        elevatedButtonTheme: ElevatedButtonThemeData(
-                          style: ButtonStyle(
-                            backgroundColor: MaterialStateProperty.all<Color>(
-                                const Color.fromRGBO(244, 201, 60, 1)),
-                            shape: MaterialStateProperty.all<
-                                RoundedRectangleBorder>(
-                                RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10))),
-                            foregroundColor:
-                            MaterialStateProperty.all<Color>(Colors.black),
-                            textStyle: MaterialStateProperty.all<TextStyle>(
-                                const TextStyle(
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.w300,
-                                    fontSize: 20)),
-                            // backgroundColor: MaterialStateProperty.all<Color>(
-                            //     const Color.fromRGBO(254, 79, 5, 1)),
-                            // shape:
-                            //     MaterialStateProperty.all<RoundedRectangleBorder>(
-                            //         RoundedRectangleBorder(
-                            //   borderRadius: BorderRadius.circular(80),
-                            // ))
-                          ),
-                        ),
-                        colorScheme: ColorScheme.fromSwatch(
-                          primarySwatch: Colors.green,
-                        ).copyWith(secondary: Colors.grey.shade600)*/
-                        inputDecorationTheme: InputDecorationTheme(
-                            suffixIconColor: themeProvider.getColor,
-                            prefixIconColor: themeProvider.getColor,
-                            focusedBorder: OutlineInputBorder(
-                              borderSide: BorderSide(
-                                  color: themeProvider.getColor, width: 2.0),
-                            ),
-                            focusColor: themeProvider.getColor),
-                        floatingActionButtonTheme: FloatingActionButtonThemeData(
-                            backgroundColor: Colors.white,
-                            sizeConstraints:
-                            const BoxConstraints(minWidth: 80, minHeight: 80),
-                            extendedPadding: const EdgeInsets.all(50),
-                            foregroundColor: themeProvider.getColor,
-                            extendedTextStyle: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 26,
-                                fontWeight: FontWeight.w300)),
-                        primaryColor: themeProvider.getColor,
-                        textTheme: const TextTheme(
-                            button: TextStyle(
-                              color: Color.fromRGBO(254, 79, 5, 1),
-                            ),
-                            subtitle1:
-                            TextStyle(color: Colors.black38, fontSize: 14),
-                            headline5: TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 24),
-                            bodyText2: TextStyle(
-                                color: Colors.black,
-                                fontSize: 16,
-                                fontWeight: FontWeight.normal)),
-                        iconTheme: const IconThemeData(
-                          color: Colors.white,
-                        ),
-                        textButtonTheme: TextButtonThemeData(
-                            style: ButtonStyle(
-                              foregroundColor:
-                              MaterialStateProperty.all<Color>(Colors.red),
-                              textStyle: MaterialStateProperty.all<TextStyle>(
-                                  const TextStyle(color: Colors.black)),
-                            )),
-                        elevatedButtonTheme: ElevatedButtonThemeData(
-                          style: ButtonStyle(
-                              textStyle: MaterialStateProperty.all<TextStyle>(
-                                  const TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.normal,
-                                      fontSize: 20)),
-                              backgroundColor: MaterialStateProperty.all<Color>(
-                                  themeProvider.getColor),
-                              foregroundColor:
-                              MaterialStateProperty.all<Color>(Colors.white),
-                              shape:
-                              MaterialStateProperty.all<RoundedRectangleBorder>(
-                                  RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10),
-                                  ))),
-                        ),
-                        colorScheme: ColorScheme.fromSwatch(
-                          primarySwatch: Colors.orange,
-                        ).copyWith(secondary: Colors.grey.shade600)
+            child: BlocBuilder<ThemeModeCubit, ThemeMode>(
+              builder: ((context, themeModeState) =>
+                  BlocBuilder<LocaleCubit, Locale>(
+                    builder: (context, localeState) => MaterialApp(
+                      locale: localeState,
+                      localizationsDelegates: const [
+                        Localization.delegate,
+                        GlobalMaterialLocalizations.delegate,
+                        GlobalWidgetsLocalizations.delegate,
+                        GlobalCupertinoLocalizations.delegate,
+                      ],
+                      supportedLocales: const [
+                        Locale('en', 'US'),
+                        Locale('am', 'ET')
+                      ],
+                      localeResolutionCallback:
+                          (deviceeLocal, supportedLocals) {
+                        for (var locale in supportedLocals) {
+                          if (locale.languageCode ==
+                                  deviceeLocal!.languageCode &&
+                              locale.countryCode == deviceeLocal.countryCode) {
+                            return deviceeLocal;
+                          }
+                        }
+                        return supportedLocals.first;
+                      },
+                      title: 'Mobile Transport',
+                      themeMode: themeModeState,
+                      darkTheme: ThemesData.darkTheme,
+                      theme: ThemesData.lightTheme,
+                      onGenerateRoute: AppRoute.generateRoute,
                     ),
-                    onGenerateRoute: AppRoute.generateRoute,
-                  );
-                })));
+                  )),
+            )));
   }
 }

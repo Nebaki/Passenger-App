@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class CustomeBackArrow extends StatelessWidget {
+  const CustomeBackArrow({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -18,7 +20,6 @@ class CustomeBackArrow extends StatelessWidget {
           child: const Icon(
             Icons.arrow_back_ios_new,
             size: 20,
-            color: Colors.black87,
           ),
         ),
       ),
