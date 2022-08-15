@@ -5,8 +5,10 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 
 import 'package:flutter/material.dart';
+
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:passengerapp/bloc/bloc.dart';
@@ -20,6 +22,9 @@ import 'package:passengerapp/repository/repositories.dart';
 import 'package:passengerapp/rout.dart';
 import 'package:http/http.dart' as http;
 import 'package:wakelock/wakelock.dart';
+
+import 'package:provider/provider.dart';
+import 'screens/theme/theme_provider.dart';
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   // If you're going to use other Firebase services in the background, such as Firestore,
@@ -40,14 +45,14 @@ void main() async {
 
   Bloc.observer = SimpleBlocObserver();
   final ReverseLocationRepository reverseLocationRepository =
-      ReverseLocationRepository(
-          dataProvider: ReverseGocoding(httpClient: http.Client()));
+  ReverseLocationRepository(
+      dataProvider: ReverseGocoding(httpClient: http.Client()));
   final RideRequestRepository rideRequestRepository = RideRequestRepository(
       dataProvider: RideRequestDataProvider(httpClient: http.Client()));
   final LocationPredictionRepository locationPredictionRepository =
-      LocationPredictionRepository(
-          dataProvider:
-              LocationPredictionDataProvider(httpClient: http.Client()));
+  LocationPredictionRepository(
+      dataProvider:
+      LocationPredictionDataProvider(httpClient: http.Client()));
 
   final PlaceDetailRepository placeDetailRepository = PlaceDetailRepository(
       dataProvider: PlaceDetailDataProvider(httpClient: http.Client()));
@@ -56,17 +61,17 @@ void main() async {
       dataProvider: DirectionDataProvider(httpClient: http.Client()));
 
   final UserRepository userRepository =
-      UserRepository(dataProvider: UserDataProvider(httpClient: http.Client()));
+  UserRepository(dataProvider: UserDataProvider(httpClient: http.Client()));
 
   final AuthRepository authRepository =
-      AuthRepository(dataProvider: AuthDataProvider(httpClient: http.Client()));
+  AuthRepository(dataProvider: AuthDataProvider(httpClient: http.Client()));
   final NotificationRequestRepository notificationRequestRepository =
-      NotificationRequestRepository(
-          dataProvider:
-              NotificationRequestDataProvider(httpClient: http.Client()));
+  NotificationRequestRepository(
+      dataProvider:
+      NotificationRequestDataProvider(httpClient: http.Client()));
 
   final DataBaseHelperRepository dataBaseHelperRepository =
-      DataBaseHelperRepository(dataProvider: DatabaseHelper());
+  DataBaseHelperRepository(dataProvider: DatabaseHelper());
 
   final DriverRepository driverRepository = DriverRepository(
       dataProvider: DriverDataProvider(httpClient: http.Client()));
@@ -74,27 +79,33 @@ void main() async {
       dataProvider: ReviewDataProvider(httpClient: http.Client()));
 
   final SavedLocationRepository savedLocationRepository =
-      SavedLocationRepository(
-          savedLocationDataProvider:
-              SavedLocationDataProvider(httpClient: http.Client()));
+  SavedLocationRepository(
+      savedLocationDataProvider:
+      SavedLocationDataProvider(httpClient: http.Client()));
   final EmergencyReportRepository emergencyReportRepository =
-      EmergencyReportRepository(
-          dataProvider: EmergencyReportDataProvider(httpClient: http.Client()));
-  runApp(MyApp(
-    notificationRequestRepository: notificationRequestRepository,
-    rideRequestRepository: rideRequestRepository,
-    authRepository: authRepository,
-    userRepository: userRepository,
-    driverRepository: driverRepository,
-    reverseLocationRepository: reverseLocationRepository,
-    locationPredictionRepository: locationPredictionRepository,
-    placeDetailRepository: placeDetailRepository,
-    directionRepository: directionRepository,
-    dataBaseHelperRepository: dataBaseHelperRepository,
-    reviewRepository: reviewRepository,
-    savedLocationRepository: savedLocationRepository,
-    emergencyReportRepository: emergencyReportRepository,
-  ));
+  EmergencyReportRepository(
+      dataProvider: EmergencyReportDataProvider(httpClient: http.Client()));
+
+  const secureStorage = FlutterSecureStorage();
+  String? theme = await secureStorage.read(key: "theme");
+  runApp(
+      ChangeNotifierProvider(
+          create: (context) => ThemeProvider(theme: int.parse(theme ?? "3")),
+          child: MyApp(
+            notificationRequestRepository: notificationRequestRepository,
+            rideRequestRepository: rideRequestRepository,
+            authRepository: authRepository,
+            userRepository: userRepository,
+            driverRepository: driverRepository,
+            reverseLocationRepository: reverseLocationRepository,
+            locationPredictionRepository: locationPredictionRepository,
+            placeDetailRepository: placeDetailRepository,
+            directionRepository: directionRepository,
+            dataBaseHelperRepository: dataBaseHelperRepository,
+            reviewRepository: reviewRepository,
+            savedLocationRepository: savedLocationRepository,
+            emergencyReportRepository: emergencyReportRepository,
+          )));
 }
 
 class MyApp extends StatelessWidget {
@@ -145,22 +156,22 @@ class MyApp extends StatelessWidget {
   final SavedLocationRepository savedLocationRepository;
   final EmergencyReportRepository emergencyReportRepository;
 
-  const MyApp(
-      {Key? key,
-      required this.notificationRequestRepository,
-      required this.rideRequestRepository,
-      required this.userRepository,
-      required this.driverRepository,
-      required this.authRepository,
-      required this.reverseLocationRepository,
-      required this.locationPredictionRepository,
-      required this.placeDetailRepository,
-      required this.directionRepository,
-      required this.dataBaseHelperRepository,
-      required this.reviewRepository,
-      required this.savedLocationRepository,
-      required this.emergencyReportRepository})
+  const MyApp({Key? key,
+    required this.notificationRequestRepository,
+    required this.rideRequestRepository,
+    required this.userRepository,
+    required this.driverRepository,
+    required this.authRepository,
+    required this.reverseLocationRepository,
+    required this.locationPredictionRepository,
+    required this.placeDetailRepository,
+    required this.directionRepository,
+    required this.dataBaseHelperRepository,
+    required this.reviewRepository,
+    required this.savedLocationRepository,
+    required this.emergencyReportRepository})
       : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     Firebase.initializeApp();
@@ -185,16 +196,19 @@ class MyApp extends StatelessWidget {
         child: MultiBlocProvider(
             providers: [
               BlocProvider(
-                  create: (context) => LocationBloc(
+                  create: (context) =>
+                  LocationBloc(
                       reverseLocationRepository: reverseLocationRepository)
                     ..add(const ReverseLocationLoad())),
               BlocProvider(
-                  create: (context) => LocationPredictionBloc(
-                      locationPredictionRepository:
+                  create: (context) =>
+                      LocationPredictionBloc(
+                          locationPredictionRepository:
                           locationPredictionRepository)),
               BlocProvider(
-                  create: (context) => PlaceDetailBloc(
-                      placeDetailRepository: placeDetailRepository)),
+                  create: (context) =>
+                      PlaceDetailBloc(
+                          placeDetailRepository: placeDetailRepository)),
               BlocProvider(
                   create: (context) =>
                       DirectionBloc(directionRepository: directionRepository)),
@@ -202,85 +216,159 @@ class MyApp extends StatelessWidget {
                   create: (context) =>
                       UserBloc(userRepository: userRepository)),
               BlocProvider(
-                  create: (context) => AuthBloc(authRepository: authRepository)
+                  create: (context) =>
+                  AuthBloc(authRepository: authRepository)
                     ..add(AuthDataLoad())),
               BlocProvider(
-                  create: (context) => RideRequestBloc(
+                  create: (context) =>
+                  RideRequestBloc(
                       rideRequestRepository: rideRequestRepository)
                     ..add(RideRequestCheckStartedTrip())),
               BlocProvider(
-                  create: (context) => NotificationRequestBloc(
-                      notificationRequestRepository:
+                  create: (context) =>
+                      NotificationRequestBloc(
+                          notificationRequestRepository:
                           notificationRequestRepository)),
               BlocProvider(
                   create: (context) =>
                       DriverBloc(driverRepository: driverRepository)),
               BlocProvider(
-                  create: (context) => LocationHistoryBloc(
+                  create: (context) =>
+                  LocationHistoryBloc(
                       dataBaseHelperRepository: dataBaseHelperRepository)
                     ..add(LocationHistoryLoad())),
               BlocProvider(
                   create: (context) =>
                       ReviewBloc(reviewRepository: reviewRepository)),
               BlocProvider(
-                  create: (context) => SavedLocationBloc(
+                  create: (context) =>
+                  SavedLocationBloc(
                       savedLocationRepository: savedLocationRepository)
                     ..add(SavedLocationsLoad())),
               BlocProvider(
-                  create: (context) => EmergencyReportBloc(
-                      emergencyReportRepository: emergencyReportRepository)),
+                  create: (context) =>
+                      EmergencyReportBloc(
+                          emergencyReportRepository: emergencyReportRepository)),
             ],
-            child: MaterialApp(
-              title: 'SafeWay',
-              theme: ThemeData(
-                  //F48221
-                  scaffoldBackgroundColor: backGroundColor,
-                  primaryColor: const Color.fromRGBO(254, 79, 5, 1),
-                  textTheme: TextTheme(
-                      button: const TextStyle(
-                        color: Color.fromRGBO(254, 79, 5, 1),
-                      ),
-                      subtitle1:
-                          const TextStyle(color: Colors.black38, fontSize: 14),
-                      headline5: const TextStyle(fontWeight: FontWeight.bold),
-                      bodyText2: TextStyle(color: Colors.grey.shade700)),
-                  iconTheme: const IconThemeData(
-                    color: Colors.white,
-                  ),
-                  textButtonTheme: TextButtonThemeData(
-                      style: ButtonStyle(
-                    foregroundColor:
-                        MaterialStateProperty.all<Color>(Colors.red),
-                    textStyle: MaterialStateProperty.all<TextStyle>(
-                        const TextStyle(color: Colors.black)),
-                  )),
-                  elevatedButtonTheme: ElevatedButtonThemeData(
-                    style: ButtonStyle(
-                      backgroundColor: MaterialStateProperty.all<Color>(
-                          const Color.fromRGBO(244, 201, 60, 1)),
-                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                          RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10))),
-                      foregroundColor:
-                          MaterialStateProperty.all<Color>(Colors.black),
-                      textStyle: MaterialStateProperty.all<TextStyle>(
-                          const TextStyle(
-                              color: Colors.black,
-                              fontWeight: FontWeight.w300,
-                              fontSize: 20)),
-                      // backgroundColor: MaterialStateProperty.all<Color>(
-                      //     const Color.fromRGBO(254, 79, 5, 1)),
-                      // shape:
-                      //     MaterialStateProperty.all<RoundedRectangleBorder>(
-                      //         RoundedRectangleBorder(
-                      //   borderRadius: BorderRadius.circular(80),
-                      // ))
+            child: Consumer<ThemeProvider>(
+                builder: (context, themeProvider, child) {
+                  return MaterialApp(
+                    title: 'SafeWay',
+                    theme: ThemeData(
+                      //F48221
+                        /*scaffoldBackgroundColor: backGroundColor,
+                        primaryColor: themeProvider.getColor,
+                        textTheme: TextTheme(
+                            button: const TextStyle(
+                              color: Color.fromRGBO(254, 79, 5, 1),
+                            ),
+                            subtitle1:
+                            const TextStyle(
+                                color: Colors.black38, fontSize: 14),
+                            headline5: const TextStyle(
+                                fontWeight: FontWeight.bold),
+                            bodyText2: TextStyle(color: Colors.grey.shade700)),
+                        iconTheme: const IconThemeData(
+                          color: Colors.white,
+                        ),
+                        textButtonTheme: TextButtonThemeData(
+                            style: ButtonStyle(
+                              foregroundColor:
+                              MaterialStateProperty.all<Color>(Colors.red),
+                              textStyle: MaterialStateProperty.all<TextStyle>(
+                                  const TextStyle(color: Colors.black)),
+                            )),
+                        elevatedButtonTheme: ElevatedButtonThemeData(
+                          style: ButtonStyle(
+                            backgroundColor: MaterialStateProperty.all<Color>(
+                                const Color.fromRGBO(244, 201, 60, 1)),
+                            shape: MaterialStateProperty.all<
+                                RoundedRectangleBorder>(
+                                RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10))),
+                            foregroundColor:
+                            MaterialStateProperty.all<Color>(Colors.black),
+                            textStyle: MaterialStateProperty.all<TextStyle>(
+                                const TextStyle(
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.w300,
+                                    fontSize: 20)),
+                            // backgroundColor: MaterialStateProperty.all<Color>(
+                            //     const Color.fromRGBO(254, 79, 5, 1)),
+                            // shape:
+                            //     MaterialStateProperty.all<RoundedRectangleBorder>(
+                            //         RoundedRectangleBorder(
+                            //   borderRadius: BorderRadius.circular(80),
+                            // ))
+                          ),
+                        ),
+                        colorScheme: ColorScheme.fromSwatch(
+                          primarySwatch: Colors.green,
+                        ).copyWith(secondary: Colors.grey.shade600)*/
+                        inputDecorationTheme: InputDecorationTheme(
+                            suffixIconColor: themeProvider.getColor,
+                            prefixIconColor: themeProvider.getColor,
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                  color: themeProvider.getColor, width: 2.0),
+                            ),
+                            focusColor: themeProvider.getColor),
+                        floatingActionButtonTheme: FloatingActionButtonThemeData(
+                            backgroundColor: Colors.white,
+                            sizeConstraints:
+                            const BoxConstraints(minWidth: 80, minHeight: 80),
+                            extendedPadding: const EdgeInsets.all(50),
+                            foregroundColor: themeProvider.getColor,
+                            extendedTextStyle: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 26,
+                                fontWeight: FontWeight.w300)),
+                        primaryColor: themeProvider.getColor,
+                        textTheme: const TextTheme(
+                            button: TextStyle(
+                              color: Color.fromRGBO(254, 79, 5, 1),
+                            ),
+                            subtitle1:
+                            TextStyle(color: Colors.black38, fontSize: 14),
+                            headline5: TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 24),
+                            bodyText2: TextStyle(
+                                color: Colors.black,
+                                fontSize: 16,
+                                fontWeight: FontWeight.normal)),
+                        iconTheme: const IconThemeData(
+                          color: Colors.white,
+                        ),
+                        textButtonTheme: TextButtonThemeData(
+                            style: ButtonStyle(
+                              foregroundColor:
+                              MaterialStateProperty.all<Color>(Colors.red),
+                              textStyle: MaterialStateProperty.all<TextStyle>(
+                                  const TextStyle(color: Colors.black)),
+                            )),
+                        elevatedButtonTheme: ElevatedButtonThemeData(
+                          style: ButtonStyle(
+                              textStyle: MaterialStateProperty.all<TextStyle>(
+                                  const TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.normal,
+                                      fontSize: 20)),
+                              backgroundColor: MaterialStateProperty.all<Color>(
+                                  themeProvider.getColor),
+                              foregroundColor:
+                              MaterialStateProperty.all<Color>(Colors.white),
+                              shape:
+                              MaterialStateProperty.all<RoundedRectangleBorder>(
+                                  RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ))),
+                        ),
+                        colorScheme: ColorScheme.fromSwatch(
+                          primarySwatch: Colors.orange,
+                        ).copyWith(secondary: Colors.grey.shade600)
                     ),
-                  ),
-                  colorScheme: ColorScheme.fromSwatch(
-                    primarySwatch: Colors.green,
-                  ).copyWith(secondary: Colors.grey.shade600)),
-              onGenerateRoute: AppRoute.generateRoute,
-            )));
+                    onGenerateRoute: AppRoute.generateRoute,
+                  );
+                })));
   }
 }

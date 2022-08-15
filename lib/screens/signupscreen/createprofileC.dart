@@ -12,6 +12,10 @@ import 'package:passengerapp/screens/screens.dart';
 import 'package:passengerapp/widgets/widgets.dart';
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:email_validator/email_validator.dart';
+import 'package:provider/provider.dart';
+
+import '../../utils/waver.dart';
+import '../theme/theme_provider.dart';
 
 class CreateProfileScreen extends StatefulWidget {
   static const routeName = "/createprofile";
@@ -58,6 +62,12 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
             ),
           );
         });
+  }
+  late ThemeProvider themeProvider;
+  @override
+  void initState() {
+    themeProvider = Provider.of<ThemeProvider>(context, listen: false);
+    super.initState();
   }
 
   @override
@@ -133,12 +143,47 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
   Widget _buildProfileForm() {
     return Stack(
       children: [
+        Opacity(
+          opacity: 0.5,
+          child: ClipPath(
+            clipper: WaveClipper(),
+            child: Container(
+              height: 180,
+              color: themeProvider.getColor,
+            ),
+          ),
+        ),
+        ClipPath(
+          clipper: WaveClipper(),
+          child: Container(
+            height: 160,
+            color: themeProvider.getColor,
+          ),
+        ),
+        Opacity(
+          opacity: 0.5,
+          child: Align(
+            alignment: Alignment.bottomCenter,
+            child: Container(
+              height: 100,
+              color: themeProvider.getColor,
+              child: ClipPath(
+                clipper: WaveClipperBottom(),
+                child: Container(
+                  height: 100,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ),
+        ),
         CustomeBackArrow(),
         Padding(
           padding:
               const EdgeInsets.only(top: 80, right: 20, left: 20, bottom: 10),
           child: Form(
             key: _formKey,
+            autovalidateMode: AutovalidateMode.onUserInteraction,
             child: SizedBox(
               height: MediaQuery.of(context).size.height,
               child: SingleChildScrollView(
