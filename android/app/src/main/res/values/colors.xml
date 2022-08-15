@@ -22,4 +22,5 @@
     <color name="transparent">#00000000</color>
     <color name="blue_shadow_color">#B9DADF</color>
     <color name="loader_background_color">#55AAAAAA</color>
+    <color name="ic_launcher_background">#d91a30</color>
 </resources>

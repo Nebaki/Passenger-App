@@ -3,35 +3,93 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:passengerapp/bloc/bloc.dart';
 import 'package:passengerapp/helper/localization.dart';
 import 'package:passengerapp/widgets/widgets.dart';
+import 'package:provider/provider.dart';
 
-class ChangePassword extends StatelessWidget {
+import '../../utils/waver.dart';
+import '../theme/theme_provider.dart';
+
+class ChangePassword extends StatefulWidget {
   static const routeName = '/changepassword';
-  final _formkey = GlobalKey<FormState>();
-  final Map<String, String> _passwordInfo = {};
-  bool _isLoading = false;
 
   ChangePassword({Key? key}) : super(key: key);
 
   @override
+  State<ChangePassword> createState() => _ChangePasswordState();
+}
+
+class _ChangePasswordState extends State<ChangePassword> {
+  final _formkey = GlobalKey<FormState>();
+
+  final Map<String, String> _passwordInfo = {};
+
+  bool _isLoading = false;
+
+  late ThemeProvider themeProvider;
+
+  @override
+  void initState() {
+    themeProvider = Provider.of<ThemeProvider>(context, listen: false);
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: BlocConsumer<UserBloc, UserState>(
-            builder: (context, state) => form(context),
-            listener: (context, state) {
-              if (state is UserPasswordChanged) {
-                _isLoading = false;
-                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                    content: Text(getTranslation(context, "password_changed")),
-                    backgroundColor: Colors.green.shade900));
-                Navigator.pop(context);
-              }
-              if (state is UserOperationFailure) {
-                _isLoading = false;
-                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                    content: Text(getTranslation(context, "operation_failure")),
-                    backgroundColor: Colors.red.shade900));
-              }
-            }));
+        body: Stack(
+          children: [
+            Opacity(
+              opacity: 0.5,
+              child: ClipPath(
+                clipper: WaveClipper(),
+                child: Container(
+                  height: 180,
+                  color: themeProvider.getColor,
+                ),
+              ),
+            ),
+            ClipPath(
+              clipper: WaveClipper(),
+              child: Container(
+                height: 160,
+                color: themeProvider.getColor,
+              ),
+            ),
+            Opacity(
+              opacity: 0.5,
+              child: Align(
+                alignment: Alignment.bottomCenter,
+                child: Container(
+                  height: 100,
+                  color: themeProvider.getColor,
+                  child: ClipPath(
+                    clipper: WaveClipperBottom(),
+                    child: Container(
+                      height: 100,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            BlocConsumer<UserBloc, UserState>(
+                builder: (context, state) => form(context),
+                listener: (context, state) {
+                  if (state is UserPasswordChanged) {
+                    _isLoading = false;
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                        content: Text(getTranslation(context, "password_changed")),
+                        backgroundColor: Colors.green.shade900));
+                    Navigator.pop(context);
+                  }
+                  if (state is UserOperationFailure) {
+                    _isLoading = false;
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                        content: Text(getTranslation(context, "operation_failure")),
+                        backgroundColor: Colors.red.shade900));
+                  }
+                }),
+          ],
+        ));
   }
 
   void changePassword(BuildContext context) {

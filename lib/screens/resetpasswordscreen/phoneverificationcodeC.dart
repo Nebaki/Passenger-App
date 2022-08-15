@@ -4,7 +4,10 @@ import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:passengerapp/rout.dart';
 import 'package:passengerapp/screens/screens.dart';
 import 'package:passengerapp/widgets/widgets.dart';
+import 'package:provider/provider.dart';
 
+import '../../utils/waver.dart';
+import '../theme/theme_provider.dart';
 enum ResetMobileVerficationState { SHOW_MOBILE_FORM_STATE, SHOW_OTP_FORM_STATE }
 
 class MobileVerification extends StatefulWidget {
@@ -46,7 +49,12 @@ class _MobileVerificationState extends State<MobileVerification> {
       });
     }
   }
-
+  late ThemeProvider themeProvider;
+  @override
+  void initState() {
+    themeProvider = Provider.of<ThemeProvider>(context, listen: false);
+    super.initState();
+  }
   void sendVerificationCode() async {
     await _auth.verifyPhoneNumber(
         phoneNumber: phoneController,
@@ -72,7 +80,7 @@ class _MobileVerificationState extends State<MobileVerification> {
               arguments: VerificationArgument(
                   phoneNumber: phoneController,
                   resendingToken: resendingToken,
-                  verificationId: verificationId));
+                  verificationId: verificationId, from: 'ForgetPassword'));
         },
         codeAutoRetrievalTimeout: (verificationId) async {});
   }
@@ -84,6 +92,40 @@ class _MobileVerificationState extends State<MobileVerification> {
       backgroundColor: const Color.fromRGBO(240, 241, 241, 1),
       body: Stack(
         children: [
+          Opacity(
+            opacity: 0.5,
+            child: ClipPath(
+              clipper: WaveClipper(),
+              child: Container(
+                height: 180,
+                color: themeProvider.getColor,
+              ),
+            ),
+          ),
+          ClipPath(
+            clipper: WaveClipper(),
+            child: Container(
+              height: 160,
+              color: themeProvider.getColor,
+            ),
+          ),
+          Opacity(
+            opacity: 0.5,
+            child: Align(
+              alignment: Alignment.bottomCenter,
+              child: Container(
+                height: 100,
+                color: themeProvider.getColor,
+                child: ClipPath(
+                  clipper: WaveClipperBottom(),
+                  child: Container(
+                    height: 100,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ),
+          ),
           CustomeBackArrow(),
           Form(
             key: _formkey,

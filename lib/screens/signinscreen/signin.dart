@@ -10,6 +10,10 @@ import 'package:passengerapp/models/models.dart';
 import 'package:passengerapp/rout.dart';
 import 'package:passengerapp/screens/screens.dart';
 
+import '../../utils/waver.dart';
+import '../theme/theme_provider.dart';
+import 'package:provider/provider.dart';
+
 class SigninScreen extends StatefulWidget {
   static const routeName = '/signin';
 
@@ -27,7 +31,12 @@ class _SigninScreenState extends State<SigninScreen> {
   final Map<String, dynamic> _auth = {};
 
   final _formkey = GlobalKey<FormState>();
-
+  late ThemeProvider themeProvider;
+  @override
+  void initState() {
+    themeProvider = Provider.of<ThemeProvider>(context, listen: false);
+    super.initState();
+  }
   bool _isLoading = false;
   void _getSettings() {
     context.read<SettingsBloc>().add(SettingsStarted());
@@ -36,31 +45,69 @@ class _SigninScreenState extends State<SigninScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
         // backgroundColor: const Color.fromRGBO(240, 241, 241, 1),
-        body: BlocConsumer<AuthBloc, AuthState>(builder: (_, state) {
-      return _buildSigninForm();
+        body: Stack(
+          children: [
+            Opacity(
+              opacity: 0.5,
+              child: ClipPath(
+                clipper: WaveClipper(),
+                child: Container(
+                  height: 180,
+                  color: themeProvider.getColor,
+                ),
+              ),
+            ),
+            ClipPath(
+              clipper: WaveClipper(),
+              child: Container(
+                height: 160,
+                color: themeProvider.getColor,
+              ),
+            ),
+            Opacity(
+              opacity: 0.5,
+              child: Align(
+                alignment: Alignment.bottomCenter,
+                child: Container(
+                  height: 100,
+                  color: themeProvider.getColor,
+                  child: ClipPath(
+                    clipper: WaveClipperBottom(),
+                    child: Container(
+                      height: 100,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            BlocConsumer<AuthBloc, AuthState>(builder: (_, state) {
+      return _buildSignInForm();
     }, listener: (_, state) {
       if (state is AuthDataLoadSuccess) {
-        name = state.auth.name!;
-        number = state.auth.phoneNumber!;
-        myId = state.auth.id!;
-        _getSettings();
+            name = state.auth.name!;
+            number = state.auth.phoneNumber!;
+            myId = state.auth.id!;
+            _getSettings();
 
       }
       if (state is AuthSigningIn) {
-        _isLoading = true;
+            _isLoading = true;
       }
       if (state is AuthLoginSuccess) {
-        context.read<AuthBloc>().add(AuthDataLoad());
+            context.read<AuthBloc>().add(AuthDataLoad());
       }
       if (state is AuthOperationFailure) {
-        _isLoading = false;
+            _isLoading = false;
 
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text(getTranslation("signin_error_message")),
-          backgroundColor: Colors.red.shade900,
-        ));
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              content: Text(getTranslation("signin_error_message")),
+              backgroundColor: Colors.red.shade900,
+            ));
       }
-    }));
+    }),
+          ],
+        ));
   }
 
   void signIn() async {
@@ -81,7 +128,7 @@ class _SigninScreenState extends State<SigninScreen> {
     // BlocProvider.of<AuthBloc>(context).add(AuthDataLoad());
   }
 
-  Widget _buildSigninForm() {
+  Widget _buildSignInForm() {
     return Stack(children: [
       BlocConsumer<SettingsBloc,SettingsState>(builder: (context, state) => Container(), listener: (context, state){
         if (state is SettingsLoadSuccess){
@@ -105,7 +152,76 @@ class _SigninScreenState extends State<SigninScreen> {
                       fontSize: 25,
                     ),
                   ),
+
                   Padding(
+                    padding: const EdgeInsets.only(left: 15, right: 15, top: 10),
+                    child: TextFormField(
+                      autofocus: true,
+                      maxLength: 9,
+                      maxLines: 1,
+                      cursorColor: themeProvider.getColor,
+                      keyboardType: const TextInputType.numberWithOptions(
+                          signed: true, decimal: true),
+                      style: const TextStyle(fontSize: 18),
+                      enabled: phoneEnabled,
+                      decoration: InputDecoration(
+                        labelStyle: TextStyle(color: themeProvider.getColor),
+
+                        /*enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.red, width: 5.0),
+                        ),*/
+                        counterText: "",
+                        prefixIconConstraints:
+                        const BoxConstraints(minWidth: 0, minHeight: 0),
+                        alignLabelWithHint: true,
+                        //hintText: "Phone number",
+                        labelText:  Localization.of(context)
+                            .getTranslation("phone_number"),
+                        hintStyle: const TextStyle(
+                            fontWeight: FontWeight.bold, color: Colors.black45),
+                        prefixIcon: Padding(
+                          padding: const EdgeInsets.only(left: 5.0, right: 5.0),
+                          child: Text(
+                            "+251",
+                            style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: themeProvider.getColor),
+                          ),
+                        ),
+                        suffix: Text("$textLength/9"),
+                        fillColor: Colors.white,
+                        filled: true,
+                        border: const OutlineInputBorder(
+                            borderSide: BorderSide(style: BorderStyle.solid)),
+                      ),
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return  Localization.of(context)
+                              .getTranslation("phone_number_required");
+                        } else if (value.length < 9) {
+                          return  Localization.of(context)
+                              .getTranslation("phone_number_short");
+                        } else if (value.length > 9) {
+                          return  Localization.of(context)
+                              .getTranslation("phone_number_exceed");
+                        } else if(value.length == 9){
+                          return null;
+                        }
+                        return null;
+                      },
+                      onChanged: (value) {
+                        if (value.length >= 9) {}
+                        setState(() {
+                          textLength = value.length;
+                        });
+                      },
+                      onSaved: (value) {
+                        _auth["phoneNumber"] = "+251$value";
+                      },
+                    ),
+                  ),
+                  /*Padding(
                     padding: const EdgeInsets.all(10),
                     child: InternationalPhoneNumberInput(
                       onSaved: (value) {
@@ -140,6 +256,7 @@ class _SigninScreenState extends State<SigninScreen> {
                               borderSide: BorderSide.none)),
                     ),
                   ),
+                  */
                   Padding(
                     padding: const EdgeInsets.all(10),
                     child: TextFormField(
@@ -303,6 +420,9 @@ class _SigninScreenState extends State<SigninScreen> {
   String getTranslation(String key) {
     return Localization.of(context).getTranslation(key);
   }
+
+  var textLength = 0;
+  var phoneEnabled = true;
 }
 
 

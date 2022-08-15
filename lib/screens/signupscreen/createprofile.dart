@@ -10,7 +10,6 @@ import 'package:passengerapp/rout.dart';
 import 'package:passengerapp/screens/screens.dart';
 import 'package:passengerapp/widgets/widgets.dart';
 // ignore: import_of_legacy_library_into_null_safe
-import 'package:email_validator/email_validator.dart';
 import 'package:provider/provider.dart';
 
 import '../../utils/waver.dart';
@@ -61,69 +60,112 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
   //         );
   //       });
   // }
-
+  late ThemeProvider themeProvider;
+  @override
+  void initState() {
+    themeProvider = Provider.of<ThemeProvider>(context, listen: false);
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: BlocConsumer<UserBloc, UserState>(
-      listener: (_, state) {
-        if (state is UserLoading) {
-          _isLoading = true;
-        }
-        if (state is UsersLoadSuccess) {
-          _isLoading = false;
-          showDialog(
-              barrierDismissible: false,
-              context: context,
-              builder: (BuildContext con) => WillPopScope(
-                  onWillPop: () async => false,
-                  child: BlocListener<AuthBloc, AuthState>(
-                    listener: (context, state) {
-                      if (state is AuthDataLoadSuccess) {
-                        name = state.auth.name!;
-                        number = state.auth.phoneNumber!;
-                        myId = state.auth.id!;
-                        Navigator.pop(con);
-
-                        context.read<SettingsBloc>().add(SettingsStarted());
-                      }
-                    },
-                    child: AlertDialog(
-                      title: Text(getTranslation(context,
-                          "create_profile_register_successful_dialog_title")),
-                      content: Text.rich(TextSpan(
-                        text: getTranslation(context,
-                            "create_profile_register_successful_dialog_text"),
-                      )),
-                      actions: [
-                        TextButton(
-                            onPressed: () {
-                              BlocProvider.of<AuthBloc>(context)
-                                  .add(AuthDataLoad());
-                            },
-                            child:
-                                Text(getTranslation(context, "okay_action"))),
-                      ],
+        body: Stack(
+          children: [
+            Opacity(
+              opacity: 0.5,
+              child: ClipPath(
+                clipper: WaveClipper(),
+                child: Container(
+                  height: 180,
+                  color: themeProvider.getColor,
+                ),
+              ),
+            ),
+            ClipPath(
+              clipper: WaveClipper(),
+              child: Container(
+                height: 160,
+                color: themeProvider.getColor,
+              ),
+            ),
+            Opacity(
+              opacity: 0.5,
+              child: Align(
+                alignment: Alignment.bottomCenter,
+                child: Container(
+                  height: 100,
+                  color: themeProvider.getColor,
+                  child: ClipPath(
+                    clipper: WaveClipperBottom(),
+                    child: Container(
+                      height: 100,
+                      color: Colors.white,
                     ),
-                  )));
-        }
-        if (state is UserOperationFailure) {
-          _isLoading = false;
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text(getTranslation(
-                context, "create_profile_register_failure_message")),
-            backgroundColor: Colors.red.shade900,
-            action:
-                SnackBarAction(label: "Try Again", onPressed: createProfile),
-          ));
-        }
+                  ),
+                ),
+              ),
+            ),
+            BlocConsumer<UserBloc, UserState>(
+      listener: (_, state) {
+            if (state is UserLoading) {
+              _isLoading = true;
+            }
+            if (state is UsersLoadSuccess) {
+              _isLoading = false;
+              showDialog(
+                  barrierDismissible: false,
+                  context: context,
+                  builder: (BuildContext con) => WillPopScope(
+                      onWillPop: () async => false,
+                      child: BlocListener<AuthBloc, AuthState>(
+                        listener: (context, state) {
+                          if (state is AuthDataLoadSuccess) {
+                            name = state.auth.name!;
+                            number = state.auth.phoneNumber!;
+                            myId = state.auth.id!;
+                            Navigator.pop(con);
+
+                            context.read<SettingsBloc>().add(SettingsStarted());
+                          }
+                        },
+                        child: AlertDialog(
+                          title: Text(getTranslation(context,
+                              "create_profile_register_successful_dialog_title")),
+                          content: Text.rich(TextSpan(
+                            text: getTranslation(context,
+                                "create_profile_register_successful_dialog_text"),
+                          )),
+                          actions: [
+                            TextButton(
+                                onPressed: () {
+                                  BlocProvider.of<AuthBloc>(context)
+                                      .add(AuthDataLoad());
+                                },
+                                child:
+                                    Text(getTranslation(context, "okay_action"))),
+                          ],
+                        ),
+                      )));
+            }
+            if (state is UserOperationFailure) {
+              _isLoading = false;
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                content: Text(getTranslation(
+                    context, "create_profile_register_failure_message")),
+                backgroundColor: Colors.red.shade900,
+                action:
+                    SnackBarAction(label: "Try Again", onPressed: createProfile),
+              ));
+            }
       },
       builder: (_, state) {
-        return Scaffold(
-            // backgroundColor: const Color.fromRGBO(240, 241, 241, 1),
-            body: _buildProfileForm());
+            return Scaffold(
+                // backgroundColor: const Color.fromRGBO(240, 241, 241, 1),
+                body: _buildProfileForm());
       },
-    ));
+    ),
+          ],
+        ));
   }
 
   void createProfile() {

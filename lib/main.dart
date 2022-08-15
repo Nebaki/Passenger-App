@@ -192,8 +192,11 @@ void main() async {
 
   final SettingsRepository settingsRepository = SettingsRepository(
       settingsDataProvider: SettingsDataProvider(httpClient: http.Client()));
-
-  runApp(MyApp(
+  const secureStorage = FlutterSecureStorage();
+  String? theme = await secureStorage.read(key: "theme");
+  runApp(ChangeNotifierProvider(
+      create: (context) => ThemeProvider(theme: int.parse(theme ?? "3")),
+      child: MyApp(
     rideRequestRepository: rideRequestRepository,
     authRepository: authRepository,
     userRepository: userRepository,
@@ -208,7 +211,7 @@ void main() async {
     emergencyReportRepository: emergencyReportRepository,
     categoryRepository: categoryRepository,
     settingsRepository: settingsRepository,
-  ));
+  )));
 }
 
 class MyApp extends StatelessWidget {
@@ -344,7 +347,7 @@ class MyApp extends StatelessWidget {
                     SettingsBloc(settingsRepository: settingsRepository),
               )
             ],
-            child: BlocBuilder<ThemeModeCubit, ThemeMode>(
+            /*child: BlocBuilder<ThemeModeCubit, ThemeMode>(
               builder: ((context, themeModeState) =>
                   BlocBuilder<LocaleCubit, Locale>(
                     builder: (context, localeState) => MaterialApp(
@@ -377,6 +380,104 @@ class MyApp extends StatelessWidget {
                       onGenerateRoute: AppRoute.generateRoute,
                     ),
                   )),
-            )));
+            )*/
+            child: Consumer<ThemeProvider>(
+                builder: (context, themeProvider, child) =>
+          BlocBuilder<LocaleCubit, Locale>(
+            builder: (context, localeState) => MaterialApp(
+          locale: localeState,
+          localizationsDelegates: const [
+            Localization.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: const [
+            Locale('en', 'US'),
+            Locale('am', 'ET')
+          ],
+          localeResolutionCallback:
+              (deviceeLocal, supportedLocals) {
+            for (var locale in supportedLocals) {
+              if (locale.languageCode ==
+                  deviceeLocal!.languageCode &&
+                  locale.countryCode == deviceeLocal.countryCode) {
+                return deviceeLocal;
+              }
+            }
+            return supportedLocals.first;
+          },
+          title: 'Mobile Transport',
+          darkTheme: ThemesData.darkTheme,
+              theme: ThemeData(
+                  inputDecorationTheme: InputDecorationTheme(
+                      suffixIconColor: themeProvider.getColor,
+                      prefixIconColor: themeProvider.getColor,
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                            color: themeProvider.getColor, width: 2.0),
+                      ),
+                      focusColor: themeProvider.getColor),
+                  floatingActionButtonTheme: FloatingActionButtonThemeData(
+                      backgroundColor: Colors.white,
+                      sizeConstraints:
+                      const BoxConstraints(minWidth: 80, minHeight: 80),
+                      extendedPadding: const EdgeInsets.all(50),
+                      foregroundColor: themeProvider.getColor,
+                      extendedTextStyle: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 26,
+                          fontWeight: FontWeight.w300)),
+
+                  //F48221
+                  primaryColor: themeProvider.getColor,
+                  textTheme: const TextTheme(
+                      button: TextStyle(
+                        color: Color.fromRGBO(254, 79, 5, 1),
+                      ),
+                      subtitle1:
+                      TextStyle(color: Colors.black38, fontSize: 14),
+                      headline5: TextStyle(
+                          fontWeight: FontWeight.bold, fontSize: 24),
+                      bodyText2: TextStyle(
+                          color: Colors.black,
+                          fontSize: 16,
+                          fontWeight: FontWeight.normal)),
+                  iconTheme: const IconThemeData(
+                    color: Colors.white,
+                  ),
+                  textButtonTheme: TextButtonThemeData(
+                      style: ButtonStyle(
+                        foregroundColor:
+                        MaterialStateProperty.all<Color>(Colors.red),
+                        textStyle: MaterialStateProperty.all<TextStyle>(
+                            const TextStyle(color: Colors.black)),
+                      )),
+                  elevatedButtonTheme: ElevatedButtonThemeData(
+                    style: ButtonStyle(
+                        textStyle: MaterialStateProperty.all<TextStyle>(
+                            const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.normal,
+                                fontSize: 20)),
+                        backgroundColor: MaterialStateProperty.all<Color>(
+                            themeProvider.getColor),
+                        foregroundColor:
+                        MaterialStateProperty.all<Color>(Colors.white),
+                        shape:
+                        MaterialStateProperty.all<RoundedRectangleBorder>(
+                            RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ))),
+                  ),
+                  colorScheme: ColorScheme.fromSwatch(
+                    primarySwatch: Colors.orange,
+                  ).copyWith(secondary: Colors.grey.shade600)),
+          onGenerateRoute: AppRoute.generateRoute,
+        ),
+    )),
+    )
+
+    );
   }
 }

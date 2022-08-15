@@ -5,52 +5,104 @@ import 'package:passengerapp/helper/localization.dart';
 import 'package:passengerapp/rout.dart';
 import 'package:passengerapp/screens/signinscreen/signin.dart';
 import 'package:passengerapp/widgets/widgets.dart';
+import 'package:provider/provider.dart';
 
-class ResetPassword extends StatelessWidget {
+import '../../utils/waver.dart';
+import '../theme/theme_provider.dart';
+
+class ResetPassword extends StatefulWidget {
   final ResetPasswordArgument arg;
   ResetPassword({Key? key, required this.arg}) : super(key: key);
 
   static const routeName = "/resetpassword";
+
+  @override
+  State<ResetPassword> createState() => _ResetPasswordState();
+}
+
+class _ResetPasswordState extends State<ResetPassword> {
   final _formkey = GlobalKey<FormState>();
+
   final newPassword = TextEditingController();
+
   final Map<String, String> _forgetPasswordInfo = {};
+
   bool _isLoading = false;
+
+  late ThemeProvider themeProvider;
+
+  @override
+  void initState() {
+    themeProvider = Provider.of<ThemeProvider>(context, listen: false);
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // appBar: AppBar(
-      //   elevation: 0.3,
-      //   backgroundColor: Colors.white,
-      //   iconTheme: const IconThemeData(color: Colors.black),
-      //   title: Text(getTranslation(context, "reset_password")),
-      //   centerTitle: true,
-      // ),
-      body: BlocConsumer<UserBloc, UserState>(
-          builder: (context, state) => resetPasswordForm(context),
-          listener: (context, state) {
-            if (state is UserPasswordChanged) {
-              _isLoading = false;
+      body: Stack(
+        children: [
+          Opacity(
+            opacity: 0.5,
+            child: ClipPath(
+              clipper: WaveClipper(),
+              child: Container(
+                height: 180,
+                color: themeProvider.getColor,
+              ),
+            ),
+          ),
+          ClipPath(
+            clipper: WaveClipper(),
+            child: Container(
+              height: 160,
+              color: themeProvider.getColor,
+            ),
+          ),
+          Opacity(
+            opacity: 0.5,
+            child: Align(
+              alignment: Alignment.bottomCenter,
+              child: Container(
+                height: 100,
+                color: themeProvider.getColor,
+                child: ClipPath(
+                  clipper: WaveClipperBottom(),
+                  child: Container(
+                    height: 100,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ),
+          ),
+          BlocConsumer<UserBloc, UserState>(
+              builder: (context, state) => resetPasswordForm(context),
+              listener: (context, state) {
+                if (state is UserPasswordChanged) {
+                  _isLoading = false;
 
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                  content: Text(getTranslation(context, "password_changed")),
-                  backgroundColor: Colors.green.shade900));
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                      content: Text(getTranslation(context, "password_changed")),
+                      backgroundColor: Colors.green.shade900));
 
-              Navigator.pushNamedAndRemoveUntil(
-                context,
-                SigninScreen.routeName,
-                ((Route<dynamic> route) => false),
-              );
-              // Navigator.pop(context);
-            }
-            if (state is UserOperationFailure) {
-              _isLoading = false;
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                  content: Text(
-                      getTranslation(context, "operation_failure_message")),
-                  backgroundColor: Colors.red.shade900));
-            }
-          }),
+                  Navigator.pushNamedAndRemoveUntil(
+                    context,
+                    SigninScreen.routeName,
+                    ((Route<dynamic> route) => false),
+                  );
+                  // Navigator.pop(context);
+                }
+                if (state is UserOperationFailure) {
+                  _isLoading = false;
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                      content: Text(
+                          getTranslation(context, "operation_failure_message")),
+                      backgroundColor: Colors.red.shade900));
+                }
+              }),
+        ],
+      ),
     );
   }
 
@@ -146,7 +198,7 @@ class ResetPassword extends StatelessWidget {
                               if (form!.validate()) {
                                 form.save();
                                 _forgetPasswordInfo['phone_number'] =
-                                    arg.phoneNumber;
+                                    widget.arg.phoneNumber;
                                 forgetPassword(context);
                               }
                             },
