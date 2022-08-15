@@ -30,7 +30,7 @@ class _CustomSplashScreenState extends State<CustomSplashScreen> {
 
   @override
   void initState() {
-    if (context.read<ThemeModeCubit>().state == ThemeMode.system) {
+    /*if (context.read<ThemeModeCubit>().state == ThemeMode.system) {
       var window = WidgetsBinding.instance.window;
       window.onPlatformBrightnessChanged = () {
         if (window.platformBrightness == Brightness.dark) {
@@ -40,6 +40,7 @@ class _CustomSplashScreenState extends State<CustomSplashScreen> {
         }
       };
     }
+    */
     super.initState();
     _toggleInternetServiceStatusStream();
   }

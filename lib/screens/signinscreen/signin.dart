@@ -355,7 +355,7 @@ class _SigninScreenState extends State<SigninScreen> {
                                       width: 20,
                                       child: CircularProgressIndicator(
                                         strokeWidth: 2,
-                                        color: Colors.black,
+                                        color: Colors.white,
                                       ),
                                     )
                                   : Container(),
