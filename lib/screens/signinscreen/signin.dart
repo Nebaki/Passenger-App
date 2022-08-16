@@ -164,6 +164,7 @@ class _SigninScreenState extends State<SigninScreen> {
                     child: Text(
                       Localization.of(context).getTranslation("signin_title"),
                       style: const TextStyle(
+                        fontFamily: 'Sifonn',
                         fontSize: 25,
                       ),
                     ),
@@ -384,8 +385,7 @@ class _SigninScreenState extends State<SigninScreen> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text(getTranslation("singim_dont_have_an_account_text"),
-                            style: const TextStyle(fontSize: 16)),
+                        Text(getTranslation("singim_dont_have_an_account_text")),
                         InkWell(
                             onTap: () {
                               Navigator.pushNamed(

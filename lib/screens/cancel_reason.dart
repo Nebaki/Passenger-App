@@ -19,10 +19,10 @@ class _CancelReasonState extends State<CancelReason> {
   final List<String> _reasons = [
     "Driver isn't here",
     "Wrong address shown",
-    "Don't charge rider",
-    "Don't charge rider",
-    "Don't charge rider",
-    "Don't charge rider"
+    "Don't charge rider x",
+    "Don't charge rider y",
+    "Don't charge rider z",
+    "Don't charge rider b"
   ];
   String? groupValue;
   bool isLoading = false;
@@ -31,16 +31,17 @@ class _CancelReasonState extends State<CancelReason> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
+          backgroundColor: Theme.of(context).primaryColor,
           elevation: 0.3,
           leading: IconButton(
               onPressed: () {
                 Navigator.pop(context);
               },
               icon: const Icon(
-                Icons.clear,
+                Icons.clear,color: Colors.white,
               )),
-          title: Text(getTranslation(context, "cancel_trip")),
-          centerTitle: true,
+          title: Text(getTranslation(context, "cancel_trip"),style: TextStyle(color: Colors.white),),
+          centerTitle: false,
         ),
         body: BlocConsumer<RideRequestBloc, RideRequestState>(
             builder: ((context, state) => Padding(
@@ -50,27 +51,27 @@ class _CancelReasonState extends State<CancelReason> {
                     children: [
                       Column(
                         children: [
-                          _builReasonItem(
+                          _buildReasonItem(
                               context: context,
                               text: "Driver isn't here",
                               value: _reasons[0]),
-                          _builReasonItem(
+                          _buildReasonItem(
                               context: context,
                               text: "Wrong address shown",
                               value: _reasons[1]),
-                          _builReasonItem(
+                          _buildReasonItem(
                               context: context,
-                              text: "Don't charge rider",
+                              text: "Don't charge rider 2",
                               value: _reasons[2]),
-                          _builReasonItem(
+                          _buildReasonItem(
                               context: context,
-                              text: "Don't charge rider",
+                              text: "Don't charge rider 3",
                               value: _reasons[3]),
-                          _builReasonItem(
+                          _buildReasonItem(
                               context: context,
-                              text: "Don't charge rider",
+                              text: "Don't charge rider 4",
                               value: _reasons[4]),
-                          _builReasonItem(
+                          _buildReasonItem(
                               context: context,
                               text: "Don't charge rider",
                               value: _reasons[5]),
@@ -79,19 +80,9 @@ class _CancelReasonState extends State<CancelReason> {
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 30),
                         child: SizedBox(
-                            height: 60,
+                            height: 50,
                             width: MediaQuery.of(context).size.width,
                             child: ElevatedButton(
-                              style: ButtonStyle(
-                                backgroundColor:
-                                    MaterialStateProperty.all<Color>(
-                                        Colors.green),
-                                shape: MaterialStateProperty.all<
-                                        RoundedRectangleBorder>(
-                                    RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(20),
-                                )),
-                              ),
                               onPressed: groupValue != null
                                   ? isLoading
                                       ? null
@@ -153,7 +144,7 @@ class _CancelReasonState extends State<CancelReason> {
     BlocProvider.of<RideRequestBloc>(context).add(requestEvent);
   }
 
-  Widget _builReasonItem(
+  Widget _buildReasonItem(
       {required context, required String text, required String value}) {
     return Column(
       children: [

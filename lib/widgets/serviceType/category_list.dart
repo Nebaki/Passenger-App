@@ -111,8 +111,8 @@ class _CategoryListState extends State<CategoryList> {
         Container(
           decoration: _selectedIndex == index
               ? BoxDecoration(
-                  boxShadow: const [
-                      BoxShadow(color: Color.fromRGBO(244, 201, 60, 1)),
+                  boxShadow:  [
+                      BoxShadow(color: Theme.of(context).primaryColor),
                     ],
                   borderRadius: BorderRadius.circular(10),
                   border: Border.all(width: 0.5, color: Colors.black))

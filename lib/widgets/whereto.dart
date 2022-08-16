@@ -37,7 +37,7 @@ class _WhereToState extends State<WhereTo> {
       height: MediaQuery.of(context).size.height * 0.22,
       padding: const EdgeInsets.only(top: 10, bottom: 10),
       decoration: BoxDecoration(
-          color: Theme.of(context).backgroundColor,
+          color: Colors.white,
           borderRadius: const BorderRadius.only(
               topLeft: Radius.circular(20), topRight: Radius.circular(20))),
       child: Column(
@@ -56,7 +56,7 @@ class _WhereToState extends State<WhereTo> {
               children: [
                 Icon(
                   Icons.location_on,
-                  color: Colors.blue.shade600,
+                  color: Theme.of(context).primaryColor,
                 ),
                 const SizedBox(
                   width: 10,
@@ -96,7 +96,7 @@ class _WhereToState extends State<WhereTo> {
                         width: 150,
                         child: Text(
                           getTranslation(context, "where_to"),
-                          style: Theme.of(context).textTheme.titleLarge,
+                          style: TextStyle(color:Theme.of(context).primaryColor)
                         ),
                       ),
                     ),
@@ -130,7 +130,7 @@ class _WhereToState extends State<WhereTo> {
                         padding: const EdgeInsets.all(8.0),
                         child: Container(
                             decoration: BoxDecoration(
-                                color: Theme.of(context).backgroundColor,
+                                color: Colors.white,
                                 borderRadius: BorderRadius.circular(10),
                                 boxShadow: const [
                                   BoxShadow(
@@ -273,7 +273,7 @@ class _WhereToState extends State<WhereTo> {
 
   Widget _buildPredictedItem(LocationPrediction prediction) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
+      padding: const EdgeInsets.symmetric(horizontal: 5),
       child: GestureDetector(
         onTap: () {
           if (droppOffLocationNode.hasFocus) {
@@ -305,7 +305,7 @@ class _WhereToState extends State<WhereTo> {
           child: Row(
             children: [
               Flexible(
-                  flex: 1,
+                  flex: 0,
                   child:
                       BlocBuilder<FavoriteLocationCubit, FavoriteLocationState>(
                     builder: ((context, state) {
@@ -332,7 +332,7 @@ class _WhereToState extends State<WhereTo> {
                                 ? Icons.favorite
                                 : Icons.favorite_border_outlined,
                             size: 20,
-                            color: isFav ? Colors.red : null,
+                            color: isFav ? Theme.of(context).primaryColor : Colors.black,
                           ),
                         );
                       }
@@ -523,7 +523,7 @@ class _WhereToState extends State<WhereTo> {
         isScrollControlled: true,
         context: context,
         enableDrag: true,
-        backgroundColor: Colors.white.withOpacity(0),
+        backgroundColor: Colors.white.withOpacity(0.5),
         builder: (BuildContext context) {
           return WillPopScope(
             onWillPop: () async {
@@ -540,8 +540,8 @@ class _WhereToState extends State<WhereTo> {
                   if (state is LocationPredictionLoadSuccess) {
                     return Positioned(
                       top: 180,
-                      left: 70,
-                      right: 70,
+                      left: 50,
+                      right: 50,
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(20),
                         child: Container(
@@ -549,7 +549,7 @@ class _WhereToState extends State<WhereTo> {
                           // height: 200,
                           constraints: const BoxConstraints(
                               maxHeight: 400, minHeight: 30),
-                          color: Theme.of(context).backgroundColor,
+                          color: Colors.white,
                           width: double.infinity,
                           child: ListView.separated(
                               physics: const ClampingScrollPhysics(),
@@ -578,8 +578,8 @@ class _WhereToState extends State<WhereTo> {
                       return state.savedLocation.isNotEmpty
                           ? Positioned(
                               top: 180,
-                              left: 70,
-                              right: 70,
+                              left: 50,
+                              right: 50,
                               child: ClipRRect(
                                 borderRadius: BorderRadius.circular(20),
                                 child: Container(
@@ -588,7 +588,7 @@ class _WhereToState extends State<WhereTo> {
                                   // height: 200,
                                   constraints: const BoxConstraints(
                                       maxHeight: 400, minHeight: 30),
-                                  color: Theme.of(context).backgroundColor,
+                                  color: Colors.white,
                                   width: double.infinity,
                                   child: ListView.separated(
                                       physics: const ClampingScrollPhysics(),
@@ -619,37 +619,50 @@ class _WhereToState extends State<WhereTo> {
                     top: 80,
                     child: Column(
                       children: [
-                        SizedBox(
-                          height: 60,
-                          child: TextFormField(
-                            onChanged: (value) {
-                              findPlace(value);
-                            },
-                            focusNode: pickupLocationNode,
-                            controller: pickupController,
-                            decoration: InputDecoration(
-                                suffixIcon: IconButton(
-                                    onPressed: () {
-                                      pickupController.clear();
-                                    },
-                                    icon: const Icon(
-                                      Icons.clear,
-                                      size: 15,
-                                    )),
-                                hintText: getTranslation(
-                                    context, "pickup_address_hint_text"),
-                                prefixIcon: const Padding(
-                                  padding: EdgeInsets.only(left: 20, right: 10),
-                                  child: Icon(
-                                    Icons.location_on,
-                                    color: Colors.blue,
+                        Container(
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(5),
+                              boxShadow: const [
+                                BoxShadow(
+                                  color: Colors.white,
+                                  //blurRadius: 2,
+                                  //spreadRadius: 2,
+                                  //offset: Offset(0, 4)
+                                )
+                              ]
+                          ),
+                          height: 55,
+                          child: Center(
+                            child: TextFormField(
+                              onChanged: (value) {
+                                findPlace(value);
+                              },
+                              focusNode: pickupLocationNode,
+                              controller: pickupController,
+                              decoration: InputDecoration(
+                                  suffixIcon: IconButton(
+                                      onPressed: () {
+                                        pickupController.clear();
+                                      },
+                                      icon: const Icon(
+                                        Icons.clear,
+                                        size: 15,
+                                      )),
+                                  hintText: getTranslation(
+                                      context, "pickup_address_hint_text"),
+                                  prefixIcon: const Padding(
+                                    padding: EdgeInsets.only(left: 20, right: 10),
+                                    child: Icon(
+                                      Icons.location_on,
+                                      color: Colors.blue,
+                                    ),
                                   ),
-                                ),
-                                // fillColor: Colors.white,
-                                filled: true,
-                                border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(10),
-                                    borderSide: BorderSide.none)),
+                                  // fillColor: Colors.white,
+                                  filled: true,
+                                  border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                      borderSide: BorderSide.none)),
+                            ),
                           ),
                         ),
                         const SizedBox(
@@ -657,33 +670,37 @@ class _WhereToState extends State<WhereTo> {
                         ),
                         Container(
                           decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(20),
+                              borderRadius: BorderRadius.circular(5),
                               boxShadow: const [
                                 BoxShadow(
-                                    color: Colors.black38,
-                                    blurRadius: 4,
-                                    spreadRadius: 2,
-                                    offset: Offset(0, 4))
-                              ]),
-                          height: 60,
-                          child: TextFormField(
-                            focusNode: droppOffLocationNode,
-                            onChanged: (value) {
-                              findPlace(value);
-                            },
-                            decoration: InputDecoration(
-                                hintText: getTranslation(
-                                    context, "droppoff_address_hint_text"),
-                                prefixIcon: const Padding(
-                                  padding: EdgeInsets.only(left: 20, right: 10),
-                                  child: Icon(Icons.location_on,
-                                      color: Colors.green),
-                                ),
-                                // fillColor: Colors.white,
-                                filled: true,
-                                border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(10),
-                                    borderSide: BorderSide.none)),
+                                    color: Colors.white,
+                                    //blurRadius: 2,
+                                    //spreadRadius: 2,
+                                    //offset: Offset(0, 4)
+                                )
+                              ]
+                          ),
+                          height: 50,
+                          child: Center(
+                            child: TextFormField(
+                              focusNode: droppOffLocationNode,
+                              onChanged: (value) {
+                                findPlace(value);
+                              },
+                              decoration: InputDecoration(
+                                  hintText: getTranslation(
+                                      context, "droppoff_address_hint_text"),
+                                  prefixIcon: const Padding(
+                                    padding: EdgeInsets.only(left: 20, right: 10),
+                                    child: Icon(Icons.location_on,
+                                        color: Colors.green),
+                                  ),
+                                  // fillColor: Colors.white,
+                                  filled: true,
+                                  border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                      borderSide: BorderSide.none)),
+                            ),
                           ),
                         ),
                       ],

@@ -306,20 +306,18 @@ class _HomeScreenState extends State<HomeScreen> {
                     : outerController.setMapStyle('[]');
               }),
           Padding(
-            padding: const EdgeInsets.only(top: 40, left: 10),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(100),
-              child: Container(
-                color: Colors.black,
-                child: IconButton(
-                  onPressed: () => _scaffoldKey.currentState!.openDrawer(),
-                  icon: const Icon(
-                    Icons.format_align_center,
-                    size: 20,
-                    color: Colors.white,
+            padding: const EdgeInsets.only(top: 50),
+            child: SizedBox(
+              height: 45,
+              child: FloatingActionButton(
+                    elevation: 5,
+                    onPressed: () => _scaffoldKey.currentState!.openDrawer(),
+                    child: Icon(
+                      Icons.format_align_center,
+                      size: 20,
+                      color: Theme.of(context).primaryColor,
+                    ),
                   ),
-                ),
-              ),
             ),
           ),
           Align(
@@ -596,7 +594,7 @@ class _HomeScreenState extends State<HomeScreen> {
         jointType: JointType.round,
         startCap: Cap.roundCap,
         endCap: Cap.roundCap,
-        color: Theme.of(context).canvasColor,
+        color: Theme.of(context).primaryColor,
         geodesic: true,
         points: polylineCoordinates);
 
@@ -934,10 +932,13 @@ class _HomeScreenState extends State<HomeScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   FilterChip(
-                      backgroundColor: Theme.of(context).backgroundColor,
-                      label: Text(
-                        getTranslation(context, "truck"),
-                        style: Theme.of(context).textTheme.titleMedium,
+                      backgroundColor: Theme.of(context).primaryColor,
+                      label: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          getTranslation(context, "truck"),
+                          style: TextStyle(color: Colors.white),
+                        ),
                       ),
                       onSelected: (selexted) {
                         selectedCar = SelectedCar.truck;
@@ -945,10 +946,13 @@ class _HomeScreenState extends State<HomeScreen> {
                         Navigator.pop(context);
                       }),
                   FilterChip(
-                      backgroundColor: Theme.of(context).backgroundColor,
-                      label: Text(
-                        getTranslation(context, "taxi"),
-                        style: Theme.of(context).textTheme.titleMedium,
+                      backgroundColor: Theme.of(context).primaryColor,
+                      label: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          getTranslation(context, "taxi"),
+                          style: TextStyle(color: Colors.white),
+                        ),
                       ),
                       onSelected: (selexted) {
                         selectedCar = SelectedCar.taxi;

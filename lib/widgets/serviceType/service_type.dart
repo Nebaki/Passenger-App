@@ -128,7 +128,7 @@ class _ServiceState extends State<Service> {
           padding:
               const EdgeInsets.only(top: 10, left: 10, right: 10, bottom: 20),
           decoration: BoxDecoration(
-              color: Theme.of(context).backgroundColor,
+              color: Colors.white,
               borderRadius: const BorderRadius.only(
                   topLeft: Radius.circular(20),
                   topRight: Radius.circular(20))),
@@ -182,63 +182,66 @@ class _ServiceState extends State<Service> {
                                 SelectedCategoryState>(
                             builder: (context, categoryState) {
                           if (categoryState is CategoryChanged) {
-                            return ElevatedButton(
-                              onPressed: () {
-                                final l = searchNearbyDriversList(
-                                    categoryState.category.name);
-                                if (widget.ignoreLastDrivers) {
-                                  nextDrivers = nextDrivers!
-                                      .toSet()
-                                      .difference(l!.toSet())
-                                      .toList()
-                                      .take(3)
-                                      .toList();
-                                } else {
-                                  if (l!.length > 3) {
-                                    nextDrivers = l.take(3).toList();
+                            return SizedBox(
+                              height: 50,
+                              child: ElevatedButton(
+                                onPressed: () {
+                                  final l = searchNearbyDriversList(
+                                      categoryState.category.name);
+                                  if (widget.ignoreLastDrivers) {
+                                    nextDrivers = nextDrivers!
+                                        .toSet()
+                                        .difference(l!.toSet())
+                                        .toList()
+                                        .take(3)
+                                        .toList();
                                   } else {
-                                    nextDrivers = l;
+                                    if (l!.length > 3) {
+                                      nextDrivers = l.take(3).toList();
+                                    } else {
+                                      nextDrivers = l;
+                                    }
                                   }
-                                }
-              
-                                if (nextDrivers!.isNotEmpty) {
-                                  DriverEvent event =
-                                      DriverLoad(nextDrivers!.first);
-                                  BlocProvider.of<DriverBloc>(context)
-                                      .add(event);
-                                } else {
-                                  BlocProvider.of<DriverBloc>(context)
-                                      .add(DriverSetNotFound());
-                                }
-                              },
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  const Spacer(),
-                                  Text(
-                                    _isLoading
-                                        ? getTranslation(context, "sending")
-                                        : getTranslation(
-                                            context, "send_request"),
-                                    style: const TextStyle(
-                                        color: Colors.black,
-                                        fontWeight: FontWeight.normal),
-                                  ),
-                                  const Spacer(),
-                                  Align(
-                                    alignment: Alignment.centerRight,
-                                    child: _isLoading
-                                        ? const SizedBox(
-                                            height: 20,
-                                            width: 20,
-                                            child: CircularProgressIndicator(
-                                              strokeWidth: 2,
-                                              color: Colors.black,
-                                            ),
-                                          )
-                                        : Container(),
-                                  )
-                                ],
+
+                                  if (nextDrivers!.isNotEmpty) {
+                                    DriverEvent event =
+                                        DriverLoad(nextDrivers!.first);
+                                    BlocProvider.of<DriverBloc>(context)
+                                        .add(event);
+                                  } else {
+                                    BlocProvider.of<DriverBloc>(context)
+                                        .add(DriverSetNotFound());
+                                  }
+                                },
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    const Spacer(),
+                                    Text(
+                                      _isLoading
+                                          ? getTranslation(context, "sending")
+                                          : getTranslation(
+                                              context, "send_request"),
+                                      style: const TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.normal),
+                                    ),
+                                    const Spacer(),
+                                    Align(
+                                      alignment: Alignment.centerRight,
+                                      child: _isLoading
+                                          ? const SizedBox(
+                                              height: 20,
+                                              width: 20,
+                                              child: CircularProgressIndicator(
+                                                strokeWidth: 2,
+                                                color: Colors.white,
+                                              ),
+                                            )
+                                          : Container(),
+                                    )
+                                  ],
+                                ),
                               ),
                             );
                           }
@@ -257,7 +260,7 @@ class _ServiceState extends State<Service> {
                           child: Text(
                             getTranslation(context, "finding_nearby_driver"),
                             style: const TextStyle(
-                                color: Colors.black,
+                                color: Colors.white,
                                 fontWeight: FontWeight.normal),
                           ),
                         );
@@ -268,7 +271,7 @@ class _ServiceState extends State<Service> {
                           child: Text(
                             getTranslation(context, "no_driver_found"),
                             style: const TextStyle(
-                                color: Colors.black,
+                                color: Colors.white,
                                 fontWeight: FontWeight.normal),
                           ),
                         );
@@ -279,7 +282,7 @@ class _ServiceState extends State<Service> {
                           child: Text(
                             getTranslation(context, "no_driver_found"),
                             style: const TextStyle(
-                                color: Colors.black,
+                                color: Colors.white,
                                 fontWeight: FontWeight.normal),
                           ),
                         );
@@ -291,7 +294,7 @@ class _ServiceState extends State<Service> {
                         child: Text(
                           getTranslation(context, "please_select_car_type"),
                           style: const TextStyle(
-                              color: Colors.black,
+                              color: Colors.white,
                               fontWeight: FontWeight.normal),
                         ),
                       );

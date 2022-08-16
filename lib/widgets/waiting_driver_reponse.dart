@@ -54,7 +54,7 @@ class _WaitingDriverResponseState extends State<WaitingDriverResponse> {
         children: [
           Container(
             decoration: BoxDecoration(
-                color: Theme.of(context).backgroundColor,
+                color: Colors.white,
                 boxShadow: const [
                   BoxShadow(
                       blurRadius: 3,
