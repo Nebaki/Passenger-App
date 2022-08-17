@@ -23,34 +23,34 @@ class SettingScreen extends StatelessWidget {
     return Scaffold(
       body: CustomScrollView(
         slivers: [
-          BlocBuilder<ProfilePictureCubit,String>(
+          BlocBuilder<ProfilePictureCubit, String>(
             builder: (context, state) {
-                return SliverAppBar(
-                  floating: true,
-                  pinned: true,
-                  snap: false,
-                  expandedHeight: 150,
-                  flexibleSpace: FlexibleSpaceBar(
-                    background: CachedNetworkImage(
-                      imageUrl: state,
-                      imageBuilder: (context, imageProvider) => Container(
-                        decoration: BoxDecoration(
-                          image: DecorationImage(
-                            image: imageProvider,
-                            fit: BoxFit.cover,
-                          ),
+              return SliverAppBar(
+                floating: true,
+                pinned: true,
+                iconTheme: IconThemeData(color: Colors.white),
+                snap: false,
+                expandedHeight: 150,
+                backgroundColor: Theme.of(context).primaryColor,
+                flexibleSpace: FlexibleSpaceBar(
+                  background: CachedNetworkImage(
+                    imageUrl: state,
+                    imageBuilder: (context, imageProvider) => Container(
+                      decoration: BoxDecoration(
+                        image: DecorationImage(
+                          image: imageProvider,
+                          fit: BoxFit.cover,
                         ),
                       ),
-                      placeholder: (context, url) =>
-                          const CircularProgressIndicator(),
-                      errorWidget: (context, url, error) =>
-                          const Icon(Icons.person,size: 85),
                     ),
-                    title: Text(getTranslation(context, "settings")),
+                    placeholder: (context, url) =>
+                        const SizedBox(height: 60,width: 60,child: CircularProgressIndicator()),
+                    errorWidget: (context, url, error) =>
+                        const Icon(Icons.person, size: 85),
                   ),
-                );
-
-
+                  title: Text(getTranslation(context, "settings")),
+                ),
+              );
             },
           ),
           BlocBuilder<AuthBloc, AuthState>(builder: ((context, state) {
@@ -103,9 +103,8 @@ class SettingScreen extends StatelessWidget {
       BuildContext context, String title, AuthDataLoadSuccess state) {
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 0),
-
       child: Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
+        padding: const EdgeInsets.symmetric(horizontal: 20),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -118,89 +117,133 @@ class SettingScreen extends StatelessWidget {
               style: Theme.of(context)
                   .textTheme
                   .titleLarge!
-                  .copyWith(color: Colors.blueAccent),
+                  .copyWith(color: Theme.of(context).primaryColor),
             ),
-             const SizedBox(
+            const SizedBox(
               height: 20,
             ),
-            ListTile(
-              horizontalTitleGap: 0,
-minVerticalPadding: 0,
+            GestureDetector(
               onTap: () {
                 _navigateToEditProfileScreen(context, state);
               },
-              contentPadding: EdgeInsets.zero,
-              title: Text(
-                state.auth.phoneNumber??"loading",
-              ),
-              subtitle:
-                  Text(getTranslation(context, "tap_to_change_phone_number")),
-            ),
-           const Divider(
-             height: 0,
-            ),
-            ListTile(
-                            isThreeLine: false,
-minVerticalPadding: 0,
-              onTap: () {
-                _navigateToEditProfileScreen(context, state);
-              },
-              contentPadding: EdgeInsets.zero,
-              title: Text(
-                state.auth.name??"loading",
-              ),
-              subtitle: Text(getTranslation(context, "name_textfield_hint_text")),
+              child: _settingItem(
+                  context,
+                  Icons.phone,
+                  getTranslation(context, "tap_to_change_phone_number"),
+                  state.auth.phoneNumber ?? "loading"),
             ),
             const Divider(
               height: 0,
             ),
-            ListTile(
+            GestureDetector(
               onTap: () {
                 _navigateToEditProfileScreen(context, state);
               },
-              contentPadding: EdgeInsets.zero,
-              title: Text(
-                state.auth.email??"loading",
-              ),
-              subtitle:
-                  Text(getTranslation(context, "email_textfield_hint_text")),
+              child: _settingItem(
+                  context,
+                  Icons.person,
+                  getTranslation(context, "name_textfield_hint_text"),
+                  state.auth.name ?? "loading"),
             ),
-             const Divider(
+            const Divider(
               height: 0,
             ),
-            ListTile(
+            GestureDetector(
               onTap: () {
                 _navigateToEditProfileScreen(context, state);
               },
-              contentPadding: EdgeInsets.zero,
-              title: Text(
-                state.auth.emergencyContact??"loading",
-              ),
-              subtitle: Text(
-                  getTranslation(context, "emergency_contact_number_hint_text")),
+              child: _settingItem(
+                  context,
+                  Icons.email,
+                  getTranslation(context, "email_textfield_hint_text"),
+                  state.auth.email ?? "loading"),
             ),
-              const  Divider(
+            const Divider(
               height: 0,
             ),
-            ListTile(
+            GestureDetector(
+              onTap: () {
+                _navigateToEditProfileScreen(context, state);
+              },
+              child: _settingItem(
+                  context,
+                  Icons.emergency,
+                  getTranslation(context, "emergency_contact_number_hint_text"),
+                  state.auth.emergencyContact ?? "loading"),
+            ),
+            const Divider(
+              height: 0,
+            ),
+            GestureDetector(
               onTap: () {
                 Navigator.pushNamed(context, ChangePassword.routeName);
               },
-              contentPadding: EdgeInsets.zero,
-              title: Text(
-                getTranslation(context, "change_password"),
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Center(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).primaryColor,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(15.0),
+                      child: Text(
+                        getTranslation(context, "change_password"),
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
+                  ),
+                ),
               ),
-            ),
+            )
           ],
         ),
       ),
     );
   }
 
+  Widget _settingItem(
+      BuildContext context, IconData iconData, String title, String value) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          title != ""
+              ? Row(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(5.0),
+                      child: Text(title,
+                          style: TextStyle(
+                            fontSize: 11,
+                            //color: Theme.of(context).primaryColor
+                          )),
+                    ),
+                  ],
+                )
+              : Container(),
+          Row(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(5.0),
+                child: Icon(iconData, color: Colors.black),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(5.0),
+                child: Text(value),
+              )
+            ],
+          )
+        ],
+      ),
+    );
+  }
+
   Widget _buildLegalItems(BuildContext context, String title) {
     return Card(
-            margin: const EdgeInsets.symmetric(horizontal: 0),
-
+      margin: const EdgeInsets.symmetric(horizontal: 0),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 20),
         child: Column(
@@ -215,9 +258,18 @@ minVerticalPadding: 0,
               style: Theme.of(context)
                   .textTheme
                   .titleLarge!
-                  .copyWith(color: Colors.blueAccent),
+                  .copyWith(color: Theme.of(context).primaryColor),
             ),
-            ListTile(
+            GestureDetector(
+              onTap: () {
+
+              },
+              child: _settingItem(
+                  context,
+                  Icons.contact_mail,"",
+                  getTranslation(context, "contact_us")),
+            ),
+            /*ListTile(
               contentPadding: EdgeInsets.zero,
               leading: const Icon(
                 Icons.contact_mail,
@@ -227,47 +279,43 @@ minVerticalPadding: 0,
               title: Text(
                 getTranslation(context, "contact_us"),
               ),
-            ),
-             const Divider(
+            ),*/
+            const Divider(
               height: 0,
             ),
-            ListTile(
-              leading: const Icon(Icons.privacy_tip_outlined),
-              minLeadingWidth: 0,
-              contentPadding: EdgeInsets.zero,
-              title: Text(
-                getTranslation(context, "privacy_policy"),
-              ),
-            ),
-             const Divider(
-              height: 0,
-            ),
-            ListTile(
-              leading: const Icon(Icons.present_to_all_sharp),
-              minLeadingWidth: 0,
-              contentPadding: EdgeInsets.zero,
-              title: Text(
-                getTranslation(context, "terms_and_conditions"),
-              ),
-            ),
-             const Divider(
-              height: 0,
-            ),
-            ListTile(
+            GestureDetector(
               onTap: () {
-                Navigator.pushNamed(context, Language.routName,
-                    arguments: LanguageArgument(
-                        index: context.read<LocaleCubit>().state ==
-                                const Locale("en", "US")
-                            ? 1
-                            : 0));
+
               },
-              leading: const Icon(Icons.language),
-              minLeadingWidth: 0,
-              contentPadding: EdgeInsets.zero,
-              title: Text(
-                getTranslation(context, "language"),
-              ),
+              child: _settingItem(
+                  context,
+                  Icons.privacy_tip_outlined,"",
+                  getTranslation(context, "privacy_policy")),
+            ),
+            const Divider(
+              height: 0,
+            ),
+            GestureDetector(
+              onTap: () {
+
+              },
+              child: _settingItem(
+                  context,
+                  Icons.present_to_all_sharp,"",
+                  getTranslation(context, "terms_and_conditions")),
+            ),
+
+            const Divider(
+              height: 0,
+            ),
+            GestureDetector(
+              onTap: () {
+
+              },
+              child: _settingItem(
+                  context,
+                  Icons.language,"",
+                  getTranslation(context, "language")),
             ),
           ],
         ),
@@ -331,8 +379,7 @@ minVerticalPadding: 0,
 
   Widget _buildAboutUsItems(BuildContext context, String title) {
     return Card(
-                  margin: const EdgeInsets.symmetric(horizontal: 0),
-
+      margin: const EdgeInsets.symmetric(horizontal: 0),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 20),
         child: Column(
@@ -344,33 +391,38 @@ minVerticalPadding: 0,
             ),
             Text(
               title,
-              style: Theme.of(context)
-                  .textTheme
-                  .titleLarge!
-                  .copyWith(color: Colors.blueAccent),
-            ), const Divider(
+              style: TextStyle(color:Theme.of(context).primaryColor),
+            ),
+            const Divider(
               height: 0,
             ),
-            Text.rich(TextSpan(
-                text: "${getTranslation(context, "owned_by")}:\n  ",
-                children: const [
-                  TextSpan(
-                      text: " Safeway Transport",
-                      style: TextStyle(
-                          fontStyle: FontStyle.italic,
-                          fontWeight: FontWeight.w300))
-                ])),const  Divider(
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text.rich(TextSpan(
+                  text: "${getTranslation(context, "owned_by")}:\n  ",
+                  children: [
+                    TextSpan(
+                        text: " Safeway Transport",
+                        style: TextStyle(color: Theme.of(context).primaryColor,
+                            fontStyle: FontStyle.italic,
+                            fontWeight: FontWeight.w300))
+                  ])),
+            ),
+            const Divider(
               height: 0,
             ),
-            Text.rich(TextSpan(
-                text: "${getTranslation(context, "developerd_by")}:\n  ",
-                children: const [
-                  TextSpan(
-                      text: " Vintage Technologies",
-                      style: TextStyle(
-                          fontStyle: FontStyle.italic,
-                          fontWeight: FontWeight.w300))
-                ])),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text.rich(TextSpan(
+                  text: "${getTranslation(context, "developerd_by")}:\n  ",
+                  children: [
+                    TextSpan(
+                        text: " Vintage Technologies",
+                        style: TextStyle(color: Theme.of(context).primaryColor,
+                            fontStyle: FontStyle.italic,
+                            fontWeight: FontWeight.w300))
+                  ])),
+            ),
           ],
         ),
       ),
@@ -379,8 +431,7 @@ minVerticalPadding: 0,
 
   Widget _buildAppinfoItems(BuildContext context, String title) {
     return Card(
-                  margin: const EdgeInsets.symmetric(horizontal: 0),
-
+      margin: const EdgeInsets.symmetric(horizontal: 0),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 20),
         child: Column(
@@ -392,51 +443,59 @@ minVerticalPadding: 0,
             ),
             Text(
               title,
-              style: Theme.of(context)
-                  .textTheme
-                  .titleLarge!
-                  .copyWith(color: Colors.blueAccent),
-            ), const Divider(
+              style: TextStyle(color: Theme.of(context).primaryColor),
+            ),
+            const Divider(
               height: 0,
             ),
-            Text.rich(TextSpan(
-                text: "${getTranslation(context, "build_name")}: ",
-                children: const [
-                  TextSpan(
-                      text: " SafeWay",
-                      style: TextStyle(
-                          fontStyle: FontStyle.italic,
-                          fontWeight: FontWeight.w300))
-                ])), const Divider(
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text.rich(TextSpan(
+                  text: "${getTranslation(context, "build_name")}: ",
+                  children: const [
+                    TextSpan(
+                        text: " SafeWay",
+                        style: TextStyle(
+                            fontStyle: FontStyle.italic,
+                            fontWeight: FontWeight.w300))
+                  ])),
+            ),
+            const Divider(
               height: 0,
             ),
-            Text.rich(TextSpan(
-                text: "${getTranslation(context, "app_version")}: ",
-                children: const [
-                  TextSpan(
-                      text: " 1.0",
-                      style: TextStyle(
-                          fontStyle: FontStyle.italic,
-                          fontWeight: FontWeight.w300))
-                ])), const Divider(
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text.rich(TextSpan(
+                  text: "${getTranslation(context, "app_version")}: ",
+                  children: const [
+                    TextSpan(
+                        text: " 1.0",
+                        style: TextStyle(
+                            fontStyle: FontStyle.italic,
+                            fontWeight: FontWeight.w300))
+                  ])),
+            ),
+            const Divider(
               height: 0,
             ),
-            Text.rich(TextSpan(
-                text: "${getTranslation(context, "build_number")}: ",
-                children: const [
-                  TextSpan(
-                      text: " 102034",
-                      style: TextStyle(
-                          fontStyle: FontStyle.italic,
-                          fontWeight: FontWeight.w300))
-                ])),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text.rich(TextSpan(
+                  text: "${getTranslation(context, "build_number")}: ",
+                  children: const [
+                    TextSpan(
+                        text: " 102034",
+                        style: TextStyle(
+                            fontStyle: FontStyle.italic,
+                            fontWeight: FontWeight.w300))
+                  ])),
+            ),
           ],
         ),
       ),
     );
   }
 }
-
 
 // Scaffold(
 //       appBar: AppBar(

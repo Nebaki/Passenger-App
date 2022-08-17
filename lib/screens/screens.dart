@@ -21,4 +21,4 @@ export 'review/review.dart';
 export 'savedadress/add_address.dart';
 export 'locationchanger/location_changer.dart';
 export 'settings/language.dart';
-export 'award/award.dart';
+export 'award/awards.dart';

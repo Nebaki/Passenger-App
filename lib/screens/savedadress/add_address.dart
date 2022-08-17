@@ -9,6 +9,7 @@ import 'package:passengerapp/rout.dart';
 import 'package:passengerapp/widgets/widgets.dart';
 import '../../bloc/bloc.dart';
 import '../../models/models.dart';
+import '../../utils/waver.dart';
 
 class AddAddressScreen extends StatefulWidget {
   static const routeName = 'addaddress';
@@ -39,12 +40,16 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
 
     super.initState();
   }
+  final _appBar = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
     // _isLoading = false;
 
     return Scaffold(
+        appBar: SafeAppBar(
+            key: _appBar, title: "Add Address",
+            appBar: AppBar(), widgets: []),
         body: BlocConsumer<FavoriteLocationCubit, FavoriteLocationState>(
             builder: (context, state) => _buildScreen(),
             listener: (context, state) {
@@ -86,7 +91,7 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
     return Stack(
       children: [
         Padding(
-          padding: const EdgeInsets.only(top: 80.0, left: 30, right: 90),
+          padding: const EdgeInsets.only(top: 20.0, left: 30, right: 30),
           child: ListView(
             children: [
               Form(
@@ -96,8 +101,8 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
                       widget.args.edit ? widget.args.savedLocation!.name : null,
                   decoration: InputDecoration(
                     label: Text(getTranslation(context, "name")),
-                    hintStyle: const TextStyle(
-                        fontWeight: FontWeight.bold, color: Colors.black45),
+                    labelStyle: TextStyle(
+                        fontWeight: FontWeight.bold, color: Theme.of(context).primaryColor),
                     fillColor: Colors.white,
                     // filled: true,
                   ),
@@ -130,8 +135,8 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
                         Icons.clear,
                         size: 15,
                       )),
-                  hintStyle: const TextStyle(
-                      fontWeight: FontWeight.bold, color: Colors.black45),
+                  labelStyle: TextStyle(
+                      fontWeight: FontWeight.bold, color: Theme.of(context).primaryColor),
                   fillColor: Colors.white,
                 ),
                 validator: (value) {
@@ -221,60 +226,63 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
                   return Container();
                 },
               ),
-              ElevatedButton(
-                onPressed: placeId != null
-                    ? () {
-                        final form = _formState.currentState;
-                        if (form!.validate()) {
-                          form.save();
-                          _isLoading = true;
+              SizedBox(
+                height: 50,
+                child: ElevatedButton(
+                  onPressed: placeId != null
+                      ? () {
+                          final form = _formState.currentState;
+                          if (form!.validate()) {
+                            form.save();
+                            _isLoading = true;
 
-                          widget.args.edit
-                              ? context
-                                  .read<FavoriteLocationCubit>()
-                                  .updateFavoriteLocation(SavedLocation(
-                                      id: widget.args.savedLocation!.id,
-                                      name: name!,
-                                      address: address!,
-                                      placeId: placeId!))
-                              : context
-                                  .read<FavoriteLocationCubit>()
-                                  .addToFavoriteLocation(SavedLocation(
-                                      name: name!,
-                                      address: address!,
-                                      placeId: placeId!));
+                            widget.args.edit
+                                ? context
+                                    .read<FavoriteLocationCubit>()
+                                    .updateFavoriteLocation(SavedLocation(
+                                        id: widget.args.savedLocation!.id,
+                                        name: name!,
+                                        address: address!,
+                                        placeId: placeId!))
+                                : context
+                                    .read<FavoriteLocationCubit>()
+                                    .addToFavoriteLocation(SavedLocation(
+                                        name: name!,
+                                        address: address!,
+                                        placeId: placeId!));
+                          }
                         }
-                      }
-                    : null,
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Spacer(),
-                    Text(
-                      getTranslation(context, "save"),
-                    ),
-                    const Spacer(),
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: _isLoading
-                          ? const SizedBox(
-                              height: 20,
-                              width: 20,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                color: Colors.black,
-                              ),
-                            )
-                          : Container(),
-                    )
-                  ],
+                      : null,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Spacer(),
+                      Text(
+                        getTranslation(context, "save"),
+                      ),
+                      const Spacer(),
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: _isLoading
+                            ? const SizedBox(
+                                height: 20,
+                                width: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: Colors.white,
+                                ),
+                              )
+                            : Container(),
+                      )
+                    ],
+                  ),
                 ),
               ),
             ],
           ),
         ),
-        const CustomeBackArrow(),
+        //const CustomeBackArrow(),
       ],
     );
   }

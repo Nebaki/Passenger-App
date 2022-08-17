@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:equatable/equatable.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -23,9 +25,10 @@ class RideRequest extends Equatable {
   final String? direction;
   final String? date;
   final String? time;
+  Uint8List? picture;
   final DriverModel? driver;
 
-  const RideRequest(
+  RideRequest(
       {this.id,
       this.date,
       this.time,
@@ -43,7 +46,8 @@ class RideRequest extends Equatable {
       this.passengerName,
       this.pickupLocation,
       this.dropOffLocation,
-      this.driver});
+      this.driver,
+      this.picture});
 
   @override
   List<Object?> get props =>
@@ -68,7 +72,8 @@ class RideRequest extends Equatable {
         price: json['price'].toString(),
         distance: json['distance'].toString(),
         date: DateFormat.yMMMEd().format(now),
-        time: DateFormat.jm().format(now));
+        time: DateFormat.jm().format(now)
+    );
   }
 
   @override

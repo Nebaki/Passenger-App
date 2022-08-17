@@ -12,15 +12,30 @@ import 'package:passengerapp/rout.dart';
 import 'package:passengerapp/screens/screens.dart';
 import 'package:passengerapp/widgets/widgets.dart';
 import 'package:shimmer/shimmer.dart';
+import '../../utils/waver.dart';
 import '../home/assistant/home_screen_assistant.dart';
 
 class SavedAddress extends StatelessWidget {
   static const routeName = "/savedadresses";
+  final _appBar = GlobalKey<FormState>();
 
-  const SavedAddress({Key? key}) : super(key: key);
+  SavedAddress({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: SafeAppBar(
+          key: _appBar, title: getTranslation(context, "saved_addresses"),
+          appBar: AppBar(), widgets: [
+        IconButton(
+            onPressed: () {
+              Navigator.pushNamed(context, AddAddressScreen.routeName,
+                  arguments: AddAdressScreenArgument(edit: false));
+            },
+            icon: const Icon(
+              Icons.add,
+               color: Colors.white,
+            )),
+      ]),
       body: Stack(
         children: [
           Center(
@@ -30,13 +45,13 @@ class SavedAddress extends StatelessWidget {
                 return state.savedLocation.isEmpty
                     ? Container()
                     : Container(
-                        padding: const EdgeInsets.only(top: 80),
+                        padding: const EdgeInsets.only(top: 00),
                         child: Column(
                           children: [
                             Container(
                                 padding:
-                                    const EdgeInsets.symmetric(horizontal: 20),
-                                height: MediaQuery.of(context).size.height - 80,
+                                    const EdgeInsets.symmetric(horizontal: 5),
+                                height: MediaQuery.of(context).size.height - 100,
                                 child: ListView.builder(
                                     itemCount: state.savedLocation.length,
                                     itemBuilder: (context, index) {
@@ -47,9 +62,9 @@ class SavedAddress extends StatelessWidget {
                                             padding: const EdgeInsets.symmetric(
                                                 horizontal: 20),
                                             decoration: BoxDecoration(
-                                              color: const Color(0xFFFFE6E6),
+                                              color: Colors.white,
                                               borderRadius:
-                                                  BorderRadius.circular(15),
+                                                  BorderRadius.circular(10),
                                             ),
                                             child: Row(
                                               children: const [
@@ -110,7 +125,7 @@ class SavedAddress extends StatelessWidget {
               return _buildShimmer(context);
             }),
           ),
-          const CustomeBackArrow(),
+          /*const CustomeBackArrow(),
           Positioned(
             top: 40,
             right: 10,
@@ -133,6 +148,7 @@ class SavedAddress extends StatelessWidget {
                   style: Theme.of(context).textTheme.titleLarge,
                 )),
           )
+          */
         ],
       ),
     );
@@ -217,66 +233,70 @@ class SavedAddress extends StatelessWidget {
   }
 
   Widget _builHistoryCard(BuildContext context, SavedLocation? location) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: GestureDetector(
-        onTap: () {
-          _showModaLButtomSheet(context, location!);
-        },
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-          decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(20),
-              color: Theme.of(context).backgroundColor,
-              boxShadow: [
-                BoxShadow(
-                    blurStyle: BlurStyle.normal,
-                    color: Colors.grey.shade300,
-                    blurRadius: 5,
-                    spreadRadius: 2)
-              ]),
-          child: Column(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Flexible(
-                    flex: 4,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          location!.name,
-                          style: Theme.of(context).textTheme.overline,
-                        ),
-                        Text(
-                          location.address,
-                          style: Theme.of(context).textTheme.subtitle1,
-                        )
-                      ],
+    return Card(
+      elevation: 3,
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: GestureDetector(
+          onTap: () {
+            _showModaLButtomSheet(context, location!);
+          },
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 2),
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                color: Colors.white,
+                ),
+            child: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Flexible(
+                      flex: 4,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(5.0),
+                            child: Text(
+                              location!.name,
+                              //style: Theme.of(context).textTheme.overline,
+                            ),
+                          ),
+                          const Divider(),
+                          Padding(
+                            padding: const EdgeInsets.all(5.0),
+                            child: Text(
+                              location.address,
+                              //style: Theme.of(context).textTheme.subtitle1,
+                            ),
+                          )
+                        ],
+                      ),
                     ),
-                  ),
-                  Flexible(
-                    flex: 2,
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(10),
-                      child: Container(
-                          height: 30,
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 8, vertical: 2),
-                          color: const Color.fromRGBO(244, 201, 60, 1),
-                          child: const Icon(
-                            Icons.star,
-                            color: Colors.white,
-                            size: 15,
-                          )),
+                    Flexible(
+                      flex: 2,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(10),
+                        child: Container(
+                            height: 30,
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 2),
+                            color: const Color.fromRGBO(244, 201, 60, 1),
+                            child: const Icon(
+                              Icons.star,
+                              color: Colors.white,
+                              size: 15,
+                            )),
+                      ),
                     ),
-                  ),
-                ],
-              ),
-              const Divider(),
-              const SizedBox(height: 10),
-            ],
+                  ],
+                ),
+                //const Divider(),
+                //const SizedBox(height: 10),
+              ],
+            ),
           ),
         ),
       ),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:passengerapp/screens/screens.dart';
 import 'models/models.dart';
+import 'screens/award/lottery.dart';
 import 'screens/settings/pages/feedbacks.dart';
 import 'screens/settings/pages/privacy.dart';
 import 'screens/settings/pages/terms.dart';
@@ -43,7 +44,7 @@ class AppRoute {
               ));
     }
     if (settings.name == SavedAddress.routeName) {
-      return MaterialPageRoute(builder: (context) => const SavedAddress());
+      return MaterialPageRoute(builder: (context) =>  SavedAddress());
     }
     if (settings.name == HistoryPage.routeName) {
       return MaterialPageRoute(builder: (context) => const HistoryPage());
@@ -77,17 +78,26 @@ class AppRoute {
     if (settings.name == ChangePassword.routeName) {
       return MaterialPageRoute(builder: (context) => ChangePassword());
     }
-    if (settings.name == AwardScreen.routeName) {
-      return MaterialPageRoute(builder: (context) => const AwardScreen());
+    if (settings.name == LotteryScreen.routeName) {
+      return MaterialPageRoute(builder: (context) => LotteryScreen());
     }
     if (settings.name == DetailHistoryScreen.routeName) {
       DetailHistoryArgument argument =
-          settings.arguments as DetailHistoryArgument;
+      settings.arguments as DetailHistoryArgument;
       return MaterialPageRoute(
           builder: (context) => DetailHistoryScreen(
-                args: argument,
-              ));
+            args: argument,
+          ));
     }
+    if (settings.name == TripDetail.routeName) {
+      DetailHistoryArgument argument =
+      settings.arguments as DetailHistoryArgument;
+      return MaterialPageRoute(
+          builder: (context) => TripDetail(
+            args: argument,
+          ));
+    }
+
 
     if (settings.name == PreferenceScreen.routeNAme) {
       PreferenceArgument argument = settings.arguments as PreferenceArgument;

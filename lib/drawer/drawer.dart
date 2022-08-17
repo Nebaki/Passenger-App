@@ -12,6 +12,7 @@ import 'package:passengerapp/helper/localization.dart';
 import 'package:passengerapp/screens/screens.dart';
 import 'package:http/http.dart' as http;
 
+import '../screens/award/lottery.dart';
 import '../screens/theme/theme_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -231,7 +232,7 @@ class NavDrawer extends StatelessWidget {
                     GestureDetector(
                       onTap: () {
                         Navigator.popAndPushNamed(
-                            context, AwardScreen.routeName);
+                            context, LotteryScreen.routeName);
                       },
                       child: _menuItem(
                           divider: true,

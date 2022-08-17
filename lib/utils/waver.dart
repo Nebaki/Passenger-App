@@ -1,4 +1,8 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import '../screens/theme/theme_provider.dart';
 
 class WaveClipper extends CustomClipper<Path> {
   @override
@@ -102,4 +106,44 @@ class WaveClipperBottomD extends CustomClipper<Path> {
   bool shouldReclip(covariant CustomClipper<Path> oldClipper) {
     return true;
   }
+}
+
+class SafeAppBar extends StatelessWidget implements PreferredSizeWidget {
+  final String title;
+  final AppBar appBar;
+  final List<Widget> widgets;
+  final TabBar? bottom;
+  /// you can add more fields that meet your needs
+
+  const SafeAppBar({required Key key,
+    required this.title,
+    required this.appBar,
+    required this.widgets,
+    this.bottom})
+      : super(key: key);
+  @override
+  Widget build(BuildContext context) {
+    ThemeProvider themeProvider = Provider.of<ThemeProvider>(context, listen: false);
+    return AppBar(
+      elevation: 3,
+      bottom: bottom,
+      backgroundColor: themeProvider.getColor,
+      iconTheme: IconThemeData(color: Colors.white),
+      actions: [
+        for(var iconButton in widgets)
+          Padding(
+            padding: const EdgeInsets.all(3.0),
+            child: iconButton,
+          )
+      ],
+      title: Text(
+        title,
+        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+      ),
+      centerTitle: false,
+    );
+  }
+
+  @override
+  Size get preferredSize => Size.fromHeight(appBar.preferredSize.height);
 }

@@ -9,7 +9,9 @@ import 'package:passengerapp/helper/localization.dart';
 import 'package:passengerapp/repository/nearby_driver.dart';
 import 'package:passengerapp/screens/home/assistant/home_screen_assistant.dart';
 import 'package:passengerapp/widgets/widgets.dart';
+import '../../localization/localization.dart';
 import '../../models/models.dart';
+import '../../utils/waver.dart';
 
 class OrderForOtherScreen extends StatefulWidget {
   static const routeName = "/orderforothers";
@@ -45,7 +47,10 @@ class _OrderForOtherScreenState extends State<OrderForOtherScreen> {
     droppOffLocationNode.dispose();
     super.dispose();
   }
+  final _appBar = GlobalKey<FormState>();
 
+  var textLength = 0;
+  var phoneEnabled = true;
   @override
   Widget build(BuildContext context) {
     List<Step> steps = [
@@ -56,6 +61,7 @@ class _OrderForOtherScreenState extends State<OrderForOtherScreen> {
             key: _formKey,
             child: Column(
               children: [
+/*
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 10),
                   child: InternationalPhoneNumberInput(
@@ -82,6 +88,77 @@ class _OrderForOtherScreenState extends State<OrderForOtherScreen> {
                     inputBorder:
                         const OutlineInputBorder(borderSide: BorderSide.none),
                     spaceBetweenSelectorAndTextField: 0,
+                  ),
+                ),
+*/
+
+                Padding(
+                  padding:
+                  const EdgeInsets.only(left: 15, right: 15, top: 10),
+                  child: TextFormField(
+                    autofocus: true,
+                    maxLength: 9,
+                    maxLines: 1,
+                    cursorColor: Theme.of(context).primaryColor,
+                    keyboardType: const TextInputType.numberWithOptions(
+                        signed: true, decimal: true),
+                    style: const TextStyle(fontSize: 18),
+                    enabled: phoneEnabled,
+                    decoration: InputDecoration(
+                      labelStyle: TextStyle(color: Theme.of(context).primaryColor),
+
+                      /*enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.red, width: 5.0),
+                        ),*/
+                      counterText: "",
+                      prefixIconConstraints:
+                      const BoxConstraints(minWidth: 0, minHeight: 0),
+                      alignLabelWithHint: true,
+                      //hintText: "Phone number",
+                      labelText: Localization.of(context)
+                          .getTranslation("phone_number"),
+                      hintStyle: const TextStyle(
+                          fontWeight: FontWeight.bold, color: Colors.black45),
+                      prefixIcon: Padding(
+                        padding: const EdgeInsets.only(left: 5.0, right: 5.0),
+                        child: Text(
+                          "+251",
+                          style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Theme.of(context).primaryColor),
+                        ),
+                      ),
+                      suffix: Text("$textLength/9"),
+                      fillColor: Colors.white,
+                      filled: true,
+                      border: const OutlineInputBorder(
+                          borderSide: BorderSide(style: BorderStyle.solid)),
+                    ),
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return Localization.of(context)
+                            .getTranslation("phone_number_required");
+                      } else if (value.length < 9) {
+                        return Localization.of(context)
+                            .getTranslation("phone_number_short");
+                      } else if (value.length > 9) {
+                        return Localization.of(context)
+                            .getTranslation("phone_number_exceed");
+                      } else if (value.length == 9) {
+                        return null;
+                      }
+                      return null;
+                    },
+                    onChanged: (value) {
+                      if (value.length >= 9) {}
+                      setState(() {
+                        textLength = value.length;
+                      });
+                    },
+                    onSaved: (value) {
+                      number = "+251$value";
+                    },
                   ),
                 ),
               ],
@@ -169,7 +246,7 @@ class _OrderForOtherScreenState extends State<OrderForOtherScreen> {
                 if (state is LocationPredictionOperationFailure) {}
 
                 return const Center(
-                  child: Text("Enter The location"),
+                  child: Text(""),
                 );
               }),
             ],
@@ -177,25 +254,20 @@ class _OrderForOtherScreenState extends State<OrderForOtherScreen> {
     ];
 
     return Scaffold(
+      appBar: SafeAppBar(
+          key: _appBar, title: getTranslation(context, "order_for_other"),
+          appBar: AppBar(), widgets: []),
       body: SingleChildScrollView(
         child: Stack(
           children: [
             Padding(
               padding: EdgeInsets.only(
-                top: 100,
+                top: 0,
                 bottom: MediaQuery.of(context).viewInsets.bottom,
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: Text(
-                      getTranslation(context, "order_for_other"),
-                      style: Theme.of(context).textTheme.headlineSmall,
-                    ),
-                  ),
-                  // 0996635512
                   Stepper(
                       physics:
                           const ScrollPhysics(parent: ClampingScrollPhysics()),
@@ -213,7 +285,7 @@ class _OrderForOtherScreenState extends State<OrderForOtherScreen> {
                                   },
                                   child: Text(
                                     getTranslation(context, "next"),
-                                    style: const TextStyle(color: Colors.black),
+                                    //style: const TextStyle(color: Colors.black),
                                   )),
                               TextButton(
                                   onPressed: details.onStepCancel,
@@ -265,7 +337,7 @@ class _OrderForOtherScreenState extends State<OrderForOtherScreen> {
                                       : null,
                                   child: Text(
                                     getTranslation(context, "next"),
-                                    style: const TextStyle(color: Colors.black),
+                                    //style: const TextStyle(color: Colors.black),
                                   )),
                               TextButton(
                                   onPressed: details.onStepCancel,
@@ -293,7 +365,6 @@ class _OrderForOtherScreenState extends State<OrderForOtherScreen> {
                 ],
               ),
             ),
-            const CustomeBackArrow(),
           ],
         ),
       ),

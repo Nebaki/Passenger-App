@@ -122,6 +122,9 @@ class AuthDataProvider {
   static Future updateToken(token) async {
     await secureStorage.write(key: 'token', value: token);
   }
+  Future<String?> getUserId() async {
+    return await secureStorage.read(key: "id");
+  }
 
   Future<String?> getImageUrl() async {
     return await secureStorage.read(key: "profile_image");

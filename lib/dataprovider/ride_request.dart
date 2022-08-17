@@ -32,7 +32,7 @@ class RideRequestDataProvider {
       final data = json.decode(response.body);
       return data['isEmpty'] != true
           ? RideRequest.fromJson(data['ride_Request'])
-          : const RideRequest(
+          :  RideRequest(
               pickUpAddress: null, droppOffAddress: null, driverId: null);
     } else if (response.statusCode == 401) {
       final res = await AuthDataProvider(httpClient: httpClient).refreshToken();
