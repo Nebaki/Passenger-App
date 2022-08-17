@@ -179,7 +179,7 @@ class NavDrawer extends StatelessWidget {
               ),
               Container(
                 padding: const EdgeInsets.only(top: 50),
-                height: height * 0.68,
+                height: height * 0.65,
                 child: ListView(
                   padding: const EdgeInsets.symmetric(horizontal: 10),
                   children: [
