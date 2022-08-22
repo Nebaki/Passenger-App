@@ -119,7 +119,7 @@ class _ResetPasswordState extends State<ResetPassword> {
         child: SizedBox(
           height: 600,
           child: Padding(
-            padding: const EdgeInsets.fromLTRB(20, 40, 20, 20),
+            padding: const EdgeInsets.fromLTRB(20, 200, 20, 20),
             child: ListView(
               children: [
                 Padding(

@@ -32,9 +32,14 @@ class _ChangePasswordState extends State<ChangePassword> {
     super.initState();
   }
 
+  final _appBar = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
+        appBar: SafeAppBar(
+        key: _appBar, title: getTranslation(context, "password_changed"),
+        appBar: AppBar(), widgets: []),
         body: Stack(
           children: [
             Opacity(
@@ -104,38 +109,35 @@ class _ChangePasswordState extends State<ChangePassword> {
           // color: const Color.fromRGBO(240, 241, 241, 1),
           height: MediaQuery.of(context).size.height,
           width: MediaQuery.of(context).size.width,
-          child: Stack(
-            children: [
-              Positioned(
-                top: MediaQuery.of(context).size.height * 0.12,
-                right: 10,
-                left: 10,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+          child: Padding(
+                  padding: const EdgeInsets.only(left: 20,top: 100,right: 20),
+                  child: ListView(
                     children: [
-                      Text(getTranslation(context, "change_password"),
+                      /*Text(getTranslation(context, "change_password"),
                           style: Theme.of(context).textTheme.headlineSmall),
                       const SizedBox(
                         height: 10,
-                      ),
-                      Text(getTranslation(context, "edit_profile_body_text")),
+                      ),*/
+                      //Text(getTranslation(context, "edit_profile_body_text")),
                       SizedBox(
                         height: MediaQuery.of(context).size.height * 0.1,
                       ),
                       TextFormField(
+                        style: const TextStyle(fontSize: 18),
                         decoration: InputDecoration(
-                            hintText: getTranslation(
+                            labelText: getTranslation(
                                 context, "old_password_hint_text"),
                             prefixIcon: const Icon(
-                              Icons.phone,
-                              size: 19,
+                              Icons.vpn_key,
+                      size: 19,
                             ),
                             // fillColor: Colors.white,
                             filled: true,
-                            border: const OutlineInputBorder(
-                                borderSide: BorderSide.none)),
+                          border: const OutlineInputBorder(
+                              borderSide: BorderSide(style: BorderStyle.solid)
+                          ),
+                        ),
+
                         validator: (value) {
                           if (value!.isEmpty) {
                             return getTranslation(
@@ -143,6 +145,7 @@ class _ChangePasswordState extends State<ChangePassword> {
                           }
                           return null;
                         },
+
                         onSaved: (value) {
                           _passwordInfo['current_password'] = value!;
                         },
@@ -151,21 +154,32 @@ class _ChangePasswordState extends State<ChangePassword> {
                         height: 20,
                       ),
                       TextFormField(
+                        style: const TextStyle(fontSize: 18),
                         decoration: InputDecoration(
-                            hintText: getTranslation(
+                            labelText: getTranslation(
                                 context, "new_password_hint_text"),
                             prefixIcon: const Icon(
-                              Icons.phone,
+                              Icons.vpn_key,
                               size: 19,
                             ),
                             // fillColor: Colors.white,
                             filled: true,
-                            border: const OutlineInputBorder(
-                                borderSide: BorderSide.none)),
+                          border: const OutlineInputBorder(
+                              borderSide: BorderSide(style: BorderStyle.solid)
+                          ),
+                        ),
                         validator: (value) {
                           if (value!.isEmpty) {
                             return getTranslation(
                                 context, "enter_new_password");
+                          } else if (value.length < 4) {
+                            return getTranslation(
+                                context, "create_profile_short_password_validation");
+                          } else if (value.length > 25) {
+                            return getTranslation(
+                                context, "create_profile_long_password_validation");
+                          }else if(_passwordInfo['current_password'] == value){
+                            return "New Password can not be same as old password";
                           }
                           return null;
                         },
@@ -185,8 +199,9 @@ class _ChangePasswordState extends State<ChangePassword> {
                           //     blurStyle: BlurStyle.normal)
                         ]),
                         child: TextFormField(
+                          style: const TextStyle(fontSize: 18),
                           decoration: InputDecoration(
-                              hintText: getTranslation(
+                              labelText: getTranslation(
                                   context, "confirm_password_hint_text"),
                               prefixIcon: const Icon(
                                 Icons.vpn_key,
@@ -194,8 +209,10 @@ class _ChangePasswordState extends State<ChangePassword> {
                               ),
                               // fillColor: Colors.white,
                               filled: true,
-                              border: const OutlineInputBorder(
-                                  borderSide: BorderSide.none)),
+                            border: const OutlineInputBorder(
+                                borderSide: BorderSide(style: BorderStyle.solid)
+                            ),
+                          ),
                           validator: (value) {
                             if (value!.isEmpty) {
                               return getTranslation(
@@ -239,7 +256,7 @@ class _ChangePasswordState extends State<ChangePassword> {
                                         height: 20,
                                         width: 20,
                                         child: CircularProgressIndicator(
-                                          color: Colors.black,
+                                          color: Colors.white,
                                         ),
                                       )
                                     : Container(),
@@ -251,10 +268,6 @@ class _ChangePasswordState extends State<ChangePassword> {
                     ],
                   ),
                 ),
-              ),
-              const CustomeBackArrow(),
-            ],
-          ),
         ));
   }
 }

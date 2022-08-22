@@ -50,7 +50,7 @@ class _WhereToState extends State<WhereTo> {
                 }
               }),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 50),
+            padding: const EdgeInsets.symmetric(horizontal: 10),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
@@ -70,7 +70,7 @@ class _WhereToState extends State<WhereTo> {
                         if (state is ReverseLocationLoadSuccess) {
                           pickupLatLng = LatLng(
                               userPostion.latitude, userPostion.longitude);
-                          buttomSheet();
+                          bottomSheet();
                           pickupAddress = state.location.address1;
                           currentLocation = state.location.address1;
                           pickupController.text = state.location.address1;
@@ -140,7 +140,7 @@ class _WhereToState extends State<WhereTo> {
                                       spreadRadius: 2)
                                 ]),
                             padding: const EdgeInsets.symmetric(
-                                horizontal: 20, vertical: 10),
+                                horizontal: 10, vertical: 10),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -518,7 +518,7 @@ class _WhereToState extends State<WhereTo> {
     }
   }
 
-  void buttomSheet() {
+  void bottomSheet() {
     showModalBottomSheet(
         isScrollControlled: true,
         context: context,
@@ -540,8 +540,8 @@ class _WhereToState extends State<WhereTo> {
                   if (state is LocationPredictionLoadSuccess) {
                     return Positioned(
                       top: 180,
-                      left: 50,
-                      right: 50,
+                      left: 15,
+                      right: 15,
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(20),
                         child: Container(
@@ -578,8 +578,8 @@ class _WhereToState extends State<WhereTo> {
                       return state.savedLocation.isNotEmpty
                           ? Positioned(
                               top: 180,
-                              left: 50,
-                              right: 50,
+                              left: 15,
+                              right: 15,
                               child: ClipRRect(
                                 borderRadius: BorderRadius.circular(20),
                                 child: Container(
@@ -614,8 +614,8 @@ class _WhereToState extends State<WhereTo> {
                   }));
                 }),
                 Positioned(
-                    left: 50,
-                    right: 50,
+                    left: 15,
+                    right: 15,
                     top: 80,
                     child: Column(
                       children: [
@@ -635,7 +635,9 @@ class _WhereToState extends State<WhereTo> {
                           child: Center(
                             child: TextFormField(
                               onChanged: (value) {
-                                findPlace(value);
+                                if(value.length >= 2){
+                                  findPlace(value);
+                                }
                               },
                               focusNode: pickupLocationNode,
                               controller: pickupController,
@@ -685,7 +687,9 @@ class _WhereToState extends State<WhereTo> {
                             child: TextFormField(
                               focusNode: droppOffLocationNode,
                               onChanged: (value) {
-                                findPlace(value);
+                                if(value.length >= 2){
+                                  findPlace(value);
+                                }
                               },
                               decoration: InputDecoration(
                                   hintText: getTranslation(

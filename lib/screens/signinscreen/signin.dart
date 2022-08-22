@@ -210,7 +210,8 @@ class _SigninScreenState extends State<SigninScreen> {
                         fillColor: Colors.white,
                         filled: true,
                         border: const OutlineInputBorder(
-                            borderSide: BorderSide(style: BorderStyle.solid)),
+                            borderSide: BorderSide(style: BorderStyle.solid)
+                        ),
                       ),
                       validator: (value) {
                         if (value!.isEmpty) {

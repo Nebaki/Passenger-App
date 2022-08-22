@@ -13,11 +13,16 @@ import 'package:passengerapp/screens/settings/pages/terms.dart';
 
 import '../../cubit/cubits.dart';
 
-class SettingScreen extends StatelessWidget {
+class SettingScreen extends StatefulWidget {
   static const routeName = "/settings";
 
   const SettingScreen({Key? key}) : super(key: key);
 
+  @override
+  State<SettingScreen> createState() => _SettingScreenState();
+}
+
+class _SettingScreenState extends State<SettingScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -324,59 +329,6 @@ class SettingScreen extends StatelessWidget {
   }
 
   // Widget _buildPreferenceItems(
-  //     BuildContext context, String title, AuthDataLoadSuccess state) {
-  //   return Card(
-  //           margin: const EdgeInsets.symmetric(horizontal: 0),
-
-  //     child: Container(
-  //       padding: const EdgeInsets.symmetric(horizontal: 20),
-  //       child: Column(
-  //         mainAxisSize: MainAxisSize.min,
-  //         crossAxisAlignment: CrossAxisAlignment.start,
-  //         children: [
-  //           const SizedBox(
-  //             height: 20,
-  //           ),
-  //           Text(
-  //             title,
-  //             style: Theme.of(context)
-  //                 .textTheme
-  //                 .titleLarge!
-  //                 .copyWith(color: Colors.blueAccent),
-  //           ),
-  //           ListTile(
-  //             contentPadding: EdgeInsets.zero,
-  //             title: Text(
-  //               state.auth.pref!['gender'],
-  //             ),
-  //             subtitle: Text(getTranslation(context, "driver_gender")),
-  //           ),
-  //            const Divider(
-  //             height: 0,
-  //           ),
-  //           ListTile(
-  //             contentPadding: EdgeInsets.zero,
-  //             title: Text(
-  //               state.auth.pref!['min_rate'],
-  //             ),
-  //             subtitle: Text(getTranslation(context, "minimum_driver_rating")),
-  //           ),
-  //            const Divider(
-  //             height: 0,
-  //           ),
-  //           ListTile(
-  //             contentPadding: EdgeInsets.zero,
-  //             title: Text(
-  //               state.auth.pref!['car_type'],
-  //             ),
-  //             subtitle: Text(getTranslation(context, "car_type")),
-  //           ),
-  //         ],
-  //       ),
-  //     ),
-  //   );
-  // }
-
   Widget _buildAboutUsItems(BuildContext context, String title) {
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 0),

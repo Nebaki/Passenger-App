@@ -362,7 +362,7 @@ class _MobileVerificationState extends State<MobileVerification> {
                       children: [
                         TextSpan(
                             text: phoneNumber)
-                      ]),style: TextStyle(fontWeight: FontWeight.bold)),
+                      ]),style: const TextStyle(fontWeight: FontWeight.bold)),
                   actions: [
                     TextButton(
                         onPressed: () {
