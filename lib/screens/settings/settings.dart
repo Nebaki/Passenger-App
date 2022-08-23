@@ -49,7 +49,7 @@ class _SettingScreenState extends State<SettingScreen> {
                       ),
                     ),
                     placeholder: (context, url) =>
-                        const SizedBox(height: 60,width: 60,child: CircularProgressIndicator()),
+                        const Icon(Icons.person, size: 85),
                     errorWidget: (context, url, error) =>
                         const Icon(Icons.person, size: 85),
                   ),
@@ -343,7 +343,10 @@ class _SettingScreenState extends State<SettingScreen> {
             ),
             Text(
               title,
-              style: TextStyle(color:Theme.of(context).primaryColor),
+              style: Theme.of(context)
+                  .textTheme
+                  .titleLarge!
+                  .copyWith(color: Theme.of(context).primaryColor),
             ),
             const Divider(
               height: 0,
@@ -366,10 +369,10 @@ class _SettingScreenState extends State<SettingScreen> {
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Text.rich(TextSpan(
-                  text: "${getTranslation(context, "developerd_by")}:\n  ",
+                  text: "${getTranslation(context, "developed_by")}:\n  ",
                   children: [
                     TextSpan(
-                        text: " Vintage Technologies",
+                        text: " Vintage Technologies: +251916772303",
                         style: TextStyle(color: Theme.of(context).primaryColor,
                             fontStyle: FontStyle.italic,
                             fontWeight: FontWeight.w300))
@@ -395,7 +398,10 @@ class _SettingScreenState extends State<SettingScreen> {
             ),
             Text(
               title,
-              style: TextStyle(color: Theme.of(context).primaryColor),
+              style: Theme.of(context)
+                  .textTheme
+                  .titleLarge!
+                  .copyWith(color: Theme.of(context).primaryColor),
             ),
             const Divider(
               height: 0,

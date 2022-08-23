@@ -80,7 +80,7 @@ class _WaitingDriverResponseState extends State<WaitingDriverResponse> {
                             getTranslation(
                                 context, "looking_for_nearby_providers"),
                             textAlign: TextAlign.center,
-                            style: Theme.of(context).textTheme.titleLarge,
+                            style: TextStyle(color: Colors.black,fontSize: 15),
                           ),
                         ),
                       ),
@@ -102,7 +102,8 @@ class _WaitingDriverResponseState extends State<WaitingDriverResponse> {
                                 getTranslation(context, "cancel"),
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
-                                style: Theme.of(context).textTheme.titleLarge,
+                                style: TextStyle(color: Theme.of(context).primaryColor
+                                    ,fontSize: 16),
                               )),
                         ),
                       )

@@ -87,7 +87,7 @@ class _PhoneVerificationState extends State<PhoneVerification> {
                 SizedBox(
                   width: 5,
                 ),
-                Text("Sending."),
+                Text("Resending."),
               ],
             ),
           );
@@ -204,11 +204,11 @@ class _PhoneVerificationState extends State<PhoneVerification> {
         children: [
           Text(
             getTranslation(context, "verification_code_sent"),
-            style: TextStyle(color: Colors.green[900], fontSize: 24.0),
+            style: TextStyle(color: Colors.green[900], fontSize: 20.0),
           ),
           Text(
             getTranslation(context, "enter_verification_code"),
-            style: const TextStyle(fontSize: 18.0),
+            style: const TextStyle(fontSize: 14.0),
           ),
           const SizedBox(
             height: 20.0,
@@ -413,7 +413,7 @@ class _PhoneVerificationState extends State<PhoneVerification> {
                     _start != 0
                         ? '${getTranslation(context, "verification_resent_text")}  $_start'
                         : getTranslation(context, "verification_resent_text"),
-                    style: const TextStyle(fontSize: 17.0),
+                    style: const TextStyle(fontSize: 13.0),
                   ),
                   TextButton(
                       style: ButtonStyle(
@@ -432,7 +432,7 @@ class _PhoneVerificationState extends State<PhoneVerification> {
                           : null,
                       child: Text(
                         getTranslation(
-                            context, "verification_resend_button_text"),
+                            context, "verification_resend_button_text"),style: TextStyle(fontSize: 11),
                       )),
                 ],
               )),

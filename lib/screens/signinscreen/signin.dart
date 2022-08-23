@@ -376,7 +376,7 @@ class _SigninScreenState extends State<SigninScreen> {
                                 context, MobileVerification.routeName);
                           },
                           child: Text(
-                            getTranslation("signin_forgot_passwod_text"),
+                            getTranslation("signin_forgot_passwod_text")+"?",
                             style: Theme.of(context).textTheme.button,
                           )),
                     ),

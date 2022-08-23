@@ -105,169 +105,187 @@ class _ChangePasswordState extends State<ChangePassword> {
   Widget form(BuildContext context) {
     return Form(
         key: _formkey,
-        child: SizedBox(
-          // color: const Color.fromRGBO(240, 241, 241, 1),
-          height: MediaQuery.of(context).size.height,
-          width: MediaQuery.of(context).size.width,
-          child: Padding(
-                  padding: const EdgeInsets.only(left: 20,top: 100,right: 20),
-                  child: ListView(
-                    children: [
-                      /*Text(getTranslation(context, "change_password"),
-                          style: Theme.of(context).textTheme.headlineSmall),
-                      const SizedBox(
-                        height: 10,
-                      ),*/
-                      //Text(getTranslation(context, "edit_profile_body_text")),
-                      SizedBox(
-                        height: MediaQuery.of(context).size.height * 0.1,
+        child: SingleChildScrollView(
+          child: SizedBox(
+            // color: const Color.fromRGBO(240, 241, 241, 1),
+            //height: MediaQuery.of(context).size.height,
+            width: MediaQuery.of(context).size.width,
+            child: Padding(
+                    padding: const EdgeInsets.only(left: 10,top: 100,right: 10),
+                    child: Card(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10.0),
                       ),
-                      TextFormField(
-                        style: const TextStyle(fontSize: 18),
-                        decoration: InputDecoration(
-                            labelText: getTranslation(
-                                context, "old_password_hint_text"),
-                            prefixIcon: const Icon(
-                              Icons.vpn_key,
-                      size: 19,
-                            ),
-                            // fillColor: Colors.white,
-                            filled: true,
-                          border: const OutlineInputBorder(
-                              borderSide: BorderSide(style: BorderStyle.solid)
-                          ),
-                        ),
+                      elevation: 0,
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Column(
+                          children: [
+                            /*Text(getTranslation(context, "change_password"),
+                                style: Theme.of(context).textTheme.headlineSmall),
+                            const SizedBox(
+                              height: 10,
+                            ),*/
+                            //Text(getTranslation(context, "edit_profile_body_text")),
 
-                        validator: (value) {
-                          if (value!.isEmpty) {
-                            return getTranslation(
-                                context, "enter_old_password");
-                          }
-                          return null;
-                        },
-
-                        onSaved: (value) {
-                          _passwordInfo['current_password'] = value!;
-                        },
-                      ),
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      TextFormField(
-                        style: const TextStyle(fontSize: 18),
-                        decoration: InputDecoration(
-                            labelText: getTranslation(
-                                context, "new_password_hint_text"),
-                            prefixIcon: const Icon(
-                              Icons.vpn_key,
-                              size: 19,
-                            ),
-                            // fillColor: Colors.white,
-                            filled: true,
-                          border: const OutlineInputBorder(
-                              borderSide: BorderSide(style: BorderStyle.solid)
-                          ),
-                        ),
-                        validator: (value) {
-                          if (value!.isEmpty) {
-                            return getTranslation(
-                                context, "enter_new_password");
-                          } else if (value.length < 4) {
-                            return getTranslation(
-                                context, "create_profile_short_password_validation");
-                          } else if (value.length > 25) {
-                            return getTranslation(
-                                context, "create_profile_long_password_validation");
-                          }else if(_passwordInfo['current_password'] == value){
-                            return "New Password can not be same as old password";
-                          }
-                          return null;
-                        },
-                        onSaved: (value) {
-                          _passwordInfo['new_password'] = value!;
-                        },
-                      ),
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      Container(
-                        decoration: const BoxDecoration(boxShadow: [
-                          // BoxShadow(
-                          //     color: Colors.grey.shade300,
-                          //     blurRadius: 4,
-                          //     spreadRadius: 2,
-                          //     blurStyle: BlurStyle.normal)
-                        ]),
-                        child: TextFormField(
-                          style: const TextStyle(fontSize: 18),
-                          decoration: InputDecoration(
-                              labelText: getTranslation(
-                                  context, "confirm_password_hint_text"),
-                              prefixIcon: const Icon(
-                                Icons.vpn_key,
-                                size: 19,
+                            TextFormField(
+                              obscureText: true,
+                              style: const TextStyle(fontSize: 18),
+                              decoration: InputDecoration(
+                                  labelText: getTranslation(
+                                      context, "old_password_hint_text"),
+                                  prefixIcon: const Icon(
+                                    Icons.vpn_key,
+                            size: 19,
+                                  ),
+                                  // fillColor: Colors.white,
+                                  filled: true,
+                                border: const OutlineInputBorder(
+                                    borderSide: BorderSide(style: BorderStyle.solid)
+                                ),
                               ),
-                              // fillColor: Colors.white,
-                              filled: true,
-                            border: const OutlineInputBorder(
-                                borderSide: BorderSide(style: BorderStyle.solid)
+
+                              validator: (value) {
+                                if (value!.isEmpty) {
+                                  return getTranslation(
+                                      context, "enter_old_password");
+                                }else if (value.length < 4) {
+                                  return getTranslation(
+                                      context, "create_profile_short_password_validation");
+                                } else if (value.length > 25) {
+                                  return getTranslation(
+                                      context, "create_profile_long_password_validation");
+                                }
+                                return null;
+                              },
+
+                              onSaved: (value) {
+                                _passwordInfo['current_password'] = value!;
+                              },
                             ),
-                          ),
-                          validator: (value) {
-                            if (value!.isEmpty) {
-                              return getTranslation(
-                                  context, "please_confirm_the_password");
-                            }
-                            return null;
-                          },
-                          onSaved: (value) {
-                            _passwordInfo['confirm_password'] = value!;
-                          },
-                        ),
-                      ),
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      SizedBox(
-                        height: 50,
-                        width: double.infinity,
-                        child: ElevatedButton(
-                          onPressed: _isLoading
-                              ? null
-                              : () {
-                                  final form = _formkey.currentState;
-                                  if (form!.validate()) {
-                                    form.save();
-                                    changePassword(context);
+                            const SizedBox(
+                              height: 20,
+                            ),
+                            TextFormField(
+                              obscureText: true,
+                              style: const TextStyle(fontSize: 18),
+                              decoration: InputDecoration(
+                                  labelText: getTranslation(
+                                      context, "new_password_hint_text"),
+                                  prefixIcon: const Icon(
+                                    Icons.vpn_key,
+                                    size: 19,
+                                  ),
+                                  // fillColor: Colors.white,
+                                  filled: true,
+                                border: const OutlineInputBorder(
+                                    borderSide: BorderSide(style: BorderStyle.solid)
+                                ),
+                              ),
+                              validator: (value) {
+                                if (value!.isEmpty) {
+                                  return getTranslation(
+                                      context, "enter_new_password");
+                                } else if (value.length < 4) {
+                                  return getTranslation(
+                                      context, "create_profile_short_password_validation");
+                                } else if (value.length > 25) {
+                                  return getTranslation(
+                                      context, "create_profile_long_password_validation");
+                                }else if(_passwordInfo['current_password'] == value){
+                                  return "New Password can not be same as old password";
+                                }
+                                return null;
+                              },
+                              onSaved: (value) {
+                                _passwordInfo['new_password'] = value!;
+                              },
+                            ),
+                            const SizedBox(
+                              height: 20,
+                            ),
+                            Container(
+                              decoration: const BoxDecoration(boxShadow: [
+                                // BoxShadow(
+                                //     color: Colors.grey.shade300,
+                                //     blurRadius: 4,
+                                //     spreadRadius: 2,
+                                //     blurStyle: BlurStyle.normal)
+                              ]),
+                              child: TextFormField(
+                                obscureText: true,
+                                style: const TextStyle(fontSize: 18),
+                                decoration: InputDecoration(
+                                    labelText: getTranslation(
+                                        context, "confirm_password_hint_text"),
+                                    prefixIcon: const Icon(
+                                      Icons.vpn_key,
+                                      size: 19,
+                                    ),
+                                    // fillColor: Colors.white,
+                                    filled: true,
+                                  border: const OutlineInputBorder(
+                                      borderSide: BorderSide(style: BorderStyle.solid)
+                                  ),
+                                ),
+                                validator: (value) {
+                                  if (value!.isEmpty) {
+                                    return getTranslation(
+                                        context, "please_confirm_the_password");
                                   }
+                                  return null;
                                 },
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              const Spacer(),
-                              Text(
-                                getTranslation(context, "change_password"),
+                                onSaved: (value) {
+                                  _passwordInfo['confirm_password'] = value!;
+                                },
                               ),
-                              const Spacer(),
-                              Align(
-                                alignment: Alignment.centerRight,
-                                child: _isLoading
-                                    ? const SizedBox(
-                                        height: 20,
-                                        width: 20,
-                                        child: CircularProgressIndicator(
-                                          color: Colors.white,
-                                        ),
-                                      )
-                                    : Container(),
-                              )
-                            ],
-                          ),
+                            ),
+                            const SizedBox(
+                              height: 20,
+                            ),
+                            SizedBox(
+                              height: 50,
+                              width: double.infinity,
+                              child: ElevatedButton(
+                                onPressed: _isLoading
+                                    ? null
+                                    : () {
+                                        final form = _formkey.currentState;
+                                        if (form!.validate()) {
+                                          form.save();
+                                          changePassword(context);
+                                        }
+                                      },
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    const Spacer(),
+                                    Text(
+                                      getTranslation(context, "change_password"),
+                                    ),
+                                    const Spacer(),
+                                    Align(
+                                      alignment: Alignment.centerRight,
+                                      child: _isLoading
+                                          ? const SizedBox(
+                                              height: 20,
+                                              width: 20,
+                                              child: CircularProgressIndicator(
+                                                color: Colors.white,
+                                              ),
+                                            )
+                                          : Container(),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            )
+                          ],
                         ),
-                      )
-                    ],
+                      ),
+                    ),
                   ),
-                ),
+          ),
         ));
   }
 }

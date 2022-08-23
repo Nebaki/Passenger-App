@@ -4,6 +4,7 @@ import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import 'package:flutter_background_service/flutter_background_service.dart';
 // ignore: import_of_legacy_library_into_null_safe
@@ -142,7 +143,10 @@ void onStart(ServiceInstance service) async {
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await initializeService();
-
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]);
   await Firebase.initializeApp();
   await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
       alert: true, badge: true, sound: true);
@@ -437,15 +441,17 @@ class MyApp extends StatelessWidget {
                         color: themeProvider.getColor,
                       ),
                       subtitle1:
-                      TextStyle(color: Colors.black38, fontSize: 14),
+                      TextStyle(color: Colors.black38, fontSize: 13),
                       headline5: const TextStyle(
                           fontFamily: 'Sifonn',
-                          fontWeight: FontWeight.bold, fontSize: 24),
+                          fontWeight: FontWeight.bold, fontSize: 18),
                       bodyText2: const TextStyle(
                           fontFamily: 'Sifonn',
                           color: Colors.black,
-                          fontSize: 16,
-                          fontWeight: FontWeight.normal)),
+                          fontSize: 13,
+                          fontWeight: FontWeight.normal)
+
+                  ),
                   iconTheme: const IconThemeData(
                     color: Colors.white,
                   ),

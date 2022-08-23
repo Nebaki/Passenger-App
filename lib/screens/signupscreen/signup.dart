@@ -401,6 +401,9 @@ class _SignupScreenState extends State<SignupScreen> {
             context: context,
             builder: (BuildContext context) {
               return AlertDialog(
+                shape: RoundedRectangleBorder(
+                    borderRadius:
+                    BorderRadius.circular(20.0)),
                 title: Text(getTranslation(
                     context,
                     "signup_confirmation_dialog_title"),style: TextStyle(color: themeProvider.getColor),),

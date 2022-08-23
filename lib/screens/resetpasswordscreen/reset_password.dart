@@ -125,9 +125,10 @@ class _ResetPasswordState extends State<ResetPassword> {
                 Padding(
                   padding: const EdgeInsets.all(10),
                   child: TextFormField(
+                    obscureText: true,
                     controller: newPassword,
                     decoration: InputDecoration(
-                        hintText:
+                        labelText:
                             getTranslation(context, "new_password_hint_text"),
                         hintStyle: const TextStyle(
                           fontWeight: FontWeight.bold,
@@ -162,8 +163,9 @@ class _ResetPasswordState extends State<ResetPassword> {
                 Padding(
                   padding: const EdgeInsets.all(10),
                   child: TextFormField(
+                    obscureText: true,
                     decoration: InputDecoration(
-                        hintText: getTranslation(
+                        labelText: getTranslation(
                             context, "confirm_password_hint_text"),
                         hintStyle: const TextStyle(
                           fontWeight: FontWeight.bold,
@@ -188,7 +190,7 @@ class _ResetPasswordState extends State<ResetPassword> {
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: SizedBox(
-                    height: 40,
+                    height: 50,
                     width: MediaQuery.of(context).size.width,
                     child: ElevatedButton(
                       onPressed: _isLoading
@@ -217,7 +219,7 @@ class _ResetPasswordState extends State<ResetPassword> {
                                     height: 20,
                                     width: 20,
                                     child: CircularProgressIndicator(
-                                      color: Colors.black,
+                                      color: Colors.white,
                                     ),
                                   )
                                 : Container(),

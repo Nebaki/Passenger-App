@@ -154,7 +154,7 @@ class _MobileVerificationState extends State<MobileVerification> {
                       getTranslation(context, "signup_action"),
                       style: const TextStyle(
                         fontWeight: FontWeight.bold,
-                        fontSize: 24.0,
+                        fontSize: 20.0,
                         // color: Colors.black
                       ),
                     ),
@@ -416,8 +416,12 @@ class _MobileVerificationState extends State<MobileVerification> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
+            shape: RoundedRectangleBorder(
+                borderRadius:
+                BorderRadius.circular(20.0)),
             content:
-                Text(getTranslation(context, "no_user_registered_message")),
+                Text(getTranslation(context, "no_user_registered_message"),
+                  style: TextStyle(color: Colors.black),),
             actions: [
               TextButton(
                   onPressed: () {
