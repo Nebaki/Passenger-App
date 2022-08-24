@@ -391,7 +391,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                           heroTag: 'sos',
                                           // backgroundColor: Colors.grey.shade300,
                                           onPressed: () {
-                                            /*
+
                                             EmergencyReportEvent event =
                                                 EmergencyReportCreate(
                                                     EmergencyReport(location: [
@@ -402,9 +402,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                             BlocProvider.of<
                                                         EmergencyReportBloc>(
                                                     context)
-                                                .add(event)
-*/
-                                            Geolocator.getCurrentPosition()
+                                                .add(event);
+
+                                            /*Geolocator.getCurrentPosition()
                                                 .then((value) {
                                               carTypeSelectorDialog(value);
                                               currentPostion = value;
@@ -419,7 +419,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                           zoom: 16.1746,
                                                           target:
                                                               currentLatLng)));
-                                            });
+                                            });*/
                                           },
                                           child: const Text(
                                             'SOS',
@@ -972,17 +972,14 @@ class _HomeScreenState extends State<HomeScreen> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          Container(
-                            width: MediaQuery.of(context).size.width * 0.75,
-                            color: Theme.of(context).primaryColor,
-                            child: Padding(
+                          Padding(
                               padding: EdgeInsets.all(10.0),
                               child: Text(
                                 "Looking For...",
-                                style: TextStyle(fontSize: 20,color: Colors.white),
+                                style: TextStyle(fontSize: 20,color: Theme.of(context).primaryColor
+                                ),
                               ),
                             ),
-                          ),
                         ],
                       ),
                       Divider(),

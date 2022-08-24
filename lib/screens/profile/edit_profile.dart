@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -483,5 +485,65 @@ class _EditProfileState extends State<EditProfile> {
         emergencyContact: emergencyController.text));
 
     BlocProvider.of<UserBloc>(context).add(event);
+  }
+
+  _getFromGallery() async {
+    PickedFile? pickedFile = await ImagePicker().getImage(
+      source: ImageSource.gallery,
+      maxWidth: 1800,
+      maxHeight: 1800,
+    );
+    if (pickedFile != null) {
+      setState(() {
+        imageFile = File(pickedFile.path);
+      });
+    }
+  }
+  File? imageFile;
+  /// Get from Camera
+  _getFromCamera() async {
+    PickedFile? pickedFile = await ImagePicker().getImage(
+      source: ImageSource.camera,
+      maxWidth: 1800,
+      maxHeight: 1800,
+    );
+    if (pickedFile != null) {
+      setState(() {
+        imageFile = File(pickedFile.path);
+      });
+    }
+  }
+  _buildBottomSheet(){
+    showModalBottomSheet(
+        enableDrag: false,
+        isDismissible: false,
+        context: context,
+        shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(10), topRight: Radius.circular(10))),
+        builder: (BuildContext ctx) {
+          return WillPopScope(
+            onWillPop: () async => false,
+            child: Container(
+              height: MediaQuery.of(context).size.height * 0.1,
+              padding: const EdgeInsets.fromLTRB(30, 30, 20, 20),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  ElevatedButton(
+                      onPressed: () {
+                        _getFromCamera();
+                      },
+                      child: Text("Open Camera")),
+                  ElevatedButton(
+                      onPressed: () {
+                        _getFromGallery();
+                      },
+                      child: Text("From Gallery")),
+                ],
+              ),
+            ),
+          );
+        });
   }
 }
