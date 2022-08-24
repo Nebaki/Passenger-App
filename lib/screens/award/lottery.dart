@@ -31,7 +31,7 @@ final _formkey = GlobalKey<FormState>();
         child: Scaffold(
           backgroundColor: const Color(0xFFF5F6F9),
           appBar: SafeAppBar(
-              key: _appBarKey, title: "Lottery", appBar: _appBar(), widgets: [],bottom: _tabBar()),
+              key: _appBarKey, title: "Awards", appBar: _appBar(), widgets: [],bottom: _tabBar()),
           body: TabBarView(physics: const ClampingScrollPhysics(),
               key:_formkey,
               children: [TicketScreen(), AwardScreen()]),

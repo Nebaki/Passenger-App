@@ -383,13 +383,23 @@ class _TripDetailState extends State<TripDetail>{
                   ),*/
                   trip.status != "Cancelled" ? Padding(
                     padding: const EdgeInsets.all(3.0),
-                    child: Text("Net fee: ${trip.price!.split(",")[0]+" ETB"}"),
+                    child: Text("Fee: ${trip.price!.split(",")[0]+" ETB"}"),
                   ): Container(),
                 ],
               )
             ],
           ),
 
+          Padding(
+            padding: const EdgeInsets.all(2.0),
+            child: Text("Date:", style: TextStyle(
+                color: theme//,fontWeight: FontWeight.bold
+            ),),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text(_formatedDate(trip.date!)),
+          ),
           Padding(
             padding: const EdgeInsets.all(2.0),
             child: Text("Origin:", style: TextStyle(
@@ -422,16 +432,6 @@ class _TripDetailState extends State<TripDetail>{
             child: Text("${trip.distance} KM"),
           ),
 
-          Padding(
-            padding: const EdgeInsets.all(2.0),
-            child: Text("Date:", style: TextStyle(
-                color: theme//,fontWeight: FontWeight.bold
-            ),),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Text(_formatedDate(trip.date!)),
-          ),
           /*Padding(
             padding: const EdgeInsets.all(2.0),
             child: Text("Trip Ended Time:", style: TextStyle(

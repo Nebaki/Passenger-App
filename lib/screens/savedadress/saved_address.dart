@@ -122,7 +122,14 @@ class SavedAddress extends StatelessWidget {
               if (state is FavoriteLocationOperationFailure) {
                 return Container();
               }
-              return _buildShimmer(context);
+              return //_buildShimmer(context)
+              const Align(
+                alignment: Alignment.center,
+                child: Padding(
+                  padding: EdgeInsets.only(top: 10, bottom: 40),
+                  child: CircularProgressIndicator(),
+                ),
+              );
             }),
           ),
           /*const CustomeBackArrow(),
@@ -239,7 +246,7 @@ class SavedAddress extends StatelessWidget {
         padding: const EdgeInsets.all(8.0),
         child: GestureDetector(
           onTap: () {
-            _showModaLButtomSheet(context, location!);
+            _showModalBottomSheet(context, location!);
           },
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 2),
@@ -303,10 +310,10 @@ class SavedAddress extends StatelessWidget {
     );
   }
 
-  void _showModaLButtomSheet(BuildContext context, SavedLocation location) {
+  void _showModalBottomSheet(BuildContext context, SavedLocation location) {
     showModalBottomSheet(
         constraints: BoxConstraints(
-            maxHeight: MediaQuery.of(context).size.height * 0.4,
+            maxHeight: MediaQuery.of(context).size.height * 0.3,
             minWidth: MediaQuery.of(context).size.width,
             maxWidth: MediaQuery.of(context).size.width),
         shape: const RoundedRectangleBorder(
@@ -343,6 +350,7 @@ class SavedAddress extends StatelessWidget {
                                 "saved_locations_bottom_rideto_action")),
                           ],
                         ))),
+                Divider(),
                 TextButton(
                     onPressed: () {
                       Navigator.popAndPushNamed(

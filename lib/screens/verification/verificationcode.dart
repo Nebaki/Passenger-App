@@ -6,6 +6,8 @@ import 'package:passengerapp/rout.dart';
 import 'package:passengerapp/screens/screens.dart';
 import 'package:passengerapp/widgets/widgets.dart';
 
+import '../../utils/waver.dart';
+
 class PhoneVerification extends StatefulWidget {
   static const routeName = '/phoneverification';
   final VerificationArgument args;
@@ -24,6 +26,7 @@ class _PhoneVerificationState extends State<PhoneVerification> {
   final otp5Controller = TextEditingController();
   final otp6Controller = TextEditingController();
   bool doesAllTextFilledsFilled = true;
+
   // late ScaffoldMessengerState _scaffoldMessenger;
 
   late Timer _timer;
@@ -57,10 +60,44 @@ class _PhoneVerificationState extends State<PhoneVerification> {
   @override
   void initState() {
     // _scaffoldMessenger = ScaffoldMessenger.of(context);
-    _verificationId = widget.args.verificationId;
-    _resendToken = widget.args.resendingToken!;
-    startTimer();
+    //_verificationId = widget.args.verificationId;
+    //_resendToken = widget.args.resendingToken!;
+    sendVerificationCode(widget.args.phoneNumber);
     super.initState();
+  }
+
+  void sendVerificationCode(String phoneNumber) async {
+    await _auth.verifyPhoneNumber(
+        phoneNumber: phoneNumber,
+        timeout: const Duration(seconds: 60),
+        verificationCompleted: (phoneAuthCredential) async {
+          // setState(() {
+          //   showLoading = false;
+          // });
+          _getSmsAutomaticallyAndConfirm(
+              phoneAuthCredential.smsCode, phoneAuthCredential);
+        },
+        verificationFailed: (verificationFailed) async {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              backgroundColor: Colors.red.shade900,
+              content: Text(
+                  getTranslation(context, "incorrect_verification_code"))));
+          setState(() {
+            //showLoading = false;
+          });
+        },
+        codeSent: (verificationId, resendingToken) async {
+          setState(() {
+            codeSent = true;
+            //showLoading = false;
+            //currentState = ResetMobileVerficationState.SHOW_OTP_FORM_STATE;
+          });
+          _resendToken = resendingToken!;
+          _verificationId = verificationId!;
+          startTimer();
+          _onCodeSent(verificationId, resendingToken,false);
+        },
+        codeAutoRetrievalTimeout: (verificationId) async {});
   }
 
   @override
@@ -100,32 +137,35 @@ class _PhoneVerificationState extends State<PhoneVerification> {
               phoneAuthCredential.smsCode, phoneAuthCredential);
         },
         verificationFailed: (verificationFailed) async {
-          ScaffoldMessenger.of(context).showSnackBar(_errorMesseageSnackBar(
+          ScaffoldMessenger.of(context).showSnackBar(_errorMessageSnackBar(
               getTranslation(context, "operation_failure_message")));
           Navigator.pop(context);
         },
         codeSent: (verificationId, resendingToken) async {
-          _onCodeSent(verificationId, resendingToken!);
+          codeSent = true;
+          _onCodeSent(verificationId, resendingToken!,true);
         },
         forceResendingToken: token,
         codeAutoRetrievalTimeout: (verificationId) async {});
   }
 
-  SnackBar _errorMesseageSnackBar(String message) {
+  SnackBar _errorMessageSnackBar(String message) {
     return SnackBar(
       content: Text(message),
       backgroundColor: Colors.red.shade900,
     );
   }
 
-  void _onCodeSent(String verificationId, int resendingToken) {
+  void _onCodeSent(String verificationId, int resendingToken, bool dismiss) {
     otp1Controller.clear();
     otp2Controller.clear();
     otp3Controller.clear();
     otp4Controller.clear();
     otp5Controller.clear();
     otp6Controller.clear();
-    Navigator.pop(context);
+    if(dismiss){
+      Navigator.pop(context);
+    }
     setState(() {
       _start = 60;
       _verificationId = verificationId;
@@ -175,21 +215,29 @@ class _PhoneVerificationState extends State<PhoneVerification> {
         _isLoading = false;
       });
       ScaffoldMessenger.of(context)
-          .showSnackBar(_errorMesseageSnackBar(e.toString()));
+          .showSnackBar(_errorMessageSnackBar(e.toString()));
     }
   }
+  final _appBar = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
     final node = FocusScope.of(context);
     return Scaffold(
+      appBar: SafeAppBar(
+          key: _appBar, title: "Verification",
+          appBar: AppBar(), widgets: []),
       body: Stack(
         children: [
-          const CustomeBackArrow(),
           Container(
-              margin: const EdgeInsets.only(left: 25.0, right: 25.0),
-              padding: const EdgeInsets.only(top: 100),
-              child: _buildForm(node)),
+            margin: const EdgeInsets.only(left: 25.0, right: 25.0),
+            padding: const EdgeInsets.only(top: 50),
+            child: codeSent
+                ? _buildForm(node)
+                : Text("Sending Code...",
+                    style: TextStyle(color: Colors.green[900], fontSize: 20.0),
+                  ),
+          ),
         ],
       ),
     );
@@ -432,7 +480,8 @@ class _PhoneVerificationState extends State<PhoneVerification> {
                           : null,
                       child: Text(
                         getTranslation(
-                            context, "verification_resend_button_text"),style: TextStyle(fontSize: 11),
+                            context, "verification_resend_button_text"),
+                        style: TextStyle(fontSize: 11),
                       )),
                 ],
               )),
@@ -492,4 +541,6 @@ class _PhoneVerificationState extends State<PhoneVerification> {
       ),
     );
   }
+
+  bool codeSent = false;
 }

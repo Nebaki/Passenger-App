@@ -372,7 +372,11 @@ class _SignupScreenState extends State<SignupScreen> {
                               backgroundColor: Colors.red.shade900,
                             ));
                           } else {
-                            sendVerificationCode();
+                            //sendVerificationCode();
+                            Navigator.pushNamed(context, PhoneVerification.routeName,
+                                arguments: VerificationArgument(
+                                    from: 'SignUp',
+                                    phoneNumber: phoneNumber));
                           }
                         }
                         if (state is UserOperationFailure) {

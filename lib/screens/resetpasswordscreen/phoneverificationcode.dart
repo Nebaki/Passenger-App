@@ -317,7 +317,11 @@ class _MobileVerificationState extends State<MobileVerification> {
                       listener: (context, state) {
                         if (state is UserPhoneNumbeChecked) {
                           if (state.phoneNumberExist) {
-                            sendVerificationCode();
+                            //sendVerificationCode();
+                            Navigator.pushNamed(context, PhoneVerification.routeName,
+                                arguments: VerificationArgument(
+                                    from: 'ForgetPassword',
+                                    phoneNumber: phoneNumber));
                           } else {
                             setState(() {
                               showLoading = false;

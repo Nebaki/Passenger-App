@@ -110,7 +110,7 @@ class NavDrawer extends StatelessWidget {
                                           );
                                         }),)
                                   )),
-                              BlocBuilder<ThemeModeCubit, ThemeMode>(
+                              /*BlocBuilder<ThemeModeCubit, ThemeMode>(
                                   builder: (context, state) {
                                 if (state == ThemeMode.light) {
                                   return IconButton(
@@ -158,6 +158,7 @@ class NavDrawer extends StatelessWidget {
                                 }
                                 return Container();
                               }),
+                              */
                             ],
                           ),
                           const SizedBox(

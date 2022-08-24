@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_animarker/widgets/animarker.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
+
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_geofire/flutter_geofire.dart';
@@ -28,6 +29,7 @@ import 'dart:async';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:passengerapp/screens/home/assistant/home_screen_assistant.dart';
 import 'package:passengerapp/screens/screens.dart';
+
 // ignore: unnecessary_import
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:passengerapp/widgets/widgets.dart';
@@ -35,7 +37,9 @@ import 'package:passengerapp/widgets/widgets.dart';
 class HomeScreen extends StatefulWidget {
   static const routeName = '/home';
   final HomeScreenArgument args;
+
   const HomeScreen({Key? key, required this.args}) : super(key: key);
+
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
@@ -65,8 +69,10 @@ class _HomeScreenState extends State<HomeScreen> {
     target: LatLng(8.9806, 38.7578),
     zoom: 16.4746,
   );
+
   // late String _darkMapStyle;
   late String _nightMapStyle;
+
   // late String _retroMapStyle;
   // late String _aubergineMapStyle;
   late String serviceStatusValue;
@@ -120,7 +126,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   @override
-  void initState()  {
+  void initState() {
     _loadMapStyles();
     _checkLocationServiceOnInit();
     _toggleLocationServiceStatusStream();
@@ -310,14 +316,14 @@ class _HomeScreenState extends State<HomeScreen> {
             child: SizedBox(
               height: 45,
               child: FloatingActionButton(
-                    elevation: 5,
-                    onPressed: () => _scaffoldKey.currentState!.openDrawer(),
-                    child: Icon(
-                      Icons.format_align_center,
-                      size: 20,
-                      color: Theme.of(context).primaryColor,
-                    ),
-                  ),
+                elevation: 5,
+                onPressed: () => _scaffoldKey.currentState!.openDrawer(),
+                child: Icon(
+                  Icons.format_align_center,
+                  size: 20,
+                  color: Theme.of(context).primaryColor,
+                ),
+              ),
             ),
           ),
           Align(
@@ -385,6 +391,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                           heroTag: 'sos',
                                           // backgroundColor: Colors.grey.shade300,
                                           onPressed: () {
+                                            /*
                                             EmergencyReportEvent event =
                                                 EmergencyReportCreate(
                                                     EmergencyReport(location: [
@@ -395,7 +402,24 @@ class _HomeScreenState extends State<HomeScreen> {
                                             BlocProvider.of<
                                                         EmergencyReportBloc>(
                                                     context)
-                                                .add(event);
+                                                .add(event)
+*/
+                                            Geolocator.getCurrentPosition()
+                                                .then((value) {
+                                              carTypeSelectorDialog(value);
+                                              currentPostion = value;
+                                              userPostion = currentPostion;
+                                              currentLatLng = LatLng(
+                                                  value.latitude,
+                                                  value.longitude);
+                                              // pickupLatLng = currentLatLng;
+                                              outerController.animateCamera(
+                                                  CameraUpdate.newCameraPosition(
+                                                      CameraPosition(
+                                                          zoom: 16.1746,
+                                                          target:
+                                                              currentLatLng)));
+                                            });
                                           },
                                           child: const Text(
                                             'SOS',
@@ -838,7 +862,8 @@ class _HomeScreenState extends State<HomeScreen> {
   void _listenBackGroundMessage() {
     IsolateNameServer.registerPortWithName(_port.sendPort, portName);
     _port.listen((message) {
-      print("Dataaaaaaaaaaaaaa Has Arrivedd Bruhhhhhhhh ${message.data['response']}");
+      print(
+          "Dataaaaaaaaaaaaaa Has Arrivedd Bruhhhhhhhh ${message.data['response']}");
       switch (message.data['response']) {
         case "Accepted":
           Geofire.stopListener();
@@ -928,53 +953,110 @@ class _HomeScreenState extends State<HomeScreen> {
               insetPadding: EdgeInsets.only(
                   top: MediaQuery.of(context).size.height * 0.3),
               backgroundColor: Colors.transparent,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  FilterChip(
-                      backgroundColor: Theme.of(context).primaryColor,
-                      label: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(
-                          getTranslation(context, "truck"),
-                          style: TextStyle(color: Colors.white),
-                        ),
+              child: SizedBox(
+                width: MediaQuery.of(context).size.width * 0.7,
+                height: MediaQuery.of(context).size.height * 0.2,
+                child: Container(
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: const [
+                        BoxShadow(
+                          color: Colors.white,
+                          //blurRadius: 2,
+                          //spreadRadius: 2,
+                          //offset: Offset(0, 4)
+                        )
+                      ]),
+                  child: Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Container(
+                            width: MediaQuery.of(context).size.width * 0.75,
+                            color: Theme.of(context).primaryColor,
+                            child: Padding(
+                              padding: EdgeInsets.all(10.0),
+                              child: Text(
+                                "Looking For...",
+                                style: TextStyle(fontSize: 20,color: Colors.white),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
-                      onSelected: (selexted) {
-                        selectedCar = SelectedCar.truck;
-                        listenTruck(value);
-                        Navigator.pop(context);
-                      }),
-                  FilterChip(
-                      backgroundColor: Theme.of(context).primaryColor,
-                      label: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(
-                          getTranslation(context, "taxi"),
-                          style: TextStyle(color: Colors.white),
-                        ),
+                      Divider(),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          ElevatedButton(
+                              onPressed: () {
+                                selectedCar = SelectedCar.truck;
+                                listenTruck(value);
+                                Navigator.pop(context);
+                              },
+                              child: Text("Truck")),
+                          ElevatedButton(
+                              onPressed: () {
+                                selectedCar = SelectedCar.taxi;
+                                listenTaxi(value);
+                                Navigator.pop(context);
+                              },
+                              child: Text("Taxi")),
+                        ],
                       ),
-                      onSelected: (selexted) {
-                        selectedCar = SelectedCar.taxi;
-                        listenTaxi(value);
-                        Navigator.pop(context);
-                      }),
-                  // FilterChip(label: Text("Taxi"), onSelected: (selexted) {}),
-                  // ElevatedButton(
-                  //     onPressed: () {
-                  //       selectedCar = SelectedCar.truck;
-                  //       listenTruck(value);
-                  //       Navigator.pop(context);
-                  //     },
-                  //     child: const Text('Truck')),
-                  // ElevatedButton(
-                  //     onPressed: () {
-                  //       selectedCar = SelectedCar.taxi;
-                  //       listenTaxi(value);
-                  //       Navigator.pop(context);
-                  //     },
-                  //     child: const Text('Taxi')),
-                ],
+                      /*Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          FilterChip(
+                              backgroundColor: Theme.of(context).primaryColor,
+                              label: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Text(
+                                  getTranslation(context, "truck"),
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                              ),
+                              onSelected: (selexted) {
+                                selectedCar = SelectedCar.truck;
+                                listenTruck(value);
+                                Navigator.pop(context);
+                              }),
+                          FilterChip(
+                              backgroundColor: Theme.of(context).primaryColor,
+                              label: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Text(
+                                  getTranslation(context, "taxi"),
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                              ),
+                              onSelected: (selexted) {
+                                selectedCar = SelectedCar.taxi;
+                                listenTaxi(value);
+                                Navigator.pop(context);
+                              }),
+                          // FilterChip(label: Text("Taxi"), onSelected: (selexted) {}),
+                          // ElevatedButton(
+                          //     onPressed: () {
+                          //       selectedCar = SelectedCar.truck;
+                          //       listenTruck(value);
+                          //       Navigator.pop(context);
+                          //     },
+                          //     child: const Text('Truck')),
+                          // ElevatedButton(
+                          //     onPressed: () {
+                          //       selectedCar = SelectedCar.taxi;
+                          //       listenTaxi(value);
+                          //       Navigator.pop(context);
+                          //     },
+                          //     child: const Text('Taxi')),
+                        ],
+                      ),
+                      */
+                    ],
+                  ),
+                ),
               ),
             ),
           );
@@ -1235,113 +1317,105 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  bool onIosBackground(ServiceInstance service) {
+    WidgetsFlutterBinding.ensureInitialized();
+    print('FLUTTER BACKGROUND FETCH');
 
-bool onIosBackground(ServiceInstance service) {
-  WidgetsFlutterBinding.ensureInitialized();
-  print('FLUTTER BACKGROUND FETCH');
+    return true;
+  }
 
-  return true;
+  Future<void> initializeService() async {
+    final service = FlutterBackgroundService();
+    await service.configure(
+      androidConfiguration: AndroidConfiguration(
+        // this will be executed when app is in foreground or background in separated isolate
+        onStart: onStart,
+
+        // auto start service
+        autoStart: true,
+        isForegroundMode: true,
+      ),
+      iosConfiguration: IosConfiguration(
+        // auto start service
+        autoStart: true,
+
+        // this will be executed when app is in foreground in separated isolate
+        onForeground: onStart,
+
+        // you have to enable background fetch capability on xcode project
+        onBackground: onIosBackground,
+      ),
+    );
+    // service.startService();
+  }
+
+  void onStart(ServiceInstance service) async {
+    // Only available for flutter 3.0.0 and later
+    DartPluginRegistrant.ensureInitialized();
+
+    service.on('method').listen((event) {});
+
+    // For flutter prior to version 3.0.0
+    // We have to register the plugin manually
+
+    // SharedPreferences preferences = await SharedPreferences.getInstance();
+    // await preferences.setString("hello", "world");
+
+    // if (service is AndroidServiceInstance) {
+    // service.on('setAsForeground').listen((event) {
+    //   print("Yow Herererr as forground");
+    //   // service.setAsForegroundService();
+    // });
+
+    // service.on('setAsBackground').listen((event) {
+    //   print("Yow Herererr as background");
+
+    //   // service.setAsBackgroundService();
+    // });
+    // }
+
+    service.on('stopService').listen((event) {
+      print("Hereeeeeeeeeexx");
+      service.stopSelf();
+    });
+
+    // bring to foreground
+    // Timer.periodic(const Duration(seconds: 1), (timer) async {
+    //   final hello = preferences.getString("hello");
+    //   print(hello);
+
+    //   if (service is AndroidServiceInstance) {
+    //     service.setForegroundNotificationInfo(
+    //       title: "My App Service",
+    //       content: "Updated at ${DateTime.now()}",
+    //     );
+    //   }
+
+    //   /// you can see this log in logcat
+    //   print('FLUTTER BACKGROUND SERVICE: ${DateTime.now()}');
+
+    //   // test using external plugin
+    //   final deviceInfo = DeviceInfoPlugin();
+    //   String? device;
+    //   if (Platform.isAndroid) {
+    //     final androidInfo = await deviceInfo.androidInfo;
+    //     device = androidInfo.model;
+    //   }
+
+    //   if (Platform.isIOS) {
+    //     final iosInfo = await deviceInfo.iosInfo;
+    //     device = iosInfo.model;
+    //   }
+
+    //   service.invoke(
+    //     'update',
+    //     {
+    //       "current_date": DateTime.now().toIso8601String(),
+    //       "device": device,
+    //     },
+    //   );
+    // });
+  }
 }
-
-Future<void> initializeService() async {
-  final service = FlutterBackgroundService();
-  await service.configure(
-    androidConfiguration: AndroidConfiguration(
-      // this will be executed when app is in foreground or background in separated isolate
-      onStart: onStart,
-
-      // auto start service 
-      autoStart: true,
-      isForegroundMode: true,
-
-    ),
-    iosConfiguration: IosConfiguration(
-      // auto start service
-      autoStart: true,
-
-      // this will be executed when app is in foreground in separated isolate
-      onForeground: onStart,
-
-      // you have to enable background fetch capability on xcode project
-      onBackground: onIosBackground,
-    ),
-  );
-  // service.startService();
-}
-
-
-
-void onStart(ServiceInstance service) async {
-  // Only available for flutter 3.0.0 and later
-  DartPluginRegistrant.ensureInitialized();
-
-  service.on('method').listen((event) {
-  });
-
-  // For flutter prior to version 3.0.0
-  // We have to register the plugin manually
-
-  // SharedPreferences preferences = await SharedPreferences.getInstance();
-  // await preferences.setString("hello", "world");
-
-  // if (service is AndroidServiceInstance) {
-  // service.on('setAsForeground').listen((event) {
-  //   print("Yow Herererr as forground");
-  //   // service.setAsForegroundService();
-  // });
-
-  // service.on('setAsBackground').listen((event) {
-  //   print("Yow Herererr as background");
-
-  //   // service.setAsBackgroundService();
-  // });
-  // }
-
-  service.on('stopService').listen((event) {
-    print("Hereeeeeeeeeexx");
-    service.stopSelf();
-  });
-
-  // bring to foreground
-  // Timer.periodic(const Duration(seconds: 1), (timer) async {
-  //   final hello = preferences.getString("hello");
-  //   print(hello);
-
-  //   if (service is AndroidServiceInstance) {
-  //     service.setForegroundNotificationInfo(
-  //       title: "My App Service",
-  //       content: "Updated at ${DateTime.now()}",
-  //     );
-  //   }
-
-  //   /// you can see this log in logcat
-  //   print('FLUTTER BACKGROUND SERVICE: ${DateTime.now()}');
-
-  //   // test using external plugin
-  //   final deviceInfo = DeviceInfoPlugin();
-  //   String? device;
-  //   if (Platform.isAndroid) {
-  //     final androidInfo = await deviceInfo.androidInfo;
-  //     device = androidInfo.model;
-  //   }
-
-  //   if (Platform.isIOS) {
-  //     final iosInfo = await deviceInfo.iosInfo;
-  //     device = iosInfo.model;
-  //   }
-
-  //   service.invoke(
-  //     'update',
-  //     {
-  //       "current_date": DateTime.now().toIso8601String(),
-  //       "device": device,
-  //     },
-  //   );
-  // });
-}
-
-}
-
-
 
 // x-refresh-token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MjllMTkwNGM4YzA0ZTY4OTVhNDRkZTgiLCJuYW1lIjoiVGhvbWFzIFNhbmthcmEiLCJlbWFpbCI6InRvbWlsaUBnbWFpbC5jb20iLCJwaG9uZV9udW1iZXIiOiIrMjUxOTU0OTk5NzcyIiwicm9sZSI6WyJQYXNzZW5nZXIiXSwiZmNtX2lkIjoiY0lyZDNOa0xSLS1CQlBaR0hqMXlvQjpBUEE5MWJIbDllVXBRRzRaLTI4d3RRT21VU29Nam1aaXB5VEp6dElTUUFMWHgzbDA1NGRPZXh6NTNuaE9Tekx6Z0t0ZlBXTE9zclpaQWVjN1BsbE9PWWhIT3JNc052Ykg5eUVBLXotTDJXT2pQMlM3Z3pUTjNZME4wRi1Ra0FtZmFTUHlHQ2x5V3VDbCIsInRvcGljcyI6W10sImlhdCI6MTY1NTcyODYyMSwiZXhwIjoxNjY2MDk2NjIxfQ.qe11fRC98aF9ZlwPG4Poejj4koa1tfkmZBDCjtHhJ2U

@@ -5,6 +5,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 import 'package:passengerapp/bloc/bloc.dart';
 import 'package:passengerapp/helper/constants.dart';
 import 'package:passengerapp/helper/localization.dart';
@@ -16,6 +17,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:http/http.dart' as http;
 
+import '../../utils/session.dart';
 import '../../utils/waver.dart';
 
 class HistoryPage extends StatefulWidget {
@@ -120,7 +122,14 @@ class _HistoryPageState extends State<HistoryPage> {
                       ),
                     ),
                   )
-                : _buildShimmerEffect();
+                : //_buildShimmerEffect()
+            const Align(
+              alignment: Alignment.center,
+              child: Padding(
+                padding: EdgeInsets.only(top: 10, bottom: 40),
+                child: CircularProgressIndicator(),
+              ),
+            );
           },
         ),
         !_isFirst
@@ -422,6 +431,17 @@ class _HistoryPageState extends State<HistoryPage> {
             ):Container()
           ],
         ),
+
+        Padding(
+          padding: const EdgeInsets.all(2.0),
+          child: Text("Date:", style: TextStyle(
+              color: theme//,fontWeight: FontWeight.bold
+          ),),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Text(_formatedDate(trip.date!)),
+        ),
         Padding(
           padding: const EdgeInsets.all(2.0),
           child: Text("Origin", style: TextStyle(color: theme)),
@@ -444,7 +464,18 @@ class _HistoryPageState extends State<HistoryPage> {
       ],
     );
   }
-
+  String _formatedDate(String utcDate){
+    var str = "2019-04-05T14:00:51.000Z";
+    if(utcDate != "null"){
+      Session().logSession("date", utcDate);
+      //var newStr = utcDate.substring(0,10) + ' ' + utcDate.substring(11,23);
+      DateTime dt = DateTime.parse(str);
+      var date = DateFormat("EEE, d MMM yyyy HH:mm:ss").format(dt);
+      return date;
+    }else{
+      return "Unavailable";
+    }
+  }
   void getImageBit(RideRequest trip) async {
     //downloadImage(trip);
     await ImageUtils.networkImageToBase64(imageUrl(trip)).then((value) => {

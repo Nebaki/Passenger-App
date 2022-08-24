@@ -105,6 +105,8 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
                         fontWeight: FontWeight.bold, color: Theme.of(context).primaryColor),
                     fillColor: Colors.white,
                     // filled: true,
+                    border: const OutlineInputBorder(
+                        borderSide: BorderSide(style: BorderStyle.solid)),
                   ),
                   validator: (value) {
                     if (value!.isEmpty) {
@@ -138,6 +140,8 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
                   labelStyle: TextStyle(
                       fontWeight: FontWeight.bold, color: Theme.of(context).primaryColor),
                   fillColor: Colors.white,
+                  border: const OutlineInputBorder(
+                      borderSide: BorderSide(style: BorderStyle.solid)),
                 ),
                 validator: (value) {
                   return null;

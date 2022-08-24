@@ -165,13 +165,13 @@ class HomeScreenArgument {
 }
 
 class VerificationArgument {
-  String verificationId;
+  String? verificationId;
   int? resendingToken;
   String phoneNumber;
   String from;
   VerificationArgument(
-      {required this.verificationId,
-      required this.resendingToken,
+      {this.verificationId,
+      this.resendingToken,
       required this.phoneNumber,
       required this.from});
 }
