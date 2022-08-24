@@ -34,6 +34,8 @@ import 'package:passengerapp/screens/screens.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:passengerapp/widgets/widgets.dart';
 
+import '../../utils/waver.dart';
+
 class HomeScreen extends StatefulWidget {
   static const routeName = '/home';
   final HomeScreenArgument args;
@@ -434,7 +436,13 @@ class _HomeScreenState extends State<HomeScreen> {
                                   ),
                               listener: (context, state) {
                                 if (state is EmergencyReportCreating) {
-                                  showDialog(
+                                  ShowSnack(context: context,
+                                      message: getTranslation(context,
+                                          "emergency_reporting_message"),
+                                      duration: 20,
+                                      textColor: Colors.white,
+                                      backgroundColor: Theme.of(context).primaryColor).show();
+                                  /*showDialog(
                                       context: context,
                                       builder: (BuildContext context) {
                                         return AlertDialog(
@@ -458,8 +466,16 @@ class _HomeScreenState extends State<HomeScreen> {
                                           ),
                                         );
                                       });
+                                  */
                                 }
                                 if (state is EmergencyReportCreated) {
+
+                                  ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                                  ShowSnack(
+                                      context: context,
+                                      message: "Emergency report has been sent.",
+                                      backgroundColor: Colors.green).show();
+                                  /*
                                   Navigator.pop(context);
 
                                   showDialog(
@@ -489,16 +505,19 @@ class _HomeScreenState extends State<HomeScreen> {
                                                     context, "okay_action")))
                                           ],
                                         );
-                                      });
+                                      });*/
                                 }
                                 if (state is EmergencyReportOperationFailur) {
+                                  ShowSnack(context: context,message: "Reporting Failed, Try Again",
+                                      backgroundColor: Colors.red).show();
+                                  /*
                                   Navigator.pop(context);
                                   ScaffoldMessenger.of(context).showSnackBar(
                                       SnackBar(
                                           content: Text(getTranslation(context,
                                               "emergency_report_failure_message")),
                                           backgroundColor:
-                                              Colors.red.shade900));
+                                              Colors.red.shade900));*/
                                 }
                               }),
                         ],

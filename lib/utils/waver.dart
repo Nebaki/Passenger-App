@@ -147,3 +147,30 @@ class SafeAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Size get preferredSize => Size.fromHeight(appBar.preferredSize.height);
 }
+
+class ShowSnack {
+  BuildContext context;
+  String message;
+  Color? backgroundColor;
+  Color? textColor;
+  SnackBarAction? action;
+  int? duration;
+  ShowSnack(
+      {required this.context,
+        required this.message,
+        this.backgroundColor,
+        this.action,
+        this.duration,
+        this.textColor
+      });
+
+  void show() {
+    SnackBar snackBar = SnackBar(
+        content: Text(message,style: TextStyle(color: textColor)),
+        backgroundColor: backgroundColor,
+        action: action,
+        duration: Duration(seconds: duration ?? 4)
+    );
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  }
+}
