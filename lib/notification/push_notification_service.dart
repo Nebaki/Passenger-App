@@ -95,7 +95,7 @@ class PushNotificationService {
     });
   }
 
-  void seubscribeTopic() async {
+  void subscribeTopic() async {
     await FirebaseMessaging.instance.subscribeToTopic('global');
     await FirebaseMessaging.instance.subscribeToTopic('passenger');
 

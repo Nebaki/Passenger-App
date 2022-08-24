@@ -133,7 +133,7 @@ class _HomeScreenState extends State<HomeScreen> {
     _toggleInternetServiceStatusStream();
     _listenBackGroundMessage();
     pushNotificationService.initialize(context);
-    pushNotificationService.seubscribeTopic();
+    pushNotificationService.subscribeTopic();
     loadStartedTrip();
 
     if (context.read<ThemeModeCubit>().state == ThemeMode.system) {
