@@ -398,7 +398,7 @@ class _TripDetailState extends State<TripDetail>{
           ),
           Padding(
             padding: const EdgeInsets.all(8.0),
-            child: Text(_formatedDate(trip.date!)),
+            child: Text(_formatDate(trip.date!)),
           ),
           Padding(
             padding: const EdgeInsets.all(2.0),
@@ -447,7 +447,7 @@ class _TripDetailState extends State<TripDetail>{
       ),
     );
   }
-  String _formatedDate(String utcDate){
+  String _formatDate(String utcDate){
     var str = "2019-04-05T14:00:51.000Z";
     if(utcDate != "null"){
       Session().logSession("date", utcDate);

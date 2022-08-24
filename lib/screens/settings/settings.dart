@@ -35,7 +35,7 @@ class _SettingScreenState extends State<SettingScreen> {
                 pinned: true,
                 iconTheme: IconThemeData(color: Colors.white),
                 snap: false,
-                expandedHeight: 150,
+                expandedHeight: 200,
                 backgroundColor: Theme.of(context).primaryColor,
                 flexibleSpace: FlexibleSpaceBar(
                   background: CachedNetworkImage(

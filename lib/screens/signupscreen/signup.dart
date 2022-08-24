@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:passengerapp/bloc/bloc.dart';
+
 // import 'package:passengerapp/helper/constants.dart';
 import 'package:passengerapp/helper/localization.dart';
 import 'package:passengerapp/rout.dart';
@@ -22,6 +23,7 @@ class SignupScreen extends StatefulWidget {
   static const routeName = '/signup';
 
   const SignupScreen({Key? key}) : super(key: key);
+
   @override
   _SignupScreenState createState() => _SignupScreenState();
 }
@@ -57,7 +59,8 @@ class _SignupScreenState extends State<SignupScreen> {
               "Can't verify $phoneNumber \n error: ${verificationFailed.message}");
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
               backgroundColor: Colors.red.shade900,
-              content: Text(verificationFailed.message ?? "Error Happened"/*getTranslation(context, "incorrect_verification_code")*/)));
+              content: Text(verificationFailed.message ??
+                  "Error Happened" /*getTranslation(context, "incorrect_verification_code")*/)));
         },
         codeSent: (verificationId, resendingToken) async {
           // setState(() {
@@ -91,7 +94,6 @@ class _SignupScreenState extends State<SignupScreen> {
       return true;
     }
   }
-
 
   bool _isLoading = false;
 
@@ -151,7 +153,7 @@ class _SignupScreenState extends State<SignupScreen> {
               child: ListView(
                 children: [
                   Padding(
-                    padding: const EdgeInsets.only(left: 20.0,top: 200),
+                    padding: const EdgeInsets.only(left: 20.0, top: 200),
                     child: Text(
                       getTranslation(context, "signup_action"),
                       style: const TextStyle(
@@ -210,7 +212,8 @@ class _SignupScreenState extends State<SignupScreen> {
                   ),
 */
                   Padding(
-                    padding: const EdgeInsets.only(left: 15, right: 15, top: 10),
+                    padding:
+                        const EdgeInsets.only(left: 15, right: 15, top: 10),
                     child: TextFormField(
                       autofocus: true,
                       maxLength: 9,
@@ -228,10 +231,10 @@ class _SignupScreenState extends State<SignupScreen> {
                         ),*/
                         counterText: "",
                         prefixIconConstraints:
-                        const BoxConstraints(minWidth: 0, minHeight: 0),
+                            const BoxConstraints(minWidth: 0, minHeight: 0),
                         alignLabelWithHint: true,
                         //hintText: "Phone number",
-                        labelText:  Localization.of(context)
+                        labelText: Localization.of(context)
                             .getTranslation("phone_number"),
                         hintStyle: const TextStyle(
                             fontWeight: FontWeight.bold, color: Colors.black45),
@@ -253,15 +256,15 @@ class _SignupScreenState extends State<SignupScreen> {
                       ),
                       validator: (value) {
                         if (value!.isEmpty) {
-                          return  Localization.of(context)
+                          return Localization.of(context)
                               .getTranslation("phone_number_required");
                         } else if (value.length < 9) {
-                          return  Localization.of(context)
+                          return Localization.of(context)
                               .getTranslation("phone_number_short");
                         } else if (value.length > 9) {
-                          return  Localization.of(context)
+                          return Localization.of(context)
                               .getTranslation("phone_number_exceed");
-                        } else if(value.length == 9){
+                        } else if (value.length == 9) {
                           return null;
                         }
                         return null;
@@ -373,10 +376,10 @@ class _SignupScreenState extends State<SignupScreen> {
                             ));
                           } else {
                             //sendVerificationCode();
-                            Navigator.pushNamed(context, PhoneVerification.routeName,
+                            Navigator.pushNamed(
+                                context, PhoneVerification.routeName,
                                 arguments: VerificationArgument(
-                                    from: 'SignUp',
-                                    phoneNumber: phoneNumber));
+                                    from: 'SignUp', phoneNumber: phoneNumber));
                           }
                         }
                         if (state is UserOperationFailure) {
@@ -398,7 +401,7 @@ class _SignupScreenState extends State<SignupScreen> {
       ),
     );
   }
-  _createAccount(){
+  _createAccount() {
     checkInternet().then((value) {
       if (value) {
         showDialog(
@@ -406,28 +409,24 @@ class _SignupScreenState extends State<SignupScreen> {
             builder: (BuildContext context) {
               return AlertDialog(
                 shape: RoundedRectangleBorder(
-                    borderRadius:
-                    BorderRadius.circular(20.0)),
-                title: Text(getTranslation(
-                    context,
-                    "signup_confirmation_dialog_title"),style: TextStyle(color: themeProvider.getColor),),
-                content: Text.rich(TextSpan(
-                    text: getTranslation(
-                        context,
-                        "signup_confirmation_dialog_text"),
-                    children: [
-                      TextSpan(
-                          text:
-                          phoneNumber)
-                    ]),style: TextStyle(fontWeight: FontWeight.bold),),
+                    borderRadius: BorderRadius.circular(20.0)),
+                title: Text(
+                  getTranslation(context, "signup_confirmation_dialog_title"),
+                  style: TextStyle(color: themeProvider.getColor),
+                ),
+                content: Text.rich(
+                  TextSpan(
+                      text: getTranslation(
+                          context, "signup_confirmation_dialog_text"),
+                      children: [TextSpan(text: phoneNumber)]),
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
                 actions: [
                   TextButton(
                       onPressed: () {
-                        Navigator.pop(context,
-                            "Cancel");
+                        Navigator.pop(context, "Cancel");
                       },
-                      child: Text(getTranslation(
-                          context,
+                      child: Text(getTranslation(context,
                           "signup_confirmation_dialog_action_cancelation"))),
                   TextButton(
                       onPressed: () async {
@@ -435,13 +434,10 @@ class _SignupScreenState extends State<SignupScreen> {
                           _isLoading = true;
                         });
 
-                        Navigator.pop(
-                            context);
-                        checkPhoneNumber(
-                            phoneNumber);
+                        Navigator.pop(context);
+                        checkPhoneNumber(phoneNumber);
                       },
-                      child: Text(getTranslation(
-                          context,
+                      child: Text(getTranslation(context,
                           "signup_confirmation_dialog_action_approval")))
                 ],
               );

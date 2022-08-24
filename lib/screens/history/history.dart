@@ -149,7 +149,7 @@ class _HistoryPageState extends State<HistoryPage> {
                       alignment: Alignment.bottomCenter,
                       child: Padding(
                         padding: EdgeInsets.only(top: 10, bottom: 40),
-                        child: Text("You have riched the limit."),
+                        child: Text("Unable to load Histroy."),
                       ),
                     );
                   }
