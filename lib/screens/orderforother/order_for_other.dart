@@ -2,12 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_geofire/flutter_geofire.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:passengerapp/bloc/bloc.dart';
 import 'package:passengerapp/helper/constants.dart';
 import 'package:passengerapp/helper/localization.dart';
 import 'package:passengerapp/repository/nearby_driver.dart';
-import 'package:passengerapp/screens/home/assistant/home_screen_assistant.dart';
 import 'package:passengerapp/widgets/widgets.dart';
 import '../../localization/localization.dart';
 import '../../models/models.dart';
@@ -61,37 +59,6 @@ class _OrderForOtherScreenState extends State<OrderForOtherScreen> {
             key: _formKey,
             child: Column(
               children: [
-/*
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 10),
-                  child: InternationalPhoneNumberInput(
-                    onSaved: (value) {
-                      number = value.phoneNumber!;
-                    },
-                    inputDecoration: InputDecoration(
-                      hintText:
-                          getTranslation(context, "phone_number_of_passenger"),
-                      hintStyle: const TextStyle(
-                          fontWeight: FontWeight.w300, ),
-                    ),
-                    onInputChanged: (PhoneNumber phoneNum) {},
-                    initialValue: PhoneNumber(isoCode: "ET"),
-                    selectorConfig: const SelectorConfig(
-                      selectorType: PhoneInputSelectorType.BOTTOM_SHEET,
-                    ),
-                    ignoreBlank: false,
-                    autoValidateMode: AutovalidateMode.onUserInteraction,
-                    // selectorTextStyle: const TextStyle(color: Colors.black),
-                    formatInput: true,
-                    keyboardType: const TextInputType.numberWithOptions(
-                        signed: true, decimal: true),
-                    inputBorder:
-                        const OutlineInputBorder(borderSide: BorderSide.none),
-                    spaceBetweenSelectorAndTextField: 0,
-                  ),
-                ),
-*/
-
                 Padding(
                   padding:
                   const EdgeInsets.only(left: 15, right: 15, top: 10),
@@ -106,10 +73,6 @@ class _OrderForOtherScreenState extends State<OrderForOtherScreen> {
                     enabled: phoneEnabled,
                     decoration: InputDecoration(
                       labelStyle: TextStyle(color: Theme.of(context).primaryColor),
-
-                      /*enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.red, width: 5.0),
-                        ),*/
                       counterText: "",
                       prefixIconConstraints:
                       const BoxConstraints(minWidth: 0, minHeight: 0),

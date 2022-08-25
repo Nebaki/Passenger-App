@@ -1,9 +1,6 @@
 import 'dart:convert';
 import 'dart:math';
-
-// import 'package:dio/dio.dart';
 import 'package:http/http.dart' as http;
-
 import '../../models/auth/auth.dart';
 import '../../models/lottery/award.dart';
 import '../../models/lottery/ticket.dart';
@@ -38,7 +35,6 @@ class LotteryDataProvider {
 
       Session().logSession("ticket", response.body);
       return LotteryStore(lotteries: lotteries,total: size);
-      //return CreditStore.fromJson(jsonDecode(response.body));
     } else {
       Session().logSession("ticket", "failure");
       List<Ticket> lotteries = [];
@@ -50,7 +46,6 @@ class LotteryDataProvider {
         if (i == 4 || i == 8) {
           type = "Message";
         }
-        //credits.add(credit);
         i++;
       }
       if(response.statusCode == 401){
@@ -72,8 +67,6 @@ class LotteryDataProvider {
   Future<AwardStore> loadLotteryAwards(page, limit) async {
     String id = await authDataProvider.getUserId() ?? "null";
     Auth user = await authDataProvider.getUserData();
-    //var driverTypeR = user.vehicleType;
-    //var driverType = '${driverTypeR?.toLowerCase()}_driver';
     var driverType = 'passenger';
     Session().logSession("award", "driver_type: $driverType");
 
@@ -95,20 +88,9 @@ class LotteryDataProvider {
 
       Session().logSession("award", 'size $size');
       return AwardStore(awards: awards,total: size);
-      //return CreditStore.fromJson(jsonDecode(response.body));
     } else {
       Session().logSession("award", "failure");
       List<Award> awards = [];
-      int i = 0;
-      while (i < 10) {
-        var rng = Random();
-        int money = rng.nextInt(100) * i + 237;
-        var type = i % 2 == 0 ? 'Gift' : 'Message';
-        if (i == 4 || i == 8) {
-          type = "Message";
-        }
-        i++;
-      }
       if(response.statusCode == 401){
         _refreshToken(loadLotteryTickets);
       }

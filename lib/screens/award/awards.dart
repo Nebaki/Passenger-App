@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
 import 'package:intl/intl.dart';
 import '../../dataprovider/auth/auth.dart';
 import 'package:http/http.dart' as http;
-
 import '../../dataprovider/lottery/lottery.dart';
 import '../../models/lottery/award.dart';
 import '../../utils/waver.dart';
@@ -34,11 +32,6 @@ class _AwardScreenState extends State<AwardScreen> with AutomaticKeepAliveClient
     return Scaffold(
       body: Stack(
         children: [
-          /*AnimatedBackground(
-            behaviour: RandomParticleBehaviour(),
-            vsync: this,
-            child: Text('Hello'),
-          ),*/
           Opacity(
             opacity: 0.5,
             child: ClipPath(
@@ -136,11 +129,8 @@ class _AwardScreenState extends State<AwardScreen> with AutomaticKeepAliveClient
   // There is next page or not
   bool _hasNextPage = true;
 
-  // Used to display loading indicators when _loadMore function is running
   bool _isLoadMoreRunning = false;
 
-  // This function will be triggered whenver the user scroll
-  // to near the bottom of the list view
   void _loadMore() async {
     if (_hasNextPage == true &&
         _isMessageLoading == false &&

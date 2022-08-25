@@ -6,7 +6,6 @@ import 'package:passengerapp/rout.dart';
 import 'package:passengerapp/screens/signinscreen/signin.dart';
 import 'package:passengerapp/widgets/widgets.dart';
 import 'package:provider/provider.dart';
-
 import '../../utils/waver.dart';
 import '../theme/theme_provider.dart';
 
@@ -235,20 +234,6 @@ class _ResetPasswordState extends State<ResetPassword> {
         ),
       ),
       const CustomeBackArrow(),
-      // Padding(
-      //   padding: const EdgeInsets.only(top: 50),
-      //   child: Column(
-      //     children: [
-      //       Align(
-      //           alignment: Alignment.topCenter,
-      //           child: Text(
-      //             getTranslation(context, "award"),
-      //             style: Theme.of(context).textTheme.titleLarge,
-      //           )),
-      //           const Divider(thickness: 0.5,)
-      //     ],
-      //   ),
-      // )
     ]);
   }
 }

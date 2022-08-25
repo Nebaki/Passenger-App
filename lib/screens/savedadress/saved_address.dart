@@ -132,30 +132,6 @@ class SavedAddress extends StatelessWidget {
               );
             }),
           ),
-          /*const CustomeBackArrow(),
-          Positioned(
-            top: 40,
-            right: 10,
-            child: IconButton(
-                onPressed: () {
-                  Navigator.pushNamed(context, AddAddressScreen.routeName,
-                      arguments: AddAdressScreenArgument(edit: false));
-                },
-                icon: const Icon(
-                  Icons.add,
-                  // color: Colors.black,
-                )),
-          ),
-          Padding(
-            padding: const EdgeInsets.only(top: 50),
-            child: Align(
-                alignment: Alignment.topCenter,
-                child: Text(
-                  getTranslation(context, "saved_addresses"),
-                  style: Theme.of(context).textTheme.titleLarge,
-                )),
-          )
-          */
         ],
       ),
     );
@@ -268,7 +244,6 @@ class SavedAddress extends StatelessWidget {
                             padding: const EdgeInsets.all(5.0),
                             child: Text(
                               location!.name,
-                              //style: Theme.of(context).textTheme.overline,
                             ),
                           ),
                           const Divider(),
@@ -276,7 +251,6 @@ class SavedAddress extends StatelessWidget {
                             padding: const EdgeInsets.all(5.0),
                             child: Text(
                               location.address,
-                              //style: Theme.of(context).textTheme.subtitle1,
                             ),
                           )
                         ],
@@ -300,8 +274,6 @@ class SavedAddress extends StatelessWidget {
                     ),
                   ],
                 ),
-                //const Divider(),
-                //const SizedBox(height: 10),
               ],
             ),
           ),

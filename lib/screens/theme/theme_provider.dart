@@ -9,7 +9,6 @@ class ThemeProvider extends ChangeNotifier {
   late ThemeData _selectedTheme;
   late int _selectedThemeIndex;
   final secure_storage = const FlutterSecureStorage();
-  //late SharedPreferences prefs;
   late Color _active;
   ThemeProvider({required int theme}) {
     if (theme == 0) {
@@ -43,7 +42,6 @@ class ThemeProvider extends ChangeNotifier {
   Color get getColor => _active;
 
   Future<void> changeTheme(int theme) async {
-    //prefs = await SharedPreferences.getInstance();
     if (theme == 0) {
       _active = ColorProvider().primaryDeepGreen;
     } else if (theme == 1) {
@@ -65,8 +63,6 @@ class ThemeProvider extends ChangeNotifier {
     }
     _selectedThemeIndex = theme;
     secure_storage.write(key: "theme", value: theme.toString());
-    //await prefs.setInt("theme", theme);
-//notifying all the listeners(consumers) about the change.
     notifyListeners();
     _setupBars(theme);
   }
@@ -96,9 +92,7 @@ class ThemeProvider extends ChangeNotifier {
   _setupBars(int theme){
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
       systemNavigationBarColor: _themeColor(theme),
-      // navigation bar color
       statusBarColor: _themeColor(theme),
-      // status bar color
     ));
   }
 

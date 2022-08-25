@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
 import 'package:intl/intl.dart';
 import '../../dataprovider/auth/auth.dart';
 import '../../dataprovider/lottery/lottery.dart';
 import '../../models/lottery/ticket.dart';
 import 'package:http/http.dart' as http;
-
 import '../../utils/waver.dart';
 import '../theme/theme_provider.dart';
 import 'awards.dart';
@@ -34,11 +32,6 @@ class _TicketScreenState extends State<TicketScreen> with AutomaticKeepAliveClie
     return Scaffold(
       body: Stack(
         children: [
-          /*AnimatedBackground(
-            behaviour: RandomParticleBehaviour(),
-            vsync: this,
-            child: Text('Hello'),
-          ),*/
           Opacity(
             opacity: 0.5,
             child: ClipPath(
@@ -136,11 +129,8 @@ class _TicketScreenState extends State<TicketScreen> with AutomaticKeepAliveClie
   // There is next page or not
   bool _hasNextPage = true;
 
-  // Used to display loading indicators when _loadMore function is running
   bool _isLoadMoreRunning = false;
 
-  // This function will be triggered whenver the user scroll
-  // to near the bottom of the list view
   void _loadMore() async {
     if (_hasNextPage == true &&
         _isMessageLoading == false &&
@@ -154,7 +144,6 @@ class _TicketScreenState extends State<TicketScreen> with AutomaticKeepAliveClie
     }
   }
 
-  // The controller for the ListView
   late ScrollController _controller;
 
   Widget listHolder(items, theme) {
@@ -302,49 +291,6 @@ class _TicketScreenState extends State<TicketScreen> with AutomaticKeepAliveClie
                   ),
                 ),
               ),
-              /*Align(
-                alignment: Alignment.bottomLeft,
-                child: Padding(
-                  padding: const EdgeInsets.all(5.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(
-                        children: [
-                          Text(
-                            _formatedDate(credit.createdAt ?? sampleUtcU),
-                            style: const TextStyle(color: Colors.black),
-                          ),
-                        ],
-                      ),
-                      Row(
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Container(
-                                decoration: BoxDecoration(
-                                    color: theme,
-                                    border: Border.all(
-                                      color: theme,
-                                    ),
-                                    borderRadius: const BorderRadius.all(
-                                        Radius.circular(20))),
-                                child: const SizedBox(
-                                  width: 5,
-                                  height: 5,
-                                )),
-                          ),
-                          Text(
-                            unknownU,
-                            style: const TextStyle(color: Colors.black),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              */
             ],
           ),
         ),

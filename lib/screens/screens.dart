@@ -3,8 +3,6 @@ export 'signupscreen/signup.dart';
 export 'verification/verificationcode.dart';
 export 'home/home_screen.dart';
 export 'signupscreen/createprofile.dart';
-export 'searchlocation.dart';
-export 'profile/profile_detail.dart';
 export 'profile/edit_profile.dart';
 export 'history/history.dart';
 export 'settings/settings.dart';

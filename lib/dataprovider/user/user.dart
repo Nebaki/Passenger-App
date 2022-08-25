@@ -1,5 +1,4 @@
 import 'dart:convert';
-// import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http_parser/http_parser.dart';
@@ -52,9 +51,6 @@ class UserDataProvider {
       await secureStorage.write(
           key: "emergency_contact",
           value: output['passenger']['emergency_contact'] ?? "");
-
-      // prefs.setString('profile_picture_url', _imageBaseUrl + output['passenger']['profile_image']);
-      // print(_imageBaseUrl + output['passenger']['profile_image']);
       await secureStorage.write(
           key: 'profile_image',
           value: output['passenger']['profile_image'] != null
@@ -294,34 +290,3 @@ class UserDataProvider {
     }
   }
 }
-
-
-// image upload with dio
-
-// var dio = Dio();
-
-    // dio.interceptors
-    //     .add(InterceptorsWrapper(onRequest: (option, handler) async {
-    //   print("Yowwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww");
-
-    //   option.headers['x-access-token'] = await authDataProvider.getToken();
-
-    //   return handler.next(option);
-    // }, onResponse: (response, handler) {
-    //   print("Yowwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww");
-    //   print(response.statusMessage);
-    //   return handler.next(response);
-    // }, onError: (error, handler) {
-    //   print(error);
-    //   return handler.next(error);
-    // }));
-    // final formData = FormData.fromMap({
-    //   'profile_image': await MultipartFile.fromFile(file.path,
-    //       contentType: MediaType('image', 'jpg'))
-    // });
-
-    //   final response = await dio.post(
-    //     '$_baseUrl/update-profile-image',
-    //     data: formData,
-    //   );
-    //   print(response.statusCode);

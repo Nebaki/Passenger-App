@@ -250,13 +250,8 @@ class RideRequestDataProvider {
         }
       }),
     );
-// 622ef747b9eb9b904c5d2210
-
-    // dxGQlHGETnWjGYmlVy8Utn:APA91bErJaqPmsqfQOcStX6MYcBxfIAMr9kofXqF7bOBhftlZ3qo327e3PQ1jinm6o7FmtTy1LX4e0SE-dCUc2NwcyL6OJqKW7dagp6uTs8k-m6ynhp7NBotpPMaioTNxBuJFPz_RUif
-
     if (response.statusCode == 200) {
-      // final data = (response.body);
-      //return NotificationRequest.fromJson(data);
+
     } else {
       throw Exception('Failed to send notification.');
     }

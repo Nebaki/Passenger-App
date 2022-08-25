@@ -109,8 +109,6 @@ class _ServiceState extends State<Service> {
   }
 
   Widget serviceTypeWidget() {
-    // DriverEvent event = DriverLoad(widget.searchNeabyDriver());
-    // BlocProvider.of<DriverBloc>(context).add(event);
     return WillPopScope(
       onWillPop: () async {
         BlocProvider.of<DirectionBloc>(context).add(
@@ -248,12 +246,6 @@ class _ServiceState extends State<Service> {
                           return Container();
                         });
                       }
-                      // if (state is DriverLoadSuccess) {
-                      //   //  FirebaseMessaging.onMessage.listen((event) {
-              
-                      //   //   });
-              
-                      // }
                       if (state is DriverLoading) {
                         return ElevatedButton(
                           onPressed: null,
@@ -308,121 +300,3 @@ class _ServiceState extends State<Service> {
   }
 }
 
-// Row(
-//                 mainAxisAlignment: MainAxisAlignment.center,
-//                 children: [
-//                   GestureDetector(
-//                     onTap: () {
-//                       setState(() {
-//                         _isSelected = 1;
-//                       });
-//                     },
-//                     child: Column(
-//                       children: [
-//                         Container(
-//                           decoration: _isSelected == 1
-//                               ? BoxDecoration(
-//                                   boxShadow: const [
-//                                       BoxShadow(
-//                                           color:
-//                                               Color.fromRGBO(244, 201, 60, 1)),
-//                                     ],
-//                                   borderRadius: BorderRadius.circular(10),
-//                                   border: Border.all(
-//                                       width: 0.5, color: Colors.black))
-//                               : null,
-//                           child: const Image(
-//                               height: 50,
-//                               image: AssetImage(
-//                                   "assets/icons/economyCarIcon.png")),
-//                         ),
-//                         const SizedBox(
-//                           height: 5,
-//                         ),
-//                         const Text("Standart")
-//                       ],
-//                     ),
-//                   ),
-//                   const SizedBox(
-//                     width: 20,
-//                   ),
-//                   GestureDetector(
-//                     onTap: () {
-//                       setState(() {
-//                         _isSelected = 2;
-//                         priceMultiplier = 2;
-//                         durationMultiplier = 2;
-
-//                         DriverEvent event =
-//                             DriverLoad(widget.searchNeabyDriver());
-//                         BlocProvider.of<DriverBloc>(context).add(event);
-//                       });
-//                     },
-//                     child: Column(
-//                       children: [
-//                         Container(
-//                           decoration: _isSelected == 2
-//                               ? BoxDecoration(
-//                                   boxShadow: const [
-//                                       BoxShadow(
-//                                           color:
-//                                               Color.fromRGBO(244, 201, 60, 1)),
-//                                     ],
-//                                   borderRadius: BorderRadius.circular(10),
-//                                   border: Border.all(
-//                                       width: 0.5, color: Colors.black))
-//                               : null,
-//                           child: const Image(
-//                               height: 50,
-//                               image:
-//                                   AssetImage("assets/icons/lexuryCarIcon.png")),
-//                         ),
-//                         const SizedBox(
-//                           height: 5,
-//                         ),
-//                         const Text("XL")
-//                       ],
-//                     ),
-//                   ),
-//                   const SizedBox(
-//                     width: 20,
-//                   ),
-//                   GestureDetector(
-//                     onTap: () {
-//                       setState(() {
-//                         _isSelected = 3;
-//                         priceMultiplier = 2.5;
-//                         durationMultiplier = 2.5;
-//                         DriverEvent event =
-//                             DriverLoad(widget.searchNeabyDriver());
-//                         BlocProvider.of<DriverBloc>(context).add(event);
-//                       });
-//                     },
-//                     child: Column(
-//                       children: [
-//                         Container(
-//                           decoration: _isSelected == 3
-//                               ? BoxDecoration(
-//                                   boxShadow: const [
-//                                       BoxShadow(
-//                                           color:
-//                                               Color.fromRGBO(244, 201, 60, 1)),
-//                                     ],
-//                                   borderRadius: BorderRadius.circular(10),
-//                                   border: Border.all(
-//                                       width: 0.5, color: Colors.black))
-//                               : null,
-//                           child: const Image(
-//                               height: 50,
-//                               image:
-//                                   AssetImage("assets/icons/familyCarIcon.png")),
-//                         ),
-//                         const SizedBox(
-//                           height: 5,
-//                         ),
-//                         const Text("Family")
-//                       ],
-//                     ),
-//                   ),
-//                 ],
-//               ),

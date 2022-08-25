@@ -1,7 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:passengerapp/bloc/bloc.dart';
-import 'package:passengerapp/helper/constants.dart';
 import 'package:passengerapp/helper/localization.dart';
 import 'package:passengerapp/rout.dart';
 import 'package:passengerapp/screens/screens.dart';
@@ -18,14 +15,6 @@ class DriverOnTheWay extends StatefulWidget {
 }
 
 class _DriverOnTheWayState extends State<DriverOnTheWay> {
-  @override
-  void initState() {
-    // widget.fromBackGround
-    //     ? BlocProvider.of<DriverBloc>(context).add(DriverLoad(driverId!))
-    //     : null;
-    super.initState();
-  }
-
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
@@ -55,54 +44,6 @@ class _DriverOnTheWayState extends State<DriverOnTheWay> {
                   child: DirectionDetail(
                     fromBackGround: widget.appOpen,
                   )),
-              // Row(
-              //   mainAxisAlignment: MainAxisAlignment.spaceAround,
-              //   children: [
-              //     Column(
-              //       crossAxisAlignment: CrossAxisAlignment.start,
-              //       children: [
-              //         Text.rich(TextSpan(
-              //             text: "Price:      ",
-              //             style: _greyTextStyle,
-              //             children: [
-              //               TextSpan(
-              //                   text: "$ ", style: _blackTextStyle)
-              //             ])),
-              //         SizedBox(
-              //           height: 5,
-              //         ),
-              //         Text.rich(TextSpan(
-              //             text: "Member: ",
-              //             style: _greyTextStyle,
-              //             children: [
-              //               TextSpan(text: "1-4", style: _blackTextStyle)
-              //             ]))
-              //       ],
-              //     ),
-              //     SizedBox(height: 35, child: VerticalDivider()),
-              //     Column(
-              //       crossAxisAlignment: CrossAxisAlignment.start,
-              //       children: [
-              //         Text.rich(TextSpan(
-              //             text: "Distance: ",
-              //             style: _greyTextStyle,
-              //             children: [
-              //               TextSpan(text: "5 km", style: _blackTextStyle)
-              //             ])),
-              //         SizedBox(
-              //           height: 5,
-              //         ),
-              //         Text.rich(TextSpan(
-              //             text: "Time:      ",
-              //             style: _greyTextStyle,
-              //             children: [
-              //               TextSpan(text: "10 min", style: _blackTextStyle)
-              //             ]))
-              //       ],
-              //     )
-              //   ],
-              // ),
-
               Expanded(
                 flex: 1,
                 child: Padding(
@@ -115,8 +56,6 @@ class _DriverOnTheWayState extends State<DriverOnTheWay> {
                             Navigator.pushNamed(context, CancelReason.routeName,
                                 arguments:
                                     CancelReasonArgument(sendRequest: true));
-                            // widget.callback!(CancelTrip(widget.callback,
-                            //     DriverOnTheWay(widget.callback)));
                           },
                           child: Text(getTranslation(context, "cancel")))),
                 ),

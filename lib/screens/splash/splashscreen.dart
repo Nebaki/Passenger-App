@@ -30,17 +30,6 @@ class _CustomSplashScreenState extends State<CustomSplashScreen> {
 
   @override
   void initState() {
-    /*if (context.read<ThemeModeCubit>().state == ThemeMode.system) {
-      var window = WidgetsBinding.instance.window;
-      window.onPlatformBrightnessChanged = () {
-        if (window.platformBrightness == Brightness.dark) {
-          BlocProvider.of<ThemeModeCubit>(context).ActivateDarkTheme();
-        } else {
-          BlocProvider.of<ThemeModeCubit>(context).ActivateLightTheme();
-        }
-      };
-    }
-    */
     super.initState();
     _toggleInternetServiceStatusStream();
   }
@@ -56,7 +45,6 @@ class _CustomSplashScreenState extends State<CustomSplashScreen> {
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
       if (permission == LocationPermission.denied) {
-        // return Future.error('Location permissions are denied');
         return false;
       } else {
         return true;
@@ -281,16 +269,9 @@ class _CustomSplashScreenState extends State<CustomSplashScreen> {
       isFirstTime = true;
       showBanner = true;
       setState(() {});
-      // ScaffoldMessenger.of(context).showMaterialBanner(MaterialBanner(
-      //     content: Center(
-      //         child: Text(getTranslation(context, "no_internet_connection"))),
-      //     actions: [Container()]));
     } else {
       showBanner = false;
       setState(() {});
-      // ScaffoldMessenger.of(context).hideCurrentMaterialBanner();
-
-      // _checkStartedTrip();
       _getSettings();
     }
   }
@@ -301,16 +282,9 @@ class _CustomSplashScreenState extends State<CustomSplashScreen> {
       if (event == ConnectivityResult.none) {
         showBanner = true;
         setState(() {});
-        // ScaffoldMessenger.of(context).showMaterialBanner(MaterialBanner(
-
-        //     content: Center(
-        //         child: Text(getTranslation(context, "no_internet_connection"))),
-        //     actions: [Container()]));
       } else if (event == ConnectivityResult.wifi) {
         showBanner = false;
         setState(() {});
-        // ScaffoldMessenger.of(context).hideCurrentMaterialBanner();
-
         if (isFirstTime) {
           _getSettings();
         }
@@ -322,7 +296,6 @@ class _CustomSplashScreenState extends State<CustomSplashScreen> {
         isFirstTime = false;
         showBanner = false;
         setState(() {});
-        // ScaffoldMessenger.of(context).hideCurrentMaterialBanner();
       }
     });
   }

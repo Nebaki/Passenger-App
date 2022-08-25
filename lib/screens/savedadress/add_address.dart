@@ -6,7 +6,6 @@ import 'package:passengerapp/cubit/favorite_location_state.dart';
 import 'package:passengerapp/helper/constants.dart';
 import 'package:passengerapp/helper/localization.dart';
 import 'package:passengerapp/rout.dart';
-import 'package:passengerapp/widgets/widgets.dart';
 import '../../bloc/bloc.dart';
 import '../../models/models.dart';
 import '../../utils/waver.dart';
@@ -159,8 +158,6 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
                           initialPosition: initialPosition,
                           useCurrentLocation: true,
                           selectInitialPosition: true,
-
-                          //usePlaceDetailSearch: true,
                           onPlacePicked: (result) {
                             placeId = result.placeId;
                             address = result.formattedAddress;

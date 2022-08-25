@@ -18,8 +18,6 @@ class PushNotificationService {
 
   Future initialize(context) async {
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      // RemoteNotification? notification = message.notification;
-      // AndroidNotification? android = message.notification?.android;
       player.open(Audio("assets/sounds/announcement-sound.mp3"));
       switch (message.data['response']) {
         case 'Accepted':
@@ -31,8 +29,6 @@ class PushNotificationService {
               .changeWidget(const DriverOnTheWay(
             fromBackGround: false,appOpen: false,
           ));
-          // context.read<CurrentWidgetCubit>().changeWidget(DriverOnTheWay());
-
           requestAccepted();
           break;
         case 'Arrived':
@@ -54,16 +50,10 @@ class PushNotificationService {
             content: Text(getTranslation(context, "trip_cancelled")),
             // backgroundColor: Colors.indigo.shade900,
           ));
-          // context.read<CurrentWidgetCubit>().changeWidget(Service(true,false));
-
           break;
         case 'Started':
           BlocProvider.of<CurrentWidgetCubit>(context)
               .changeWidget(const StartedTripPannel());
-          // context
-          //     .read<CurrentWidgetCubit>()
-          //     .changeWidget(const StartedTripPannel());
-
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
             content: Text(getTranslation(context, "trip_started")),
             // backgroundColor: Colors.indigo.shade900,

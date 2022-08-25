@@ -36,9 +36,9 @@ class _WhereToState extends State<WhereTo> {
     return Container(
       height: MediaQuery.of(context).size.height * 0.22,
       padding: const EdgeInsets.only(top: 10, bottom: 10),
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
           color: Colors.white,
-          borderRadius: const BorderRadius.only(
+          borderRadius: BorderRadius.only(
               topLeft: Radius.circular(20), topRight: Radius.circular(20))),
       child: Column(
         children: [
@@ -87,9 +87,6 @@ class _WhereToState extends State<WhereTo> {
                               .add(const ReverseLocationLoad());
                           _buildReverseLocationLoadingDialog();
                         }
-                        // whereToClicked = true;
-                        // BlocProvider.of<LocationBloc>(context)
-                        //     .add(const ReverseLocationLoad());
                       },
                       child: SizedBox(
                         height: 35,
@@ -292,12 +289,6 @@ class _WhereToState extends State<WhereTo> {
 
             pickupAddress = prediction.mainText;
           }
-          // Navigator.pop(con);
-
-          // getPlaceDetail(prediction.placeId);
-          // LocationHistoryEvent event = LocationHistoryAdd(location: prediction);
-          // BlocProvider.of<LocationHistoryBloc>(context).add(event);
-          // settingDropOffDialog(con);
         },
         child: Container(
           color: Colors.black.withOpacity(0),
@@ -625,9 +616,6 @@ class _WhereToState extends State<WhereTo> {
                               boxShadow: const [
                                 BoxShadow(
                                   color: Colors.white,
-                                  //blurRadius: 2,
-                                  //spreadRadius: 2,
-                                  //offset: Offset(0, 4)
                                 )
                               ]
                           ),
@@ -676,9 +664,6 @@ class _WhereToState extends State<WhereTo> {
                               boxShadow: const [
                                 BoxShadow(
                                     color: Colors.white,
-                                    //blurRadius: 2,
-                                    //spreadRadius: 2,
-                                    //offset: Offset(0, 4)
                                 )
                               ]
                           ),
@@ -712,10 +697,6 @@ class _WhereToState extends State<WhereTo> {
               ],
             ),
           );
-
-          // SearchScreen(
-          //     args: SearchScreenArgument(
-          //         currentLocation: currentLocation));
         });
   }
 }

@@ -121,11 +121,6 @@ class ReviewScreen extends StatelessWidget {
                                       image: DecorationImage(
                                         image: imageProvider,
                                         fit: BoxFit.cover,
-                                        //colorFilter:
-                                        //     const ColorFilter.mode(
-                                        //   Colors.red,
-                                        //   BlendMode.colorBurn,
-                                        // ),
                                       ),
                                     ),
                                   ),
@@ -152,7 +147,6 @@ class ReviewScreen extends StatelessWidget {
                               direction: Axis.horizontal,
                               allowHalfRating: false,
                               itemCount: 5,
-                              //itemPadding: EdgeInsets.symmetric(horizontal: 4.0),
                               itemBuilder: (context, _) =>
                                   const Icon(Icons.star, color: Colors.green),
                               onRatingUpdate: (rating) {});
@@ -170,7 +164,6 @@ class ReviewScreen extends StatelessWidget {
                     direction: Axis.horizontal,
                     allowHalfRating: true,
                     itemCount: 5,
-                    //itemPadding: EdgeInsets.symmetric(horizontal: 4.0),
                     itemBuilder: (context, _) =>
                         const Icon(Icons.star, color: Colors.green),
                     onRatingUpdate: (rating) {

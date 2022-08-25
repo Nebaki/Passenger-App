@@ -3,9 +3,6 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:passengerapp/screens/screens.dart';
 import 'models/models.dart';
 import 'screens/award/lottery.dart';
-import 'screens/settings/pages/feedbacks.dart';
-import 'screens/settings/pages/privacy.dart';
-import 'screens/settings/pages/terms.dart';
 
 class AppRoute {
   static Route generateRoute(RouteSettings settings) {

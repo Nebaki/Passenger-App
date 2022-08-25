@@ -19,8 +19,6 @@ class ThemesData {
           backgroundColor: Colors.grey.shade900,
           foregroundColor: Colors.white,
           extendedTextStyle: const TextStyle(color: Colors.white)),
-      // progressIndicatorTheme:
-      //     const ProgressIndicatorThemeData(color: Colors.green),
       scaffoldBackgroundColor: Colors.grey.shade900,
       textButtonTheme: TextButtonThemeData(
           style: ButtonStyle(

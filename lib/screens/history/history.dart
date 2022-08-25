@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -12,11 +11,9 @@ import 'package:passengerapp/helper/localization.dart';
 import 'package:passengerapp/models/models.dart';
 import 'package:passengerapp/rout.dart';
 import 'package:passengerapp/screens/screens.dart';
-import 'package:passengerapp/widgets/widgets.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:http/http.dart' as http;
-
 import '../../utils/session.dart';
 import '../../utils/waver.dart';
 
@@ -30,7 +27,6 @@ class HistoryPage extends StatefulWidget {
 }
 
 class _HistoryPageState extends State<HistoryPage> {
-  // final _textStyle = TextStyle(fontSize: 20);
   final _appBar = GlobalKey<FormState>();
 
   int _skip = 0;
@@ -157,17 +153,6 @@ class _HistoryPageState extends State<HistoryPage> {
                 },
               )
             : Container(),
-        //const CustomeBackArrow(),
-        /*Padding(
-          padding: const EdgeInsets.only(top: 50),
-          child: Align(
-              alignment: Alignment.topCenter,
-              child: Text(
-                getTranslation(context, "history_detail_title"),
-                style: Theme.of(context).textTheme.titleLarge,
-              )),
-        )
-        */
       ],
     ));
   }
@@ -360,10 +345,6 @@ class _HistoryPageState extends State<HistoryPage> {
                                 decoration:
                                     const BoxDecoration(color: Colors.black),
                               ),
-                              // Text(
-                              //   "${request.price != 'null' ? double.parse(request.price!).truncate() : 0} ETB",
-                              //   // style: const TextStyle(color: Colors.black),
-                              // )
                             ],
                           )
                         ],
@@ -485,11 +466,6 @@ class _HistoryPageState extends State<HistoryPage> {
       //updateDB(trip)
     });
   }
-/*
-  Future<void> updateDB(RideRequest trip) async {
-    await HistoryDB().updateTrip(trip).then((value) => {update()});
-  }
-  */
   String imageUrl(RideRequest trip) {
     String googleAPiKey = "AIzaSyB8z8UeyROt2-ay24jiHrrcMXaEAlPUvdQ";
     return "https://maps.googleapis.com/maps/api/staticmap?"

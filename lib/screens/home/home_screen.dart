@@ -8,8 +8,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_animarker/widgets/animarker.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
-
-// ignore: import_of_legacy_library_into_null_safe
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_geofire/flutter_geofire.dart';
 import 'package:geolocator/geolocator.dart';
@@ -30,7 +28,6 @@ import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:passengerapp/screens/home/assistant/home_screen_assistant.dart';
 import 'package:passengerapp/screens/screens.dart';
 
-// ignore: unnecessary_import
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:passengerapp/widgets/widgets.dart';
 
@@ -71,12 +68,7 @@ class _HomeScreenState extends State<HomeScreen> {
     target: LatLng(8.9806, 38.7578),
     zoom: 16.4746,
   );
-
-  // late String _darkMapStyle;
   late String _nightMapStyle;
-
-  // late String _retroMapStyle;
-  // late String _aubergineMapStyle;
   late String serviceStatusValue;
   bool? internetServiceStatus;
   late bool isFirstTime;
@@ -87,13 +79,6 @@ class _HomeScreenState extends State<HomeScreen> {
   Future _loadMapStyles() async {
     _nightMapStyle =
         await rootBundle.loadString("assets/map_styles/night.json");
-    // _aubergineMapStyle =
-    //     await rootBundle.loadString('assets/map_styles/aubergine.json');
-    //       _darkMapStyle =
-    //     await rootBundle.loadString('assets/map_styles/dark.json');
-
-    //     _retroMapStyle =
-    //     await rootBundle.loadString("assets/map_styles/retro.json");
   }
 
   Future<Position> _determinePosition() async {
@@ -158,7 +143,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void dispose() {
-    // context.read<UserBloc>().add(UserSetAvailability([], false));
     IsolateNameServer.removePortNameMapping(portName);
     _serviceStatusStreamSubscription!.cancel();
     _connectivitySubscription!.cancel();
@@ -207,10 +191,6 @@ class _HomeScreenState extends State<HomeScreen> {
                             if (widget.args.isFromSplash) {
                               carTypeSelectorDialog(value);
                             }
-                            // MediaQuery.of(context).platformBrightness ==
-                            //         Brightness.dark
-                            //     ? controller.setMapStyle(_darkMapStyle)
-                            //     : null;
                             currentLatLng =
                                 LatLng(value.latitude, value.longitude);
                             pickupLatLng = currentLatLng;
@@ -405,32 +385,12 @@ class _HomeScreenState extends State<HomeScreen> {
                                                         EmergencyReportBloc>(
                                                     context)
                                                 .add(event);
-
-                                            /*Geolocator.getCurrentPosition()
-                                                .then((value) {
-                                              carTypeSelectorDialog(value);
-                                              currentPostion = value;
-                                              userPostion = currentPostion;
-                                              currentLatLng = LatLng(
-                                                  value.latitude,
-                                                  value.longitude);
-                                              // pickupLatLng = currentLatLng;
-                                              outerController.animateCamera(
-                                                  CameraUpdate.newCameraPosition(
-                                                      CameraPosition(
-                                                          zoom: 16.1746,
-                                                          target:
-                                                              currentLatLng)));
-                                            });*/
                                           },
                                           child: const Text(
                                             'SOS',
                                             style: TextStyle(
                                                 fontWeight: FontWeight.bold,
                                                 fontSize: 18),
-
-                                            // color: Colors.indigo.shade900,
-                                            // size: 35,
                                           )),
                                     ),
                                   ),
@@ -442,31 +402,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                       duration: 20,
                                       textColor: Colors.white,
                                       backgroundColor: Theme.of(context).primaryColor).show();
-                                  /*showDialog(
-                                      context: context,
-                                      builder: (BuildContext context) {
-                                        return AlertDialog(
-                                          content: Row(
-                                            children: [
-                                              const SizedBox(
-                                                height: 20,
-                                                width: 20,
-                                                child:
-                                                    CircularProgressIndicator(
-                                                  strokeWidth: 1,
-                                                  color: Colors.red,
-                                                ),
-                                              ),
-                                              const SizedBox(
-                                                width: 5,
-                                              ),
-                                              Text(getTranslation(context,
-                                                  "emergency_reporting_message")),
-                                            ],
-                                          ),
-                                        );
-                                      });
-                                  */
                                 }
                                 if (state is EmergencyReportCreated) {
 
@@ -475,49 +410,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                       context: context,
                                       message: "Emergency report has been sent.",
                                       backgroundColor: Colors.green).show();
-                                  /*
-                                  Navigator.pop(context);
-
-                                  showDialog(
-                                      context: context,
-                                      builder: (BuildContext context) {
-                                        return AlertDialog(
-                                          content: Row(
-                                            children: [
-                                              const SizedBox(
-                                                  height: 20,
-                                                  width: 20,
-                                                  child: Icon(Icons.done,
-                                                      color: Colors.green)),
-                                              const SizedBox(
-                                                width: 5,
-                                              ),
-                                              Text(getTranslation(context,
-                                                  "emergency_report_success_message")),
-                                            ],
-                                          ),
-                                          actions: [
-                                            TextButton(
-                                                onPressed: () {
-                                                  Navigator.pop(context);
-                                                },
-                                                child: Text(getTranslation(
-                                                    context, "okay_action")))
-                                          ],
-                                        );
-                                      });*/
                                 }
                                 if (state is EmergencyReportOperationFailur) {
                                   ShowSnack(context: context,message: "Reporting Failed, Try Again",
                                       backgroundColor: Colors.red).show();
-                                  /*
-                                  Navigator.pop(context);
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                          content: Text(getTranslation(context,
-                                              "emergency_report_failure_message")),
-                                          backgroundColor:
-                                              Colors.red.shade900));*/
                                 }
                               }),
                         ],
@@ -536,14 +432,6 @@ class _HomeScreenState extends State<HomeScreen> {
               ],
             ),
           ),
-          // Padding(
-          //   padding: const EdgeInsets.only(top: 40),
-          //   child: ElevatedButton(onPressed: () {
-          //     // print('Tokk ${FirebaseMessaging.instance.getToken()}');
-          //     FlutterBackgroundService().invoke("stopService");
-          //     // FlutterBackgroundService().startService();
-          //   }, child: const Text("Maintenance")),
-          // )
         ],
       ),
     );
@@ -784,16 +672,10 @@ class _HomeScreenState extends State<HomeScreen> {
         });
       });
     }
-
-    // setState(() {
-    //   markers = newMarker;
-    // });
   }
 
   void changeCameraView() {
     final destinationLatLng = droppOffLatLng;
-    // final pickupLatLng = pickUp;
-    // pickupLatLng = LatLng(currentLatLng.latitude, currentLatLng.longitude);
     if (pickupLatLng.latitude > destinationLatLng.latitude &&
         pickupLatLng.longitude > destinationLatLng.longitude) {
       latLngBounds =
@@ -981,9 +863,6 @@ class _HomeScreenState extends State<HomeScreen> {
                       boxShadow: const [
                         BoxShadow(
                           color: Colors.white,
-                          //blurRadius: 2,
-                          //spreadRadius: 2,
-                          //offset: Offset(0, 4)
                         )
                       ]),
                   child: Column(
@@ -1021,55 +900,6 @@ class _HomeScreenState extends State<HomeScreen> {
                               child: Text("Taxi")),
                         ],
                       ),
-                      /*Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          FilterChip(
-                              backgroundColor: Theme.of(context).primaryColor,
-                              label: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Text(
-                                  getTranslation(context, "truck"),
-                                  style: TextStyle(color: Colors.white),
-                                ),
-                              ),
-                              onSelected: (selexted) {
-                                selectedCar = SelectedCar.truck;
-                                listenTruck(value);
-                                Navigator.pop(context);
-                              }),
-                          FilterChip(
-                              backgroundColor: Theme.of(context).primaryColor,
-                              label: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Text(
-                                  getTranslation(context, "taxi"),
-                                  style: TextStyle(color: Colors.white),
-                                ),
-                              ),
-                              onSelected: (selexted) {
-                                selectedCar = SelectedCar.taxi;
-                                listenTaxi(value);
-                                Navigator.pop(context);
-                              }),
-                          // FilterChip(label: Text("Taxi"), onSelected: (selexted) {}),
-                          // ElevatedButton(
-                          //     onPressed: () {
-                          //       selectedCar = SelectedCar.truck;
-                          //       listenTruck(value);
-                          //       Navigator.pop(context);
-                          //     },
-                          //     child: const Text('Truck')),
-                          // ElevatedButton(
-                          //     onPressed: () {
-                          //       selectedCar = SelectedCar.taxi;
-                          //       listenTaxi(value);
-                          //       Navigator.pop(context);
-                          //     },
-                          //     child: const Text('Taxi')),
-                        ],
-                      ),
-                      */
                     ],
                   ),
                 ),
@@ -1200,10 +1030,6 @@ class _HomeScreenState extends State<HomeScreen> {
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                           style: Theme.of(context).textTheme.bodyText2)),
-                  // Expanded(
-                  //     child: Text(
-                  //         "For better accuracy,please turn on both GPS and WIFI location services",
-                  //         style: Theme.of(context).textTheme.bodyText2)),
                   Expanded(
                       flex: 2,
                       child: SizedBox(
@@ -1312,8 +1138,6 @@ class _HomeScreenState extends State<HomeScreen> {
             );
         }
 
-        ///////////////////////
-
         _getPolyline(widget.args.encodedPts!);
         _addMarker(
             pickupLatLng,
@@ -1344,51 +1168,25 @@ class _HomeScreenState extends State<HomeScreen> {
     final service = FlutterBackgroundService();
     await service.configure(
       androidConfiguration: AndroidConfiguration(
-        // this will be executed when app is in foreground or background in separated isolate
         onStart: onStart,
 
-        // auto start service
         autoStart: true,
         isForegroundMode: true,
       ),
       iosConfiguration: IosConfiguration(
-        // auto start service
         autoStart: true,
 
-        // this will be executed when app is in foreground in separated isolate
         onForeground: onStart,
 
-        // you have to enable background fetch capability on xcode project
         onBackground: onIosBackground,
       ),
     );
-    // service.startService();
   }
 
   void onStart(ServiceInstance service) async {
-    // Only available for flutter 3.0.0 and later
     DartPluginRegistrant.ensureInitialized();
 
     service.on('method').listen((event) {});
-
-    // For flutter prior to version 3.0.0
-    // We have to register the plugin manually
-
-    // SharedPreferences preferences = await SharedPreferences.getInstance();
-    // await preferences.setString("hello", "world");
-
-    // if (service is AndroidServiceInstance) {
-    // service.on('setAsForeground').listen((event) {
-    //   print("Yow Herererr as forground");
-    //   // service.setAsForegroundService();
-    // });
-
-    // service.on('setAsBackground').listen((event) {
-    //   print("Yow Herererr as background");
-
-    //   // service.setAsBackgroundService();
-    // });
-    // }
 
     service.on('stopService').listen((event) {
       print("Hereeeeeeeeeexx");
@@ -1433,5 +1231,3 @@ class _HomeScreenState extends State<HomeScreen> {
     // });
   }
 }
-
-// x-refresh-token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MjllMTkwNGM4YzA0ZTY4OTVhNDRkZTgiLCJuYW1lIjoiVGhvbWFzIFNhbmthcmEiLCJlbWFpbCI6InRvbWlsaUBnbWFpbC5jb20iLCJwaG9uZV9udW1iZXIiOiIrMjUxOTU0OTk5NzcyIiwicm9sZSI6WyJQYXNzZW5nZXIiXSwiZmNtX2lkIjoiY0lyZDNOa0xSLS1CQlBaR0hqMXlvQjpBUEE5MWJIbDllVXBRRzRaLTI4d3RRT21VU29Nam1aaXB5VEp6dElTUUFMWHgzbDA1NGRPZXh6NTNuaE9Tekx6Z0t0ZlBXTE9zclpaQWVjN1BsbE9PWWhIT3JNc052Ykg5eUVBLXotTDJXT2pQMlM3Z3pUTjNZME4wRi1Ra0FtZmFTUHlHQ2x5V3VDbCIsInRvcGljcyI6W10sImlhdCI6MTY1NTcyODYyMSwiZXhwIjoxNjY2MDk2NjIxfQ.qe11fRC98aF9ZlwPG4Poejj4koa1tfkmZBDCjtHhJ2U

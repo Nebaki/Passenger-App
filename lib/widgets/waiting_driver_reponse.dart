@@ -1,8 +1,6 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:passengerapp/helper/localization.dart';
-
 import 'package:passengerapp/rout.dart';
 import 'package:passengerapp/screens/screens.dart';
 
@@ -53,16 +51,16 @@ class _WaitingDriverResponseState extends State<WaitingDriverResponse> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
                 color: Colors.white,
-                boxShadow: const [
+                boxShadow: [
                   BoxShadow(
                       blurRadius: 3,
                       color: Colors.grey,
                       blurStyle: BlurStyle.outer,
                       spreadRadius: 2)
                 ],
-                borderRadius: const BorderRadius.only(
+                borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(20),
                     topRight: Radius.circular(20))),
             child: Column(
@@ -94,9 +92,6 @@ class _WaitingDriverResponseState extends State<WaitingDriverResponse> {
                                     context, CancelReason.routeName,
                                     arguments: CancelReasonArgument(
                                         sendRequest: true));
-
-                                // callback!(CancelTrip(
-                                //     callback, WaitingDriverResponse(callback)));
                               },
                               child: Text(
                                 getTranslation(context, "cancel"),
@@ -131,20 +126,4 @@ class _WaitingDriverResponseState extends State<WaitingDriverResponse> {
       ),
     );
   }
-
-  // void sendNotification(BuildContext context, String fcm, String id) {
-  //   RideRequestEvent event = RideRequestSendNotification(
-  //       RideRequest(
-  //           driverFcm: fcm,
-  //           driverId: id,
-  //           passengerName: name,
-  //           passengerPhoneNumber: number,
-  //           pickUpAddress: pickupAddress,
-  //           droppOffAddress: droppOffAddress,
-  //           pickupLocation: pickupLatLng,
-  //           dropOffLocation: droppOffLatLng),
-  //       rideRequestId);
-
-  //   BlocProvider.of<RideRequestBloc>(context).add(event);
-  // }
 }

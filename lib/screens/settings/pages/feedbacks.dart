@@ -1,10 +1,7 @@
 import 'dart:ui';
-
 import 'package:flutter/material.dart';
-
 import 'package:http/http.dart' as http;
 import 'package:passengerapp/dataprovider/send_feedback.dart';
-import 'package:passengerapp/utils/service.dart';
 
 class FeedbackScreen extends StatefulWidget {
   static const routeName = "/feedback";

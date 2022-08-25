@@ -4,7 +4,6 @@ import 'package:passengerapp/helper/localization.dart';
 import 'package:passengerapp/models/models.dart';
 import 'package:passengerapp/rout.dart';
 import 'package:passengerapp/utils/session.dart';
-
 import '../../utils/waver.dart';
 import '../theme/theme_provider.dart';
 import 'package:provider/provider.dart';
@@ -226,14 +225,6 @@ class DetailHistoryScreen extends StatelessWidget {
                           const SizedBox(
                             height: 20,
                           ),
-                          // const Text(
-                          //   "This trip was towards your destination you recieved Guaranted fare",
-                          //   style: TextStyle(
-                          //       fontSize: 9,
-                          //       color: Colors.black26,
-                          //       fontWeight: FontWeight.bold),
-                          //   textAlign: TextAlign.start,
-                          // )
                         ],
                       ),
                     ),
@@ -431,18 +422,6 @@ class _TripDetailState extends State<TripDetail>{
             padding: const EdgeInsets.all(8.0),
             child: Text("${trip.distance} KM"),
           ),
-
-          /*Padding(
-            padding: const EdgeInsets.all(2.0),
-            child: Text("Trip Ended Time:", style: TextStyle(
-                color: theme//,fontWeight: FontWeight.bold
-            ),),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Text(_formatedDate(trip.date!)),
-          ),
-          */
         ],
       ),
     );

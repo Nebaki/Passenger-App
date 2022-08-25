@@ -1,6 +1,4 @@
 import 'dart:convert';
-// import 'dart:io';
-// import 'package:retry/retry.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:passengerapp/dataprovider/dataproviders.dart';
@@ -13,19 +11,6 @@ class SettingsDataProvider {
   AuthDataProvider authDataProvider =
       AuthDataProvider(httpClient: http.Client());
   SettingsDataProvider({required this.httpClient});
-
-  // Future<http.Response> refreshToken() async {
-  //   print("refresh token method called");
-  //   http.Response response = await httpClient
-  //       .get(Uri.parse(api.AuthEndPoints.refreshTokenEndPoint()));
-  //   print("refresh token response code: ${response.statusCode}");
-  //   if (response.statusCode == 200) {
-  //     final token = jsonDecode(response.body)['token'];
-  //     secureStorage.write(key: "token", value: token);
-  //   }
-  //   return response;
-  // }
-
   Future<Settings> getSettings() async {
     http.Response response = await httpClient.get(
         Uri.parse(api.SettingsEndPoint.getSettingsEndPoint()),

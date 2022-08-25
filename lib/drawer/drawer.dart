@@ -1,13 +1,11 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-// ignore: import_of_legacy_library_into_null_safe
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:passengerapp/bloc/bloc.dart';
 import 'package:passengerapp/bloc/database/location_history_bloc.dart';
 import 'package:passengerapp/cubit/cubits.dart';
 import 'package:passengerapp/cubit/favorite_location.dart';
 import 'package:passengerapp/dataprovider/auth/auth.dart';
-import 'package:passengerapp/drawer/custome_paint.dart';
 import 'package:passengerapp/helper/localization.dart';
 import 'package:passengerapp/screens/screens.dart';
 import 'package:http/http.dart' as http;
@@ -110,55 +108,6 @@ class NavDrawer extends StatelessWidget {
                                           );
                                         }),)
                                   )),
-                              /*BlocBuilder<ThemeModeCubit, ThemeMode>(
-                                  builder: (context, state) {
-                                if (state == ThemeMode.light) {
-                                  return IconButton(
-                                      onPressed: () {
-                                        context
-                                            .read<ThemeModeCubit>()
-                                            .ActivateDarkTheme();
-                                      },
-                                      color: Colors.black,
-                                      icon: const Icon(Icons.dark_mode_outlined));
-                                }
-                                if (state == ThemeMode.dark) {
-                                  return IconButton(
-                                      onPressed: () {
-                                        context
-                                            .read<ThemeModeCubit>()
-                                            .ActivateLightTheme();
-                                      },
-                                      color: Colors.white,
-                                      icon:
-                                          const Icon(Icons.light_mode_outlined));
-                                }
-                                if (state == ThemeMode.system) {
-                                  Brightness brightness =
-                                      MediaQuery.of(context).platformBrightness;
-                                  return brightness == Brightness.dark
-                                      ? IconButton(
-                                          onPressed: () {
-                                            context
-                                                .read<ThemeModeCubit>()
-                                                .ActivateLightTheme();
-                                          },
-                                          color: Colors.white,
-                                          icon: const Icon(
-                                              Icons.light_mode_outlined))
-                                      : IconButton(
-                                          onPressed: () {
-                                            context
-                                                .read<ThemeModeCubit>()
-                                                .ActivateDarkTheme();
-                                          },
-                                          color: Colors.black,
-                                          icon: const Icon(
-                                              Icons.dark_mode_outlined));
-                                }
-                                return Container();
-                              }),
-                              */
                             ],
                           ),
                           const SizedBox(
@@ -289,38 +238,6 @@ class NavDrawer extends StatelessWidget {
                           ),
                         ),
                       ),
-/*
-                              Card(
-                                elevation: 1,
-                                child: Padding(
-                                  padding: const EdgeInsets.only(
-                                      left: 10.0, top: 5, bottom: 5, right: 10),
-                                  child: GestureDetector(
-                                    onTap: () {
-                                      Navigator.pushNamed(
-                                          context, SettingScreen.routeName);
-                                    },
-                                    child: Row(
-                                      children: [
-                                        Icon(
-                                          Icons.settings,
-                                          color: themeProvider.getColor,
-                                        ),
-                                        Padding(
-                                          padding: const EdgeInsets.all(3.0),
-                                          child: Text(
-                                            "Settings",
-                                            style: TextStyle(
-                                                color: themeProvider.getColor),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ),
-*/
-
                       Container(
                         padding: const EdgeInsets.only(
                             left: 10, bottom: 20, top: 10),
@@ -386,103 +303,6 @@ class NavDrawer extends StatelessWidget {
                             ],
                           ),
                         ),
-                        /*child: ListView(
-                              scrollDirection: Axis.horizontal,
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: GestureDetector(
-                                    onTap: () {
-                                      themeProvider.changeTheme(0);
-                                    },
-                                    child: Container(
-                                      color: ColorProvider().primaryDeepGreen,
-                                      height: 50,
-                                      width: 50,
-                                    ),
-                                  ),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: GestureDetector(
-                                    onTap: () {
-                                      themeProvider.changeTheme(1);
-                                    },
-                                    child: Container(
-                                      color: ColorProvider().primaryDeepRed,
-                                      height: 50,
-                                      width: 50,
-                                    ),
-                                  ),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: GestureDetector(
-                                    onTap: () {
-                                      themeProvider.changeTheme(2);
-                                    },
-                                    child: Container(
-                                      color: ColorProvider().primaryDeepPurple,
-                                      height: 50,
-                                      width: 50,
-                                    ),
-                                  ),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: GestureDetector(
-                                    onTap: () {
-                                      themeProvider.changeTheme(3);
-                                    },
-                                    child: Container(
-                                      color: ColorProvider().primaryDeepOrange,
-                                      height: 50,
-                                      width: 50,
-                                    ),
-                                  ),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: GestureDetector(
-                                    onTap: () {
-                                      themeProvider.changeTheme(4);
-                                    },
-                                    child: Container(
-                                      color: ColorProvider().primaryDeepBlue,
-                                      height: 50,
-                                      width: 50,
-                                    ),
-                                  ),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: GestureDetector(
-                                    onTap: () {
-                                      themeProvider.changeTheme(5);
-                                    },
-                                    child: Container(
-                                      color: ColorProvider().primaryDeepBlack,
-                                      height: 50,
-                                      width: 50,
-                                    ),
-                                  ),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: GestureDetector(
-                                    onTap: () {
-                                      themeProvider.changeTheme(6);
-                                    },
-                                    child: Container(
-                                      color: ColorProvider().primaryDeepTeal,
-                                      height: 50,
-                                      width: 50,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            )
-                              */
                       ),
                     ]),
               ),

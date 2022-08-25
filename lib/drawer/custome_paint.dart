@@ -32,8 +32,6 @@ class DrawerBackGround extends CustomPainter {
     paint.color = const Color.fromARGB(255, 226, 182, 34);
 
     canvas.drawPath(bottomPath, paint);
-
-    //ovalPath.quadraticBezierTo(, y1, x2, y2)
   }
 
   @override

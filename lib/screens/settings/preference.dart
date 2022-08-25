@@ -6,7 +6,6 @@ import 'package:passengerapp/models/models.dart';
 import 'package:passengerapp/rout.dart';
 
 enum Gender { male, female }
-
 class PreferenceScreen extends StatefulWidget {
   static const routeNAme = "/preferencescreen";
   final PreferenceArgument args;
@@ -154,16 +153,6 @@ class _PreferenceScreenState extends State<PreferenceScreen> {
                             )
                           ],
                         ),
-                        // RadioListTile(
-                        //   value: true,
-                        //   groupValue: true,
-                        //   onChanged: (value) {},
-                        // ),
-                        // RadioListTile(
-                        //   value: true,
-                        //   groupValue: true,
-                        //   onChanged: (value) {},
-                        // ),
                       ],
                     ),
                     const Padding(
@@ -182,13 +171,11 @@ class _PreferenceScreenState extends State<PreferenceScreen> {
                         direction: Axis.horizontal,
                         allowHalfRating: true,
                         itemCount: 5,
-                        //itemPadding: EdgeInsets.symmetric(horizontal: 4.0),
                         itemBuilder: (context, _) =>
                             const Icon(Icons.star, color: Colors.white),
                         onRatingUpdate: (rating) {
                           minRate = rating;
                         }),
-                    //_buildVihcleTypeList(),
                     const Padding(
                       padding: EdgeInsets.only(top: 40, bottom: 20),
                       child: Text(

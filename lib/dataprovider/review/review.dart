@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:http/http.dart' as http;
 import 'package:passengerapp/dataprovider/dataproviders.dart';
 import 'package:passengerapp/helper/constants.dart';
@@ -29,7 +28,6 @@ class ReviewDataProvider {
       if (res.statusCode == 200) {
         return createRideRequest(review);
       } else {
-        // print(response.body);
         throw Exception(response.statusCode);
       }
     } else {

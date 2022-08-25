@@ -72,17 +72,6 @@ class AuthDataProvider {
           key: 'profile_image',
           value: _imageBaseUrl + output['passenger']['profile_image']);
 
-      // await secureStorage.write(
-      //     key: "driver_gender",
-      //     value: output["passenger"]['preference']['gender']);
-      // await secureStorage.write(
-      //     key: "min_rate",
-      //     value: output["passenger"]['preference']['min_rate'].toString());
-      // await secureStorage.write(
-      //     key: "car_type",
-      //     value: output["passenger"]['preference']['car_type']);
-
-      //return User.fromJson(output);
     } else {
       throw Exception('Failed to login.');
     }

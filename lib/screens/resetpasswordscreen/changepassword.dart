@@ -2,9 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:passengerapp/bloc/bloc.dart';
 import 'package:passengerapp/helper/localization.dart';
-import 'package:passengerapp/widgets/widgets.dart';
 import 'package:provider/provider.dart';
-
 import '../../utils/waver.dart';
 import '../theme/theme_provider.dart';
 
@@ -121,13 +119,6 @@ class _ChangePasswordState extends State<ChangePassword> {
                         padding: const EdgeInsets.all(8.0),
                         child: Column(
                           children: [
-                            /*Text(getTranslation(context, "change_password"),
-                                style: Theme.of(context).textTheme.headlineSmall),
-                            const SizedBox(
-                              height: 10,
-                            ),*/
-                            //Text(getTranslation(context, "edit_profile_body_text")),
-
                             TextFormField(
                               obscureText: true,
                               style: const TextStyle(fontSize: 18),
@@ -204,41 +195,32 @@ class _ChangePasswordState extends State<ChangePassword> {
                             const SizedBox(
                               height: 20,
                             ),
-                            Container(
-                              decoration: const BoxDecoration(boxShadow: [
-                                // BoxShadow(
-                                //     color: Colors.grey.shade300,
-                                //     blurRadius: 4,
-                                //     spreadRadius: 2,
-                                //     blurStyle: BlurStyle.normal)
-                              ]),
-                              child: TextFormField(
-                                obscureText: true,
-                                style: const TextStyle(fontSize: 18),
-                                decoration: InputDecoration(
-                                    labelText: getTranslation(
-                                        context, "confirm_password_hint_text"),
-                                    prefixIcon: const Icon(
-                                      Icons.vpn_key,
-                                      size: 19,
-                                    ),
-                                    // fillColor: Colors.white,
-                                    filled: true,
-                                  border: const OutlineInputBorder(
-                                      borderSide: BorderSide(style: BorderStyle.solid)
+                            TextFormField(
+                              obscureText: true,
+                              style: const TextStyle(fontSize: 18),
+                              decoration: InputDecoration(
+                                  labelText: getTranslation(
+                                      context, "confirm_password_hint_text"),
+                                  prefixIcon: const Icon(
+                                    Icons.vpn_key,
+                                    size: 19,
                                   ),
+                                  // fillColor: Colors.white,
+                                  filled: true,
+                                border: const OutlineInputBorder(
+                                    borderSide: BorderSide(style: BorderStyle.solid)
                                 ),
-                                validator: (value) {
-                                  if (value!.isEmpty) {
-                                    return getTranslation(
-                                        context, "please_confirm_the_password");
-                                  }
-                                  return null;
-                                },
-                                onSaved: (value) {
-                                  _passwordInfo['confirm_password'] = value!;
-                                },
                               ),
+                              validator: (value) {
+                                if (value!.isEmpty) {
+                                  return getTranslation(
+                                      context, "please_confirm_the_password");
+                                }
+                                return null;
+                              },
+                              onSaved: (value) {
+                                _passwordInfo['confirm_password'] = value!;
+                              },
                             ),
                             const SizedBox(
                               height: 20,

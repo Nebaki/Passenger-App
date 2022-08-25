@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-
-// ignore: import_of_legacy_library_into_null_safe
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:passengerapp/bloc/bloc.dart';
 import 'package:passengerapp/helper/constants.dart';
@@ -9,11 +7,7 @@ import 'package:passengerapp/helper/localization.dart';
 import 'package:passengerapp/models/models.dart';
 import 'package:passengerapp/rout.dart';
 import 'package:passengerapp/screens/screens.dart';
-import 'package:passengerapp/widgets/widgets.dart';
-
-// ignore: import_of_legacy_library_into_null_safe
 import 'package:provider/provider.dart';
-
 import '../../utils/waver.dart';
 import '../theme/theme_provider.dart';
 
@@ -33,35 +27,6 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
   final Map<String, dynamic> _user = {};
   bool _isLoading = false;
 
-  // _showModalNavigation() {
-  //   showModalBottomSheet(
-  //       context: context,
-  //       builder: (BuildContext ctx) {
-  //         return ListTile(
-  //           leading: const Icon(Icons.image),
-  //           title: const Text("Gallery"),
-  //           onTap: () async {
-  //             XFile? image = (await ImagePicker.platform.getImage(
-  //               source: ImageSource.gallery,
-  //             )
-
-  //                 // .pickImage(
-  //                 //   source:
-  //                 //   maxHeight: 400,
-  //                 //   maxWidth: 400,
-  //                 // )
-  //                 );
-
-  //             setState(() {
-  //             });
-  //             UserEvent event = UploadProfile(image!);
-
-  //             BlocProvider.of<UserBloc>(ctx).add(event);
-  //             Navigator.pop(context);
-  //           },
-  //         );
-  //       });
-  // }
   late ThemeProvider themeProvider;
 
   @override
@@ -146,40 +111,6 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                   ],
                 ),
               );
-              /*showDialog(
-                  barrierDismissible: false,
-                  context: context,
-                  builder: (BuildContext con) => WillPopScope(
-                      onWillPop: () async => false,
-                      child: BlocListener<AuthBloc, AuthState>(
-                        listener: (context, state) {
-                          if (state is AuthDataLoadSuccess) {
-                            name = state.auth.name!;
-                            number = state.auth.phoneNumber!;
-                            myId = state.auth.id!;
-                            Navigator.pop(con);
-
-                            context.read<SettingsBloc>().add(SettingsStarted());
-                          }
-                        },
-                        child: AlertDialog(
-                          title: Text(getTranslation(context,
-                              "create_profile_register_successful_dialog_title")),
-                          content: Text.rich(TextSpan(
-                            text: getTranslation(context,
-                                "create_profile_register_successful_dialog_text"),
-                          )),
-                          actions: [
-                            TextButton(
-                                onPressed: () {
-                                  BlocProvider.of<AuthBloc>(context)
-                                      .add(AuthDataLoad());
-                                },
-                                child: Text(
-                                    getTranslation(context, "okay_action"))),
-                          ],
-                        ),
-                      )));*/
             }
             if (state is UserOperationFailure) {
               _isLoading = false;
@@ -234,7 +165,6 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
           }
           if (state is SettingsLoading) {
             showDialog(
-                // barrierDismissible: false,
                 context: context,
                 builder: (BuildContext context) {
                   return WillPopScope(
@@ -259,7 +189,6 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
             padding: const EdgeInsets.only(
                 top: 150, right: 20, left: 20, bottom: 10),
             child: Form(
-              // autovalidateMode: AutovalidateMode.onUserInteraction,
               key: _formKey,
               autovalidateMode: AutovalidateMode.onUserInteraction,
               child: Card(
@@ -378,23 +307,6 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                       const SizedBox(
                         height: 10,
                       ),
-                      /*TextFormField(
-                        decoration: InputDecoration(
-                            border: const OutlineInputBorder(
-                                borderSide: BorderSide(style: BorderStyle.solid)),
-                            labelText: getTranslation(
-                                context, "create_profile_promo_text"),
-                            hintStyle: const TextStyle(
-                              fontWeight: FontWeight.w300,
-                              // color: Colors.black45
-                            ),
-                            prefixIcon: const Icon(
-                              Icons.gif,
-                              size: 19,
-                            )
-                        ),
-                      ),
-                      */
                       const Padding(
                         padding: EdgeInsets.symmetric(vertical: 10),
                         child: Center(

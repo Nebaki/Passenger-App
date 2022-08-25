@@ -2,14 +2,12 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:passengerapp/bloc/bloc.dart';
 import 'package:passengerapp/helper/localization.dart';
 import 'package:passengerapp/rout.dart';
 import 'package:passengerapp/screens/screens.dart';
 import 'package:passengerapp/widgets/widgets.dart';
 import 'package:provider/provider.dart';
-
 import '../../localization/localization.dart';
 import '../../utils/waver.dart';
 import '../theme/theme_provider.dart';
@@ -70,10 +68,6 @@ class _MobileVerificationState extends State<MobileVerification> {
         phoneNumber: phoneNumber,
         timeout: const Duration(seconds: 60),
         verificationCompleted: (phoneAuthCredential) async {
-          // setState(() {
-          //   showLoading = false;
-          // });
-
           signInWithPhoneAuthCredential(phoneAuthCredential);
         },
         verificationFailed: (verificationFailed) async {
@@ -159,44 +153,6 @@ class _MobileVerificationState extends State<MobileVerification> {
                       ),
                     ),
                   ),
-/*
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 10),
-                    child: InternationalPhoneNumberInput(
-                      inputDecoration: InputDecoration(
-                          hintText:
-                              getTranslation(context, "phone_number_hint_text"),
-                          hintStyle: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                          ),
-                          filled: true,
-                          border: const OutlineInputBorder(
-                              borderSide: BorderSide.none)),
-                      onInputChanged: (PhoneNumber number) {
-                        setState(() {
-                          phoneNumber = number.phoneNumber!;
-                        });
-                      },
-                      onInputValidated: (bool value) {},
-                      selectorConfig: const SelectorConfig(
-                        selectorType: PhoneInputSelectorType.BOTTOM_SHEET,
-                      ),
-                      ignoreBlank: false,
-
-                      autoValidateMode: AutovalidateMode.onUserInteraction,
-                      // selectorTextStyle: const TextStyle(color: Colors.black),
-                      initialValue: PhoneNumber(isoCode: "ET"),
-                      //textFieldController: phoneController,
-                      formatInput: true,
-                      keyboardType: const TextInputType.numberWithOptions(
-                          signed: true, decimal: true),
-                      inputBorder:
-                          const OutlineInputBorder(borderSide: BorderSide.none),
-                      spaceBetweenSelectorAndTextField: 0,
-                    ),
-                  ),
-*/
-
 
                   Padding(
                     padding: const EdgeInsets.only(left: 15, right: 15, top: 10),
@@ -211,10 +167,6 @@ class _MobileVerificationState extends State<MobileVerification> {
                       enabled: phoneEnabled,
                       decoration: InputDecoration(
                         labelStyle: TextStyle(color: themeProvider.getColor),
-
-                        /*enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.red, width: 5.0),
-                        ),*/
                         counterText: "",
                         prefixIconConstraints:
                         const BoxConstraints(minWidth: 0, minHeight: 0),

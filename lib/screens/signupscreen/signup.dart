@@ -2,16 +2,12 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:passengerapp/bloc/bloc.dart';
-
-// import 'package:passengerapp/helper/constants.dart';
 import 'package:passengerapp/helper/localization.dart';
 import 'package:passengerapp/rout.dart';
 import 'package:passengerapp/screens/screens.dart';
 import 'package:passengerapp/utils/session.dart';
 import 'package:passengerapp/widgets/widgets.dart';
-
 import 'package:provider/provider.dart';
 import '../../localization/localization.dart';
 import '../../utils/waver.dart';
@@ -47,7 +43,6 @@ class _SignupScreenState extends State<SignupScreen> {
         timeout: const Duration(seconds: 60),
         phoneNumber: phoneNumber,
         verificationCompleted: (phoneAuthCredential) async {
-          // signInWithPhoneAuthCredential(phoneAuthCredential);
           Session().logSession("register", "$phoneNumber Verified");
         },
         verificationFailed: (verificationFailed) async {
@@ -63,11 +58,7 @@ class _SignupScreenState extends State<SignupScreen> {
                   "Error Happened" /*getTranslation(context, "incorrect_verification_code")*/)));
         },
         codeSent: (verificationId, resendingToken) async {
-          // setState(() {
-          //   showLoading = false;
           currentState = MobileVerficationState.SHOW_OTP_FORM_STATE;
-          //   this.verificationId = verificationId;
-          // });
           Session().logSession("register", "Code sent to: $phoneNumber");
           setState(() {
             _isLoading = false;
@@ -162,55 +153,6 @@ class _SignupScreenState extends State<SignupScreen> {
                       ),
                     ),
                   ),
-/*
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 10),
-                    child: InternationalPhoneNumberInput(
-                      inputDecoration: InputDecoration(
-                          hintText:
-                              getTranslation(context, "phone_number_hint_text"),
-                          hintStyle: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            // color: Colors.black45
-                          ),
-                          // fillColor: Colors.white,
-                          filled: true,
-                          border: const OutlineInputBorder(
-                              borderSide: BorderSide.none)),
-                      onInputChanged: (PhoneNumber number) {
-                        setState(() {
-                          phoneNumber = number.phoneNumber!;
-                        });
-                      },
-                      initialValue: PhoneNumber(isoCode: "ET"),
-
-                      onInputValidated: (bool value) {
-                        value
-                            ? setState(() {
-                                isCorrect = true;
-                              })
-                            : setState(() {
-                                isCorrect = false;
-                              });
-                      },
-                      selectorConfig: const SelectorConfig(
-                        selectorType: PhoneInputSelectorType.BOTTOM_SHEET,
-                      ),
-                      ignoreBlank: false,
-
-                      autoValidateMode: AutovalidateMode.onUserInteraction,
-                      // selectorTextStyle: const TextStyle(color: Colors.black),
-                      //initialValue: number,
-                      //textFieldController: phoneController,
-                      formatInput: true,
-                      keyboardType: const TextInputType.numberWithOptions(
-                          signed: true, decimal: true),
-                      inputBorder:
-                          const OutlineInputBorder(borderSide: BorderSide.none),
-                      spaceBetweenSelectorAndTextField: 0,
-                    ),
-                  ),
-*/
                   Padding(
                     padding:
                         const EdgeInsets.only(left: 15, right: 15, top: 10),
@@ -225,10 +167,6 @@ class _SignupScreenState extends State<SignupScreen> {
                       enabled: phoneEnabled,
                       decoration: InputDecoration(
                         labelStyle: TextStyle(color: themeProvider.getColor),
-
-                        /*enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.red, width: 5.0),
-                        ),*/
                         counterText: "",
                         prefixIconConstraints:
                             const BoxConstraints(minWidth: 0, minHeight: 0),

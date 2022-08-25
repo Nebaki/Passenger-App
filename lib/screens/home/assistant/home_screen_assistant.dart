@@ -1,6 +1,4 @@
-// void checkDriver(message) {}
 import 'dart:collection';
-
 import 'package:geolocator/geolocator.dart';
 import 'package:passengerapp/helper/constants.dart';
 import 'package:passengerapp/models/nearby_driver.dart';
@@ -14,7 +12,6 @@ late int costPerMinuteAssistant;
 late int initialFareAssistant;
 enum SelectedCar { taxi, truck, none }
 late SelectedCar selectedCar = SelectedCar.none;
-// bool whereToClicked = false;
 List newDriversList = [];
 List? searchNearbyDriversList(String category) {
   if (repo.getNearbyDrivers().isEmpty) {

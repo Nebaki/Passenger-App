@@ -15,15 +15,12 @@ class DriverProfile extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<DriverBloc, DriverState>(builder: (_, state) {
       if (state is DriverLoadSuccess) {
-        ////////////////////////////////////
         driverName = state.driver.firstName;
         driverImage = state.driver.profileImage;
         driverId = state.driver.id;
         vehicle = state.driver.vehicle;
         driverRating = state.driver.rating;
         driverFcm = state.driver.fcmId;
-
-        ///////////////////////////////////
         return Column(
           children: [
             Flexible(
@@ -79,12 +76,6 @@ class DriverProfile extends StatelessWidget {
                             onPressed: () {
                               sendTelegramMessage(state.driver.firstName,
                                   state.driver.phoneNumber);
-
-                              //     Navigator.pushNamed(
-                              // context,
-                              // ReviewScreen
-                              //     .routeName);
-                              // makePhoneCall(state.driver.phoneNumber);
                             },
                             icon: const Icon(
                               Icons.share,
@@ -117,11 +108,6 @@ class DriverProfile extends StatelessWidget {
                                             image: DecorationImage(
                                               image: imageProvider,
                                               fit: BoxFit.cover,
-                                              //colorFilter:
-                                              //     const ColorFilter.mode(
-                                              //   Colors.red,
-                                              //   BlendMode.colorBurn,
-                                              // ),
                                             ),
                                           ),
                                         ),

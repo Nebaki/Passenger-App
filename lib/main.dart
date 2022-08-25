@@ -1,17 +1,13 @@
 import 'dart:isolate';
 import 'dart:ui';
-import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'package:flutter_background_service/flutter_background_service.dart';
-// ignore: import_of_legacy_library_into_null_safe
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:geolocator/geolocator.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:passengerapp/bloc/bloc.dart';
 import 'package:passengerapp/bloc/database/location_history_bloc.dart';
 import 'package:passengerapp/bloc_observer.dart';
@@ -23,7 +19,6 @@ import 'package:passengerapp/localization/localization.dart';
 import 'package:passengerapp/repository/repositories.dart';
 import 'package:passengerapp/rout.dart';
 import 'package:http/http.dart' as http;
-import 'package:passengerapp/theme_data.dart';
 import 'package:wakelock/wakelock.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
@@ -31,10 +26,6 @@ import 'package:provider/provider.dart';
 import 'screens/theme/theme_provider.dart';
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  // If you're going to use other Firebase services in the background, such as Firestore,http
-  // make sure you call `initializeApp` before using other Firebase services.
-  // await Firebase.initializeApp();
-  // AssetsAudioPlayer().open(Audio("assets/sounds/announcement-sound.mp3"));
   final SendPort? send = IsolateNameServer.lookupPortByName(portName);
   send!.send(message);
 
@@ -52,21 +43,13 @@ Future<void> initializeService() async {
   final service = FlutterBackgroundService();
   await service.configure(
     androidConfiguration: AndroidConfiguration(
-      // this will be executed when app is in foreground or background in separated isolate
       onStart: onStart,
-
-      // auto start service
       autoStart: false,
       isForegroundMode: true,
     ),
     iosConfiguration: IosConfiguration(
-      // auto start service
       autoStart: false,
-
-      // this will be executed when app is in foreground in separated isolate
       onForeground: onStart,
-
-      // you have to enable background fetch capability on xcode project
       onBackground: onIosBackground,
     ),
   );
@@ -74,70 +57,11 @@ Future<void> initializeService() async {
 }
 
 void onStart(ServiceInstance service) async {
-  // Only available for flutter 3.0.0 and later
   DartPluginRegistrant.ensureInitialized();
 
-
-  // For flutter prior to version 3.0.0
-  // We have to register the plugin manually
-
-  // SharedPreferences preferences = await SharedPreferences.getInstance();
-  // await preferences.setString("hello", "world");
-
-  // if (service is AndroidServiceInstance) {
-  // service.on('setAsForeground').listen((event) {
-  //   print("Yow Herererr as forground");
-  //   // service.setAsForegroundService();
-  // });
-
-  // service.on('setAsBackground').listen((event) {
-  //   print("Yow Herererr as background");
-
-  //   // service.setAsBackgroundService();
-  // });
-  // }
-
   service.on('stopService').listen((event) {
-    print("Hereeeeeeeeee");
     service.stopSelf();
   });
-
-  // bring to foreground
-  // Timer.periodic(const Duration(seconds: 1), (timer) async {
-  //   final hello = preferences.getString("hello");
-  //   print(hello);
-
-  //   if (service is AndroidServiceInstance) {
-  //     service.setForegroundNotificationInfo(
-  //       title: "My App Service",
-  //       content: "Updated at ${DateTime.now()}",
-  //     );
-  //   }
-
-  //   /// you can see this log in logcat
-  //   print('FLUTTER BACKGROUND SERVICE: ${DateTime.now()}');
-
-  //   // test using external plugin
-  //   final deviceInfo = DeviceInfoPlugin();
-  //   String? device;
-  //   if (Platform.isAndroid) {
-  //     final androidInfo = await deviceInfo.androidInfo;
-  //     device = androidInfo.model;
-  //   }
-
-  //   if (Platform.isIOS) {
-  //     final iosInfo = await deviceInfo.iosInfo;
-  //     device = iosInfo.model;
-  //   }
-
-  //   service.invoke(
-  //     'update',
-  //     {
-  //       "current_date": DateTime.now().toIso8601String(),
-  //       "device": device,
-  //     },
-  //   );
-  // });
 }
 
 void main() async {
@@ -351,40 +275,6 @@ class MyApp extends StatelessWidget {
                     SettingsBloc(settingsRepository: settingsRepository),
               )
             ],
-            /*child: BlocBuilder<ThemeModeCubit, ThemeMode>(
-              builder: ((context, themeModeState) =>
-                  BlocBuilder<LocaleCubit, Locale>(
-                    builder: (context, localeState) => MaterialApp(
-                      locale: localeState,
-                      localizationsDelegates: const [
-                        Localization.delegate,
-                        GlobalMaterialLocalizations.delegate,
-                        GlobalWidgetsLocalizations.delegate,
-                        GlobalCupertinoLocalizations.delegate,
-                      ],
-                      supportedLocales: const [
-                        Locale('en', 'US'),
-                        Locale('am', 'ET')
-                      ],
-                      localeResolutionCallback:
-                          (deviceeLocal, supportedLocals) {
-                        for (var locale in supportedLocals) {
-                          if (locale.languageCode ==
-                                  deviceeLocal!.languageCode &&
-                              locale.countryCode == deviceeLocal.countryCode) {
-                            return deviceeLocal;
-                          }
-                        }
-                        return supportedLocals.first;
-                      },
-                      title: 'Mobile Transport',
-                      themeMode: themeModeState,
-                      darkTheme: ThemesData.darkTheme,
-                      theme: ThemesData.lightTheme,
-                      onGenerateRoute: AppRoute.generateRoute,
-                    ),
-                  )),
-            )*/
             child: Consumer<ThemeProvider>(
                 builder: (context, themeProvider, child) =>
           BlocBuilder<LocaleCubit, Locale>(
@@ -412,7 +302,6 @@ class MyApp extends StatelessWidget {
             return supportedLocals.first;
           },
           title: 'Mobile Transport',
-          //darkTheme: ThemesData.darkTheme,
               theme: ThemeData(
                   inputDecorationTheme: InputDecorationTheme(
                       suffixIconColor: themeProvider.getColor,

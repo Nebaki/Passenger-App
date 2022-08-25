@@ -38,8 +38,4 @@ Future<void> sendTelegramMessage(String driverName, String driverNumber) async {
   Time: ${DateFormat.jm().format(DateTime.now())}
   ''';
   await FlutterShare.share(title: "Trip Detail", text: message);
-  // await SocialShare.shareTelegram("content").then((value) {
-  //   print("desn't load");
-  //   print(value);
-  // });
 }

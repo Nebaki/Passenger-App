@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -9,9 +8,7 @@ import 'package:passengerapp/cubit/cubits.dart';
 import 'package:passengerapp/helper/localization.dart';
 import 'package:passengerapp/models/user/user.dart';
 import 'package:passengerapp/rout.dart';
-import '../../localization/localization.dart';
 import '../../utils/waver.dart';
-import '../../widgets/widgets.dart';
 
 class EditProfile extends StatefulWidget {
   static const routeName = "/editaprofile";

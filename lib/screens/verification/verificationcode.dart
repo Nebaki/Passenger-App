@@ -4,8 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:passengerapp/helper/localization.dart';
 import 'package:passengerapp/rout.dart';
 import 'package:passengerapp/screens/screens.dart';
-import 'package:passengerapp/widgets/widgets.dart';
-
 import '../../utils/waver.dart';
 
 class PhoneVerification extends StatefulWidget {
@@ -26,9 +24,6 @@ class _PhoneVerificationState extends State<PhoneVerification> {
   final otp5Controller = TextEditingController();
   final otp6Controller = TextEditingController();
   bool doesAllTextFilledsFilled = true;
-
-  // late ScaffoldMessengerState _scaffoldMessenger;
-
   late Timer _timer;
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
@@ -59,9 +54,6 @@ class _PhoneVerificationState extends State<PhoneVerification> {
 
   @override
   void initState() {
-    // _scaffoldMessenger = ScaffoldMessenger.of(context);
-    //_verificationId = widget.args.verificationId;
-    //_resendToken = widget.args.resendingToken!;
     sendVerificationCode(widget.args.phoneNumber);
     super.initState();
   }
@@ -71,9 +63,6 @@ class _PhoneVerificationState extends State<PhoneVerification> {
         phoneNumber: phoneNumber,
         timeout: const Duration(seconds: 60),
         verificationCompleted: (phoneAuthCredential) async {
-          // setState(() {
-          //   showLoading = false;
-          // });
           _getSmsAutomaticallyAndConfirm(
               phoneAuthCredential.smsCode, phoneAuthCredential);
         },
@@ -89,8 +78,6 @@ class _PhoneVerificationState extends State<PhoneVerification> {
         codeSent: (verificationId, resendingToken) async {
           setState(() {
             codeSent = true;
-            //showLoading = false;
-            //currentState = ResetMobileVerficationState.SHOW_OTP_FORM_STATE;
           });
           _resendToken = resendingToken!;
           _verificationId = verificationId!;

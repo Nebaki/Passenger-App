@@ -7,7 +7,6 @@ import 'package:passengerapp/helper/constants.dart';
 import 'package:passengerapp/helper/localization.dart';
 import 'package:passengerapp/rout.dart';
 import 'package:passengerapp/screens/locationchanger/setting_location_dialog.dart';
-
 import 'predicted_address-list.dart';
 
 class LocationChanger extends StatelessWidget {
