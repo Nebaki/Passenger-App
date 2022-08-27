@@ -24,7 +24,7 @@ class _DriverOnTheWayState extends State<DriverOnTheWay> {
           padding:
               const EdgeInsets.only(top: 10, left: 20, right: 20, bottom: 20),
           decoration: BoxDecoration(
-              color: Theme.of(context).backgroundColor,
+              color: Colors.white,
               borderRadius: BorderRadius.circular(20)),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
