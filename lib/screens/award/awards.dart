@@ -6,7 +6,7 @@ import 'package:http/http.dart' as http;
 import '../../dataprovider/lottery/lottery.dart';
 import '../../models/lottery/award.dart';
 import '../../utils/waver.dart';
-import '../signinscreen/signin.dart';
+import '../user/signin.dart';
 import '../theme/theme_provider.dart';
 
 class AwardScreen extends StatefulWidget {

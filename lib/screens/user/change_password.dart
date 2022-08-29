@@ -9,7 +9,7 @@ import '../theme/theme_provider.dart';
 class ChangePassword extends StatefulWidget {
   static const routeName = '/changepassword';
 
-  ChangePassword({Key? key}) : super(key: key);
+  const ChangePassword({Key? key}) : super(key: key);
 
   @override
   State<ChangePassword> createState() => _ChangePasswordState();

@@ -12,7 +12,7 @@ import '../../localization/localization.dart';
 import '../../utils/waver.dart';
 import '../theme/theme_provider.dart';
 
-enum ResetMobileVerficationState { SHOW_MOBILE_FORM_STATE, SHOW_OTP_FORM_STATE }
+enum ResetMobileVerificationState { SHOW_MOBILE_FORM_STATE, SHOW_OTP_FORM_STATE }
 
 class MobileVerification extends StatefulWidget {
   static const routeName = '/resetverification';
@@ -24,8 +24,8 @@ class MobileVerification extends StatefulWidget {
 }
 
 class _MobileVerificationState extends State<MobileVerification> {
-  ResetMobileVerficationState currentState =
-      ResetMobileVerficationState.SHOW_MOBILE_FORM_STATE;
+  ResetMobileVerificationState currentState =
+      ResetMobileVerificationState.SHOW_MOBILE_FORM_STATE;
   late String phoneNumber;
   bool isCorrect = false;
 
@@ -81,7 +81,7 @@ class _MobileVerificationState extends State<MobileVerification> {
         codeSent: (verificationId, resendingToken) async {
           setState(() {
             showLoading = false;
-            currentState = ResetMobileVerficationState.SHOW_OTP_FORM_STATE;
+            currentState = ResetMobileVerificationState.SHOW_OTP_FORM_STATE;
             this.verificationId = verificationId;
           });
           Navigator.pushNamed(context, PhoneVerification.routeName,
