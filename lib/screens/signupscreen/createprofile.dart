@@ -213,6 +213,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                         height: 10,
                       ),
                       TextFormField(
+                        style: const TextStyle(fontSize: 18),
                         decoration: InputDecoration(
                           labelText:
                               getTranslation(context, "name_textfield_hint_text"),
@@ -250,6 +251,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                         height: 10,
                       ),
                       TextFormField(
+                          style: const TextStyle(fontSize: 18),
                           controller: password,
                           decoration: InputDecoration(
                             labelText: getTranslation(context, "password_hint_text"),
@@ -283,6 +285,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                         height: 10,
                       ),
                       TextFormField(
+                        style: const TextStyle(fontSize: 18),
                         decoration: InputDecoration(
                           labelText: getTranslation(context, "confirm_password"),
                           hintStyle: const TextStyle(

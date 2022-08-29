@@ -10,6 +10,7 @@ import 'package:passengerapp/helper/localization.dart';
 import 'package:passengerapp/screens/home/assistant/home_screen_assistant.dart';
 import 'package:passengerapp/widgets/serviceType/service_type.dart';
 import '../models/models.dart';
+import '../screens/locationchanger/predicted_places.dart';
 
 class WhereTo extends StatefulWidget {
   const WhereTo({Key? key}) : super(key: key);
@@ -24,18 +25,19 @@ class _WhereToState extends State<WhereTo> {
   final pickupController = TextEditingController();
   FocusNode pickupLocationNode = FocusNode();
   FocusNode droppOffLocationNode = FocusNode();
+
   @override
   void dispose() {
     pickupLocationNode.dispose();
     droppOffLocationNode.dispose();
     super.dispose();
   }
-  Padding _whereToUi(){
-   return Padding(
-     padding: const EdgeInsets.symmetric(
-         horizontal: 24.0, vertical: 5.0),
-     child: Column(
-       crossAxisAlignment: CrossAxisAlignment.start,
+
+  Padding _whereToUi() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 5.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const SizedBox(height: 6.0),
           const Text(
@@ -44,76 +46,75 @@ class _WhereToState extends State<WhereTo> {
           ),
           const Text(
             "Where to?",
-            style:
-            TextStyle(fontSize: 20.0, fontFamily: "Brand Bold"),
+            style: TextStyle(fontSize: 20.0, fontFamily: "Brand Bold"),
           ),
-          const SizedBox(height: 20.0),
+          const SizedBox(height: 10.0),
           BlocBuilder<LocationBloc, ReverseLocationState>(
               builder: (context, state) {
-                return Padding(
-                  padding: const EdgeInsets.only(top: 15),
-                  child: GestureDetector(
-                    onTap: () {
-                      if (state is ReverseLocationLoadSuccess) {
-                        pickupLatLng = LatLng(
-                            userPostion.latitude, userPostion.longitude);
-                        bottomSheet();
-                        pickupAddress = state.location.address1;
-                        currentLocation = state.location.address1;
-                        pickupController.text = state.location.address1;
-                        pickupAddress = currentLocation;
-                      }
-                      if (state is ReverseLocationLoading) {
-                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                            content: Text(getTranslation(
-                                context, "determining_current_location"))));
-                      }
-                      if (state is ReverseLocationOperationFailure) {
-                        context
-                            .read<LocationBloc>()
-                            .add(const ReverseLocationLoad());
-                        _buildReverseLocationLoadingDialog();
-                      }
-                    },
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(5.0),
-                        boxShadow: const [
-                          BoxShadow(
-                            color: Colors.black54,
-                            blurRadius: 6.0,
-                            spreadRadius: 0.5,
-                            offset: Offset(0.7, 0.7),
-                          ),
-                        ],
+            return Padding(
+              padding: const EdgeInsets.only(top: 15),
+              child: GestureDetector(
+                onTap: () {
+                  if (state is ReverseLocationLoadSuccess) {
+                    pickupLatLng =
+                        LatLng(userPostion.latitude, userPostion.longitude);
+                    bottomSheet();
+                    pickupAddress = state.location.address1;
+                    currentLocation = state.location.address1;
+                    pickupController.text = state.location.address1;
+                    pickupAddress = currentLocation;
+                  }
+                  if (state is ReverseLocationLoading) {
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                        content: Text(getTranslation(
+                            context, "determining_current_location"))));
+                  }
+                  if (state is ReverseLocationOperationFailure) {
+                    context
+                        .read<LocationBloc>()
+                        .add(const ReverseLocationLoad());
+                    _buildReverseLocationLoadingDialog();
+                  }
+                },
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(5.0),
+                    boxShadow: const [
+                      BoxShadow(
+                        color: Colors.black54,
+                        blurRadius: 6.0,
+                        spreadRadius: 0.5,
+                        offset: Offset(0.7, 0.7),
                       ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(12.0),
-                        child: Row(
-                          children: const [
-                            Icon(
-                              Icons.search,
-                              color: Colors.blueAccent,
-                            ),
-                            SizedBox(
-                              width: 10.0,
-                            ),
-                            Text("Search Drop Off")
-                          ],
+                    ],
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(12.0),
+                    child: Row(
+                      children: const [
+                        Icon(
+                          Icons.search,
+                          color: Colors.blueAccent,
                         ),
-                      ),
+                        SizedBox(
+                          width: 10.0,
+                        ),
+                        Text("Search Drop Off")
+                      ],
                     ),
                   ),
-                );
-              }),
+                ),
+              ),
+            );
+          }),
           /*GestureDetector(
             onTap: () async {
-              *//*Navigator.push(
+              */ /*Navigator.push(
                   context,
                   MaterialPageRoute(
                       builder: (context) => const SearchScreen()));
-              *//*
+              */ /*
             },
             child: Container(
               decoration: BoxDecoration(
@@ -145,12 +146,13 @@ class _WhereToState extends State<WhereTo> {
               ),
             ),
           ),*/
-          const SizedBox(height: 24.0),
+          const SizedBox(height: 10.0),
         ],
       ),
-   );
+    );
   }
-  Padding _whereToNative(){
+
+  Padding _whereToNative() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10),
       child: Card(
@@ -171,48 +173,47 @@ class _WhereToState extends State<WhereTo> {
             ),
             BlocBuilder<LocationBloc, ReverseLocationState>(
                 builder: (context, state) {
-                  return Padding(
-                    padding: const EdgeInsets.only(top: 15),
-                    child: InkWell(
-                      onTap: () {
-                        if (state is ReverseLocationLoadSuccess) {
-                          pickupLatLng = LatLng(
-                              userPostion.latitude, userPostion.longitude);
-                          bottomSheet();
-                          pickupAddress = state.location.address1;
-                          currentLocation = state.location.address1;
-                          pickupController.text = state.location.address1;
-                          pickupAddress = currentLocation;
-                        }
-                        if (state is ReverseLocationLoading) {
-                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                              content: Text(getTranslation(
-                                  context, "determining_current_location"))));
-                        }
-                        if (state is ReverseLocationOperationFailure) {
-                          context
-                              .read<LocationBloc>()
-                              .add(const ReverseLocationLoad());
-                          _buildReverseLocationLoadingDialog();
-                        }
-                      },
-                      child: SizedBox(
-                        height: 35,
-                        width: 150,
-                        child: Text(
-                            getTranslation(context, "where_to"),
-                            style: TextStyle(color:Colors.grey[400],
-                                fontSize: 20)
-                        ),
-                      ),
-                    ),
-                  );
-                }),
+              return Padding(
+                padding: const EdgeInsets.only(top: 15),
+                child: InkWell(
+                  onTap: () {
+                    if (state is ReverseLocationLoadSuccess) {
+                      pickupLatLng =
+                          LatLng(userPostion.latitude, userPostion.longitude);
+                      bottomSheet();
+                      pickupAddress = state.location.address1;
+                      currentLocation = state.location.address1;
+                      pickupController.text = state.location.address1;
+                      pickupAddress = currentLocation;
+                    }
+                    if (state is ReverseLocationLoading) {
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          content: Text(getTranslation(
+                              context, "determining_current_location"))));
+                    }
+                    if (state is ReverseLocationOperationFailure) {
+                      context
+                          .read<LocationBloc>()
+                          .add(const ReverseLocationLoad());
+                      _buildReverseLocationLoadingDialog();
+                    }
+                  },
+                  child: SizedBox(
+                    height: 35,
+                    width: 150,
+                    child: Text(getTranslation(context, "where_to"),
+                        style:
+                            TextStyle(color: Colors.grey[400], fontSize: 20)),
+                  ),
+                ),
+              );
+            }),
           ],
         ),
       ),
     );
   }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -238,60 +239,11 @@ class _WhereToState extends State<WhereTo> {
               builder: (context, state) {
             if (state is LocationHistoryLoadSuccess) {
               return SizedBox(
-                height: 70,
-                width: double.infinity,
-                child: ListView.separated(
-                  scrollDirection: Axis.horizontal,
-                  itemBuilder: (context, index) {
-                    return GestureDetector(
-                      onTap: () {
-                        if (selectedCar != SelectedCar.none) {
-                          getPlaceDetail(state.locationHistory[index].placeId);
-                          settingDropOffDialog(true);
-                        } else {
-                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                              content: Text(getTranslation(context,
-                                  "location_not_determined_error_message"))));
-                        }
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Container(
-                            decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(10),
-                                boxShadow: const [
-                                  BoxShadow(
-                                      blurStyle: BlurStyle.outer,
-                                      color: Colors.grey,
-                                      blurRadius: 3,
-                                      spreadRadius: 2)
-                                ]),
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 10, vertical: 10),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Flexible(
-                                  flex: 1,
-                                  child: Text(
-                                    state.locationHistory[index].mainText,
-                                    style:
-                                        Theme.of(context).textTheme.titleSmall,
-                                  ),
-                                ),
-                                Text(state.locationHistory[index].secondaryText)
-                              ],
-                            )),
-                      ),
-                    );
-                  },
-                  itemCount: state.locationHistory.length,
-                  separatorBuilder: (context, index) {
-                    return const VerticalDivider();
-                  },
-                ),
-              );
+                  height: 70,
+                  width: double.infinity,
+                  child: _predictedPlaces(state)
+                  //child: _predictedPlace(state)
+                  );
             }
             if (state is LocationHistoryLoading) {
               return Column(
@@ -316,6 +268,76 @@ class _WhereToState extends State<WhereTo> {
           }),
         ],
       ),
+    );
+  }
+
+  _predictedPlace(LocationHistoryLoadSuccess state) {
+    return ListView.separated(
+      padding: const EdgeInsets.all(0.0),
+      itemBuilder: (context, index) {
+        return PredictionTile(
+          //placePredictions: placePredictionList[index],
+          locationPrediction: state.locationHistory[index],
+        );
+      },
+      separatorBuilder: (BuildContext context, int index) =>
+          const DividerWidget(),
+      itemCount: state.locationHistory.length,
+      shrinkWrap: true,
+      physics: const ClampingScrollPhysics(),
+    );
+  }
+
+  _predictedPlaces(LocationHistoryLoadSuccess state) {
+    return ListView.separated(
+      scrollDirection: Axis.horizontal,
+      itemBuilder: (context, index) {
+        return GestureDetector(
+          onTap: () {
+            if (selectedCar != SelectedCar.none) {
+              getPlaceDetail(state.locationHistory[index].placeId);
+              settingDropOffDialog(true);
+            } else {
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                  content: Text(getTranslation(
+                      context, "location_not_determined_error_message"))));
+            }
+          },
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Container(
+                decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(10),
+                    boxShadow: const [
+                      BoxShadow(
+                          blurStyle: BlurStyle.outer,
+                          color: Colors.grey,
+                          blurRadius: 3,
+                          spreadRadius: 2)
+                    ]),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Flexible(
+                      flex: 1,
+                      child: Text(
+                        state.locationHistory[index].mainText,
+                        style: Theme.of(context).textTheme.titleSmall,
+                      ),
+                    ),
+                    Text(state.locationHistory[index].secondaryText)
+                  ],
+                )),
+          ),
+        );
+      },
+      itemCount: state.locationHistory.length,
+      separatorBuilder: (context, index) {
+        return const VerticalDivider();
+      },
     );
   }
 
@@ -402,7 +424,7 @@ class _WhereToState extends State<WhereTo> {
 
   Widget _buildPredictedItem(LocationPrediction prediction) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 5),
+      padding: const EdgeInsets.symmetric(horizontal: 0),
       child: GestureDetector(
         onTap: () {
           if (droppOffLocationNode.hasFocus) {
@@ -424,6 +446,7 @@ class _WhereToState extends State<WhereTo> {
         },
         child: Container(
           color: Colors.black.withOpacity(0),
+          height: 40,
           width: MediaQuery.of(context).size.width,
           child: Row(
             children: [
@@ -455,7 +478,9 @@ class _WhereToState extends State<WhereTo> {
                                 ? Icons.favorite
                                 : Icons.favorite_border_outlined,
                             size: 20,
-                            color: isFav ? Theme.of(context).primaryColor : Colors.black,
+                            color: isFav
+                                ? Theme.of(context).primaryColor
+                                : Colors.black,
                           ),
                         );
                       }
@@ -635,7 +660,7 @@ class _WhereToState extends State<WhereTo> {
   }
 
   void findPlace(String placeName) {
-    if (placeName.length>=2) {
+    if (placeName.length >= 2) {
       LocationPredictionEvent event =
           LocationPredictionLoad(placeName: placeName);
       BlocProvider.of<LocationPredictionBloc>(context).add(event);
@@ -647,7 +672,7 @@ class _WhereToState extends State<WhereTo> {
         isScrollControlled: true,
         context: context,
         enableDrag: true,
-        backgroundColor: Colors.white.withOpacity(0.5),
+        backgroundColor: Colors.white,
         builder: (BuildContext context) {
           return WillPopScope(
             onWillPop: () async {
@@ -664,8 +689,8 @@ class _WhereToState extends State<WhereTo> {
                   if (state is LocationPredictionLoadSuccess) {
                     return Positioned(
                       top: 180,
-                      left: 15,
-                      right: 15,
+                      left: 1,
+                      right: 1,
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(20),
                         child: Container(
@@ -738,98 +763,207 @@ class _WhereToState extends State<WhereTo> {
                   }));
                 }),
                 Positioned(
-                    left: 15,
-                    right: 15,
-                    top: 80,
-                    child: Column(
-                      children: [
-                        Container(
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(5),
-                              boxShadow: const [
-                                BoxShadow(
-                                  color: Colors.white,
-                                )
-                              ]
-                          ),
-                          height: 55,
-                          child: Center(
-                            child: TextFormField(
-                              onChanged: (value) {
-                                if(value.length >= 2){
-                                  findPlace(value);
-                                }
-                              },
-                              focusNode: pickupLocationNode,
-                              controller: pickupController,
-                              decoration: InputDecoration(
-                                  suffixIcon: IconButton(
-                                      onPressed: () {
-                                        pickupController.clear();
-                                      },
-                                      icon: const Icon(
-                                        Icons.clear,
-                                        size: 15,
-                                      )),
-                                  hintText: getTranslation(
-                                      context, "pickup_address_hint_text"),
-                                  prefixIcon: const Padding(
-                                    padding: EdgeInsets.only(left: 20, right: 10),
-                                    child: Icon(
-                                      Icons.location_on,
-                                      color: Colors.blue,
-                                    ),
-                                  ),
-                                  // fillColor: Colors.white,
-                                  filled: true,
-                                  border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                      borderSide: BorderSide.none)),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        Container(
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(5),
-                              boxShadow: const [
-                                BoxShadow(
-                                    color: Colors.white,
-                                )
-                              ]
-                          ),
-                          height: 50,
-                          child: Center(
-                            child: TextFormField(
-                              focusNode: droppOffLocationNode,
-                              onChanged: (value) {
-                                if(value.length >= 2){
-                                  findPlace(value);
-                                }
-                              },
-                              decoration: InputDecoration(
-                                  hintText: getTranslation(
-                                      context, "droppoff_address_hint_text"),
-                                  prefixIcon: const Padding(
-                                    padding: EdgeInsets.only(left: 20, right: 10),
-                                    child: Icon(Icons.location_on,
-                                        color: Colors.green),
-                                  ),
-                                  // fillColor: Colors.white,
-                                  filled: true,
-                                  border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                      borderSide: BorderSide.none)),
-                            ),
-                          ),
-                        ),
-                      ],
+                    left: 0,
+                    right: 0,
+                    top: 40,
+                    child: Card(
+                        margin: EdgeInsets.zero,
+                        elevation: 5,
+                        child: Padding(
+                          padding: const EdgeInsets.all(10.0),
+                          child: Column(children: _inputChildrenX()),
+                        )
                     )),
               ],
             ),
           );
         });
+  }
+
+  _inputChildren() {
+    return [
+      Container(
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(5),
+            boxShadow: const [
+              BoxShadow(
+                color: Colors.white,
+              )
+            ]),
+        height: 55,
+        child: Center(
+          child: TextFormField(
+            onChanged: (value) {
+              if (value.length >= 2) {
+                findPlace(value);
+              }
+            },
+            focusNode: pickupLocationNode,
+            controller: pickupController,
+            decoration: InputDecoration(
+                suffixIcon: IconButton(
+                    onPressed: () {
+                      pickupController.clear();
+                    },
+                    icon: const Icon(
+                      Icons.clear,
+                      size: 15,
+                    )),
+                hintText: getTranslation(context, "pickup_address_hint_text"),
+                prefixIcon: const Padding(
+                  padding: EdgeInsets.only(left: 20, right: 10),
+                  child: Icon(
+                    Icons.location_on,
+                    color: Colors.blue,
+                  ),
+                ),
+                // fillColor: Colors.white,
+                filled: true,
+                border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide.none)),
+          ),
+        ),
+      ),
+      const SizedBox(
+        height: 10,
+      ),
+      Container(
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(5),
+            boxShadow: const [
+              BoxShadow(
+                color: Colors.white,
+              )
+            ]),
+        height: 50,
+        child: Center(
+          child: TextFormField(
+            focusNode: droppOffLocationNode,
+            onChanged: (value) {
+              if (value.length >= 2) {
+                findPlace(value);
+              }
+            },
+            decoration: InputDecoration(
+                hintText: getTranslation(context, "droppoff_address_hint_text"),
+                prefixIcon: const Padding(
+                  padding: EdgeInsets.only(left: 20, right: 10),
+                  child: Icon(Icons.location_on, color: Colors.green),
+                ),
+                // fillColor: Colors.white,
+                filled: true,
+                border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide.none)),
+          ),
+        ),
+      ),
+    ];
+  }
+
+  _inputChildrenX() {
+    return [
+      const SizedBox(height: 5.0),
+      Stack(
+        children: [
+          GestureDetector(
+            onTap: () {
+              Navigator.pop(context);
+            },
+            child: const Icon(Icons.arrow_back,color: Colors.black,),
+          ),
+          const Center(
+            child: Text(
+              "Set Drop Off",
+              style: TextStyle(fontSize: 18.0, fontFamily: "Brand-Bold"),
+            ),
+          ),
+        ],
+      ),
+      const SizedBox(height: 16.0),
+      Row(
+        children: [
+          //Image.asset("/assets/images/pickicon.png", height: 16.0, width: 16.0),
+          const Icon(Icons.location_on, color: Colors.blue),
+          const SizedBox(width: 18.0),
+          Expanded(
+            child: Container(
+              height: 40,
+              decoration: BoxDecoration(
+                color: Colors.grey[400],
+                borderRadius: BorderRadius.circular(5.0),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(3.0),
+                child: TextField(
+                  focusNode: pickupLocationNode,
+                  controller: pickupController,
+                  decoration: InputDecoration(
+                    suffixIcon: IconButton(
+                        onPressed: () {
+                          pickupController.clear();
+                        },
+                        icon: const Icon(
+                          Icons.clear,
+                          size: 15,
+                        )),
+                    hintText:
+                        getTranslation(context, "pickup_address_hint_text"),
+                    fillColor: Colors.grey[400],
+                    filled: true,
+                    focusColor: Colors.grey[400],
+                    focusedBorder: InputBorder.none,
+                    border: InputBorder.none,
+                    isDense: true,
+                    contentPadding: const EdgeInsets.only(
+                        left: 11.0, top: 8.0, bottom: 8.0),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+      const SizedBox(height: 10.0),
+      Row(
+        children: [
+          //Image.asset("images/desticon.png", height: 16.0, width: 16.0),
+          const Icon(Icons.location_on, color: Colors.green),
+          const SizedBox(width: 18.0),
+          Expanded(
+            child: Container(
+              height: 40,
+              decoration: BoxDecoration(
+                color: Colors.grey[400],
+                borderRadius: BorderRadius.circular(5.0),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(3.0),
+                child: TextField(
+                  onChanged: (val) {
+                    if (val.length >= 2) {
+                      findPlace(val);
+                    }
+                  },
+                  focusNode: droppOffLocationNode,
+                  decoration: InputDecoration(
+                    hintText:
+                        getTranslation(context, "where_to") + "?",
+                    fillColor: Colors.grey[400],
+                    filled: true,
+                    border: InputBorder.none,
+                    isDense: true,
+                    focusedBorder: InputBorder.none,
+                    contentPadding: const EdgeInsets.only(
+                        left: 11.0, top: 8.0, bottom: 8.0),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    ];
   }
 }

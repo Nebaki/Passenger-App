@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:passengerapp/helper/localization.dart';
 import 'package:passengerapp/rout.dart';
 import 'package:passengerapp/screens/screens.dart';
+import '../../utils/session.dart';
 import '../../utils/waver.dart';
 
 class PhoneVerification extends StatefulWidget {
@@ -201,8 +202,9 @@ class _PhoneVerificationState extends State<PhoneVerification> {
       setState(() {
         _isLoading = false;
       });
+      Session().logError("firebase-login", e.toString());
       ScaffoldMessenger.of(context)
-          .showSnackBar(_errorMessageSnackBar(e.toString()));
+          .showSnackBar(_errorMessageSnackBar("Incorrect Verification Code, Please Try Again!"));
     }
   }
   final _appBar = GlobalKey<FormState>();

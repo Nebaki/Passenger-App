@@ -206,38 +206,42 @@ class _SettingScreenState extends State<SettingScreen> {
 
   Widget _settingItem(
       BuildContext context, IconData iconData, String title, String value) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          title != ""
-              ? Row(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(5.0),
-                      child: Text(title,
-                          style: TextStyle(
-                            fontSize: 11,
-                            //color: Theme.of(context).primaryColor
-                          )),
-                    ),
-                  ],
+    return Container(
+      color: Colors.transparent,
+      width: MediaQuery.of(context).size.width,
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            title != ""
+                ? Row(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(5.0),
+                        child: Text(title,
+                            style: TextStyle(
+                              fontSize: 11,
+                              //color: Theme.of(context).primaryColor
+                            )),
+                      ),
+                    ],
+                  )
+                : Container(),
+            Row(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(5.0),
+                  child: Icon(iconData, color: Colors.black),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(5.0),
+                  child: Text(value),
                 )
-              : Container(),
-          Row(
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(5.0),
-                child: Icon(iconData, color: Colors.black),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(5.0),
-                child: Text(value),
-              )
-            ],
-          )
-        ],
+              ],
+            )
+          ],
+        ),
       ),
     );
   }
@@ -262,49 +266,32 @@ class _SettingScreenState extends State<SettingScreen> {
                   .copyWith(color: Theme.of(context).primaryColor),
             ),
             GestureDetector(
-              onTap: () {
-
-              },
-              child: _settingItem(
-                  context,
-                  Icons.contact_mail,"",
+              onTap: () {},
+              child: _settingItem(context, Icons.contact_mail, "",
                   getTranslation(context, "contact_us")),
             ),
             const Divider(
               height: 0,
             ),
             GestureDetector(
-              onTap: () {
-
-              },
-              child: _settingItem(
-                  context,
-                  Icons.privacy_tip_outlined,"",
+              onTap: () {},
+              child: _settingItem(context, Icons.privacy_tip_outlined, "",
                   getTranslation(context, "privacy_policy")),
             ),
             const Divider(
               height: 0,
             ),
             GestureDetector(
-              onTap: () {
-
-              },
-              child: _settingItem(
-                  context,
-                  Icons.present_to_all_sharp,"",
+              onTap: () {},
+              child: _settingItem(context, Icons.present_to_all_sharp, "",
                   getTranslation(context, "terms_and_conditions")),
             ),
-
             const Divider(
               height: 0,
             ),
             GestureDetector(
-              onTap: () {
-
-              },
-              child: _settingItem(
-                  context,
-                  Icons.language,"",
+              onTap: () {},
+              child: _settingItem(context, Icons.language, "",
                   getTranslation(context, "language")),
             ),
           ],
@@ -343,7 +330,8 @@ class _SettingScreenState extends State<SettingScreen> {
                   children: [
                     TextSpan(
                         text: " Safeway Transport",
-                        style: TextStyle(color: Theme.of(context).primaryColor,
+                        style: TextStyle(
+                            color: Theme.of(context).primaryColor,
                             fontStyle: FontStyle.italic,
                             fontWeight: FontWeight.w300))
                   ])),
@@ -358,7 +346,8 @@ class _SettingScreenState extends State<SettingScreen> {
                   children: [
                     TextSpan(
                         text: " Vintage Technologies: +251916772303",
-                        style: TextStyle(color: Theme.of(context).primaryColor,
+                        style: TextStyle(
+                            color: Theme.of(context).primaryColor,
                             fontStyle: FontStyle.italic,
                             fontWeight: FontWeight.w300))
                   ])),

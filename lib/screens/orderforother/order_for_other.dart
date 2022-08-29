@@ -9,6 +9,7 @@ import 'package:passengerapp/repository/nearby_driver.dart';
 import 'package:passengerapp/widgets/widgets.dart';
 import '../../localization/localization.dart';
 import '../../models/models.dart';
+import '../../utils/session.dart';
 import '../../utils/waver.dart';
 
 class OrderForOtherScreen extends StatefulWidget {
@@ -57,6 +58,7 @@ class _OrderForOtherScreenState extends State<OrderForOtherScreen> {
           title: Text(getTranslation(context, "passenger_information")),
           content: Form(
             key: _formKey,
+            autovalidateMode: AutovalidateMode.onUserInteraction,
             child: Column(
               children: [
                 Padding(
@@ -73,28 +75,28 @@ class _OrderForOtherScreenState extends State<OrderForOtherScreen> {
                     enabled: phoneEnabled,
                     decoration: InputDecoration(
                       labelStyle: TextStyle(color: Theme.of(context).primaryColor),
-                      counterText: "",
+                      counterText: "",/*
                       prefixIconConstraints:
-                      const BoxConstraints(minWidth: 0, minHeight: 0),
+                      const BoxConstraints(minWidth: 0, minHeight: 0),*/
                       alignLabelWithHint: true,
                       //hintText: "Phone number",
                       labelText: Localization.of(context)
-                          .getTranslation("phone_number"),
+                          .getTranslation("phone_number"),/*
                       hintStyle: const TextStyle(
-                          fontWeight: FontWeight.bold, color: Colors.black45),
-                      prefixIcon: Padding(
-                        padding: const EdgeInsets.only(left: 5.0, right: 5.0),
-                        child: Text(
+                          fontWeight: FontWeight.bold, color: Colors.black45),*/
+                     /* prefixIcon: Text(
                           "+251",
                           style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
                               color: Theme.of(context).primaryColor),
-                        ),
-                      ),
+                        ),*/
+                      prefixText: "+251",
                       suffix: Text("$textLength/9"),
                       fillColor: Colors.white,
                       filled: true,
+                      isDense: true,
+                      contentPadding: const EdgeInsets.fromLTRB(12, 15, 15, 15),
                       border: const OutlineInputBorder(
                           borderSide: BorderSide(style: BorderStyle.solid)),
                     ),
@@ -121,6 +123,7 @@ class _OrderForOtherScreenState extends State<OrderForOtherScreen> {
                     },
                     onSaved: (value) {
                       number = "+251$value";
+                      Session().logSuccess("for-other", number);
                     },
                   ),
                 ),
@@ -136,7 +139,9 @@ class _OrderForOtherScreenState extends State<OrderForOtherScreen> {
                 height: 60,
                 child: TextFormField(
                   onChanged: (value) {
-                    findPlace(value);
+                    if(value.length >= 2){
+                      findPlace(value);
+                    }
                   },
                   focusNode: pickupLocationNode,
                   controller: pickupController,
@@ -159,6 +164,8 @@ class _OrderForOtherScreenState extends State<OrderForOtherScreen> {
                         color: Colors.blue,
                       ),
                     ),
+                    border: const OutlineInputBorder(
+                        borderSide: BorderSide(style: BorderStyle.solid)),
                   ),
                 ),
               ),
@@ -169,7 +176,9 @@ class _OrderForOtherScreenState extends State<OrderForOtherScreen> {
                 focusNode: droppOffLocationNode,
                 controller: droppOffController,
                 onChanged: (value) {
-                  findPlace(value);
+                  if(value.length >= 2){
+                    findPlace(value);
+                  }
                 },
                 decoration: InputDecoration(
                   hintText:
@@ -178,6 +187,8 @@ class _OrderForOtherScreenState extends State<OrderForOtherScreen> {
                     padding: EdgeInsets.only(left: 20, right: 10),
                     child: Icon(Icons.location_on, color: Colors.green),
                   ),
+                  border: const OutlineInputBorder(
+                      borderSide: BorderSide(style: BorderStyle.solid)),
                 ),
               ),
               BlocBuilder<LocationPredictionBloc, LocationPredictionState>(
@@ -336,7 +347,7 @@ class _OrderForOtherScreenState extends State<OrderForOtherScreen> {
 
   Widget _buildPredictedItem(LocationPrediction prediction) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
+      padding: const EdgeInsets.symmetric(horizontal: 10),
       child: GestureDetector(
         onTap: () {
           if (droppOffLocationNode.hasFocus) {
@@ -373,7 +384,10 @@ class _OrderForOtherScreenState extends State<OrderForOtherScreen> {
               const SizedBox(
                 width: 10,
               ),
-              Flexible(flex: 5, child: Text(prediction.mainText)),
+              Flexible(flex: 5, child: Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: Text(prediction.mainText),
+              )),
             ],
           ),
         ),
