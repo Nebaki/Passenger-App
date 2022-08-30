@@ -223,7 +223,6 @@ class _ForgetPasswordState extends State<ForgetPassword> {
                                           height: 20,
                                           width: 20,
                                           child: CircularProgressIndicator(
-                                            strokeWidth: 2,
                                             color: Colors.white,
                                           ),
                                         )
@@ -248,7 +247,10 @@ class _ForgetPasswordState extends State<ForgetPassword> {
                             setState(() {
                               showLoading = false;
                             });
-                            showPhoneNumberDoesnotExistDialog();
+                            ShowSnack(context: context,
+                                message: getTranslation(context, "no_user_registered_message"),
+                            textColor: Colors.white,backgroundColor: Colors.red).show();
+                            //showPhoneNumberDoesnotExistDialog();
                           }
                         }
                         if (state is UserOperationFailure) {
@@ -336,29 +338,6 @@ class _ForgetPasswordState extends State<ForgetPassword> {
 
     BlocProvider.of<UserBloc>(context).add(UserCheckPhoneNumber(phoneNumber));
   }
-
-  void showPhoneNumberDoesnotExistDialog() {
-    showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            shape: RoundedRectangleBorder(
-                borderRadius:
-                BorderRadius.circular(20.0)),
-            content:
-                Text(getTranslation(context, "no_user_registered_message"),
-                  style: TextStyle(color: Colors.black),),
-            actions: [
-              TextButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  child: Text(getTranslation(context, "okay_action")))
-            ],
-          );
-        });
-  }
-
   var textLength = 0;
   var phoneEnabled = true;
 }

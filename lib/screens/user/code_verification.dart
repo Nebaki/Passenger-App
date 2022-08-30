@@ -105,14 +105,13 @@ class _PhoneVerificationState extends State<PhoneVerification> {
                   height: 20,
                   width: 20,
                   child: CircularProgressIndicator(
-                    strokeWidth: 1,
                     color: Colors.red,
                   ),
                 ),
                 SizedBox(
                   width: 5,
                 ),
-                Text("Resending."),
+                Text("Resending Verification Code..."),
               ],
             ),
           );
@@ -256,6 +255,7 @@ class _PhoneVerificationState extends State<PhoneVerification> {
               SizedBox(
                   width: 50.0,
                   child: TextFormField(
+                    autofocus: true,
                     validator: (value) {
                       if (value!.isEmpty) {
                         setState(() {

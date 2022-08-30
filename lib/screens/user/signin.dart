@@ -339,8 +339,8 @@ class _SigninScreenState extends State<SigninScreen> {
                           },
                           child: Text(
                             getTranslation("signin_forgot_passwod_text")+"?",
-                            style: const TextStyle(
-                                color: Color.fromRGBO(39, 49, 110, 1),
+                            style: TextStyle(
+                                color: themeProvider.getColor,
                                 fontWeight: FontWeight.bold),
                           )),
                     ),
@@ -357,8 +357,8 @@ class _SigninScreenState extends State<SigninScreen> {
                                   context, SignupScreen.routeName);
                             },
                             child: Text(getTranslation("signin_inkwell_text"),
-                                style: const TextStyle(
-                                    color: Color.fromRGBO(39, 49, 110, 1),
+                                style: TextStyle(
+                                    color: themeProvider.getColor,
                                     fontWeight: FontWeight.bold)))
                       ],
                     ),

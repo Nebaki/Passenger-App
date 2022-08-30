@@ -29,8 +29,11 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
 
   late ThemeProvider themeProvider;
 
+  late bool _visiblePassword;
+  late IconData icon;
   @override
   void initState() {
+    _visiblePassword = true;
     themeProvider = Provider.of<ThemeProvider>(context, listen: false);
     super.initState();
   }
@@ -90,6 +93,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                     name = state.auth.name!;
                     number = state.auth.phoneNumber!;
                     myId = state.auth.id!;
+                    Navigator.of(context).pop();
                     context.read<SettingsBloc>().add(SettingsStarted());
                   }
                 },
@@ -251,7 +255,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                         height: 10,
                       ),
                       TextFormField(
-                          obscureText: true,
+                          obscureText: _visiblePassword,
                           style: const TextStyle(fontSize: 18),
                           controller: password,
                           decoration: InputDecoration(
@@ -260,6 +264,18 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                               fontWeight: FontWeight.w300,
                               // color: Colors.black45
                             ),
+
+                              suffixIcon: IconButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      _visiblePassword = !_visiblePassword;
+
+                                      icon = _visiblePassword
+                                          ? Icons.visibility
+                                          : Icons.visibility_off;
+                                    });
+                                  },
+                                  icon: Icon(icon)),
                             prefixIcon: const Icon(
                               Icons.lock,
                               size: 19,
@@ -287,7 +303,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                         height: 10,
                       ),
                       TextFormField(
-                        obscureText: true,
+                        obscureText: _visiblePassword,
                         style: const TextStyle(fontSize: 18),
                         decoration: InputDecoration(
                           labelText: getTranslation(context, "confirm_password"),
@@ -296,9 +312,21 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                             // color: Colors.black45
                           ),
                           prefixIcon: const Icon(
-                            Icons.confirmation_num,
+                            Icons.lock,
                             size: 19,
                           ),
+
+                            suffixIcon: IconButton(
+                                onPressed: () {
+                                  setState(() {
+                                    _visiblePassword = !_visiblePassword;
+
+                                    icon = _visiblePassword
+                                        ? Icons.visibility
+                                        : Icons.visibility_off;
+                                  });
+                                },
+                                icon: Icon(icon)),
                             border: const OutlineInputBorder(
                                 borderSide: BorderSide(style: BorderStyle.solid))
                         ),

@@ -220,7 +220,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 heroTag: 'sos',
                 // backgroundColor: Colors.grey.shade300,
                 onPressed: () {
-
                   EmergencyReportEvent event =
                   EmergencyReportCreate(
                       EmergencyReport(location: [
@@ -232,6 +231,16 @@ class _HomeScreenState extends State<HomeScreen> {
                       EmergencyReportBloc>(
                       context)
                       .add(event);
+                  /*_determinePosition().then((value) {
+                    currentPostion = value;
+                    userPostion = currentPostion;
+                    context.read<UserBloc>().add(UserSetAvailability(
+                        [value.longitude, value.latitude], true));
+                    currentPostion = value;
+                    if (widget.args.isFromSplash) {
+                      carTypeSelectorDialog(value);
+                    }
+                  });*/
                 },
                 child: const Text(
                   'SOS',
@@ -312,7 +321,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             pickupLatLng = currentLatLng;
                             controller.animateCamera(
                                 CameraUpdate.newCameraPosition(CameraPosition(
-                                    zoom: 16.1746, target: currentLatLng)));
+                                    zoom: 14.1746, target: currentLatLng)));
                           });
                         },
                       ),
@@ -339,8 +348,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     child: SizedBox(
                                         height: 40,
                                         width: 40,
-                                        child: CircularProgressIndicator(
-                                            strokeWidth: 1)),
+                                        child: CircularProgressIndicator()),
                                   )),
                             );
                           });
@@ -415,7 +423,7 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Text(repo.getNearbyDrivers().length.toString()),
           ),
           Padding(
-            padding: const EdgeInsets.only(top: 50),
+            padding: const EdgeInsets.only(top: 38),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -423,7 +431,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: Align(
                     alignment: Alignment.centerRight,
                     child: SizedBox(
-                      height: 300,
+                      height: MediaQuery.of(context).size.height * 0.3,
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -464,7 +472,7 @@ class _HomeScreenState extends State<HomeScreen> {
         userPostion = currentPostion;
         outerController.animateCamera(CameraUpdate.newCameraPosition(
             CameraPosition(
-                zoom: 16.1746,
+                zoom: 14.1746,
                 target: LatLng(value.latitude, value.longitude))));
         switch (selectedCar) {
           case SelectedCar.taxi:
@@ -479,10 +487,10 @@ class _HomeScreenState extends State<HomeScreen> {
       });
     } else if (!determinePosition && !listenToNearbyTaxi) {
       outerController.animateCamera(CameraUpdate.newCameraPosition(
-          CameraPosition(zoom: 16.1746, target: currentLatLng)));
+          CameraPosition(zoom: 14.1746, target: currentLatLng)));
     } else if (listenToNearbyTaxi) {
       outerController.animateCamera(CameraUpdate.newCameraPosition(
-          CameraPosition(zoom: 16.1746, target: currentLatLng)));
+          CameraPosition(zoom: 14.1746, target: currentLatLng)));
       switch (selectedCar) {
         case SelectedCar.taxi:
           listenTaxi(currentPostion);
@@ -863,12 +871,13 @@ class _HomeScreenState extends State<HomeScreen> {
           return WillPopScope(
             onWillPop: () async => false,
             child: Dialog(
-              elevation: 0,
+              alignment: Alignment.center,
+              elevation: 0,/*
               insetPadding: EdgeInsets.only(
-                  top: MediaQuery.of(context).size.height * 0.3),
+                  top: MediaQuery.of(context).size.height * 0.3),*/
               backgroundColor: Colors.transparent,
               child: SizedBox(
-                width: MediaQuery.of(context).size.width * 0.7,
+                width: MediaQuery.of(context).size.width * 0.9,
                 height: MediaQuery.of(context).size.height * 0.2,
                 child: Container(
                   decoration: BoxDecoration(
@@ -884,9 +893,9 @@ class _HomeScreenState extends State<HomeScreen> {
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           Padding(
-                              padding: EdgeInsets.all(10.0),
+                              padding: EdgeInsets.all(13.0),
                               child: Text(
-                                "Looking For...",
+                                "What are You Looking for?",
                                 style: TextStyle(fontSize: 20,color: Theme.of(context).primaryColor
                                 ),
                               ),
@@ -1102,7 +1111,7 @@ class _HomeScreenState extends State<HomeScreen> {
         locationServiceButtomSheet();
         serviceStatusValue = 'disabled';
 
-        return Future.error("NoLocation Enabled");
+        return Future.error("No Location Enabled");
       }
 
       return Future.error('Location services are disabled.');

@@ -1,7 +1,7 @@
 {
     "phone_number_hint_text":"Phone Number",
-    "pickup_address_hint_text":"PickUp Address",
-    "droppoff_address_hint_text":"DropOff Address",
+    "pickup_address_hint_text":"Enter Pickup Address",
+    "droppoff_address_hint_text":"Enter Destination Address",
     "password_hint_text":"Password",
     "button_no_internet_connection_message":"No Internet Connection",
     "no_internet_connection_message_action_text":"Try Again",

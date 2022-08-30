@@ -363,7 +363,6 @@ class _WhereToState extends State<WhereTo> {
                       height: 20,
                       width: 20,
                       child: CircularProgressIndicator(
-                        strokeWidth: 1,
                         color: Colors.red,
                       ),
                     ),
@@ -559,7 +558,6 @@ class _WhereToState extends State<WhereTo> {
                         height: 20,
                         width: 20,
                         child: CircularProgressIndicator(
-                          strokeWidth: 1,
                           color: Colors.black,
                         ),
                       ),
@@ -640,7 +638,6 @@ class _WhereToState extends State<WhereTo> {
                           height: 20,
                           width: 20,
                           child: CircularProgressIndicator(
-                            strokeWidth: 1,
                             color: Colors.green,
                           ),
                         ),
@@ -771,7 +768,7 @@ class _WhereToState extends State<WhereTo> {
                         elevation: 5,
                         child: Padding(
                           padding: const EdgeInsets.all(10.0),
-                          child: Column(children: _inputChildrenX()),
+                          child: Column(children: _inputChildren()),
                         )
                     )),
               ],
@@ -790,7 +787,7 @@ class _WhereToState extends State<WhereTo> {
                 color: Colors.white,
               )
             ]),
-        height: 55,
+        height: 60,
         child: Center(
           child: TextFormField(
             onChanged: (value) {
@@ -798,6 +795,7 @@ class _WhereToState extends State<WhereTo> {
                 findPlace(value);
               }
             },
+            style: const TextStyle(fontSize: 18),
             focusNode: pickupLocationNode,
             controller: pickupController,
             decoration: InputDecoration(
@@ -809,7 +807,7 @@ class _WhereToState extends State<WhereTo> {
                       Icons.clear,
                       size: 15,
                     )),
-                hintText: getTranslation(context, "pickup_address_hint_text"),
+                labelText: getTranslation(context, "pickup_address_hint_text"),
                 prefixIcon: const Padding(
                   padding: EdgeInsets.only(left: 20, right: 10),
                   child: Icon(
@@ -836,17 +834,19 @@ class _WhereToState extends State<WhereTo> {
                 color: Colors.white,
               )
             ]),
-        height: 50,
+        height: 60,
         child: Center(
           child: TextFormField(
+            autofocus: true,
             focusNode: droppOffLocationNode,
             onChanged: (value) {
               if (value.length >= 2) {
                 findPlace(value);
               }
             },
+            style: const TextStyle(fontSize: 18),
             decoration: InputDecoration(
-                hintText: getTranslation(context, "droppoff_address_hint_text"),
+                labelText: getTranslation(context, "droppoff_address_hint_text"),
                 prefixIcon: const Padding(
                   padding: EdgeInsets.only(left: 20, right: 10),
                   child: Icon(Icons.location_on, color: Colors.green),
@@ -875,7 +875,7 @@ class _WhereToState extends State<WhereTo> {
           ),
           const Center(
             child: Text(
-              "Set Drop Off",
+              "Enter Destination",
               style: TextStyle(fontSize: 18.0, fontFamily: "Brand-Bold"),
             ),
           ),
@@ -897,6 +897,11 @@ class _WhereToState extends State<WhereTo> {
               child: Padding(
                 padding: const EdgeInsets.all(3.0),
                 child: TextField(
+                  onChanged: (val) {
+                    if (val.length >= 2) {
+                      findPlace(val);
+                    }
+                  },
                   focusNode: pickupLocationNode,
                   controller: pickupController,
                   decoration: InputDecoration(
@@ -910,14 +915,17 @@ class _WhereToState extends State<WhereTo> {
                         )),
                     hintText:
                         getTranslation(context, "pickup_address_hint_text"),
-                    fillColor: Colors.grey[400],
+                    fillColor: Colors.white,
                     filled: true,
-                    focusColor: Colors.grey[400],
-                    focusedBorder: InputBorder.none,
-                    border: InputBorder.none,
+                    //focusColor: Colors.grey[400],
+                    //focusedBorder: InputBorder.none,
+                    border: const OutlineInputBorder(
+                        borderSide: BorderSide(style: BorderStyle.solid)
+                    ),
                     isDense: true,
                     contentPadding: const EdgeInsets.only(
                         left: 11.0, top: 8.0, bottom: 8.0),
+
                   ),
                 ),
               ),
@@ -950,11 +958,11 @@ class _WhereToState extends State<WhereTo> {
                   decoration: InputDecoration(
                     hintText:
                         getTranslation(context, "where_to") + "?",
-                    fillColor: Colors.grey[400],
+                    fillColor: Colors.white,
                     filled: true,
                     border: InputBorder.none,
                     isDense: true,
-                    focusedBorder: InputBorder.none,
+                    //focusedBorder: InputBorder.none,
                     contentPadding: const EdgeInsets.only(
                         left: 11.0, top: 8.0, bottom: 8.0),
                   ),

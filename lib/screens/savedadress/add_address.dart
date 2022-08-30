@@ -96,6 +96,8 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
               Form(
                 key: _formState,
                 child: TextFormField(
+                  autofocus: true,
+                  style: const TextStyle(fontSize: 18),
                   initialValue:
                       widget.args.edit ? widget.args.savedLocation!.name : null,
                   decoration: InputDecoration(
@@ -122,6 +124,7 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
                 height: 20,
               ),
               TextFormField(
+                style: const TextStyle(fontSize: 18),
                 onChanged: (value) {
                   findPlace(value);
                 },
@@ -176,7 +179,8 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
                 leading: const Icon(
                   Icons.location_on,
                 ),
-                title: Text(getTranslation(context, "pick_location_from_map")),
+                title: Text(getTranslation(context, "pick_location_from_map"),
+                style: TextStyle(color: Theme.of(context).primaryColor),),
               ),
               const Divider(),
               BlocBuilder<LocationPredictionBloc, LocationPredictionState>(
@@ -210,10 +214,11 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
 
                 if (state is LocationPredictionOperationFailure) {}
 
-                return const Center(
+                /*return const Center(
                   child: Text("Enter The location"),
-                );
-              }),
+                );*/
+                return Container();
+                  }),
               BlocConsumer<PlaceDetailBloc, PlaceDetailState>(
                 listener: (_, state) {
                   if (state is PlaceDetailLoadSuccess) {
