@@ -319,7 +319,6 @@ class _SigninScreenState extends State<SigninScreen> {
                                       height: 20,
                                       width: 20,
                                       child: CircularProgressIndicator(
-                                        strokeWidth: 2,
                                         color: Colors.white,
                                       ),
                                     )
@@ -336,11 +335,13 @@ class _SigninScreenState extends State<SigninScreen> {
                       child: InkWell(
                           onTap: () {
                             Navigator.pushNamed(
-                                context, MobileVerification.routeName);
+                                context, ForgetPassword.routeName);
                           },
                           child: Text(
                             getTranslation("signin_forgot_passwod_text")+"?",
-                            style: Theme.of(context).textTheme.button,
+                            style: const TextStyle(
+                                color: Color.fromRGBO(39, 49, 110, 1),
+                                fontWeight: FontWeight.bold),
                           )),
                     ),
                   ),
@@ -356,7 +357,9 @@ class _SigninScreenState extends State<SigninScreen> {
                                   context, SignupScreen.routeName);
                             },
                             child: Text(getTranslation("signin_inkwell_text"),
-                                style: Theme.of(context).textTheme.button))
+                                style: const TextStyle(
+                                    color: Color.fromRGBO(39, 49, 110, 1),
+                                    fontWeight: FontWeight.bold)))
                       ],
                     ),
                   ),

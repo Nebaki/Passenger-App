@@ -14,16 +14,16 @@ import '../theme/theme_provider.dart';
 
 enum ResetMobileVerificationState { SHOW_MOBILE_FORM_STATE, SHOW_OTP_FORM_STATE }
 
-class MobileVerification extends StatefulWidget {
-  static const routeName = '/resetverification';
+class ForgetPassword extends StatefulWidget {
+  static const routeName = '/forget_password';
 
-  const MobileVerification({Key? key}) : super(key: key);
+  const ForgetPassword({Key? key}) : super(key: key);
 
   @override
-  _MobileVerificationState createState() => _MobileVerificationState();
+  _ForgetPasswordState createState() => _ForgetPasswordState();
 }
 
-class _MobileVerificationState extends State<MobileVerification> {
+class _ForgetPasswordState extends State<ForgetPassword> {
   ResetMobileVerificationState currentState =
       ResetMobileVerificationState.SHOW_MOBILE_FORM_STATE;
   late String phoneNumber;
@@ -62,36 +62,6 @@ class _MobileVerificationState extends State<MobileVerification> {
   void initState() {
     themeProvider = Provider.of<ThemeProvider>(context, listen: false);
     super.initState();
-  }
-  void sendVerificationCode() async {
-    await _auth.verifyPhoneNumber(
-        phoneNumber: phoneNumber,
-        timeout: const Duration(seconds: 60),
-        verificationCompleted: (phoneAuthCredential) async {
-          signInWithPhoneAuthCredential(phoneAuthCredential);
-        },
-        verificationFailed: (verificationFailed) async {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              backgroundColor: Colors.red.shade900,
-              content: Text(getTranslation(context, "incorrect_verification_code"))));
-          setState(() {
-            showLoading = false;
-          });
-        },
-        codeSent: (verificationId, resendingToken) async {
-          setState(() {
-            showLoading = false;
-            currentState = ResetMobileVerificationState.SHOW_OTP_FORM_STATE;
-            this.verificationId = verificationId;
-          });
-          Navigator.pushNamed(context, PhoneVerification.routeName,
-              arguments: VerificationArgument(
-                  from: 'ForgetPassword',
-                  phoneNumber: phoneNumber,
-                  resendingToken: resendingToken,
-                  verificationId: verificationId));
-        },
-        codeAutoRetrievalTimeout: (verificationId) async {});
   }
 
   final _formkey = GlobalKey<FormState>();

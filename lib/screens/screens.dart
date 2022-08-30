@@ -10,7 +10,7 @@ export 'savedadress/saved_address.dart';
 export '../widgets/startedtrippanel/cancel_reason.dart';
 export 'user/reset_password.dart';
 export 'splash/splashscreen.dart';
-export 'user/phone_verification.dart';
+export 'user/forget_password.dart';
 export 'user/change_password.dart';
 export 'history/history_detail.dart';
 export 'settings/preference.dart';

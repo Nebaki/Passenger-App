@@ -223,8 +223,8 @@ class _PhoneVerificationState extends State<PhoneVerification> {
             padding: const EdgeInsets.only(top: 50),
             child: codeSent
                 ? _buildForm(node)
-                : Text("Sending Code...",
-                    style: TextStyle(color: Colors.green[900], fontSize: 20.0),
+                : Text("Sending Verification Code, Please wait...",
+                    style: TextStyle(color: Colors.green[900], fontSize: 16.0),
                   ),
           ),
         ],

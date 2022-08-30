@@ -330,14 +330,14 @@ class MyApp extends StatelessWidget {
                         color: themeProvider.getColor,
                       ),
                       subtitle1:
-                      TextStyle(color: Colors.black38, fontSize: 13),
+                      const TextStyle(color: Colors.black38, fontSize: 14),
                       headline5: const TextStyle(
                           fontFamily: 'Sifonn',
-                          fontWeight: FontWeight.bold, fontSize: 18),
+                          fontWeight: FontWeight.bold, fontSize: 24),
                       bodyText2: const TextStyle(
                           fontFamily: 'Sifonn',
                           color: Colors.black,
-                          fontSize: 13,
+                          fontSize: 16,
                           fontWeight: FontWeight.normal)
 
                   ),

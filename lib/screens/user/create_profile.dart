@@ -251,6 +251,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                         height: 10,
                       ),
                       TextFormField(
+                          obscureText: true,
                           style: const TextStyle(fontSize: 18),
                           controller: password,
                           decoration: InputDecoration(
@@ -271,10 +272,11 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                               return getTranslation(context,
                                   "create_profile_empity_password_validation");
                             } else if (value.length > 25) {
-                              return 'Password must not be longer than 25 characters';
+                              return getTranslation(context,
+                                  "signin_form_long_password_validation");
                             } else if (value.length < 4) {
                               return getTranslation(context,
-                                  "create_profile_long_password_validation");
+                                  "signin_form_short_password_validation");
                             }
                             return null;
                           },
@@ -285,6 +287,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                         height: 10,
                       ),
                       TextFormField(
+                        obscureText: true,
                         style: const TextStyle(fontSize: 18),
                         decoration: InputDecoration(
                           labelText: getTranslation(context, "confirm_password"),
@@ -356,8 +359,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                                               height: 20,
                                               width: 20,
                                               child: CircularProgressIndicator(
-                                                strokeWidth: 1,
-                                                color: Colors.black,
+                                                color: Colors.white,
                                               ),
                                             )
                                           : Container(),

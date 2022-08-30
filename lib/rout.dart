@@ -68,9 +68,9 @@ class AppRoute {
     if (settings.name == SigninScreen.routeName) {
       return MaterialPageRoute(builder: (context) => const SigninScreen());
     }
-    if (settings.name == MobileVerification.routeName) {
+    if (settings.name == ForgetPassword.routeName) {
       return MaterialPageRoute(
-          builder: (context) => const MobileVerification());
+          builder: (context) => const ForgetPassword());
     }
     if (settings.name == ChangePassword.routeName) {
       return MaterialPageRoute(builder: (context) => ChangePassword());
