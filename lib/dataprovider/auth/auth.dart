@@ -6,6 +6,8 @@ import 'package:http/http.dart' as http;
 import 'package:passengerapp/models/models.dart';
 import 'package:passengerapp/helper/api_end_points.dart' as api;
 
+import '../../utils/session.dart';
+
 class AuthDataProvider {
   final _baseUrl = 'https://safeway-api.herokuapp.com/api/auth';
   final _imageBaseUrl = 'https://safeway-api.herokuapp.com/';
@@ -50,6 +52,7 @@ class AuthDataProvider {
         'fcm_id': fcmId
       }),
     );
+    Session().logSession("login", response.body);
 
     if (response.statusCode == 200) {
       Map<String, dynamic> output = jsonDecode(response.body);

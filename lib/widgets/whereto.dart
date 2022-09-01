@@ -23,6 +23,7 @@ class _WhereToState extends State<WhereTo> {
   late String currentLocation = "Loading current location..";
   late LatLng destinationLtlng;
   final pickupController = TextEditingController();
+  final dropOffController = TextEditingController();
   FocusNode pickupLocationNode = FocusNode();
   FocusNode droppOffLocationNode = FocusNode();
 
@@ -246,7 +247,7 @@ class _WhereToState extends State<WhereTo> {
                   );
             }
             if (state is LocationHistoryLoading) {
-              return Column(
+              /*return Column(
                 children: [
                   Text(getTranslation(
                       context, "location_history_loading_message")),
@@ -260,7 +261,8 @@ class _WhereToState extends State<WhereTo> {
                     ),
                   ),
                 ],
-              );
+              );*/
+              return Container();
             }
             return Center(
                 child: Text(getTranslation(
@@ -837,6 +839,7 @@ class _WhereToState extends State<WhereTo> {
         height: 60,
         child: Center(
           child: TextFormField(
+            controller: dropOffController,
             autofocus: true,
             focusNode: droppOffLocationNode,
             onChanged: (value) {
@@ -846,6 +849,14 @@ class _WhereToState extends State<WhereTo> {
             },
             style: const TextStyle(fontSize: 18),
             decoration: InputDecoration(
+                suffixIcon: IconButton(
+                    onPressed: () {
+                      dropOffController.clear();
+                    },
+                    icon: const Icon(
+                      Icons.clear,
+                      size: 15,
+                    )),
                 labelText: getTranslation(context, "droppoff_address_hint_text"),
                 prefixIcon: const Padding(
                   padding: EdgeInsets.only(left: 20, right: 10),

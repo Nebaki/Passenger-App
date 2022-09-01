@@ -1,7 +1,7 @@
 {
     "phone_number_hint_text":"Phone Number",
-    "pickup_address_hint_text":"Enter Pickup Address",
-    "droppoff_address_hint_text":"Enter Destination Address",
+    "pickup_address_hint_text":"Pickup Address",
+    "droppoff_address_hint_text":"Destination Address",
     "password_hint_text":"Password",
     "button_no_internet_connection_message":"No Internet Connection",
     "no_internet_connection_message_action_text":"Try Again",
@@ -62,7 +62,7 @@
     "operation_failure_message":"Operation Failure",
     "saved_locations_title":"Saved Locations",
     "saved_locations_bottom_rideto_action":"Create Order",
-    "saved_locations_bottom_edit_action":"Edit",
+    "saved_locations_bottom_edit_action":"Update Address",
     "settingup_dropp_off_failure_message":"Unable To set the Dropoff.",
     "settingup_dropp_off_message":"Setting up Drop Off. Please wait..",
     "settingup_pickup_failure_message":"Unable To set the Pickup Location.",
@@ -120,9 +120,9 @@
     "how_was_you_trip":"How was your trip?",
     "leave_a_comment":"Leave a comment..",
     "submit":"Submit",
-    "please_confirm_the_password":"Please confirm the password",
-    "enter_new_password":"Please enter The New Password",
-    "enter_old_password":"Please enter The Old password",
+    "please_confirm_the_password":"Please confirm your password",
+    "enter_new_password":"Please enter your new password",
+    "enter_old_password":"Please enter your old password",
     "operation_failure":"Operation Failure",
     "password_changed":"Password Changed",
     "driver":"driver",
@@ -133,7 +133,7 @@
     "location":"Location",
     "order_for_other":"Order For Others",
     "next":"Next",
-    "back":"Back",
+    "back":"Previous",
     "continue":"Continue",
     "no_user_registered_message":"There is no user registered by this phone number",
     "reset_password":"Reset Password",
@@ -187,7 +187,8 @@
     "incorrect_verification_code":"InCorrect Verification Code",
     "phone_number": "Phone number",
     "phone_number_required": "Please enter Your Phone Number",
-    "phone_number_short": "Phone no. length must not be less than 9 digits",
-    "phone_number_exceed": "Phone no. length must not be greater than 9 digits"
+    "phone_number_short": "Phone No. length must not be less than 9 digits",
+    "phone_number_exceed": "Phone No. length must not be greater than 9 digits",
+    "passenger_phone_number": "Please Enter Passenger Phone No."
 
 }

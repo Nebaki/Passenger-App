@@ -19,10 +19,12 @@ class SettingScreen extends StatefulWidget {
 }
 
 class _SettingScreenState extends State<SettingScreen> {
+  final _appBar = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: CustomScrollView(
+        key: _appBar,
         slivers: [
           BlocBuilder<ProfilePictureCubit, String>(
             builder: (context, state) {
@@ -67,15 +69,17 @@ class _SettingScreenState extends State<SettingScreen> {
                 const SizedBox(
                   height: 10,
                 ),
-                _buildAppinfoItems(
-                    context, getTranslation(context, "app_info")),
+                //_buildAppinfoItems(context, getTranslation(context, "app_info")),
+                _buildAboutUsItems(
+                    context, getTranslation(context, "about_us")),
                 const SizedBox(
                   height: 10,
                 ),
-                _buildAboutUsItems(context, getTranslation(context, "about_us"))
               ]));
             }
-            return Container();
+            return const Center(
+                child: Text("Something went wrong")
+            );
           }))
         ],
       ),
@@ -126,7 +130,7 @@ class _SettingScreenState extends State<SettingScreen> {
                   context,
                   Icons.phone,
                   getTranslation(context, "tap_to_change_phone_number"),
-                  state.auth.phoneNumber ?? "loading"),
+                  state.auth.phoneNumber ?? "Loading"),
             ),
             const Divider(
               height: 0,
@@ -163,41 +167,29 @@ class _SettingScreenState extends State<SettingScreen> {
               },
               child: _settingItem(
                   context,
-                  Icons.emergency,
+                  Icons.phone,
                   getTranslation(context, "emergency_contact_number_hint_text"),
                   state.auth.emergencyContact ?? "loading"),
             ),
             const Divider(
               height: 0,
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                GestureDetector(
-                  onTap: () {
-                    Navigator.pushNamed(context, ChangePassword.routeName);
-                  },
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Center(
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Theme.of(context).primaryColor,
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(15.0),
-                          child: Text(
-                            getTranslation(context, "change_password"),
-                            style: TextStyle(color: Colors.white),
-                          ),
-                        ),
-                      ),
+            Padding(
+                  padding: const EdgeInsets.all(15),
+                  child: SizedBox(
+                    height: 50,
+                    width: MediaQuery.of(context).size.width,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Navigator.pushNamed(context, ChangePassword.routeName);
+                      },
+                      child: Text(
+                                  getTranslation(context, "change_password"),
+                                  style: const TextStyle(color: Colors.white),
+                                ),
                     ),
                   ),
                 ),
-              ],
-            )
           ],
         ),
       ),
@@ -219,11 +211,7 @@ class _SettingScreenState extends State<SettingScreen> {
                     children: [
                       Padding(
                         padding: const EdgeInsets.all(5.0),
-                        child: Text(title,
-                            style: TextStyle(
-                              fontSize: 11,
-                              //color: Theme.of(context).primaryColor
-                            )),
+                        child: Text(title),
                       ),
                     ],
                   )
@@ -329,7 +317,7 @@ class _SettingScreenState extends State<SettingScreen> {
                   text: "${getTranslation(context, "owned_by")}:\n  ",
                   children: [
                     TextSpan(
-                        text: " Safeway Transport",
+                        text: " Tropical Trading",
                         style: TextStyle(
                             color: Theme.of(context).primaryColor,
                             fontStyle: FontStyle.italic,
@@ -383,10 +371,10 @@ class _SettingScreenState extends State<SettingScreen> {
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Text.rich(TextSpan(
-                  text: "${getTranslation(context, "build_name")}: ",
+                  text: "${getTranslation(context, "build_name")} ",
                   children: const [
                     TextSpan(
-                        text: " SafeWay",
+                        text: " Gari",
                         style: TextStyle(
                             fontStyle: FontStyle.italic,
                             fontWeight: FontWeight.w300))
@@ -398,7 +386,7 @@ class _SettingScreenState extends State<SettingScreen> {
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Text.rich(TextSpan(
-                  text: "${getTranslation(context, "app_version")}: ",
+                  text: "${getTranslation(context, "app_version")} ",
                   children: const [
                     TextSpan(
                         text: " 1.0",
@@ -413,7 +401,7 @@ class _SettingScreenState extends State<SettingScreen> {
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Text.rich(TextSpan(
-                  text: "${getTranslation(context, "build_number")}: ",
+                  text: "${getTranslation(context, "build_number")} ",
                   children: const [
                     TextSpan(
                         text: " 102034",

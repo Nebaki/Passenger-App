@@ -189,7 +189,6 @@
     "phone_number": "Phone number",
     "phone_number_required": "Please enter Your Password",
     "phone_number_short": "Phone no. length must not be less than 9 digits",
-    "phone_number_exceed": "Phone no. length must not be greater than 9 digits"
-
-
+    "phone_number_exceed": "Phone no. length must not be greater than 9 digits",
+    "passenger_phone_number": "Please Enter Passenger Phone No."
 }
