@@ -22,7 +22,7 @@ class DriverProfile extends StatelessWidget {
         vehicle = state.driver.vehicle;
         driverRating = state.driver.rating;
         driverFcm = state.driver.fcmId;
-        var model = vehicle!['model'].toString().substring(0,15);
+        var model = vehicle!['model'];
         return Column(
           children: [
             /*Flexible(
@@ -351,15 +351,26 @@ class DriverProfile extends StatelessWidget {
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
-                                  "${getTranslation(context, "car_model")}: $model",
-                                overflow: TextOverflow.fade,
-                                maxLines: 2,
-                                softWrap: false,),
-                              Text(
-                                  "${getTranslation(context, "plate_number")}: ${vehicle!['plate_number']}"),
-                              Text(
-                                  '${getTranslation(context, "color")}: ${vehicle!['color']}'),
+                              Padding(
+                                padding: const EdgeInsets.only(bottom: 8.0),
+                                child: SizedBox(
+                                  child: Text(
+                                      "${getTranslation(context, "car_model")}: $model",
+                                    overflow: TextOverflow.fade,
+                                    maxLines: 2,
+                                    softWrap: false,),
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(bottom: 8.0),
+                                child: Text(
+                                    "${getTranslation(context, "plate_number")}: ${vehicle!['plate_number']}"),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(bottom: 2.0),
+                                child: Text(
+                                    '${getTranslation(context, "color")}: ${vehicle!['color']}'),
+                              ),
                             ],
                           ),
                           const SizedBox(

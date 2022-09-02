@@ -628,7 +628,7 @@ class _WhereToState extends State<WhereTo> {
                           context, "settingup_dropp_off_failure_message"))));
                 });
               }
-              return WillPopScope(
+              /*return WillPopScope(
                 onWillPop: () async => false,
                 child: AlertDialog(
                   content: Row(
@@ -653,6 +653,8 @@ class _WhereToState extends State<WhereTo> {
                   ),
                 ),
               );
+              */
+              return Container();
             }),
           );
         });

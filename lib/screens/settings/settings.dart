@@ -8,6 +8,7 @@ import 'package:passengerapp/rout.dart';
 import 'package:passengerapp/screens/screens.dart';
 
 import '../../cubit/cubits.dart';
+import '../../localization/localization.dart';
 
 class SettingScreen extends StatefulWidget {
   static const routeName = "/settings";
@@ -20,6 +21,7 @@ class SettingScreen extends StatefulWidget {
 
 class _SettingScreenState extends State<SettingScreen> {
   final _appBar = GlobalKey<FormState>();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -77,13 +79,74 @@ class _SettingScreenState extends State<SettingScreen> {
                 ),
               ]));
             }
-            return const Center(
-                child: Text("Something went wrong")
-            );
+            return const Center(child: Text("Something went wrong"));
           }))
         ],
       ),
     );
+  }
+
+  final List<String> dropDownItems = ["Amharic", "English"];
+
+  String getTrans(String key) {
+    return Localization.of(context).getTranslation(key);
+  }
+
+  _buildLanguageMenu() {
+    return Card(
+        margin: const EdgeInsets.symmetric(horizontal: 0),
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              const Padding(
+                padding: EdgeInsets.all(8.0),
+                child: Icon(Icons.language,color: Colors.black,),
+              ),
+              Text(getTrans("language")),
+              const SizedBox(
+                width: 10,
+              ),
+              BlocBuilder<LocaleCubit, Locale>(
+                builder: (context, state) => DropdownButton(
+                    dropdownColor: Colors.white,
+                    value: state == const Locale("en", "US")
+                        ? "English"
+                        : "Amharic",
+                    items: dropDownItems
+                        .map((e) => DropdownMenuItem(
+                              child: Text(
+                                e,
+                                style: TextStyle(color: Colors.black),
+                              ),
+                              value: e,
+                            ))
+                        .toList(),
+                    onChanged: (value) {
+                      switch (value) {
+                        case "Amharic":
+                          context
+                              .read<LocaleCubit>()
+                              .changeLocale(const Locale("am", "ET"));
+
+                          break;
+                        case "English":
+                          context
+                              .read<LocaleCubit>()
+                              .changeLocale(const Locale("en", "US"));
+
+                          break;
+                        default:
+                          context
+                              .read<LocaleCubit>()
+                              .changeLocale(const Locale("en", "US"));
+                      }
+                    }),
+              )
+            ],
+          ),
+        ));
   }
 
   void _navigateToEditProfileScreen(
@@ -175,21 +238,21 @@ class _SettingScreenState extends State<SettingScreen> {
               height: 0,
             ),
             Padding(
-                  padding: const EdgeInsets.all(15),
-                  child: SizedBox(
-                    height: 50,
-                    width: MediaQuery.of(context).size.width,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        Navigator.pushNamed(context, ChangePassword.routeName);
-                      },
-                      child: Text(
-                                  getTranslation(context, "change_password"),
-                                  style: const TextStyle(color: Colors.white),
-                                ),
-                    ),
+              padding: const EdgeInsets.all(15),
+              child: SizedBox(
+                height: 50,
+                width: MediaQuery.of(context).size.width,
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.pushNamed(context, ChangePassword.routeName);
+                  },
+                  child: Text(
+                    getTranslation(context, "change_password"),
+                    style: const TextStyle(color: Colors.white),
                   ),
                 ),
+              ),
+            ),
           ],
         ),
       ),
@@ -278,9 +341,11 @@ class _SettingScreenState extends State<SettingScreen> {
               height: 0,
             ),
             GestureDetector(
-              onTap: () {},
+              onTap: () {},/*
               child: _settingItem(context, Icons.language, "",
                   getTranslation(context, "language")),
+              */
+              child: _buildLanguageMenu(),
             ),
           ],
         ),

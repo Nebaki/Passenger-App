@@ -81,7 +81,7 @@ class _PhoneVerificationState extends State<PhoneVerification> {
             codeSent = true;
           });
           _resendToken = resendingToken!;
-          _verificationId = verificationId!;
+          _verificationId = verificationId;
           startTimer();
           _onCodeSent(verificationId, resendingToken,false);
         },
