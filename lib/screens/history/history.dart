@@ -387,6 +387,7 @@ class _HistoryPageState extends State<HistoryPage> {
   }
 
   _listUi(Color theme, RideRequest trip) {
+    Session().logSession("tripData", trip.toString());
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -408,7 +409,7 @@ class _HistoryPageState extends State<HistoryPage> {
             ),
             trip.status != "Cancelled" ? Padding(
               padding: const EdgeInsets.all(3.0),
-              child: Text("Fee ${trip.price!.split(",")[0] + "ETB"}"),
+              child: Text(trip.price!.split(",")[0] + " ETB"),
             ):Container()
           ],
         ),
@@ -421,7 +422,8 @@ class _HistoryPageState extends State<HistoryPage> {
         ),
         Padding(
           padding: const EdgeInsets.all(8.0),
-          child: Text(_formatedDate(trip.date!)),
+          child: Text(trip.date!),
+          //child: Text(_formatedDate(trip.date!)),
         ),
         Padding(
           padding: const EdgeInsets.all(2.0),
@@ -450,7 +452,7 @@ class _HistoryPageState extends State<HistoryPage> {
     if(utcDate != "null"){
       Session().logSession("date", utcDate);
       //var newStr = utcDate.substring(0,10) + ' ' + utcDate.substring(11,23);
-      DateTime dt = DateTime.parse(str);
+      DateTime dt = DateTime.parse(utcDate);
       var date = DateFormat("EEE, d MMM yyyy HH:mm:ss").format(dt);
       return date;
     }else{

@@ -8,6 +8,8 @@ import 'package:passengerapp/cubit/cubits.dart';
 import 'package:passengerapp/helper/localization.dart';
 import 'package:passengerapp/models/user/user.dart';
 import 'package:passengerapp/rout.dart';
+import 'package:passengerapp/utils/session.dart';
+import '../../utils/validator.dart';
 import '../../utils/waver.dart';
 
 class EditProfile extends StatefulWidget {
@@ -40,6 +42,13 @@ class _EditProfileState extends State<EditProfile> {
   late String emergency;
   bool emergencyUpdate = false;
 
+  String _phoneSupplier(String phone){
+    Session().logSession("phone-sup", phone);
+    if(phone.length > 4){
+      return phone.substring(4);
+    }
+    return phone;
+  }
   @override
   void initState() {
     name = widget.args.auth.name ?? "Loading";
@@ -48,7 +57,7 @@ class _EditProfileState extends State<EditProfile> {
     phoneController.text = phone;
     email = widget.args.auth.email;
     emailController.text = email ?? "";
-    emergency = widget.args.auth.emergencyContact ?? "+251";
+    emergency = widget.args.auth.emergencyContact ?? "";
     emergencyController.text = emergency;
     textLength = phoneController.text.length;
     eTextLength = emergencyController.text.length;
@@ -140,9 +149,8 @@ class _EditProfileState extends State<EditProfile> {
                 BlocProvider.of<AuthBloc>(context).add(AuthDataLoad());
                 //Navigator.pop(context);
               });
-
               ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                content: Text(getTranslation(context, "update_successfull")),
+                content: Text(getTranslation(context, "update_successful")),
                 backgroundColor: Colors.green,
               ));
             }
@@ -164,6 +172,7 @@ class _EditProfileState extends State<EditProfile> {
   Widget _buildProfileForm() {
     return Form(
         key: _formKey,
+        autovalidateMode: AutovalidateMode.onUserInteraction,
         child: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.only(
@@ -230,7 +239,7 @@ class _EditProfileState extends State<EditProfile> {
                               borderSide:
                                   BorderSide(width: 0.6, color: Colors.orange)),
                           prefixIcon: const Icon(
-                            Icons.contact_mail,
+                            Icons.person,
                             size: 19,
                           ),
                           // fillColor: Colors.white,
@@ -240,13 +249,14 @@ class _EditProfileState extends State<EditProfile> {
                               borderSide: BorderSide.none)),
                       validator: (value) {
                         if (value!.isEmpty) {
-                          return 'This field can\'t be empity';
-                        } else if (value.length < 2) {
                           return getTranslation(
-                              context, "create_profile_short_name_validation");
+                              context, "create_profile_empity_name_validation");
                         } else if (value.length > 25) {
                           return getTranslation(
                               context, "create_profile_long_name_validation");
+                        } else if (value.length < 4) {
+                          return getTranslation(
+                              context, "create_profile_short_name_validation");
                         }
                         return null;
                       },
@@ -273,13 +283,14 @@ class _EditProfileState extends State<EditProfile> {
                               borderSide:
                                   BorderSide(width: 0.6, color: Colors.orange)),
                           prefixIcon: const Icon(
-                            Icons.phone_callback_outlined,
+                            Icons.phone,
                             size: 19,
                           ),
                           // fillColor: Colors.white,
-                          suffix: Text("$textLength/13"),
+                          //suffix: Text("$textLength/13"),
+                          //prefixText: "+251",
                           filled: true,
-                          enabled: phoneEnabled,
+                          enabled: false,//phoneEnabled,
                           border: const OutlineInputBorder(
                               borderSide: BorderSide.none)),
                       validator: (value) {
@@ -301,7 +312,7 @@ class _EditProfileState extends State<EditProfile> {
                         });
                       },
                       onSaved: (value) {
-                        _user["phone_number"] = value;
+                        _user["phone_number"] = '+251$value';
                       },
                     ),
                     const SizedBox(
@@ -331,8 +342,14 @@ class _EditProfileState extends State<EditProfile> {
                               //borderRadius: BorderRadius.all(Radius.circular(10)),
                               borderSide: BorderSide.none)),
                       validator: (value) {
-                        if (value!.isEmpty) {}
-                        return null;
+                        if(value!.isEmpty){
+                          return null;
+                        }
+                        else if(Sanitizer().isEmailValid(value.toString())){
+                          return null;
+                        }else {
+                          return "Invalid Email Format";
+                        }
                       },
                       onSaved: (value) {
                         _user["email"] = value;
@@ -358,17 +375,18 @@ class _EditProfileState extends State<EditProfile> {
                               borderSide:
                                   BorderSide(width: 0.6, color: Colors.orange)),
                           prefixIcon: const Icon(
-                            Icons.contact_phone_outlined,
+                            Icons.phone,
                             size: 19,
                           ),
                           suffix: Text("$eTextLength/13"),
+                          //prefixText: "+251",
                           filled: true,
                           border: const OutlineInputBorder(
                               //borderRadius: BorderRadius.all(Radius.circular(10)),
                               borderSide: BorderSide.none)),
                       onSaved: (value) {
                         //print("now");
-                        _user["emergency_contact"] = emergencyController.text;
+                        //emergencyController.text = '+251$value';
                       },
                       validator: (value) {
                         if (value!.isEmpty) {
@@ -432,7 +450,6 @@ class _EditProfileState extends State<EditProfile> {
                                       width: 20,
                                       child: CircularProgressIndicator(
                                         color: Colors.white,
-                                        strokeWidth: 1,
                                       ),
                                     )
                                   : Container(),

@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:passengerapp/bloc/bloc.dart';
 import 'package:passengerapp/helper/localization.dart';
 import 'package:passengerapp/rout.dart';
-import 'package:passengerapp/screens/signinscreen/signin.dart';
+import 'package:passengerapp/screens/user/signin.dart';
 import 'package:passengerapp/widgets/widgets.dart';
 import 'package:provider/provider.dart';
 import '../../utils/waver.dart';
@@ -30,8 +30,12 @@ class _ResetPasswordState extends State<ResetPassword> {
 
   late ThemeProvider themeProvider;
 
+  late bool _visiblePassword;
+  late IconData icon;
   @override
   void initState() {
+    _visiblePassword = true;
+    icon = Icons.visibility;
     themeProvider = Provider.of<ThemeProvider>(context, listen: false);
     super.initState();
   }
@@ -115,6 +119,7 @@ class _ResetPasswordState extends State<ResetPassword> {
     return Stack(children: [
       Form(
         key: _formkey,
+        autovalidateMode: AutovalidateMode.onUserInteraction,
         child: SizedBox(
           height: 600,
           child: Padding(
@@ -124,7 +129,9 @@ class _ResetPasswordState extends State<ResetPassword> {
                 Padding(
                   padding: const EdgeInsets.all(10),
                   child: TextFormField(
-                    obscureText: true,
+                    style: const TextStyle(fontSize: 18),
+                    obscureText: _visiblePassword,
+                    autofocus: true,
                     controller: newPassword,
                     decoration: InputDecoration(
                         labelText:
@@ -136,10 +143,21 @@ class _ResetPasswordState extends State<ResetPassword> {
                           Icons.vpn_key,
                           size: 19,
                         ),
+                      suffixIcon: IconButton(
+                          onPressed: () {
+                            setState(() {
+                              _visiblePassword = !_visiblePassword;
+                              icon = _visiblePassword
+                                  ? Icons.visibility
+                                  : Icons.visibility_off;
+                            });
+                          },
+                          icon: Icon(icon)),
                         // fillColor: Colors.white,
                         // filled: true,
-                        border: const OutlineInputBorder(
-                            borderSide: BorderSide.none)),
+                      border: const OutlineInputBorder(
+                          borderSide: BorderSide(style: BorderStyle.solid)),
+                    ),
                     validator: (value) {
                       if (value!.isEmpty) {
                         return getTranslation(
@@ -162,7 +180,8 @@ class _ResetPasswordState extends State<ResetPassword> {
                 Padding(
                   padding: const EdgeInsets.all(10),
                   child: TextFormField(
-                    obscureText: true,
+                    style: const TextStyle(fontSize: 18),
+                    obscureText: _visiblePassword,
                     decoration: InputDecoration(
                         labelText: getTranslation(
                             context, "confirm_password_hint_text"),
@@ -173,10 +192,21 @@ class _ResetPasswordState extends State<ResetPassword> {
                           Icons.vpn_key,
                           size: 19,
                         ),
+                      suffixIcon: IconButton(
+                          onPressed: () {
+                            setState(() {
+                              _visiblePassword = !_visiblePassword;
+                              icon = _visiblePassword
+                                  ? Icons.visibility
+                                  : Icons.visibility_off;
+                            });
+                          },
+                          icon: Icon(icon)),
                         // fillColor: Colors.white,
                         // filled: true,
-                        border: const OutlineInputBorder(
-                            borderSide: BorderSide.none)),
+                      border: const OutlineInputBorder(
+                          borderSide: BorderSide(style: BorderStyle.solid)),
+                    ),
                     validator: (value) {
                       if (value != newPassword.text) {
                         return 'Password must match';

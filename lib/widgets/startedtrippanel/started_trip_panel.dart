@@ -12,20 +12,21 @@ class StartedTripPannel extends StatelessWidget {
       child: Column(
         children: [
           Container(
-              height: 250,
+              height: 300,
               padding: const EdgeInsets.only(
                   top: 10, left: 20, right: 20, bottom: 0),
               decoration: BoxDecoration(
-                  color: Theme.of(context).backgroundColor,
+                  color: Colors.white,
                   borderRadius: BorderRadius.circular(20)),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: const [
                   Flexible(
-                      flex: 1,
+                      flex: 3,
                       child: DriverProfile(
                           assetImage: 'assets/icons/economyCarIcon.png')),
+
                   Divider(),
                   Flexible(flex: 1, child: Counter()),
                 ],

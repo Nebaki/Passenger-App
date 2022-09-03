@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:passengerapp/helper/localization.dart';
 import 'package:passengerapp/rout.dart';
 import 'package:passengerapp/screens/screens.dart';
+import '../../utils/session.dart';
 import '../../utils/waver.dart';
 
 class PhoneVerification extends StatefulWidget {
@@ -80,7 +81,7 @@ class _PhoneVerificationState extends State<PhoneVerification> {
             codeSent = true;
           });
           _resendToken = resendingToken!;
-          _verificationId = verificationId!;
+          _verificationId = verificationId;
           startTimer();
           _onCodeSent(verificationId, resendingToken,false);
         },
@@ -104,14 +105,13 @@ class _PhoneVerificationState extends State<PhoneVerification> {
                   height: 20,
                   width: 20,
                   child: CircularProgressIndicator(
-                    strokeWidth: 1,
                     color: Colors.red,
                   ),
                 ),
                 SizedBox(
                   width: 5,
                 ),
-                Text("Resending."),
+                Text("Resending Verification Code..."),
               ],
             ),
           );
@@ -201,8 +201,9 @@ class _PhoneVerificationState extends State<PhoneVerification> {
       setState(() {
         _isLoading = false;
       });
+      Session().logError("firebase-login", e.toString());
       ScaffoldMessenger.of(context)
-          .showSnackBar(_errorMessageSnackBar(e.toString()));
+          .showSnackBar(_errorMessageSnackBar("Incorrect Verification Code, Please Try Again!"));
     }
   }
   final _appBar = GlobalKey<FormState>();
@@ -221,8 +222,8 @@ class _PhoneVerificationState extends State<PhoneVerification> {
             padding: const EdgeInsets.only(top: 50),
             child: codeSent
                 ? _buildForm(node)
-                : Text("Sending Code...",
-                    style: TextStyle(color: Colors.green[900], fontSize: 20.0),
+                : Text("Sending Verification Code, Please wait...",
+                    style: TextStyle(color: Colors.green[900], fontSize: 16.0),
                   ),
           ),
         ],
@@ -254,6 +255,7 @@ class _PhoneVerificationState extends State<PhoneVerification> {
               SizedBox(
                   width: 50.0,
                   child: TextFormField(
+                    autofocus: true,
                     validator: (value) {
                       if (value!.isEmpty) {
                         setState(() {

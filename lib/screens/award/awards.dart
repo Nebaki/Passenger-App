@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:passengerapp/utils/session.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import '../../dataprovider/auth/auth.dart';
@@ -6,7 +7,7 @@ import 'package:http/http.dart' as http;
 import '../../dataprovider/lottery/lottery.dart';
 import '../../models/lottery/award.dart';
 import '../../utils/waver.dart';
-import '../signinscreen/signin.dart';
+import '../user/signin.dart';
 import '../theme/theme_provider.dart';
 
 class AwardScreen extends StatefulWidget {
@@ -112,9 +113,14 @@ class _AwardScreenState extends State<AwardScreen> with AutomaticKeepAliveClient
     super.initState();
   }
 
-  String _formatedDate(String utcDate) {
+  String _formateDate(String utcDate) {
     //var str = "2019-04-05T14:00:51.000Z";
-    var newStr = utcDate.substring(0, 10) + ' ' + utcDate.substring(11, 23);
+    var newStr = "2019-04-05T14:00:51.000Z";
+    try{
+      newStr = utcDate.substring(0, 10) + ' ' + utcDate.substring(11, 23);
+    }on Exception catch (_, e){
+      Session().logError("date", e.toString());
+    }
     DateTime dt = DateTime.parse(newStr);
     var date = DateFormat("EEE, d MMM yyyy HH:mm:ss").format(dt);
     return date;
@@ -172,7 +178,7 @@ class _AwardScreenState extends State<AwardScreen> with AutomaticKeepAliveClient
                 ),
             ],
           )
-        : const Center(child: Text("No Award available for a moment"));
+        : const Center(child: Text("No Award available for the moment"));
   }
 
   final List<Award>? _items = [];
@@ -320,7 +326,7 @@ class _AwardScreenState extends State<AwardScreen> with AutomaticKeepAliveClient
                           ),
                           Text("From: ",style: TextStyle(color: themeProvider.getColor)),
                           Text(
-                            _formatedDate(award.startDate ?? "2022-04-20T11:47:17.092Z"),
+                            _formateDate(award.startDate ?? "2022-04-20T11:47:17.092Z"),
                             style: const TextStyle(color: Colors.black,fontWeight: FontWeight.bold),
                           ),
                         ],
@@ -346,7 +352,7 @@ class _AwardScreenState extends State<AwardScreen> with AutomaticKeepAliveClient
                             children: [
                               Text("To: ",style: TextStyle(color: themeProvider.getColor)),
                               Text(
-                                _formatedDate(award.endDate ?? "2022-04-20T11:47:17.092Z"),
+                                _formateDate(award.endDate ?? "2022-04-20T11:47:17.092Z"),
                                 style: const TextStyle(color: Colors.black,fontWeight: FontWeight.bold),
                               ),
                             ],

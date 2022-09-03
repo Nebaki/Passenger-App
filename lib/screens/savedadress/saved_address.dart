@@ -46,13 +46,7 @@ class SavedAddress extends StatelessWidget {
                     ? Container()
                     : Container(
                         padding: const EdgeInsets.only(top: 00),
-                        child: Column(
-                          children: [
-                            Container(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 5),
-                                height: MediaQuery.of(context).size.height - 100,
-                                child: ListView.builder(
+                        child: ListView.builder(
                                     itemCount: state.savedLocation.length,
                                     itemBuilder: (context, index) {
                                       return Dismissible(
@@ -114,9 +108,7 @@ class SavedAddress extends StatelessWidget {
                                           key: const Key("item."),
                                           child: _builHistoryCard(context,
                                               state.savedLocation[index]));
-                                    }))
-                          ],
-                        ),
+                                    })
                       );
               }
               if (state is FavoriteLocationOperationFailure) {
@@ -285,9 +277,7 @@ class SavedAddress extends StatelessWidget {
   void _showModalBottomSheet(BuildContext context, SavedLocation location) {
     showModalBottomSheet(
         constraints: BoxConstraints(
-            maxHeight: MediaQuery.of(context).size.height * 0.3,
-            minWidth: MediaQuery.of(context).size.width,
-            maxWidth: MediaQuery.of(context).size.width),
+            maxHeight: MediaQuery.of(context).size.height * 0.14),
         shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.only(
                 topLeft: Radius.circular(30), topRight: Radius.circular(30))),
@@ -302,40 +292,48 @@ class SavedAddress extends StatelessWidget {
                     style: Theme.of(context).textTheme.titleLarge),
                 const Divider(),
                 SizedBox(
-                    width: double.infinity,
-                    child: TextButton(
-                        onPressed: () {
-                          getPlaceDetail(location.placeId, context);
-                          settingDropOffDialog(context);
+                  height: 50,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      TextButton(
+                          onPressed: () {
+                            getPlaceDetail(location.placeId, context);
+                            settingDropOffDialog(context);
 
-                          LocationHistoryEvent event = LocationHistoryAdd(
-                              location: LocationPrediction(
-                                  placeId: location.placeId,
-                                  mainText: location.name,
-                                  secondaryText: location.address));
-                          BlocProvider.of<LocationHistoryBloc>(context)
-                              .add(event);
-                        },
-                        child: Row(
-                          children: [
-                            Text(getTranslation(context,
-                                "saved_locations_bottom_rideto_action")),
-                          ],
-                        ))),
-                Divider(),
-                TextButton(
-                    onPressed: () {
-                      Navigator.popAndPushNamed(
-                          context, AddAddressScreen.routeName,
-                          arguments: AddAdressScreenArgument(
-                              edit: true, savedLocation: location));
-                    },
-                    child: Row(
-                      children: [
-                        Text(getTranslation(
-                            context, "saved_locations_bottom_edit_action")),
-                      ],
-                    )),
+                            LocationHistoryEvent event = LocationHistoryAdd(
+                                location: LocationPrediction(
+                                    placeId: location.placeId,
+                                    mainText: location.name,
+                                    secondaryText: location.address));
+                            BlocProvider.of<LocationHistoryBloc>(context)
+                                .add(event);
+                          },
+                          child: Row(
+                            children: [
+                              Text(getTranslation(context,
+                                  "saved_locations_bottom_rideto_action"),
+                                style: const TextStyle(fontSize: 16),),
+                            ],
+                          )),
+                      const VerticalDivider(),
+                      TextButton(
+                          onPressed: () {
+                            Navigator.popAndPushNamed(
+                                context, AddAddressScreen.routeName,
+                                arguments: AddAdressScreenArgument(
+                                    edit: true, savedLocation: location));
+                          },
+                          child: Row(
+                            children: [
+                              Text(getTranslation(
+                                  context, "saved_locations_bottom_edit_action"),
+                                  style: const TextStyle(fontSize: 16)),
+                            ],
+                          )),
+                    ],
+                  ),
+                ),
               ],
             ),
           );

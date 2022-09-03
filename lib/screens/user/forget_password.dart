@@ -12,20 +12,20 @@ import '../../localization/localization.dart';
 import '../../utils/waver.dart';
 import '../theme/theme_provider.dart';
 
-enum ResetMobileVerficationState { SHOW_MOBILE_FORM_STATE, SHOW_OTP_FORM_STATE }
+enum ResetMobileVerificationState { SHOW_MOBILE_FORM_STATE, SHOW_OTP_FORM_STATE }
 
-class MobileVerification extends StatefulWidget {
-  static const routeName = '/resetverification';
+class ForgetPassword extends StatefulWidget {
+  static const routeName = '/forget_password';
 
-  const MobileVerification({Key? key}) : super(key: key);
+  const ForgetPassword({Key? key}) : super(key: key);
 
   @override
-  _MobileVerificationState createState() => _MobileVerificationState();
+  _ForgetPasswordState createState() => _ForgetPasswordState();
 }
 
-class _MobileVerificationState extends State<MobileVerification> {
-  ResetMobileVerficationState currentState =
-      ResetMobileVerficationState.SHOW_MOBILE_FORM_STATE;
+class _ForgetPasswordState extends State<ForgetPassword> {
+  ResetMobileVerificationState currentState =
+      ResetMobileVerificationState.SHOW_MOBILE_FORM_STATE;
   late String phoneNumber;
   bool isCorrect = false;
 
@@ -62,36 +62,6 @@ class _MobileVerificationState extends State<MobileVerification> {
   void initState() {
     themeProvider = Provider.of<ThemeProvider>(context, listen: false);
     super.initState();
-  }
-  void sendVerificationCode() async {
-    await _auth.verifyPhoneNumber(
-        phoneNumber: phoneNumber,
-        timeout: const Duration(seconds: 60),
-        verificationCompleted: (phoneAuthCredential) async {
-          signInWithPhoneAuthCredential(phoneAuthCredential);
-        },
-        verificationFailed: (verificationFailed) async {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              backgroundColor: Colors.red.shade900,
-              content: Text(getTranslation(context, "incorrect_verification_code"))));
-          setState(() {
-            showLoading = false;
-          });
-        },
-        codeSent: (verificationId, resendingToken) async {
-          setState(() {
-            showLoading = false;
-            currentState = ResetMobileVerficationState.SHOW_OTP_FORM_STATE;
-            this.verificationId = verificationId;
-          });
-          Navigator.pushNamed(context, PhoneVerification.routeName,
-              arguments: VerificationArgument(
-                  from: 'ForgetPassword',
-                  phoneNumber: phoneNumber,
-                  resendingToken: resendingToken,
-                  verificationId: verificationId));
-        },
-        codeAutoRetrievalTimeout: (verificationId) async {});
   }
 
   final _formkey = GlobalKey<FormState>();
@@ -253,7 +223,6 @@ class _MobileVerificationState extends State<MobileVerification> {
                                           height: 20,
                                           width: 20,
                                           child: CircularProgressIndicator(
-                                            strokeWidth: 2,
                                             color: Colors.white,
                                           ),
                                         )
@@ -278,7 +247,10 @@ class _MobileVerificationState extends State<MobileVerification> {
                             setState(() {
                               showLoading = false;
                             });
-                            showPhoneNumberDoesnotExistDialog();
+                            ShowSnack(context: context,
+                                message: getTranslation(context, "no_user_registered_message"),
+                            textColor: Colors.white,backgroundColor: Colors.red).show();
+                            //showPhoneNumberDoesnotExistDialog();
                           }
                         }
                         if (state is UserOperationFailure) {
@@ -366,29 +338,6 @@ class _MobileVerificationState extends State<MobileVerification> {
 
     BlocProvider.of<UserBloc>(context).add(UserCheckPhoneNumber(phoneNumber));
   }
-
-  void showPhoneNumberDoesnotExistDialog() {
-    showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            shape: RoundedRectangleBorder(
-                borderRadius:
-                BorderRadius.circular(20.0)),
-            content:
-                Text(getTranslation(context, "no_user_registered_message"),
-                  style: TextStyle(color: Colors.black),),
-            actions: [
-              TextButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  child: Text(getTranslation(context, "okay_action")))
-            ],
-          );
-        });
-  }
-
   var textLength = 0;
   var phoneEnabled = true;
 }

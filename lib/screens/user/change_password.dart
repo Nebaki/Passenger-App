@@ -9,7 +9,7 @@ import '../theme/theme_provider.dart';
 class ChangePassword extends StatefulWidget {
   static const routeName = '/changepassword';
 
-  ChangePassword({Key? key}) : super(key: key);
+  const ChangePassword({Key? key}) : super(key: key);
 
   @override
   State<ChangePassword> createState() => _ChangePasswordState();
@@ -22,10 +22,17 @@ class _ChangePasswordState extends State<ChangePassword> {
 
   bool _isLoading = false;
 
+  final oldPasswordController = TextEditingController();
+  final passwordController = TextEditingController();
+  final confirmPasswordController = TextEditingController();
   late ThemeProvider themeProvider;
 
+  late bool _visiblePassword;
+  late IconData icon;
   @override
   void initState() {
+    _visiblePassword = true;
+    icon = Icons.visibility;
     themeProvider = Provider.of<ThemeProvider>(context, listen: false);
     super.initState();
   }
@@ -36,7 +43,7 @@ class _ChangePasswordState extends State<ChangePassword> {
     return Scaffold(
       backgroundColor: Colors.white,
         appBar: SafeAppBar(
-        key: _appBar, title: getTranslation(context, "password_changed"),
+        key: _appBar, title: getTranslation(context, "change_password"),
         appBar: AppBar(), widgets: []),
         body: Stack(
           children: [
@@ -103,6 +110,7 @@ class _ChangePasswordState extends State<ChangePassword> {
   Widget form(BuildContext context) {
     return Form(
         key: _formkey,
+        autovalidateMode: AutovalidateMode.onUserInteraction,
         child: SingleChildScrollView(
           child: SizedBox(
             // color: const Color.fromRGBO(240, 241, 241, 1),
@@ -120,9 +128,22 @@ class _ChangePasswordState extends State<ChangePassword> {
                         child: Column(
                           children: [
                             TextFormField(
-                              obscureText: true,
+                              controller: oldPasswordController,
+                              autofocus: true,
+                              obscureText: _visiblePassword,
                               style: const TextStyle(fontSize: 18),
                               decoration: InputDecoration(
+                                suffixIcon: IconButton(
+                                    onPressed: () {
+                                      setState(() {
+                                        _visiblePassword = !_visiblePassword;
+
+                                        icon = _visiblePassword
+                                            ? Icons.visibility
+                                            : Icons.visibility_off;
+                                      });
+                                    },
+                                    icon: Icon(icon)),
                                   labelText: getTranslation(
                                       context, "old_password_hint_text"),
                                   prefixIcon: const Icon(
@@ -158,9 +179,21 @@ class _ChangePasswordState extends State<ChangePassword> {
                               height: 20,
                             ),
                             TextFormField(
-                              obscureText: true,
+                              controller: passwordController,
+                              obscureText: _visiblePassword,
                               style: const TextStyle(fontSize: 18),
                               decoration: InputDecoration(
+                                suffixIcon: IconButton(
+                                    onPressed: () {
+                                      setState(() {
+                                        _visiblePassword = !_visiblePassword;
+
+                                        icon = _visiblePassword
+                                            ? Icons.visibility
+                                            : Icons.visibility_off;
+                                      });
+                                    },
+                                    icon: Icon(icon)),
                                   labelText: getTranslation(
                                       context, "new_password_hint_text"),
                                   prefixIcon: const Icon(
@@ -184,7 +217,7 @@ class _ChangePasswordState extends State<ChangePassword> {
                                   return getTranslation(
                                       context, "create_profile_long_password_validation");
                                 }else if(_passwordInfo['current_password'] == value){
-                                  return "New Password can not be same as old password";
+                                  return "New Password cannot be same as old password";
                                 }
                                 return null;
                               },
@@ -196,9 +229,20 @@ class _ChangePasswordState extends State<ChangePassword> {
                               height: 20,
                             ),
                             TextFormField(
-                              obscureText: true,
+                              controller: confirmPasswordController,
+                              obscureText: _visiblePassword,
                               style: const TextStyle(fontSize: 18),
                               decoration: InputDecoration(
+                                suffixIcon: IconButton(
+                                    onPressed: () {
+                                      setState(() {
+                                        _visiblePassword = !_visiblePassword;
+                                        icon = _visiblePassword
+                                            ? Icons.visibility
+                                            : Icons.visibility_off;
+                                      });
+                                    },
+                                    icon: Icon(icon)),
                                   labelText: getTranslation(
                                       context, "confirm_password_hint_text"),
                                   prefixIcon: const Icon(
@@ -215,6 +259,9 @@ class _ChangePasswordState extends State<ChangePassword> {
                                 if (value!.isEmpty) {
                                   return getTranslation(
                                       context, "please_confirm_the_password");
+                                }
+                                if (value != passwordController.text) {
+                                  return "Password does not match";
                                 }
                                 return null;
                               },
@@ -235,7 +282,12 @@ class _ChangePasswordState extends State<ChangePassword> {
                                         final form = _formkey.currentState;
                                         if (form!.validate()) {
                                           form.save();
-                                          changePassword(context);
+                                          if(oldPasswordController.text != passwordController.text){
+                                            changePassword(context);
+                                          }else{
+                                            ShowSnack(context: context,message:"New Password cannot be same as old password",
+                                            textColor: Colors.white,backgroundColor: Colors.red);
+                                          }
                                         }
                                       },
                                 child: Row(

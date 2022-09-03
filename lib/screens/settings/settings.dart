@@ -8,6 +8,7 @@ import 'package:passengerapp/rout.dart';
 import 'package:passengerapp/screens/screens.dart';
 
 import '../../cubit/cubits.dart';
+import '../../localization/localization.dart';
 
 class SettingScreen extends StatefulWidget {
   static const routeName = "/settings";
@@ -19,10 +20,13 @@ class SettingScreen extends StatefulWidget {
 }
 
 class _SettingScreenState extends State<SettingScreen> {
+  final _appBar = GlobalKey<FormState>();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: CustomScrollView(
+        key: _appBar,
         slivers: [
           BlocBuilder<ProfilePictureCubit, String>(
             builder: (context, state) {
@@ -67,19 +71,82 @@ class _SettingScreenState extends State<SettingScreen> {
                 const SizedBox(
                   height: 10,
                 ),
-                _buildAppinfoItems(
-                    context, getTranslation(context, "app_info")),
+                //_buildAppinfoItems(context, getTranslation(context, "app_info")),
+                _buildAboutUsItems(
+                    context, getTranslation(context, "about_us")),
                 const SizedBox(
                   height: 10,
                 ),
-                _buildAboutUsItems(context, getTranslation(context, "about_us"))
               ]));
             }
-            return Container();
+            return const Center(child: Text("Something went wrong"));
           }))
         ],
       ),
     );
+  }
+
+  final List<String> dropDownItems = ["Amharic", "English"];
+
+  String getTrans(String key) {
+    return Localization.of(context).getTranslation(key);
+  }
+
+  _buildLanguageMenu() {
+    return Card(
+        margin: const EdgeInsets.symmetric(horizontal: 0),
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              const Padding(
+                padding: EdgeInsets.all(8.0),
+                child: Icon(Icons.language,color: Colors.black,),
+              ),
+              Text(getTrans("language")),
+              const SizedBox(
+                width: 10,
+              ),
+              BlocBuilder<LocaleCubit, Locale>(
+                builder: (context, state) => DropdownButton(
+                    dropdownColor: Colors.white,
+                    value: state == const Locale("en", "US")
+                        ? "English"
+                        : "Amharic",
+                    items: dropDownItems
+                        .map((e) => DropdownMenuItem(
+                              child: Text(
+                                e,
+                                style: TextStyle(color: Colors.black),
+                              ),
+                              value: e,
+                            ))
+                        .toList(),
+                    onChanged: (value) {
+                      switch (value) {
+                        case "Amharic":
+                          context
+                              .read<LocaleCubit>()
+                              .changeLocale(const Locale("am", "ET"));
+
+                          break;
+                        case "English":
+                          context
+                              .read<LocaleCubit>()
+                              .changeLocale(const Locale("en", "US"));
+
+                          break;
+                        default:
+                          context
+                              .read<LocaleCubit>()
+                              .changeLocale(const Locale("en", "US"));
+                      }
+                    }),
+              )
+            ],
+          ),
+        ));
   }
 
   void _navigateToEditProfileScreen(
@@ -126,7 +193,7 @@ class _SettingScreenState extends State<SettingScreen> {
                   context,
                   Icons.phone,
                   getTranslation(context, "tap_to_change_phone_number"),
-                  state.auth.phoneNumber ?? "loading"),
+                  state.auth.phoneNumber ?? "Loading"),
             ),
             const Divider(
               height: 0,
@@ -163,41 +230,29 @@ class _SettingScreenState extends State<SettingScreen> {
               },
               child: _settingItem(
                   context,
-                  Icons.emergency,
+                  Icons.phone,
                   getTranslation(context, "emergency_contact_number_hint_text"),
                   state.auth.emergencyContact ?? "loading"),
             ),
             const Divider(
               height: 0,
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                GestureDetector(
-                  onTap: () {
+            Padding(
+              padding: const EdgeInsets.all(15),
+              child: SizedBox(
+                height: 50,
+                width: MediaQuery.of(context).size.width,
+                child: ElevatedButton(
+                  onPressed: () {
                     Navigator.pushNamed(context, ChangePassword.routeName);
                   },
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Center(
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Theme.of(context).primaryColor,
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(15.0),
-                          child: Text(
-                            getTranslation(context, "change_password"),
-                            style: TextStyle(color: Colors.white),
-                          ),
-                        ),
-                      ),
-                    ),
+                  child: Text(
+                    getTranslation(context, "change_password"),
+                    style: const TextStyle(color: Colors.white),
                   ),
                 ),
-              ],
-            )
+              ),
+            ),
           ],
         ),
       ),
@@ -206,38 +261,38 @@ class _SettingScreenState extends State<SettingScreen> {
 
   Widget _settingItem(
       BuildContext context, IconData iconData, String title, String value) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          title != ""
-              ? Row(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(5.0),
-                      child: Text(title,
-                          style: TextStyle(
-                            fontSize: 11,
-                            //color: Theme.of(context).primaryColor
-                          )),
-                    ),
-                  ],
+    return Container(
+      color: Colors.transparent,
+      width: MediaQuery.of(context).size.width,
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            title != ""
+                ? Row(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(5.0),
+                        child: Text(title),
+                      ),
+                    ],
+                  )
+                : Container(),
+            Row(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(5.0),
+                  child: Icon(iconData, color: Colors.black),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(5.0),
+                  child: Text(value),
                 )
-              : Container(),
-          Row(
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(5.0),
-                child: Icon(iconData, color: Colors.black),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(5.0),
-                child: Text(value),
-              )
-            ],
-          )
-        ],
+              ],
+            )
+          ],
+        ),
       ),
     );
   }
@@ -262,50 +317,35 @@ class _SettingScreenState extends State<SettingScreen> {
                   .copyWith(color: Theme.of(context).primaryColor),
             ),
             GestureDetector(
-              onTap: () {
-
-              },
-              child: _settingItem(
-                  context,
-                  Icons.contact_mail,"",
+              onTap: () {},
+              child: _settingItem(context, Icons.contact_mail, "",
                   getTranslation(context, "contact_us")),
             ),
             const Divider(
               height: 0,
             ),
             GestureDetector(
-              onTap: () {
-
-              },
-              child: _settingItem(
-                  context,
-                  Icons.privacy_tip_outlined,"",
+              onTap: () {},
+              child: _settingItem(context, Icons.privacy_tip_outlined, "",
                   getTranslation(context, "privacy_policy")),
             ),
             const Divider(
               height: 0,
             ),
             GestureDetector(
-              onTap: () {
-
-              },
-              child: _settingItem(
-                  context,
-                  Icons.present_to_all_sharp,"",
+              onTap: () {},
+              child: _settingItem(context, Icons.present_to_all_sharp, "",
                   getTranslation(context, "terms_and_conditions")),
             ),
-
             const Divider(
               height: 0,
             ),
             GestureDetector(
-              onTap: () {
-
-              },
-              child: _settingItem(
-                  context,
-                  Icons.language,"",
+              onTap: () {},/*
+              child: _settingItem(context, Icons.language, "",
                   getTranslation(context, "language")),
+              */
+              child: _buildLanguageMenu(),
             ),
           ],
         ),
@@ -342,8 +382,9 @@ class _SettingScreenState extends State<SettingScreen> {
                   text: "${getTranslation(context, "owned_by")}:\n  ",
                   children: [
                     TextSpan(
-                        text: " Safeway Transport",
-                        style: TextStyle(color: Theme.of(context).primaryColor,
+                        text: " Tropical Trading",
+                        style: TextStyle(
+                            color: Theme.of(context).primaryColor,
                             fontStyle: FontStyle.italic,
                             fontWeight: FontWeight.w300))
                   ])),
@@ -358,7 +399,8 @@ class _SettingScreenState extends State<SettingScreen> {
                   children: [
                     TextSpan(
                         text: " Vintage Technologies: +251916772303",
-                        style: TextStyle(color: Theme.of(context).primaryColor,
+                        style: TextStyle(
+                            color: Theme.of(context).primaryColor,
                             fontStyle: FontStyle.italic,
                             fontWeight: FontWeight.w300))
                   ])),
@@ -394,10 +436,10 @@ class _SettingScreenState extends State<SettingScreen> {
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Text.rich(TextSpan(
-                  text: "${getTranslation(context, "build_name")}: ",
+                  text: "${getTranslation(context, "build_name")} ",
                   children: const [
                     TextSpan(
-                        text: " SafeWay",
+                        text: " Gari",
                         style: TextStyle(
                             fontStyle: FontStyle.italic,
                             fontWeight: FontWeight.w300))
@@ -409,7 +451,7 @@ class _SettingScreenState extends State<SettingScreen> {
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Text.rich(TextSpan(
-                  text: "${getTranslation(context, "app_version")}: ",
+                  text: "${getTranslation(context, "app_version")} ",
                   children: const [
                     TextSpan(
                         text: " 1.0",
@@ -424,7 +466,7 @@ class _SettingScreenState extends State<SettingScreen> {
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Text.rich(TextSpan(
-                  text: "${getTranslation(context, "build_number")}: ",
+                  text: "${getTranslation(context, "build_number")} ",
                   children: const [
                     TextSpan(
                         text: " 102034",

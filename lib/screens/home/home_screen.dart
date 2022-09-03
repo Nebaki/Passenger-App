@@ -150,6 +150,131 @@ class _HomeScreenState extends State<HomeScreen> {
     super.dispose();
   }
 
+  Padding _drawerAction(){
+    return Padding(
+      padding: const EdgeInsets.only(top: 50),
+      child: SizedBox(
+        height: 45,
+        child: FloatingActionButton(
+          elevation: 5,
+          onPressed: () => _scaffoldKey.currentState!.openDrawer(),
+          child: Icon(
+            Icons.format_align_center,
+            size: 20,
+            color: Theme.of(context).primaryColor,
+          ),
+        ),
+      ),
+    );
+  }
+  Align _currentLocation(){
+    return Align(
+        alignment: Alignment.centerRight,
+        child: SizedBox(
+          height: 45,
+          child: FloatingActionButton(
+              heroTag: 'Mylocation',
+              // backgroundColor: Colors.grey.shade300,
+              onPressed: () {
+                outerController.animateCamera(context
+                    .read<CurrentWidgetCubit>()
+                    .state
+                    .key !=
+                    const Key("whereto")
+                    ? CameraUpdate.newLatLngBounds(
+                    latLngBounds, 100)
+                    : CameraUpdate.newCameraPosition(
+                    CameraPosition(
+                        zoom: 16.4746,
+                        target: LatLng(
+                            currentPostion.latitude,
+                            currentPostion
+                                .longitude))));
+              },
+              child: const Icon(Icons.gps_fixed, size: 20)),
+        ),
+      );
+  }
+  Align _callCenter(){
+    return Align(
+      alignment: Alignment.centerRight,
+      child: SizedBox(
+        height: 45,
+        child: FloatingActionButton(
+          onPressed: () async {
+            makePhoneCall('9495');
+          },
+          child: const Icon(Icons.call, size: 20),
+        ),
+      ),
+    );
+  }
+  BlocConsumer<EmergencyReportBloc, EmergencyReportState> _emergencyReport(){
+    return BlocConsumer<EmergencyReportBloc,
+        EmergencyReportState>(
+        builder: (context, state) => Align(
+          alignment: Alignment.centerRight,
+          child: SizedBox(
+            height: 45,
+            child: FloatingActionButton(
+                heroTag: 'sos',
+                // backgroundColor: Colors.grey.shade300,
+                onPressed: () {
+                  EmergencyReportEvent event =
+                  EmergencyReportCreate(
+                      EmergencyReport(location: [
+                        currentLatLng.latitude,
+                        currentLatLng.longitude
+                      ]));
+
+                  BlocProvider.of<
+                      EmergencyReportBloc>(
+                      context)
+                      .add(event);
+                  /*_determinePosition().then((value) {
+                    currentPostion = value;
+                    userPostion = currentPostion;
+                    context.read<UserBloc>().add(UserSetAvailability(
+                        [value.longitude, value.latitude], true));
+                    currentPostion = value;
+                    if (widget.args.isFromSplash) {
+                      carTypeSelectorDialog(value);
+                    }
+                  });*/
+                },
+                child: const Text(
+                  'SOS',
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18),
+                )),
+          ),
+        ),
+        listener: (context, state) {
+          if (state is EmergencyReportCreating) {
+            ShowSnack(context: context,
+                message: getTranslation(context,
+                    "emergency_reporting_message"),
+                duration: 20,
+                textColor: Colors.white,
+                backgroundColor: Theme.of(context).primaryColor).show();
+          }
+          if (state is EmergencyReportCreated) {
+
+            ScaffoldMessenger.of(context).hideCurrentSnackBar();
+            ShowSnack(
+                context: context,
+                message: "Emergency report has been sent.",
+                backgroundColor: Colors.green).show();
+          }
+          if (state is EmergencyReportOperationFailur) {
+            ShowSnack(context: context,message: "Reporting Failed, Try Again",
+                backgroundColor: Colors.red).show();
+          }
+        });
+  }
+
+
   @override
   Widget build(BuildContext context) {
     createMarkerIcon();
@@ -196,7 +321,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             pickupLatLng = currentLatLng;
                             controller.animateCamera(
                                 CameraUpdate.newCameraPosition(CameraPosition(
-                                    zoom: 16.1746, target: currentLatLng)));
+                                    zoom: 14.1746, target: currentLatLng)));
                           });
                         },
                       ),
@@ -223,8 +348,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     child: SizedBox(
                                         height: 40,
                                         width: 40,
-                                        child: CircularProgressIndicator(
-                                            strokeWidth: 1)),
+                                        child: CircularProgressIndicator()),
                                   )),
                             );
                           });
@@ -293,27 +417,13 @@ class _HomeScreenState extends State<HomeScreen> {
                     ? outerController.setMapStyle(_nightMapStyle)
                     : outerController.setMapStyle('[]');
               }),
-          Padding(
-            padding: const EdgeInsets.only(top: 50),
-            child: SizedBox(
-              height: 45,
-              child: FloatingActionButton(
-                elevation: 5,
-                onPressed: () => _scaffoldKey.currentState!.openDrawer(),
-                child: Icon(
-                  Icons.format_align_center,
-                  size: 20,
-                  color: Theme.of(context).primaryColor,
-                ),
-              ),
-            ),
-          ),
+          _drawerAction(),
           Align(
             alignment: Alignment.centerLeft,
             child: Text(repo.getNearbyDrivers().length.toString()),
           ),
           Padding(
-            padding: const EdgeInsets.only(top: 50),
+            padding: const EdgeInsets.only(top: 38),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -321,101 +431,13 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: Align(
                     alignment: Alignment.centerRight,
                     child: SizedBox(
-                      height: 300,
+                      height: MediaQuery.of(context).size.height * 0.3,
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Align(
-                            alignment: Alignment.centerRight,
-                            child: SizedBox(
-                              height: 45,
-                              child: FloatingActionButton(
-                                  heroTag: 'Mylocation',
-                                  // backgroundColor: Colors.grey.shade300,
-                                  onPressed: () {
-                                    outerController.animateCamera(context
-                                                .read<CurrentWidgetCubit>()
-                                                .state
-                                                .key !=
-                                            const Key("whereto")
-                                        ? CameraUpdate.newLatLngBounds(
-                                            latLngBounds, 100)
-                                        : CameraUpdate.newCameraPosition(
-                                            CameraPosition(
-                                                zoom: 16.4746,
-                                                target: LatLng(
-                                                    currentPostion.latitude,
-                                                    currentPostion
-                                                        .longitude))));
-                                  },
-                                  child: const Icon(Icons.gps_fixed, size: 20)),
-                            ),
-                          ),
-                          Align(
-                            alignment: Alignment.centerRight,
-                            child: SizedBox(
-                              height: 45,
-                              child: FloatingActionButton(
-                                onPressed: () async {
-                                  makePhoneCall('9495');
-                                },
-                                child: const Icon(Icons.call, size: 20),
-                              ),
-                            ),
-                          ),
-                          BlocConsumer<EmergencyReportBloc,
-                                  EmergencyReportState>(
-                              builder: (context, state) => Align(
-                                    alignment: Alignment.centerRight,
-                                    child: SizedBox(
-                                      height: 45,
-                                      child: FloatingActionButton(
-                                          heroTag: 'sos',
-                                          // backgroundColor: Colors.grey.shade300,
-                                          onPressed: () {
-
-                                            EmergencyReportEvent event =
-                                                EmergencyReportCreate(
-                                                    EmergencyReport(location: [
-                                              currentLatLng.latitude,
-                                              currentLatLng.longitude
-                                            ]));
-
-                                            BlocProvider.of<
-                                                        EmergencyReportBloc>(
-                                                    context)
-                                                .add(event);
-                                          },
-                                          child: const Text(
-                                            'SOS',
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 18),
-                                          )),
-                                    ),
-                                  ),
-                              listener: (context, state) {
-                                if (state is EmergencyReportCreating) {
-                                  ShowSnack(context: context,
-                                      message: getTranslation(context,
-                                          "emergency_reporting_message"),
-                                      duration: 20,
-                                      textColor: Colors.white,
-                                      backgroundColor: Theme.of(context).primaryColor).show();
-                                }
-                                if (state is EmergencyReportCreated) {
-
-                                  ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                                  ShowSnack(
-                                      context: context,
-                                      message: "Emergency report has been sent.",
-                                      backgroundColor: Colors.green).show();
-                                }
-                                if (state is EmergencyReportOperationFailur) {
-                                  ShowSnack(context: context,message: "Reporting Failed, Try Again",
-                                      backgroundColor: Colors.red).show();
-                                }
-                              }),
+                          _currentLocation(),
+                          _callCenter(),
+                          _emergencyReport(),
                         ],
                       ),
                     ),
@@ -450,7 +472,7 @@ class _HomeScreenState extends State<HomeScreen> {
         userPostion = currentPostion;
         outerController.animateCamera(CameraUpdate.newCameraPosition(
             CameraPosition(
-                zoom: 16.1746,
+                zoom: 14.1746,
                 target: LatLng(value.latitude, value.longitude))));
         switch (selectedCar) {
           case SelectedCar.taxi:
@@ -465,10 +487,10 @@ class _HomeScreenState extends State<HomeScreen> {
       });
     } else if (!determinePosition && !listenToNearbyTaxi) {
       outerController.animateCamera(CameraUpdate.newCameraPosition(
-          CameraPosition(zoom: 16.1746, target: currentLatLng)));
+          CameraPosition(zoom: 14.1746, target: currentLatLng)));
     } else if (listenToNearbyTaxi) {
       outerController.animateCamera(CameraUpdate.newCameraPosition(
-          CameraPosition(zoom: 16.1746, target: currentLatLng)));
+          CameraPosition(zoom: 14.1746, target: currentLatLng)));
       switch (selectedCar) {
         case SelectedCar.taxi:
           listenTaxi(currentPostion);
@@ -509,9 +531,9 @@ class _HomeScreenState extends State<HomeScreen> {
     List<PointLatLng> result = polylinePoints.decodePolyline(encodedString);
 
     if (result.isNotEmpty) {
-      result.forEach((PointLatLng point) {
+      for (var point in result) {
         polylineCoordinates.add(LatLng(point.latitude, point.longitude));
-      });
+      }
     }
     _addPolyLine();
   }
@@ -547,7 +569,6 @@ class _HomeScreenState extends State<HomeScreen> {
               switch (callback) {
                 case Geofire.onKeyEntered:
                   debugPrint('Added');
-
                   repo.addDriver(NearbyDriver(
                       id: data['key'],
                       latitude: data['latitude'],
@@ -850,16 +871,17 @@ class _HomeScreenState extends State<HomeScreen> {
           return WillPopScope(
             onWillPop: () async => false,
             child: Dialog(
-              elevation: 0,
+              alignment: Alignment.center,
+              elevation: 0,/*
               insetPadding: EdgeInsets.only(
-                  top: MediaQuery.of(context).size.height * 0.3),
+                  top: MediaQuery.of(context).size.height * 0.3),*/
               backgroundColor: Colors.transparent,
               child: SizedBox(
-                width: MediaQuery.of(context).size.width * 0.7,
+                width: MediaQuery.of(context).size.width * 0.9,
                 height: MediaQuery.of(context).size.height * 0.2,
                 child: Container(
                   decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
+                      borderRadius: BorderRadius.circular(15),
                       boxShadow: const [
                         BoxShadow(
                           color: Colors.white,
@@ -871,10 +893,10 @@ class _HomeScreenState extends State<HomeScreen> {
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           Padding(
-                              padding: EdgeInsets.all(10.0),
+                              padding: EdgeInsets.all(13.0),
                               child: Text(
-                                "Looking For...",
-                                style: TextStyle(fontSize: 20,color: Theme.of(context).primaryColor
+                                "What are You Looking for?",
+                                style: TextStyle(fontSize: 14,color: Theme.of(context).primaryColor
                                 ),
                               ),
                             ),
@@ -1089,7 +1111,7 @@ class _HomeScreenState extends State<HomeScreen> {
         locationServiceButtomSheet();
         serviceStatusValue = 'disabled';
 
-        return Future.error("NoLocation Enabled");
+        return Future.error("No Location Enabled");
       }
 
       return Future.error('Location services are disabled.');

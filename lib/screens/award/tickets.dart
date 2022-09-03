@@ -171,7 +171,7 @@ class _TicketScreenState extends State<TicketScreen> with AutomaticKeepAliveClie
                 ),
             ],
           )
-        : const Center(child: Text("No Ticket available for moment"));
+        : const Center(child: Text("No Ticket available for the moment"));
   }
 
   final List<Ticket>? _items = [];

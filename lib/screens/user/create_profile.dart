@@ -29,8 +29,13 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
 
   late ThemeProvider themeProvider;
 
+  late bool _visiblePassword;
+  late IconData icon;
   @override
   void initState() {
+    _visiblePassword = true;
+    icon = Icons.visibility;
+    _visiblePassword = true;
     themeProvider = Provider.of<ThemeProvider>(context, listen: false);
     super.initState();
   }
@@ -81,10 +86,8 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
             }
             if (state is UsersLoadSuccess) {
               _isLoading = false;
-
-              BlocProvider.of<AuthBloc>(context)
-                  .add(AuthDataLoad());
-              BlocListener<AuthBloc, AuthState>(
+              context.read<SettingsBloc>().add(SettingsStarted());
+              /*BlocListener<AuthBloc, AuthState>(
                 listener: (context, state) {
                   if (state is AuthDataLoadSuccess) {
                     name = state.auth.name!;
@@ -110,7 +113,10 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                             getTranslation(context, "okay_action"))),
                   ],
                 ),
+
               );
+              BlocProvider.of<AuthBloc>(context).add(AuthDataLoad())
+              */
             }
             if (state is UserOperationFailure) {
               _isLoading = false;
@@ -213,6 +219,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                         height: 10,
                       ),
                       TextFormField(
+                        style: const TextStyle(fontSize: 18),
                         decoration: InputDecoration(
                           labelText:
                               getTranslation(context, "name_textfield_hint_text"),
@@ -250,6 +257,8 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                         height: 10,
                       ),
                       TextFormField(
+                          obscureText: _visiblePassword,
+                          style: const TextStyle(fontSize: 18),
                           controller: password,
                           decoration: InputDecoration(
                             labelText: getTranslation(context, "password_hint_text"),
@@ -257,6 +266,18 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                               fontWeight: FontWeight.w300,
                               // color: Colors.black45
                             ),
+
+                              suffixIcon: IconButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      _visiblePassword = !_visiblePassword;
+
+                                      icon = _visiblePassword
+                                          ? Icons.visibility
+                                          : Icons.visibility_off;
+                                    });
+                                  },
+                                  icon: Icon(icon)),
                             prefixIcon: const Icon(
                               Icons.lock,
                               size: 19,
@@ -269,10 +290,11 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                               return getTranslation(context,
                                   "create_profile_empity_password_validation");
                             } else if (value.length > 25) {
-                              return 'Password must not be longer than 25 characters';
+                              return getTranslation(context,
+                                  "signin_form_long_password_validation");
                             } else if (value.length < 4) {
                               return getTranslation(context,
-                                  "create_profile_long_password_validation");
+                                  "signin_form_short_password_validation");
                             }
                             return null;
                           },
@@ -283,6 +305,8 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                         height: 10,
                       ),
                       TextFormField(
+                        obscureText: _visiblePassword,
+                        style: const TextStyle(fontSize: 18),
                         decoration: InputDecoration(
                           labelText: getTranslation(context, "confirm_password"),
                           hintStyle: const TextStyle(
@@ -290,9 +314,21 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                             // color: Colors.black45
                           ),
                           prefixIcon: const Icon(
-                            Icons.confirmation_num,
+                            Icons.lock,
                             size: 19,
                           ),
+
+                            suffixIcon: IconButton(
+                                onPressed: () {
+                                  setState(() {
+                                    _visiblePassword = !_visiblePassword;
+
+                                    icon = _visiblePassword
+                                        ? Icons.visibility
+                                        : Icons.visibility_off;
+                                  });
+                                },
+                                icon: Icon(icon)),
                             border: const OutlineInputBorder(
                                 borderSide: BorderSide(style: BorderStyle.solid))
                         ),
@@ -353,8 +389,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                                               height: 20,
                                               width: 20,
                                               child: CircularProgressIndicator(
-                                                strokeWidth: 1,
-                                                color: Colors.black,
+                                                color: Colors.white,
                                               ),
                                             )
                                           : Container(),

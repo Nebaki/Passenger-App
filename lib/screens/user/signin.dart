@@ -113,6 +113,54 @@ class _SigninScreenState extends State<SigninScreen> {
             ));
           }
         }),
+        Padding(
+          padding: const EdgeInsets.only(top: 50.0),
+          child: Align(
+            alignment: Alignment.topRight,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Text("${getTranslation("language")}:"),
+                const SizedBox(
+                  width: 10,
+                ),
+                BlocBuilder<LocaleCubit, Locale>(
+                  builder: (context, state) => DropdownButton(
+                      dropdownColor: Colors.white,
+                      value: state == const Locale("en", "US")
+                          ? "English"
+                          : "Amharic",
+                      items: dropDownItems
+                          .map((e) => DropdownMenuItem(
+                        child: Text(e,style: TextStyle(color: Colors.black),),
+                        value: e,
+                      ))
+                          .toList(),
+                      onChanged: (value) {
+                        switch (value) {
+                          case "Amharic":
+                            context
+                                .read<LocaleCubit>()
+                                .changeLocale(const Locale("am", "ET"));
+
+                            break;
+                          case "English":
+                            context
+                                .read<LocaleCubit>()
+                                .changeLocale(const Locale("en", "US"));
+
+                            break;
+                          default:
+                            context
+                                .read<LocaleCubit>()
+                                .changeLocale(const Locale("en", "US"));
+                        }
+                      }),
+                )
+              ],
+            ),
+          ),
+        ),
       ],
     ));
   }
@@ -319,7 +367,6 @@ class _SigninScreenState extends State<SigninScreen> {
                                       height: 20,
                                       width: 20,
                                       child: CircularProgressIndicator(
-                                        strokeWidth: 2,
                                         color: Colors.white,
                                       ),
                                     )
@@ -336,11 +383,13 @@ class _SigninScreenState extends State<SigninScreen> {
                       child: InkWell(
                           onTap: () {
                             Navigator.pushNamed(
-                                context, MobileVerification.routeName);
+                                context, ForgetPassword.routeName);
                           },
                           child: Text(
                             getTranslation("signin_forgot_passwod_text")+"?",
-                            style: Theme.of(context).textTheme.button,
+                            style: TextStyle(
+                                color: themeProvider.getColor,
+                                fontWeight: FontWeight.bold),
                           )),
                     ),
                   ),
@@ -356,56 +405,16 @@ class _SigninScreenState extends State<SigninScreen> {
                                   context, SignupScreen.routeName);
                             },
                             child: Text(getTranslation("signin_inkwell_text"),
-                                style: Theme.of(context).textTheme.button))
+                                style: TextStyle(
+                                    color: themeProvider.getColor,
+                                    fontWeight: FontWeight.bold)))
                       ],
                     ),
                   ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text("${getTranslation("language")}:"),
-                      const SizedBox(
-                        width: 10,
-                      ),
-                      BlocBuilder<LocaleCubit, Locale>(
-                        builder: (context, state) => DropdownButton(
-                            dropdownColor: Colors.white,
-                            value: state == const Locale("en", "US")
-                                ? "English"
-                                : "Amharic",
-                            items: dropDownItems
-                                .map((e) => DropdownMenuItem(
-                                      child: Text(e,style: TextStyle(color: Colors.black),),
-                                      value: e,
-                                    ))
-                                .toList(),
-                            onChanged: (value) {
-                              switch (value) {
-                                case "Amharic":
-                                  context
-                                      .read<LocaleCubit>()
-                                      .changeLocale(const Locale("am", "ET"));
-
-                                  break;
-                                case "English":
-                                  context
-                                      .read<LocaleCubit>()
-                                      .changeLocale(const Locale("en", "US"));
-
-                                  break;
-                                default:
-                                  context
-                                      .read<LocaleCubit>()
-                                      .changeLocale(const Locale("en", "US"));
-                              }
-                            }),
-                      )
-                    ],
-                  )
                 ],
               )),
         ),
-      )
+      ),
     ]);
   }
 

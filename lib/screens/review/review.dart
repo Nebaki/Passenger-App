@@ -20,7 +20,7 @@ class ReviewScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Theme.of(context).backgroundColor,
+        backgroundColor: Colors.white,
         body: BlocConsumer<ReviewBloc, ReviewState>(
             builder: ((context, state) => buildScreen(context)),
             listener: (context, state) {
@@ -142,13 +142,14 @@ class ReviewScreen extends StatelessWidget {
                         if (state is DriverLoadSuccess) {
                           return RatingBar.builder(
                               itemSize: 20,
-                              initialRating: 1,
+                              initialRating: state.driver.rating,
                               minRating: 1,
                               direction: Axis.horizontal,
-                              allowHalfRating: false,
+                              allowHalfRating: true,
                               itemCount: 5,
+                              ignoreGestures: true,
                               itemBuilder: (context, _) =>
-                                  const Icon(Icons.star, color: Colors.green),
+                                  const Icon(Icons.star, color: Colors.yellow),
                               onRatingUpdate: (rating) {});
                         }
                         return Container();
@@ -165,7 +166,7 @@ class ReviewScreen extends StatelessWidget {
                     allowHalfRating: true,
                     itemCount: 5,
                     itemBuilder: (context, _) =>
-                        const Icon(Icons.star, color: Colors.green),
+                        const Icon(Icons.star, color: Colors.yellow),
                     onRatingUpdate: (rating) {
                       minRate = rating;
                     }),
@@ -176,9 +177,9 @@ class ReviewScreen extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
             child: Container(
-              decoration: BoxDecoration(boxShadow: [
+              decoration: const BoxDecoration(boxShadow: [
                 BoxShadow(
-                    color: Colors.grey.shade300,
+                    color: Colors.white,
                     blurRadius: 4,
                     spreadRadius: 2,
                     blurStyle: BlurStyle.normal)
@@ -199,35 +200,37 @@ class ReviewScreen extends StatelessWidget {
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 30),
               width: double.infinity,
-              child: ElevatedButton(
-                onPressed: _isLoading
-                    ? null
-                    : () {
-                        createReview(context);
-                        // print(driverId);
-                      },
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Spacer(),
-                    Text(
-                      getTranslation(context, "submit"),
-                    ),
-                    const Spacer(),
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: _isLoading
-                          ? const SizedBox(
-                              height: 20,
-                              width: 20,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                color: Colors.black,
-                              ),
-                            )
-                          : Container(),
-                    )
-                  ],
+              child: SizedBox(
+                height: 50,
+                child: ElevatedButton(
+                  onPressed: _isLoading
+                      ? null
+                      : () {
+                          createReview(context);
+                          // print(driverId);
+                        },
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Spacer(),
+                      Text(
+                        getTranslation(context, "submit"),
+                      ),
+                      const Spacer(),
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: _isLoading
+                            ? const SizedBox(
+                                height: 20,
+                                width: 20,
+                                child: CircularProgressIndicator(
+                                  color: Colors.white,
+                                ),
+                              )
+                            : Container(),
+                      )
+                    ],
+                  ),
                 ),
               ),
             ),

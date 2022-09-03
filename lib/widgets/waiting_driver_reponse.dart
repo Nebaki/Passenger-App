@@ -91,7 +91,7 @@ class _WaitingDriverResponseState extends State<WaitingDriverResponse> {
                                 Navigator.pushNamed(
                                     context, CancelReason.routeName,
                                     arguments: CancelReasonArgument(
-                                        sendRequest: true));
+                                        sendRequest: false));
                               },
                               child: Text(
                                 getTranslation(context, "cancel"),
