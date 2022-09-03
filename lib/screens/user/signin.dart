@@ -113,6 +113,54 @@ class _SigninScreenState extends State<SigninScreen> {
             ));
           }
         }),
+        Padding(
+          padding: const EdgeInsets.only(top: 50.0),
+          child: Align(
+            alignment: Alignment.topRight,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Text("${getTranslation("language")}:"),
+                const SizedBox(
+                  width: 10,
+                ),
+                BlocBuilder<LocaleCubit, Locale>(
+                  builder: (context, state) => DropdownButton(
+                      dropdownColor: Colors.white,
+                      value: state == const Locale("en", "US")
+                          ? "English"
+                          : "Amharic",
+                      items: dropDownItems
+                          .map((e) => DropdownMenuItem(
+                        child: Text(e,style: TextStyle(color: Colors.black),),
+                        value: e,
+                      ))
+                          .toList(),
+                      onChanged: (value) {
+                        switch (value) {
+                          case "Amharic":
+                            context
+                                .read<LocaleCubit>()
+                                .changeLocale(const Locale("am", "ET"));
+
+                            break;
+                          case "English":
+                            context
+                                .read<LocaleCubit>()
+                                .changeLocale(const Locale("en", "US"));
+
+                            break;
+                          default:
+                            context
+                                .read<LocaleCubit>()
+                                .changeLocale(const Locale("en", "US"));
+                        }
+                      }),
+                )
+              ],
+            ),
+          ),
+        ),
       ],
     ));
   }
@@ -363,52 +411,10 @@ class _SigninScreenState extends State<SigninScreen> {
                       ],
                     ),
                   ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text("${getTranslation("language")}:"),
-                      const SizedBox(
-                        width: 10,
-                      ),
-                      BlocBuilder<LocaleCubit, Locale>(
-                        builder: (context, state) => DropdownButton(
-                            dropdownColor: Colors.white,
-                            value: state == const Locale("en", "US")
-                                ? "English"
-                                : "Amharic",
-                            items: dropDownItems
-                                .map((e) => DropdownMenuItem(
-                                      child: Text(e,style: TextStyle(color: Colors.black),),
-                                      value: e,
-                                    ))
-                                .toList(),
-                            onChanged: (value) {
-                              switch (value) {
-                                case "Amharic":
-                                  context
-                                      .read<LocaleCubit>()
-                                      .changeLocale(const Locale("am", "ET"));
-
-                                  break;
-                                case "English":
-                                  context
-                                      .read<LocaleCubit>()
-                                      .changeLocale(const Locale("en", "US"));
-
-                                  break;
-                                default:
-                                  context
-                                      .read<LocaleCubit>()
-                                      .changeLocale(const Locale("en", "US"));
-                              }
-                            }),
-                      )
-                    ],
-                  )
                 ],
               )),
         ),
-      )
+      ),
     ]);
   }
 

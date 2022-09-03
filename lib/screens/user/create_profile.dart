@@ -34,6 +34,8 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
   @override
   void initState() {
     _visiblePassword = true;
+    icon = Icons.visibility;
+    _visiblePassword = true;
     themeProvider = Provider.of<ThemeProvider>(context, listen: false);
     super.initState();
   }
@@ -84,16 +86,13 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
             }
             if (state is UsersLoadSuccess) {
               _isLoading = false;
-
-              BlocProvider.of<AuthBloc>(context)
-                  .add(AuthDataLoad());
-              BlocListener<AuthBloc, AuthState>(
+              context.read<SettingsBloc>().add(SettingsStarted());
+              /*BlocListener<AuthBloc, AuthState>(
                 listener: (context, state) {
                   if (state is AuthDataLoadSuccess) {
                     name = state.auth.name!;
                     number = state.auth.phoneNumber!;
                     myId = state.auth.id!;
-                    Navigator.of(context).pop();
                     context.read<SettingsBloc>().add(SettingsStarted());
                   }
                 },
@@ -114,7 +113,10 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                             getTranslation(context, "okay_action"))),
                   ],
                 ),
+
               );
+              BlocProvider.of<AuthBloc>(context).add(AuthDataLoad())
+              */
             }
             if (state is UserOperationFailure) {
               _isLoading = false;

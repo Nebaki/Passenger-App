@@ -896,7 +896,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               padding: EdgeInsets.all(13.0),
                               child: Text(
                                 "What are You Looking for?",
-                                style: TextStyle(fontSize: 20,color: Theme.of(context).primaryColor
+                                style: TextStyle(fontSize: 14,color: Theme.of(context).primaryColor
                                 ),
                               ),
                             ),
