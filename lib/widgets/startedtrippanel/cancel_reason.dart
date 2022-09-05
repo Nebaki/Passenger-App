@@ -17,12 +17,11 @@ class CancelReason extends StatefulWidget {
 
 class _CancelReasonState extends State<CancelReason> {
   final List<String> _reasons = [
-    "Driver isn't here",
-    "Wrong address shown",
-    "Don't charge rider x",
-    "Don't charge rider y",
-    "Don't charge rider z",
-    "Don't charge rider b"
+    "Driver Asked To Cancel",
+    "Accidental Request",
+    "Wrong Pickup Location",
+    "Wrong Drop off Location",
+    "Long Waiting time",
   ];
   String? groupValue;
   bool isLoading = false;
@@ -53,28 +52,24 @@ class _CancelReasonState extends State<CancelReason> {
                         children: [
                           _buildReasonItem(
                               context: context,
-                              text: "Driver isn't here",
+                              text: "Driver Asked To Cancel",
                               value: _reasons[0]),
                           _buildReasonItem(
                               context: context,
-                              text: "Wrong address shown",
+                              text: "Accidental Request",
                               value: _reasons[1]),
                           _buildReasonItem(
                               context: context,
-                              text: "Don't charge rider 2",
+                              text: "Wrong Pickup Location",
                               value: _reasons[2]),
                           _buildReasonItem(
                               context: context,
-                              text: "Don't charge rider 3",
+                              text: "Wrong Drop off Location",
                               value: _reasons[3]),
                           _buildReasonItem(
                               context: context,
-                              text: "Don't charge rider 4",
+                              text: "Long Waiting time",
                               value: _reasons[4]),
-                          _buildReasonItem(
-                              context: context,
-                              text: "Don't charge rider",
-                              value: _reasons[5]),
                         ],
                       ),
                       Padding(

@@ -86,8 +86,8 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
             }
             if (state is UsersLoadSuccess) {
               _isLoading = false;
-              context.read<SettingsBloc>().add(SettingsStarted());
-              /*BlocListener<AuthBloc, AuthState>(
+              //context.read<SettingsBloc>().add(SettingsStarted());
+              BlocListener<AuthBloc, AuthState>(
                 listener: (context, state) {
                   if (state is AuthDataLoadSuccess) {
                     name = state.auth.name!;
@@ -96,7 +96,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                     context.read<SettingsBloc>().add(SettingsStarted());
                   }
                 },
-                child: AlertDialog(
+                child: null/*AlertDialog(
                   title: Text(getTranslation(context,
                       "create_profile_register_successful_dialog_title")),
                   content: Text.rich(TextSpan(
@@ -112,11 +112,10 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                         child: Text(
                             getTranslation(context, "okay_action"))),
                   ],
-                ),
+                ),*/
 
               );
-              BlocProvider.of<AuthBloc>(context).add(AuthDataLoad())
-              */
+              BlocProvider.of<AuthBloc>(context).add(AuthDataLoad());
             }
             if (state is UserOperationFailure) {
               _isLoading = false;
@@ -219,6 +218,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                         height: 10,
                       ),
                       TextFormField(
+                        autofocus: true,
                         style: const TextStyle(fontSize: 18),
                         decoration: InputDecoration(
                           labelText:

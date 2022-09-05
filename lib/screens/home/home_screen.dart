@@ -209,6 +209,29 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
+  Padding _selectCar(){
+    return Padding(
+      padding: const EdgeInsets.only(top: 150.0),
+      child: SizedBox(
+          height: 45,
+          child: FloatingActionButton(
+            onPressed: () async {
+              Geolocator.getCurrentPosition().then((value) {
+                carTypeSelectorDialog(value);
+                currentPostion = value;
+                userPostion = currentPostion;
+                currentLatLng = LatLng(value.latitude, value.longitude);
+                // pickupLatLng = currentLatLng;
+                outerController.animateCamera(CameraUpdate.newCameraPosition(
+                    CameraPosition(zoom: 14.1746, target: currentLatLng)));
+              });
+            },
+            child: const Icon(Icons.car_rental, size: 20),
+          ),
+        ),
+    );
+  }
+
   BlocConsumer<EmergencyReportBloc, EmergencyReportState> _emergencyReport(){
     return BlocConsumer<EmergencyReportBloc,
         EmergencyReportState>(
@@ -418,6 +441,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     : outerController.setMapStyle('[]');
               }),
           _drawerAction(),
+          _selectCar(),
           Align(
             alignment: Alignment.centerLeft,
             child: Text(repo.getNearbyDrivers().length.toString()),
@@ -739,7 +763,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 currentLatLng = LatLng(value.latitude, value.longitude);
                 // pickupLatLng = currentLatLng;
                 outerController.animateCamera(CameraUpdate.newCameraPosition(
-                    CameraPosition(zoom: 16.1746, target: currentLatLng)));
+                    CameraPosition(zoom: 14.1746, target: currentLatLng)));
               });
             }
             isFirstTime = false;

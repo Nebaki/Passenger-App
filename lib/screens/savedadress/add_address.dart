@@ -195,7 +195,8 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
           BlocBuilder<LocationPredictionBloc, LocationPredictionState>(
               builder: (context, state) {
             if (state is LocationPredictionLoading) {
-              return const Center(child: CircularProgressIndicator());
+              //return const Center(child: CircularProgressIndicator());
+              return Container();
             }
             if (state is LocationPredictionLoadSuccess) {
               return ClipRRect(

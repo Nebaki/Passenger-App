@@ -4,10 +4,14 @@ import 'package:passengerapp/bloc/bloc.dart';
 import 'package:passengerapp/models/models.dart';
 import 'package:shimmer/shimmer.dart';
 
+import '../../helper/constants.dart';
+import '../../helper/localization.dart';
+
 class CategoryList extends StatefulWidget {
   final Function changeCost;
   final Function searchNearbyDriver;
   final Function changeCapacity;
+
   const CategoryList(
       {Key? key,
       required this.changeCost,
@@ -106,27 +110,93 @@ class _CategoryListState extends State<CategoryList> {
   }
 
   Widget _buildCategoryItems(Category category, index) {
-    return Column(
-      children: [
-        Container(
-          decoration: _selectedIndex == index
-              ? BoxDecoration(
-                  boxShadow:  [
-                      BoxShadow(color: Theme.of(context).primaryColor),
-                    ],
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(width: 0.5, color: Colors.black))
-              : null,
-          child: const Image(
-              height: 50,
-              image: //NetworkImage('$pictureUrl/${category.icon}')
-                  AssetImage("assets/icons/economyCarIcon.png")),
+    return Container(
+      decoration: _selectedIndex == index
+          ? BoxDecoration(
+          boxShadow: [
+            BoxShadow(color: Theme.of(context).primaryColor),
+          ],
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(width: 0.5, color: Colors.black))
+          : null,
+      child: Padding(
+        padding: const EdgeInsets.all(5.0),
+        child: Column(
+          children: [
+            const Image(
+                height: 40,
+                width: 70,
+                image: //NetworkImage('$pictureUrl/${category.icon}')
+                    AssetImage("assets/icons/economyCarIcon.png")),
+            const SizedBox(
+              height: 5,
+            ),
+            Text(category.name, style: TextStyle(color: _selectedIndex == index ?
+            Colors.white: Colors.black),)
+          ],
         ),
-        const SizedBox(
-          height: 5,
-        ),
-        Text(category.name)
-      ],
+      ),
     );
   }
+
+  Widget _buildCategoryItemsX(Category category, index) {
+    return SizedBox(
+      width: MediaQuery.of(context).size.width,
+      child: Container(
+        decoration: _selectedIndex == index
+            ? BoxDecoration(
+            boxShadow: [
+              BoxShadow(color: Theme.of(context).primaryColor),
+            ],
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(width: 0.5, color: Colors.black))
+            : null,
+        child: Padding(
+          padding: const EdgeInsets.all(2.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              const Image(
+                  width: 50,
+                  height: 50,
+                  image: //NetworkImage('$pictureUrl/${category.icon}')
+                  AssetImage("assets/icons/economyCarIcon.png")),
+              Padding(
+                padding: const EdgeInsets.all(2.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(5.0),
+                      child: Text(category.name,style: TextStyle(fontSize: 18),),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(5.0),
+                      child: Text("$duration min"),
+                    ),
+                  ],
+                ),
+              ),
+              Expanded(child: Padding(
+                padding: EdgeInsets.only(left: 25.0),
+                child: Row(
+                  children: const [
+                    Icon(Icons.person),
+                    Text('Sits'),
+                  ],
+                ),
+              )),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.only(right: 8.0),
+                  child: Text('$price${getTranslation(context, "etb")}'),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
 }

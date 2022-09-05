@@ -19,8 +19,7 @@ class _DirectionDetailState extends State<DirectionDetail> {
   String capacity = "Uknown";
   @override
   Widget build(BuildContext context) {
-    print(
-        "Frommmmmmmmmmmmmmmmmmmmmm whereeeeeeeeeeeeeeeeee ${widget.fromBackGround}");
+    print("From where ${widget.fromBackGround}");
     return widget.fromBackGround
         ? Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,

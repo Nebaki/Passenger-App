@@ -217,7 +217,7 @@ class _ServiceState extends State<Service> {
                                     const Spacer(),
                                     Text(
                                       _isLoading
-                                          ? getTranslation(context, "sending")
+                                          ? getTranslation(context, "looking_for_nearby_providers")
                                           : getTranslation(
                                               context, "send_request"),
                                       style: const TextStyle(
@@ -232,7 +232,6 @@ class _ServiceState extends State<Service> {
                                               height: 20,
                                               width: 20,
                                               child: CircularProgressIndicator(
-                                                strokeWidth: 2,
                                                 color: Colors.white,
                                               ),
                                             )
@@ -250,7 +249,7 @@ class _ServiceState extends State<Service> {
                         return ElevatedButton(
                           onPressed: null,
                           child: Text(
-                            getTranslation(context, "finding_nearby_driver"),
+                              getTranslation(context, "sending"),
                             style: const TextStyle(
                                 color: Colors.white,
                                 fontWeight: FontWeight.normal),
@@ -259,6 +258,7 @@ class _ServiceState extends State<Service> {
                       }
                       if (state is DriverOperationFailure) {
                         return ElevatedButton(
+                          style: ButtonStyle(backgroundColor: MaterialStateProperty.all<Color>(Colors.grey)),
                           onPressed: null,
                           child: Text(
                             getTranslation(context, "no_driver_found"),
@@ -270,6 +270,7 @@ class _ServiceState extends State<Service> {
                       }
                       if (state is DriverNotFoundState) {
                         return ElevatedButton(
+                          style: ButtonStyle(backgroundColor: MaterialStateProperty.all<Color>(Colors.grey)),
                           onPressed: null,
                           child: Text(
                             getTranslation(context, "no_driver_found"),
