@@ -3,6 +3,9 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:passengerapp/screens/screens.dart';
 import 'models/models.dart';
 import 'screens/award/lottery.dart';
+import 'screens/settings/pages/feedbacks.dart';
+import 'screens/settings/pages/privacy.dart';
+import 'screens/settings/pages/terms.dart';
 
 class AppRoute {
   static Route generateRoute(RouteSettings settings) {
@@ -107,6 +110,19 @@ class AppRoute {
       return MaterialPageRoute(
           builder: (context) => const OrderForOtherScreen());
     }
+    if (settings.name == FeedbackScreen.routeName) {
+      return MaterialPageRoute(
+          builder: (context) => const FeedbackScreen());
+    }
+    if (settings.name == PrivacyScreen.routeName) {
+      return MaterialPageRoute(
+          builder: (context) => const PrivacyScreen());
+    }
+    if (settings.name == TermsAndConditionScreen.routeName) {
+      return MaterialPageRoute(
+          builder: (context) => const TermsAndConditionScreen());
+    }
+
     if (settings.name == ReviewScreen.routeName) {
       ReviewScreenArgument argument =
           settings.arguments as ReviewScreenArgument;

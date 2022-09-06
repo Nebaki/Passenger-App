@@ -2,6 +2,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
+import '../../../utils/waver.dart';
+
 class TermsAndConditionScreen extends StatefulWidget {
   static const routeName = "/terms";
 
@@ -20,27 +22,14 @@ class LoadTermsAndConditions extends State<TermsAndConditionScreen> {
     // Enable virtual display.
     if (Platform.isAndroid) WebView.platform = AndroidWebView();
   }
+  final _appBar = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 5,
-        centerTitle: true,
-        leading: IconButton(
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            icon: const Icon(
-              Icons.arrow_back,
-              color: Colors.black,
-            )),
-        title: const Text(
-          "Terms and Conditions",
-          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
-        ),
-      ),
+        appBar: SafeAppBar(
+            key: _appBar, title: "Terms and Conditions",
+            appBar: AppBar(), widgets: []),
       body: Stack(
         children: <Widget>[
           WebView(

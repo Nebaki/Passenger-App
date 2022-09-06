@@ -80,3 +80,29 @@ class RideRequest extends Equatable {
   String toString() =>
       'RideRequest {DriverId: $driverId, $id , PickupLocation: $pickupLocation, DroppOffLocaiton: $dropOffLocation, PickupAddress:$pickUpAddress, DroppOffLocation: $droppOffAddress,Direction:$direction,Status: $status,Price:$price,Distance:$distance,Date:$date,Time:$time}';
 }
+class Driver{
+  final String? id;
+  final String? driverName;
+  final String? driverPhone;
+  final LatLng? driverEmail;
+  final LatLng? driverGender;
+  Driver(
+      {this.id,
+        this.driverName,
+        this.driverPhone,
+        this.driverEmail,
+        this.driverGender});
+
+  factory Driver.fromJson(Map<String, dynamic> json) {
+    return Driver(
+        id: json["id"],
+        driverName: json['first_name']+' '+json['last_name'],
+        driverPhone: json["phone_number"] ?? '',
+        driverEmail: json["email"] ?? '',
+        driverGender: json['status']
+    );
+  }
+
+  @override
+  String toString() => '';
+}

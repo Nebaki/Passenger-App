@@ -22,7 +22,7 @@ class DriverProfile extends StatelessWidget {
         vehicle = state.driver.vehicle;
         driverRating = state.driver.rating;
         driverFcm = state.driver.fcmId;
-        var model = vehicle!['model'];
+        var model = vehicle!.model;
         return Column(
           children: [
             /*Flexible(
@@ -364,12 +364,12 @@ class DriverProfile extends StatelessWidget {
                               Padding(
                                 padding: const EdgeInsets.only(bottom: 8.0),
                                 child: Text(
-                                    "${getTranslation(context, "plate_number")}: ${vehicle!['plate_number']}"),
+                                    "${getTranslation(context, "plate_number")}: ${vehicle!.plateNumber}"),
                               ),
                               Padding(
                                 padding: const EdgeInsets.only(bottom: 2.0),
                                 child: Text(
-                                    '${getTranslation(context, "color")}: ${vehicle!['color']}'),
+                                    '${getTranslation(context, "color")}: ${vehicle!.color}'),
                               ),
                             ],
                           ),

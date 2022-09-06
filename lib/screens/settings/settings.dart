@@ -6,9 +6,12 @@ import 'package:passengerapp/helper/localization.dart';
 import 'package:passengerapp/models/models.dart';
 import 'package:passengerapp/rout.dart';
 import 'package:passengerapp/screens/screens.dart';
+import 'package:passengerapp/screens/settings/pages/privacy.dart';
+import 'package:passengerapp/screens/settings/pages/terms.dart';
 
 import '../../cubit/cubits.dart';
 import '../../localization/localization.dart';
+import 'pages/feedbacks.dart';
 
 class SettingScreen extends StatefulWidget {
   static const routeName = "/settings";
@@ -317,7 +320,10 @@ class _SettingScreenState extends State<SettingScreen> {
                   .copyWith(color: Theme.of(context).primaryColor),
             ),
             GestureDetector(
-              onTap: () {},
+              onTap: () {
+                Navigator.pushNamed(
+                    context,FeedbackScreen.routeName);
+              },
               child: _settingItem(context, Icons.contact_mail, "",
                   getTranslation(context, "contact_us")),
             ),
@@ -325,7 +331,11 @@ class _SettingScreenState extends State<SettingScreen> {
               height: 0,
             ),
             GestureDetector(
-              onTap: () {},
+              onTap: () {
+                Navigator.pushNamed(
+                  context, PrivacyScreen.routeName
+                );
+              },
               child: _settingItem(context, Icons.privacy_tip_outlined, "",
                   getTranslation(context, "privacy_policy")),
             ),
@@ -333,7 +343,9 @@ class _SettingScreenState extends State<SettingScreen> {
               height: 0,
             ),
             GestureDetector(
-              onTap: () {},
+              onTap: () {
+                Navigator.pushNamed(context,TermsAndConditionScreen.routeName);
+              },
               child: _settingItem(context, Icons.present_to_all_sharp, "",
                   getTranslation(context, "terms_and_conditions")),
             ),

@@ -27,11 +27,11 @@ Future<void> sendTelegramMessage(String driverName, String driverNumber) async {
 
   DropOff Location: $droppOffAddress,
 
-  Plate Number: ${vehicle!["plate_number"]},
+  Plate Number: ${vehicle!.plateNumber},
 
-  Color: ${vehicle!["color"]},
+  Color: ${vehicle!.color},
 
-  Model: ${vehicle!["model"]},
+  Model: ${vehicle!.model},
   
   Date: ${DateFormat.yMMMEd().format(DateTime.now())},
 

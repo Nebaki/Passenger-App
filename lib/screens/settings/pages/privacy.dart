@@ -2,6 +2,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
+import '../../../utils/waver.dart';
+
 class PrivacyScreen extends StatefulWidget {
   static const routeName = "/privacy";
 
@@ -20,27 +22,14 @@ class LoadPrivacy extends State<PrivacyScreen> {
     // Enable virtual display.
     if (Platform.isAndroid) WebView.platform = AndroidWebView();
   }
+  final _appBar = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 2,
-        centerTitle: true,
-        leading: IconButton(
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            icon: const Icon(
-              Icons.arrow_back,
-              color: Colors.black,
-            )),
-        title: const Text(
-          "Privacy Policy",
-          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
-        ),
-      ),
+        appBar: SafeAppBar(
+            key: _appBar, title: "Privacy Policy",
+            appBar: AppBar(), widgets: []),
       body: Stack(
         children: <Widget>[
           WebView(
