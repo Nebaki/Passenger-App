@@ -39,11 +39,12 @@ class _DriverOnTheWayState extends State<DriverOnTheWay> {
 
               const Divider(),
 
-              Expanded(
+              /*Expanded(
                   flex: 1,
                   child: DirectionDetail(
                     fromBackGround: widget.appOpen,
                   )),
+              */
               Expanded(
                 flex: 1,
                 child: Padding(

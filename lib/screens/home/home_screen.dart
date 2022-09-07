@@ -983,7 +983,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       flex: 2,
                       child: Center(
                         child: Icon(Icons.location_off_outlined,
-                            color: buttonColor, size: 60),
+                            color: Colors.red, size: 60,),
                       )),
                   // const Expanded(child: SizedBox()),
                   const SizedBox(
@@ -994,7 +994,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       child: Text(
                           getTranslation(context,
                               "location_service_off_buttom_sheet_text"),
-                          maxLines: 2,
+                          maxLines: 3,
                           overflow: TextOverflow.ellipsis,
                           style: Theme.of(context).textTheme.bodyText2)),
                   Expanded(
@@ -1010,7 +1010,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             child: Text(
                               getTranslation(context,
                                   "location_service_off_buttom_sheet_acction_button_top"),
-                              maxLines: 1,
+                              maxLines: 2,
                               overflow: TextOverflow.ellipsis,
                               textAlign: TextAlign.center,
                             )),
@@ -1026,7 +1026,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             onPressed: () async {
                               SystemNavigator.pop();
                             },
-                            child: Text(getTranslation(context, "cancel"))),
+                            child: Text(getTranslation(context, "cancel").toUpperCase())),
                       ))
                 ],
               ),

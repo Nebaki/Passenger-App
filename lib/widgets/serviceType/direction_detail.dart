@@ -80,6 +80,7 @@ class _DirectionDetailState extends State<DirectionDetail> {
                   ],
                 ),
               )
+
             ],
           )
         : BlocBuilder<SelectedCategoryBloc, SelectedCategoryState>(

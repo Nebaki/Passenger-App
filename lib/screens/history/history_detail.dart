@@ -363,21 +363,13 @@ class _TripDetailState extends State<TripDetail>{
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(2.0),
-                    child: Text("Status:", style: TextStyle(
-                        color: theme
-                    )),
+              Padding(
+                    padding: const EdgeInsets.only(left: 3.0,top: 10,bottom: 10),
+                    child: Text(trip.status ?? "loading",
+                      style: TextStyle(color: trip.status != "Completed"
+                          ? Colors.red : Colors.green),
+                    ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(trip.status ?? "loading"),
-                  ),
-                ],
-              ),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
@@ -394,7 +386,7 @@ class _TripDetailState extends State<TripDetail>{
             ],
           ),
 
-          Padding(
+          /*Padding(
             padding: const EdgeInsets.all(2.0),
             child: Text("Date:", style: TextStyle(
                 color: theme//,fontWeight: FontWeight.bold
@@ -404,6 +396,28 @@ class _TripDetailState extends State<TripDetail>{
             padding: const EdgeInsets.all(8.0),
             child: Text(trip.date!),
           ),
+          */
+          Padding(
+            padding: const EdgeInsets.all(2.0),
+            child: Text("Started Time:", style: TextStyle(
+                color: theme//,fontWeight: FontWeight.bold
+            ),),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text(trip.status != "Cancelled" ? _formatDate(trip.startingTime!) : "Not started"),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(2.0),
+            child: Text("Ended Time:", style: TextStyle(
+                color: theme//,fontWeight: FontWeight.bold
+            ),),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text(trip.status != "Cancelled" ? _formatDate(trip.completedTime!) : "Not started"),
+          ),
+
           Padding(
             padding: const EdgeInsets.all(2.0),
             child: Text("Origin:", style: TextStyle(
@@ -518,18 +532,18 @@ class _TripDetailState extends State<TripDetail>{
 
               Padding(
                 padding: const EdgeInsets.all(5.0),
-                child: Text("Vehicle Model:", style: TextStyle(
+                child: Text("Vehicle:", style: TextStyle(
                     color: theme//,fontWeight: FontWeight.bold
                 ),),
               ),
               Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Text(trip.driver?.vehicle?.model ?? "1"),
+                child: Text('${trip.driver?.vehicle?.color} ${trip.driver?.vehicle?.model}'),
               ),
 
               Padding(
                 padding: const EdgeInsets.all(5.0),
-                child: Text("Vehicle Plate Number:", style: TextStyle(
+                child: Text("Plate Number:", style: TextStyle(
                     color: theme//,fontWeight: FontWeight.bold
                 ),),
               ),
@@ -537,18 +551,6 @@ class _TripDetailState extends State<TripDetail>{
                 padding: const EdgeInsets.all(8.0),
                 child: Text(trip.driver?.vehicle?.plateNumber ?? "Unknown"),
               ),
-
-              Padding(
-                padding: const EdgeInsets.all(5.0),
-                child: Text("Vehicle Color:", style: TextStyle(
-                    color: theme//,fontWeight: FontWeight.bold
-                )),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(trip.driver?.vehicle?.color ?? "Unknown"),
-              ),
-
             ],
           ),
         ),

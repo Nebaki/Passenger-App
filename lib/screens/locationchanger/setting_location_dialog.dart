@@ -55,8 +55,7 @@ class SettingLocationDialog extends StatelessWidget {
                       height: 20,
                       width: 20,
                       child: CircularProgressIndicator(
-                        strokeWidth: 1,
-                        color: Colors.black,
+                        color: Colors.white,
                       ),
                     ),
                   ),

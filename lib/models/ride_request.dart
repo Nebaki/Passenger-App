@@ -25,6 +25,8 @@ class RideRequest extends Equatable {
   final String? direction;
   final String? date;
   final String? time;
+  final String? startingTime;
+  final String? completedTime;
   Uint8List? picture;
   final DriverModel? driver;
 
@@ -47,6 +49,8 @@ class RideRequest extends Equatable {
       this.pickupLocation,
       this.dropOffLocation,
       this.driver,
+      this.startingTime,
+      this.completedTime,
       this.picture});
 
   @override
@@ -69,6 +73,8 @@ class RideRequest extends Equatable {
         pickUpAddress: json["pickup_address"] ?? '',
         droppOffAddress: json["drop_off_address"] ?? '',
         status: json['status'],
+        startingTime: json['starting_time'],
+        completedTime: json['completed_time'],
         price: json['price'].toString(),
         distance: json['distance'].toString(),
         date: DateFormat.yMMMEd().format(now),
