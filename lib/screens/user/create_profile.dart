@@ -7,6 +7,7 @@ import 'package:passengerapp/helper/localization.dart';
 import 'package:passengerapp/models/models.dart';
 import 'package:passengerapp/rout.dart';
 import 'package:passengerapp/screens/screens.dart';
+import 'package:passengerapp/utils/session.dart';
 import 'package:provider/provider.dart';
 import '../../utils/waver.dart';
 import '../theme/theme_provider.dart';
@@ -31,6 +32,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
 
   late bool _visiblePassword;
   late IconData icon;
+
   @override
   void initState() {
     _visiblePassword = true;
@@ -82,18 +84,34 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
         BlocConsumer<UserBloc, UserState>(
           listener: (_, state) {
             if (state is UserLoading) {
+              Session().logSession("registration", "User Loading");
               _isLoading = true;
             }
             if (state is UsersLoadSuccess) {
+              Session().logSession("registration", "User Loaded");
               _isLoading = false;
-              context.read<SettingsBloc>().add(SettingsStarted());
-              /*BlocListener<AuthBloc, AuthState>(
+              //context.read<SettingsBloc>().add(SettingsStarted());
+
+              Session().logSession("registration", "Load Auth Data");
+              BlocProvider.of<AuthBloc>(context).add(AuthDataLoad());
+/*
+
+              BlocListener<AuthBloc, AuthState>(
                 listener: (context, state) {
                   if (state is AuthDataLoadSuccess) {
+                    Session()
+                        .logSession("registration", "Auth Data LoadSuccess");
                     name = state.auth.name!;
                     number = state.auth.phoneNumber!;
                     myId = state.auth.id!;
                     context.read<SettingsBloc>().add(SettingsStarted());
+                  }
+                  if (state is AuthDataLoading) {
+                    Session().logSession("registration", "Auth Data Loading");
+                  }
+                  if (state is AuthOperationFailure) {
+                    Session()
+                        .logSession("registration", "Auth Data Load Failed");
                   }
                 },
                 child: AlertDialog(
@@ -109,16 +127,50 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                           BlocProvider.of<AuthBloc>(context)
                               .add(AuthDataLoad());
                         },
-                        child: Text(
-                            getTranslation(context, "okay_action"))),
+                        child: Text(getTranslation(context, "okay_action"))),
                   ],
                 ),
-
               );
-              BlocProvider.of<AuthBloc>(context).add(AuthDataLoad())
-              */
+*/
+
+              showDialog(
+                  barrierDismissible: false,
+                  context: context,
+                  builder: (BuildContext con) => WillPopScope(
+                      onWillPop: () async => false,
+                      child: BlocListener<AuthBloc, AuthState>(
+                        listener: (context, state) {
+                          if (state is AuthDataLoadSuccess) {
+                            name = state.auth.name!;
+                            number = state.auth.phoneNumber!;
+                            myId = state.auth.id!;
+                            Navigator.pop(con);
+
+                            context.read<SettingsBloc>().add(SettingsStarted());
+                          }
+                        },
+                        child: null/*AlertDialog(
+                          title: Text(getTranslation(context,
+                              "create_profile_register_successful_dialog_title")),
+                          content: Text.rich(TextSpan(
+                            text: getTranslation(context,
+                                "create_profile_register_successful_dialog_text"),
+                          )),
+                          actions: [
+                            TextButton(
+                                onPressed: () {
+                                  BlocProvider.of<AuthBloc>(context)
+                                      .add(AuthDataLoad());
+                                },
+                                child:
+                                Text(getTranslation(context, "okay_action"))),
+                          ],
+                        )*/,
+                      )));
+
             }
             if (state is UserOperationFailure) {
+              Session().logSession("registration", "UserOperationFailure");
               _isLoading = false;
               ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                 content: Text(getTranslation(
@@ -149,6 +201,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
         email: _user["email"],
         emergencyContact: _user["phone_number"]));
 
+    Session().logSession("registration", "UserEvent");
     BlocProvider.of<UserBloc>(context).add(event);
   }
 
@@ -156,6 +209,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
     return BlocListener<SettingsBloc, SettingsState>(
         listener: (context, state) {
           if (state is SettingsLoadSuccess) {
+            Session().logSession("registration", "SettingsLoadSuccess");
             Navigator.pushNamedAndRemoveUntil(context, HomeScreen.routeName,
                 ((Route<dynamic> route) => false),
                 arguments: HomeScreenArgument(
@@ -164,12 +218,15 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                     isFromSplash: true));
           }
           if (state is SettingsOperationFailure) {
+            Session().logSession("registration", "SettingsOperationFailure");
             SystemNavigator.pop();
           }
           if (state is SettingsUnAuthorised) {
+            Session().logSession("registration", "SettingsUnAuthorised");
             SystemNavigator.pop();
           }
           if (state is SettingsLoading) {
+            Session().logSession("registration", "SettingsLoading");
             showDialog(
                 context: context,
                 builder: (BuildContext context) {
@@ -183,7 +240,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                           child: SizedBox(
                               height: 40,
                               width: 40,
-                              child: CircularProgressIndicator(strokeWidth: 1)),
+                              child: CircularProgressIndicator()),
                         )),
                   );
                 });
@@ -219,31 +276,32 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                         height: 10,
                       ),
                       TextFormField(
+                        autofocus: true,
                         style: const TextStyle(fontSize: 18),
                         decoration: InputDecoration(
-                          labelText:
-                              getTranslation(context, "name_textfield_hint_text"),
-                          hintStyle: const TextStyle(
-                            fontWeight: FontWeight.w300,
-                            // color: Colors.black45
-                          ),
-                          prefixIcon: const Icon(
-                            Icons.contacts_rounded,
-                            size: 19,
-                          ),
-                          border: const OutlineInputBorder(
-                              borderSide: BorderSide(style: BorderStyle.solid))
-                        ),
+                            labelText: getTranslation(
+                                context, "name_textfield_hint_text"),
+                            hintStyle: const TextStyle(
+                              fontWeight: FontWeight.w300,
+                              // color: Colors.black45
+                            ),
+                            prefixIcon: const Icon(
+                              Icons.contacts_rounded,
+                              size: 19,
+                            ),
+                            border: const OutlineInputBorder(
+                                borderSide:
+                                    BorderSide(style: BorderStyle.solid))),
                         validator: (value) {
                           if (value!.isEmpty) {
-                            return getTranslation(
-                                context, "create_profile_empity_name_validation");
+                            return getTranslation(context,
+                                "create_profile_empity_name_validation");
                           } else if (value.length > 25) {
                             return getTranslation(
                                 context, "create_profile_long_name_validation");
                           } else if (value.length < 4) {
-                            return getTranslation(
-                                context, "create_profile_short_name_validation");
+                            return getTranslation(context,
+                                "create_profile_short_name_validation");
                           }
                           return null;
                         },
@@ -261,12 +319,12 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                           style: const TextStyle(fontSize: 18),
                           controller: password,
                           decoration: InputDecoration(
-                            labelText: getTranslation(context, "password_hint_text"),
-                            hintStyle: const TextStyle(
-                              fontWeight: FontWeight.w300,
-                              // color: Colors.black45
-                            ),
-
+                              labelText:
+                                  getTranslation(context, "password_hint_text"),
+                              hintStyle: const TextStyle(
+                                fontWeight: FontWeight.w300,
+                                // color: Colors.black45
+                              ),
                               suffixIcon: IconButton(
                                   onPressed: () {
                                     setState(() {
@@ -278,13 +336,13 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                                     });
                                   },
                                   icon: Icon(icon)),
-                            prefixIcon: const Icon(
-                              Icons.lock,
-                              size: 19,
-                            ),
+                              prefixIcon: const Icon(
+                                Icons.lock,
+                                size: 19,
+                              ),
                               border: const OutlineInputBorder(
-                                  borderSide: BorderSide(style: BorderStyle.solid))
-                          ),
+                                  borderSide:
+                                      BorderSide(style: BorderStyle.solid))),
                           validator: (value) {
                             if (value!.isEmpty) {
                               return getTranslation(context,
@@ -308,16 +366,16 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                         obscureText: _visiblePassword,
                         style: const TextStyle(fontSize: 18),
                         decoration: InputDecoration(
-                          labelText: getTranslation(context, "confirm_password"),
-                          hintStyle: const TextStyle(
-                            fontWeight: FontWeight.w300,
-                            // color: Colors.black45
-                          ),
-                          prefixIcon: const Icon(
-                            Icons.lock,
-                            size: 19,
-                          ),
-
+                            labelText:
+                                getTranslation(context, "confirm_password"),
+                            hintStyle: const TextStyle(
+                              fontWeight: FontWeight.w300,
+                              // color: Colors.black45
+                            ),
+                            prefixIcon: const Icon(
+                              Icons.lock,
+                              size: 19,
+                            ),
                             suffixIcon: IconButton(
                                 onPressed: () {
                                   setState(() {
@@ -330,8 +388,8 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                                 },
                                 icon: Icon(icon)),
                             border: const OutlineInputBorder(
-                                borderSide: BorderSide(style: BorderStyle.solid))
-                        ),
+                                borderSide:
+                                    BorderSide(style: BorderStyle.solid))),
                         validator: (value) {
                           if (value != password.text) {
                             return getTranslation(context,

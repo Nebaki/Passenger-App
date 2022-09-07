@@ -209,6 +209,29 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
+  Padding _selectCar(){
+    return Padding(
+      padding: const EdgeInsets.only(top: 150.0),
+      child: SizedBox(
+          height: 45,
+          child: FloatingActionButton(
+            onPressed: () async {
+              Geolocator.getCurrentPosition().then((value) {
+                carTypeSelectorDialog(value);
+                currentPostion = value;
+                userPostion = currentPostion;
+                currentLatLng = LatLng(value.latitude, value.longitude);
+                // pickupLatLng = currentLatLng;
+                outerController.animateCamera(CameraUpdate.newCameraPosition(
+                    CameraPosition(zoom: 14.1746, target: currentLatLng)));
+              });
+            },
+            child: const Icon(Icons.car_rental, size: 20),
+          ),
+        ),
+    );
+  }
+
   BlocConsumer<EmergencyReportBloc, EmergencyReportState> _emergencyReport(){
     return BlocConsumer<EmergencyReportBloc,
         EmergencyReportState>(
@@ -418,6 +441,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     : outerController.setMapStyle('[]');
               }),
           _drawerAction(),
+          _selectCar(),
           Align(
             alignment: Alignment.centerLeft,
             child: Text(repo.getNearbyDrivers().length.toString()),
@@ -739,7 +763,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 currentLatLng = LatLng(value.latitude, value.longitude);
                 // pickupLatLng = currentLatLng;
                 outerController.animateCamera(CameraUpdate.newCameraPosition(
-                    CameraPosition(zoom: 16.1746, target: currentLatLng)));
+                    CameraPosition(zoom: 14.1746, target: currentLatLng)));
               });
             }
             isFirstTime = false;
@@ -959,7 +983,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       flex: 2,
                       child: Center(
                         child: Icon(Icons.location_off_outlined,
-                            color: buttonColor, size: 60),
+                            color: Colors.red, size: 60,),
                       )),
                   // const Expanded(child: SizedBox()),
                   const SizedBox(
@@ -970,7 +994,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       child: Text(
                           getTranslation(context,
                               "location_service_off_buttom_sheet_text"),
-                          maxLines: 2,
+                          maxLines: 3,
                           overflow: TextOverflow.ellipsis,
                           style: Theme.of(context).textTheme.bodyText2)),
                   Expanded(
@@ -986,7 +1010,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             child: Text(
                               getTranslation(context,
                                   "location_service_off_buttom_sheet_acction_button_top"),
-                              maxLines: 1,
+                              maxLines: 2,
                               overflow: TextOverflow.ellipsis,
                               textAlign: TextAlign.center,
                             )),
@@ -1002,7 +1026,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             onPressed: () async {
                               SystemNavigator.pop();
                             },
-                            child: Text(getTranslation(context, "cancel"))),
+                            child: Text(getTranslation(context, "cancel").toUpperCase())),
                       ))
                 ],
               ),

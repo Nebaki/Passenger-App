@@ -190,14 +190,14 @@ class DetailHistoryScreen extends StatelessWidget {
                           _buildReciept(
                               title: getTranslation(
                                   context, "history_detail_vehicle"),
-                              value: args.request.driver!.vehicle!['model']),
+                              value: args.request.driver!.vehicle!.model),
                           const SizedBox(
                             height: 15,
                           ),
                           _buildReciept(
                               title: getTranslation(
                                   context, "history_detail_color"),
-                              value: args.request.driver!.vehicle!['color']),
+                              value: args.request.driver!.vehicle!.color),
                           const SizedBox(
                             height: 15,
                           ),
@@ -205,7 +205,7 @@ class DetailHistoryScreen extends StatelessWidget {
                               title: getTranslation(
                                   context, "history_detail_plate_number"),
                               value: args
-                                  .request.driver!.vehicle!['plate_number']),
+                                  .request.driver!.vehicle!.plateNumber),
                           const SizedBox(
                             height: 15,
                           ),
@@ -322,25 +322,38 @@ class _TripDetailState extends State<TripDetail>{
           ),
           SingleChildScrollView(
             child: Padding(
-              padding: const EdgeInsets.all(3.0),
-              child: Card(elevation: 2,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15.0),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                      children: [
-                        args.request.picture != null ? Image.memory(args.request.picture!) : Container(),
-                        _listUi(Theme.of(context).primaryColor,args.request),
-                      ],
-                    ),
-                  )),
+              padding: const EdgeInsets.all(5.0),
+              child: Column(
+                children: [
+                  Card(elevation: 2,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15.0),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Column(
+                          children: [
+                            args.request.picture != null ? Image.memory(args.request.picture!) : Container(),
+                            _listUi(Theme.of(context).primaryColor,args.request),
+                          ],
+                        ),
+                      )),
+                   _showDriver(args.request) ? Card(elevation: 2,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15.0),
+                      ),
+                      child: _listUiDriver(Theme.of(context).primaryColor,args.request)
+                  ): Container(),
+                ],
+              ),
             ),
           )
         ],
       ),
     );
+  }
+  bool _showDriver(RideRequest request){
+    return request.status != "Cancelled" && request.status != "Pending";
   }
   _listUi(Color theme,RideRequest trip){
     return Container(
@@ -350,21 +363,13 @@ class _TripDetailState extends State<TripDetail>{
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(2.0),
-                    child: Text("Status:", style: TextStyle(
-                        color: theme
-                    )),
+              Padding(
+                    padding: const EdgeInsets.only(left: 3.0,top: 10,bottom: 10),
+                    child: Text(trip.status ?? "loading",
+                      style: TextStyle(color: trip.status != "Completed"
+                          ? Colors.red : Colors.green),
+                    ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(trip.status ?? "loading"),
-                  ),
-                ],
-              ),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
@@ -381,7 +386,7 @@ class _TripDetailState extends State<TripDetail>{
             ],
           ),
 
-          Padding(
+          /*Padding(
             padding: const EdgeInsets.all(2.0),
             child: Text("Date:", style: TextStyle(
                 color: theme//,fontWeight: FontWeight.bold
@@ -391,6 +396,28 @@ class _TripDetailState extends State<TripDetail>{
             padding: const EdgeInsets.all(8.0),
             child: Text(trip.date!),
           ),
+          */
+          Padding(
+            padding: const EdgeInsets.all(2.0),
+            child: Text("Started Time:", style: TextStyle(
+                color: theme//,fontWeight: FontWeight.bold
+            ),),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text(trip.status != "Cancelled" ? _formatDate(trip.startingTime!) : "Not started"),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(2.0),
+            child: Text("Ended Time:", style: TextStyle(
+                color: theme//,fontWeight: FontWeight.bold
+            ),),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text(trip.status != "Cancelled" ? _formatDate(trip.completedTime!) : "Not started"),
+          ),
+
           Padding(
             padding: const EdgeInsets.all(2.0),
             child: Text("Origin:", style: TextStyle(
@@ -426,6 +453,111 @@ class _TripDetailState extends State<TripDetail>{
       ),
     );
   }
+  _listUiDriver(Color theme,RideRequest trip){
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 2),
+                  child: Container(
+                        color: theme,
+                        child: SizedBox(
+                          height: 40,
+                          width: MediaQuery.of(context).size.width * 0.94,
+                          child: const Padding(
+                            padding: EdgeInsets.only(top: 13.0,left: 5),
+                            child: Text("Driver and Vehicle Information", style: TextStyle(
+                                color: Colors.white
+                            )),
+                          ),
+                        ),
+                      ),
+                ),
+              ],
+            )
+          ],
+        ),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(5.0),
+                child: Text("Name:", style: TextStyle(
+                    color: theme//,fontWeight: FontWeight.bold
+                ),),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text('${trip.driver?.firstName} ${trip.driver?.lastName}'),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(5.0),
+                child: Text("Phone No.:", style: TextStyle(
+                    color: theme
+                )),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(trip.driver?.phoneNumber ?? ""),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(5.0),
+                child: Text("Gender:", style: TextStyle(
+                    color: theme
+                ),),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(trip.driver?.gender ?? ""),
+              ),
+
+              Padding(
+                padding: const EdgeInsets.all(5.0),
+                child: Text("Rating:", style: TextStyle(
+                    color: theme//,fontWeight: FontWeight.bold
+                ),),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(trip.driver?.rating.toStringAsFixed(1) ?? "1"),
+              ),
+
+              Padding(
+                padding: const EdgeInsets.all(5.0),
+                child: Text("Vehicle:", style: TextStyle(
+                    color: theme//,fontWeight: FontWeight.bold
+                ),),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text('${trip.driver?.vehicle?.color} ${trip.driver?.vehicle?.model}'),
+              ),
+
+              Padding(
+                padding: const EdgeInsets.all(5.0),
+                child: Text("Plate Number:", style: TextStyle(
+                    color: theme//,fontWeight: FontWeight.bold
+                ),),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(trip.driver?.vehicle?.plateNumber ?? "Unknown"),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
   String _formatDate(String utcDate){
     var str = "2019-04-05T14:00:51.000Z";
     if(utcDate != "null"){

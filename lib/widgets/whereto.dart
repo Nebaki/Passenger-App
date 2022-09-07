@@ -472,7 +472,7 @@ class _WhereToState extends State<WhereTo> {
                                     .read<FavoriteLocationCubit>()
                                     .deleteFavoriteLocationByPlaceId(
                                         prediction.placeId)
-                                : addToSavedLocaitons(prediction);
+                                : addToSavedLocations(prediction);
                           },
                           icon: Icon(
                             isFav
@@ -513,7 +513,7 @@ class _WhereToState extends State<WhereTo> {
     BlocProvider.of<PlaceDetailBloc>(context).add(event);
   }
 
-  void addToSavedLocaitons(LocationPrediction prediction) {
+  void addToSavedLocations(LocationPrediction prediction) {
     context.read<FavoriteLocationCubit>().addToFavoriteLocation(SavedLocation(
         name: "Favorite",
         address: prediction.mainText,
@@ -685,7 +685,8 @@ class _WhereToState extends State<WhereTo> {
                 BlocBuilder<LocationPredictionBloc, LocationPredictionState>(
                     builder: (context, state) {
                   if (state is LocationPredictionLoading) {
-                    return const Center(child: CircularProgressIndicator());
+                    //return const Center(child: CircularProgressIndicator());
+                    return Container();
                   }
                   if (state is LocationPredictionLoadSuccess) {
                     return Positioned(

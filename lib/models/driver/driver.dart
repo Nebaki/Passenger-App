@@ -11,7 +11,7 @@ class DriverModel extends Equatable {
   final String profileImage;
   final String fcmId;
   final double rating;
-  final Map<String, dynamic>? vehicle;
+  final Vehicle? vehicle;
 
   const DriverModel(
       {required this.id,
@@ -47,14 +47,33 @@ class DriverModel extends Equatable {
         fcmId: json['fcm_id'],
         rating: double.parse(json['avg_rate']['score'].toString()),
         vehicle: json.containsKey('vehicle')
-            ? {
+            ? Vehicle.fromJson(json['vehicle'])
+        /*
+        {
                 'model': json['vehicle']['model'],
                 'plate_number': json['vehicle']['plate_number'],
                 "color": json['vehicle']['color']
-              }
+              }*/
             : null);
   }
 
   @override
   String toString() => 'DriverModel {First Name: $firstName }';
+}
+class Vehicle{
+  final String model;
+  final String plateNumber;
+  final String color;
+  Vehicle({
+    required this.model,
+    required this.plateNumber,
+    required this.color
+  });
+  factory Vehicle.fromJson(Map<String, dynamic> json) {
+    return Vehicle(
+        model: json["model"],
+        plateNumber: json["plate_number"],
+        color: json["color"]);
+  }
+
 }

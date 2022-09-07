@@ -5,6 +5,7 @@ import 'package:passengerapp/dataprovider/auth/auth.dart';
 import 'package:passengerapp/helper/api_end_points.dart';
 import 'package:passengerapp/helper/constants.dart';
 import 'package:passengerapp/models/models.dart';
+import 'package:passengerapp/utils/session.dart';
 
 class RideRequestDataProvider {
   final _fcmUrl = 'https://fcm.googleapis.com/fcm/send';
@@ -56,6 +57,7 @@ class RideRequestDataProvider {
         });
 
     if (response.statusCode == 200) {
+      Session().logSession("history", response.body);
       final data = json.decode(response.body)['items'] as List;
 
       return data.isNotEmpty

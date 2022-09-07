@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:passengerapp/dataprovider/send_feedback.dart';
 
+import '../../../utils/waver.dart';
+
 class FeedbackScreen extends StatefulWidget {
   static const routeName = "/feedback";
 
@@ -13,8 +15,7 @@ class FeedbackScreen extends StatefulWidget {
 }
 
 class _FeedbackScreenState extends State<FeedbackScreen> {
-  final _textStyle = const TextStyle(
-      height: 2.0, color: Colors.black, fontWeight: FontWeight.bold);
+  final _appBar = GlobalKey<FormState>();
 
   var _isLoading = false;
   @override
@@ -23,33 +24,19 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
     super.initState();
   }
   TextEditingController feedBackController = TextEditingController();
-  String _chosenValue = "Android";
+  String _chosenValue = "Thank You";
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 5,
-        centerTitle: true,
-        leading: IconButton(
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            icon: const Icon(
-              Icons.arrow_back,
-              color: Colors.black,
-            )),
-        title: const Text(
-          "Feedbacks",
-          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
-        ),
-      ),
+      appBar: SafeAppBar(
+          key: _appBar, title: "Contact us",
+          appBar: AppBar(), widgets: []),
       body: Container(
-          padding: const EdgeInsets.all(10),
+          padding: const EdgeInsets.all(3),
           child: Card(
               margin: const EdgeInsets.all(4.0),
-              elevation: 10.0,
+              elevation: 3.0,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(15.0),
               ),
@@ -59,8 +46,8 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                     padding: const EdgeInsets.all(50),
                     children: [
                       Center(
-                          child: Image.asset('assets/icons/familyCarIcon.png',
-                            height: 100.0,width:100.0,)
+                          child: Image.asset('assets/icons/logo.png',
+                            height: 200.0,width:200.0,color: Theme.of(context).primaryColor,)
                       ),
                       const Text("Choose Tile",style: TextStyle(
                         fontSize: 18,fontWeight: FontWeight.bold,
@@ -71,13 +58,11 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                         child: _feedBackBox(),
                       ),
                       Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        padding: const EdgeInsets.all(10),
                         child: SizedBox(
-                          height: 60,
+                          height: 50,
                           width: MediaQuery.of(context).size.width,
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: ElevatedButton(
+                          child: ElevatedButton(
                               onPressed: () {
                                 final FormState? form = _formKey.currentState;
                                 if (form!.validate() && !_isLoading) {
@@ -97,17 +82,17 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                               },
                               child: Row(
                                 children: [
+                                  const Spacer(),
                                   const Text("Send Feedback"),
                                   const Spacer(),
                                   Align(
-                                    alignment: Alignment.centerRight,
+                                    alignment: Alignment.center,
                                     child: _isLoading
                                         ? const SizedBox(
                                             height: 20,
                                             width: 20,
                                             child: CircularProgressIndicator(
-                                              strokeWidth: 2,
-                                              color: Colors.white,
+                                              color: Colors.white
                                             ),
                                           )
                                         : Container(),
@@ -115,7 +100,6 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                                 ],
                               ),
                             ),
-                          ),
                         ),
                       )
                     ],
@@ -163,7 +147,8 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
       },
     );
   }
-
+  var items = <String>['Driver Attitude', 'Item Lost', 'App Issue',
+    'Complaint', 'Thank You', 'Advice', 'Other'];
   Widget _dropDownItem() {
     return DropdownButton<String>(
       dropdownColor: Colors.white,
@@ -172,15 +157,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
       //elevation: 5,
       style: const TextStyle(color: Colors.white),
       iconEnabledColor: Colors.black,
-      items: <String>[
-        'Android',
-        'IOS',
-        'Flutter',
-        'Node',
-        'Java',
-        'Python',
-        'PHP',
-      ].map<DropdownMenuItem<String>>((String value) {
+      items: items.map<DropdownMenuItem<String>>((String value) {
         return DropdownMenuItem<String>(
           value: value,
           child: Text(

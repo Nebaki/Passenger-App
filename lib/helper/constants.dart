@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_maps_place_picker/google_maps_place_picker.dart';
+import 'package:passengerapp/models/models.dart';
 
 const mapStyle = '''[
   {
@@ -196,7 +197,7 @@ late String myId;
 String? driverName;
 String? driverId;
 String? driverImage;
-Map<String, dynamic>? vehicle;
+Vehicle? vehicle;
 double? driverRating;
 late String driverFcm;
 const initialPosition = LatLng(8.9806, 38.7578);

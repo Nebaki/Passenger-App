@@ -25,6 +25,8 @@ class RideRequest extends Equatable {
   final String? direction;
   final String? date;
   final String? time;
+  final String? startingTime;
+  final String? completedTime;
   Uint8List? picture;
   final DriverModel? driver;
 
@@ -47,6 +49,8 @@ class RideRequest extends Equatable {
       this.pickupLocation,
       this.dropOffLocation,
       this.driver,
+      this.startingTime,
+      this.completedTime,
       this.picture});
 
   @override
@@ -69,6 +73,8 @@ class RideRequest extends Equatable {
         pickUpAddress: json["pickup_address"] ?? '',
         droppOffAddress: json["drop_off_address"] ?? '',
         status: json['status'],
+        startingTime: json['starting_time'],
+        completedTime: json['completed_time'],
         price: json['price'].toString(),
         distance: json['distance'].toString(),
         date: DateFormat.yMMMEd().format(now),
@@ -79,4 +85,30 @@ class RideRequest extends Equatable {
   @override
   String toString() =>
       'RideRequest {DriverId: $driverId, $id , PickupLocation: $pickupLocation, DroppOffLocaiton: $dropOffLocation, PickupAddress:$pickUpAddress, DroppOffLocation: $droppOffAddress,Direction:$direction,Status: $status,Price:$price,Distance:$distance,Date:$date,Time:$time}';
+}
+class Driver{
+  final String? id;
+  final String? driverName;
+  final String? driverPhone;
+  final LatLng? driverEmail;
+  final LatLng? driverGender;
+  Driver(
+      {this.id,
+        this.driverName,
+        this.driverPhone,
+        this.driverEmail,
+        this.driverGender});
+
+  factory Driver.fromJson(Map<String, dynamic> json) {
+    return Driver(
+        id: json["id"],
+        driverName: json['first_name']+' '+json['last_name'],
+        driverPhone: json["phone_number"] ?? '',
+        driverEmail: json["email"] ?? '',
+        driverGender: json['status']
+    );
+  }
+
+  @override
+  String toString() => '';
 }
