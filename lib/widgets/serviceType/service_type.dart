@@ -8,6 +8,7 @@ import 'package:passengerapp/helper/localization.dart';
 import 'package:passengerapp/models/models.dart';
 import 'package:passengerapp/repository/nearby_driver.dart';
 import 'package:passengerapp/screens/home/assistant/home_screen_assistant.dart';
+import 'package:passengerapp/utils/session.dart';
 import 'package:passengerapp/widgets/serviceType/category_list.dart';
 import 'package:passengerapp/widgets/widgets.dart';
 
@@ -157,6 +158,7 @@ class _ServiceState extends State<Service> {
                       // widget.searchNearbyDriversList('lada').take();
                       // nextDrivers.remove(state.driver.id);
                       driverFcm = state.driver.fcmId;
+                      Session().logSession("driverInfo", 'id: ${state.driver.id}, fcm: $driverFcm');
                       if (widget.fromOrderForOthers) {
                         orderForOthers(driverFcm);
                       } else {

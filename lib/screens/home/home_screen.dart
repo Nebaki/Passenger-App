@@ -754,6 +754,7 @@ class _HomeScreenState extends State<HomeScreen> {
       }).listen((serviceStatus) {
         if (serviceStatus == ServiceStatus.enabled) {
           if (serviceStatusValue == "disabled") {
+            locationErrorShown = false;
             Navigator.pop(context);
             if (isFirstTime) {
               Geolocator.getCurrentPosition().then((value) {
@@ -771,7 +772,9 @@ class _HomeScreenState extends State<HomeScreen> {
           serviceStatusValue = 'enabled';
         } else {
           debugPrint("Disableddddd");
-          locationServiceButtomSheet();
+          if(!locationErrorShown){
+            locationServiceButtomSheet();
+          }
 
           serviceStatusValue = 'disabled';
         }
@@ -785,20 +788,23 @@ class _HomeScreenState extends State<HomeScreen> {
           _connectivity.onConnectivityChanged.listen((event) {
             if (event == ConnectivityResult.none) {
               debugPrint("yow none");
-
-              internetServiceButtomSheet();
+              if(!internetErrorShown) {
+                internetServiceButtomSheet();
+              }
               internetServiceStatus = true;
             } else if (event == ConnectivityResult.wifi) {
               debugPrint("yow wifi");
 
               if (internetServiceStatus != null) {
                 internetServiceStatus! ? Navigator.pop(context) : null;
+                internetErrorShown = false;
               }
             } else if (event == ConnectivityResult.mobile) {
               debugPrint("yow mobile");
 
               if (internetServiceStatus != null) {
                 internetServiceStatus! ? Navigator.pop(context) : null;
+                internetErrorShown = false;
               }
             }
           });
@@ -964,6 +970,7 @@ class _HomeScreenState extends State<HomeScreen> {
             borderRadius: BorderRadius.only(
                 topLeft: Radius.circular(10), topRight: Radius.circular(10))),
         builder: (BuildContext ctx) {
+          locationErrorShown = true;
           return WillPopScope(
             onWillPop: () async => false,
             child: Container(
@@ -1013,6 +1020,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
                               textAlign: TextAlign.center,
+                                style: TextStyle(fontSize: 14),
                             )),
                       )),
                   const SizedBox(
@@ -1026,7 +1034,8 @@ class _HomeScreenState extends State<HomeScreen> {
                             onPressed: () async {
                               SystemNavigator.pop();
                             },
-                            child: Text(getTranslation(context, "cancel").toUpperCase())),
+                            child: Text(getTranslation(context, "cancel").toUpperCase(),
+                                style: TextStyle(fontSize: 14))),
                       ))
                 ],
               ),
@@ -1041,6 +1050,7 @@ class _HomeScreenState extends State<HomeScreen> {
         isDismissible: false,
         context: context,
         builder: (BuildContext context) {
+          internetErrorShown = true;
           return WillPopScope(
             onWillPop: () async => false,
             child: Container(
@@ -1124,6 +1134,8 @@ class _HomeScreenState extends State<HomeScreen> {
         widget.args.settings.radius.truckRadius);
   }
 
+  bool locationErrorShown = false;
+  bool internetErrorShown = false;
   void _checkLocationServiceOnInit() async {
     bool serviceEnabled;
 
@@ -1131,8 +1143,9 @@ class _HomeScreenState extends State<HomeScreen> {
     if (!serviceEnabled) {
       if (!serviceEnabled) {
         isFirstTime = true;
-
-        locationServiceButtomSheet();
+        if(!locationErrorShown){
+          locationServiceButtomSheet();
+        }
         serviceStatusValue = 'disabled';
 
         return Future.error("No Location Enabled");
@@ -1149,7 +1162,9 @@ class _HomeScreenState extends State<HomeScreen> {
     result = await _connectivity.checkConnectivity();
 
     if (result == ConnectivityResult.none) {
-      internetServiceButtomSheet();
+      if(!internetErrorShown) {
+        internetServiceButtomSheet();
+      }
     }
   }
 

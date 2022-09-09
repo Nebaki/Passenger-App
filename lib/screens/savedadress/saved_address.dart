@@ -277,7 +277,7 @@ class SavedAddress extends StatelessWidget {
   void _showModalBottomSheet(BuildContext context, SavedLocation location) {
     showModalBottomSheet(
         constraints: BoxConstraints(
-            maxHeight: MediaQuery.of(context).size.height * 0.14),
+            maxHeight: MediaQuery.of(context).size.height * 0.15),
         shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.only(
                 topLeft: Radius.circular(30), topRight: Radius.circular(30))),
