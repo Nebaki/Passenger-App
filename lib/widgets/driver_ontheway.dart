@@ -31,7 +31,7 @@ class _DriverOnTheWayState extends State<DriverOnTheWay> {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               const Expanded(
-                  flex: 3,
+                  //flex: 3,
                   child: DriverProfile(
                       assetImage: 'assets/icons/economyCarIcon.png')),
 
@@ -45,9 +45,7 @@ class _DriverOnTheWayState extends State<DriverOnTheWay> {
                     fromBackGround: widget.appOpen,
                   )),
               */
-              Expanded(
-                flex: 1,
-                child: Padding(
+              Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: SizedBox(
                       height: 50,
@@ -60,7 +58,6 @@ class _DriverOnTheWayState extends State<DriverOnTheWay> {
                           },
                           child: Text(getTranslation(context, "cancel")))),
                 ),
-              ),
             ],
           )),
     );

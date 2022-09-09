@@ -213,13 +213,13 @@ class DriverProfile extends StatelessWidget {
                   children: [
                     Center(
                         child: CircleAvatar(
-                            radius: 25,
+                            radius: 20,
                             backgroundColor: Colors.grey.shade800,
                             child: ClipRRect(
                               borderRadius: BorderRadius.circular(100),
                               child: CachedNetworkImage(
                                   imageUrl:
-                                  'https://safeway-api.herokuapp.com/${state.driver.profileImage}',
+                                      'https://safeway-api.herokuapp.com/${state.driver.profileImage}',
                                   imageBuilder: (context, imageProvider) =>
                                       Container(
                                         decoration: BoxDecoration(
@@ -230,9 +230,9 @@ class DriverProfile extends StatelessWidget {
                                         ),
                                       ),
                                   placeholder: (context, url) =>
-                                  const CircularProgressIndicator(),
+                                      const CircularProgressIndicator(),
                                   errorWidget: (context, url, error) {
-                                    return const Icon(Icons.error);
+                                    return const Icon(Icons.person);
                                   }),
                             ))),
                     const SizedBox(
@@ -263,7 +263,7 @@ class DriverProfile extends StatelessWidget {
                 ),
               ],
             ),
-           /* Flexible(
+            /* Flexible(
               flex: 2,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -303,47 +303,131 @@ class DriverProfile extends StatelessWidget {
                 ],
               ),
             ),*/
-            Column(
+
+            Padding(
+              padding: const EdgeInsets.only(top: 10.0),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  /*Flexible(
+                            flex: 2,
+                            child:
+                            Image(height: 40, image: AssetImage(assetImage))),
+                        */
+                  Padding(
+                    padding: const EdgeInsets.only(top: 10.0,right: 5),
+                    child: Image(
+                        height: 60, width: 60, image: AssetImage(assetImage)),
+                  ),
+                  /* Flexible(
+                          flex: 4,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                      "${getTranslation(context, "car_model")}: ${vehicle!['model']}"),
+                                  Text(
+                                      "${getTranslation(context, "plate_number")}: ${vehicle!['plate_number']}")
+                                ],
+                              ),
+                              const SizedBox(
+                                width: 15,
+                              ),
+                              Text(
+                                  '${getTranslation(context, "color")}: ${vehicle!['color']}'),
+                            ],
+                          ),
+                        )
+*/
+                  Padding(
+                    padding: const EdgeInsets.all(2.0),
+                    child: SizedBox(
+                      width: MediaQuery.of(context).size.width * 0.6,
+                      child: Expanded(
+                        child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.only(bottom: 8.0),
+                                    child: Flexible(
+                                      child: Text(
+                                          "${getTranslation(context, "car_model")}: ${vehicle!.color} $model ",
+                                          overflow: TextOverflow.ellipsis,
+                                          maxLines: 2,
+                                          softWrap: true,
+                                          textAlign: TextAlign.start,
+                                        style: TextStyle(fontSize: 14),
+                                      ),
+                                    ),
+                                  ),
+                                  Divider(
+                                    height: 2,
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.only(top:8,bottom: 8.0),
+                                    child: Text(
+                                        "${getTranslation(context,
+                                            "plate_number")}: ${vehicle!.plateNumber}",
+                                        style: TextStyle(fontSize: 14)),
+                                  ),
+                                ],
+                              ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            /*Column(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    /*Flexible(
-                        flex: 2,
-                        child:
-                        Image(height: 40, image: AssetImage(assetImage))),
                     */
+            /*Flexible(
+                          flex: 2,
+                          child:
+                          Image(height: 40, image: AssetImage(assetImage))),
+                      */
+            /*
                     Padding(
                       padding: const EdgeInsets.all(7.0),
-                      child: Image(height: 40, width: 40,image: AssetImage(assetImage)),
+                      child: Image(
+                          height: 40, width: 40, image: AssetImage(assetImage)),
                     ),
-                   /* Flexible(
-                      flex: 4,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                  "${getTranslation(context, "car_model")}: ${vehicle!['model']}"),
-                              Text(
-                                  "${getTranslation(context, "plate_number")}: ${vehicle!['plate_number']}")
-                            ],
-                          ),
-                          const SizedBox(
-                            width: 15,
-                          ),
-                          Text(
-                              '${getTranslation(context, "color")}: ${vehicle!['color']}'),
-                        ],
-                      ),
-                    )
+                    */
+            /* Flexible(
+                        flex: 4,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                    "${getTranslation(context, "car_model")}: ${vehicle!['model']}"),
+                                Text(
+                                    "${getTranslation(context, "plate_number")}: ${vehicle!['plate_number']}")
+                              ],
+                            ),
+                            const SizedBox(
+                              width: 15,
+                            ),
+                            Text(
+                                '${getTranslation(context, "color")}: ${vehicle!['color']}'),
+                          ],
+                        ),
+                      )
 */
+/*
                     Padding(
-                      padding: const EdgeInsets.all(8.0),
+                      padding: const EdgeInsets.all(2.0),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -353,12 +437,12 @@ class DriverProfile extends StatelessWidget {
                             children: [
                               Padding(
                                 padding: const EdgeInsets.only(bottom: 8.0),
-                                child: SizedBox(
+                                child: Flexible(
                                   child: Text(
                                       "${getTranslation(context, "car_model")}: ${vehicle!.color} $model ",
-                                    overflow: TextOverflow.fade,
-                                    maxLines: 2,
-                                    softWrap: false,),
+                                      overflow: TextOverflow.visible,
+                                      maxLines: 2,
+                                      textAlign: TextAlign.start),
                                 ),
                               ),
                               Padding(
@@ -378,6 +462,7 @@ class DriverProfile extends StatelessWidget {
                 ),
               ],
             ),
+            */
             const SizedBox(
               height: 10,
             ),
