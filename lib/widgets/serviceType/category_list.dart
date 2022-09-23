@@ -54,7 +54,7 @@ class _CategoryListState extends State<CategoryList> {
                           child: _buildCategoryItems(
                               state.categories[index], index)))));
         }
-        return _buildShimmerEffect();
+        return Container();
       },
     );
   }
