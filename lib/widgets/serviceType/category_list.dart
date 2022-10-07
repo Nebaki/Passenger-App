@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:passengerapp/bloc/bloc.dart';
 import 'package:passengerapp/models/models.dart';
+import 'package:passengerapp/utils/waver.dart';
 import 'package:shimmer/shimmer.dart';
 
 import '../../helper/constants.dart';
@@ -34,6 +35,9 @@ class _CategoryListState extends State<CategoryList> {
           BlocProvider.of<SelectedCategoryBloc>(context)
               .add(SelectCategory(state.categories[_selectedIndex]));
         }
+        if(state is CategoryOperationFailure){
+          ShowSnack(context: context,message: "category load error").show();
+        }
       },
       builder: (context, state) {
         if (state is CategoryLoadSuccess) {
@@ -54,7 +58,7 @@ class _CategoryListState extends State<CategoryList> {
                           child: _buildCategoryItems(
                               state.categories[index], index)))));
         }
-        return Container();
+        return _buildShimmerEffect();
       },
     );
   }

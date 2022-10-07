@@ -36,6 +36,7 @@ class _ServiceState extends State<Service> {
     GeolocatorPlatform.instance.getCurrentPosition().then((value) {
       currentLatlng = LatLng(value.latitude, value.longitude);
     });
+
     super.initState();
   }
 

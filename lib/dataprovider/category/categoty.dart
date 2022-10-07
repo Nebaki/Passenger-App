@@ -34,6 +34,7 @@ class CategoryDataProvider {
         throw Exception(response.statusCode);
       }
     }else {
+      Session().logSession("cats-failed", "cat error");
       throw Exception(response.statusCode);
     }
   }

@@ -938,14 +938,18 @@ class _HomeScreenState extends State<HomeScreen> {
                         children: [
                           ElevatedButton(
                               onPressed: () {
-                                selectedCar = SelectedCar.truck;
+                                setState((){
+                                  selectedCar = SelectedCar.truck;
+                                });
                                 listenTruck(value);
                                 Navigator.pop(context);
                               },
                               child: Text("Truck")),
                           ElevatedButton(
                               onPressed: () {
-                                selectedCar = SelectedCar.taxi;
+                                setState((){
+                                  selectedCar = SelectedCar.taxi;
+                                });
                                 listenTaxi(value);
                                 Navigator.pop(context);
                               },
@@ -1119,19 +1123,28 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void listenTaxi(Position value) {
+    BlocProvider.of<CategoryBloc>(context)
+        .add(CategoryLoad());
     Geofire.initialize('availableDrivers');
     geofireListener(value.latitude, value.longitude, 'Taxi',
         widget.args.settings.radius.taxiRadius);
-    geofireListener(value.latitude, value.longitude, 'Taxi',
+
+    /*geofireListener(value.latitude, value.longitude, 'Taxi',
         widget.args.settings.radius.taxiRadius);
+    */
   }
 
   void listenTruck(Position value) {
+
+    BlocProvider.of<CategoryBloc>(context)
+        .add(CategoryLoad());
     Geofire.initialize('availableTrucks');
     geofireListener(value.latitude, value.longitude, 'Truck',
         widget.args.settings.radius.truckRadius);
+    /*
     geofireListener(value.latitude, value.longitude, 'Truck',
         widget.args.settings.radius.truckRadius);
+    */
   }
 
   bool locationErrorShown = false;

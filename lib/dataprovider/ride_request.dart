@@ -60,9 +60,14 @@ class RideRequestDataProvider {
       Session().logSession("history", response.body);
       final data = json.decode(response.body)['items'] as List;
 
-      return data.isNotEmpty
-          ? data.map((e) => RideRequest.fromJson(e)).toList()
-          : [];
+      try{
+        return data.isNotEmpty
+            ? data.map((e) => RideRequest.fromJson(e)).toList()
+            : [];
+      }catch(e){
+        Session().logSession("error-h", e.toString());
+        rethrow;
+      }
     } else if (response.statusCode == 401) {
       final res = await AuthDataProvider(httpClient: httpClient).refreshToken();
 
