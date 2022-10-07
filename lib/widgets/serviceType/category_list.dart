@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:passengerapp/bloc/bloc.dart';
 import 'package:passengerapp/models/models.dart';
+import 'package:passengerapp/utils/session.dart';
 import 'package:passengerapp/utils/waver.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -36,7 +37,7 @@ class _CategoryListState extends State<CategoryList> {
               .add(SelectCategory(state.categories[_selectedIndex]));
         }
         if(state is CategoryOperationFailure){
-          ShowSnack(context: context,message: "category load error").show();
+          ShowSnack(context: context,message: "Unable to load").show();
         }
       },
       builder: (context, state) {
@@ -58,6 +59,17 @@ class _CategoryListState extends State<CategoryList> {
                           child: _buildCategoryItems(
                               state.categories[index], index)))));
         }
+        if(state is CategoryOperationFailure){
+          //Session().logSession("cat-error", 'errorMessage: '+state.message);
+          //ShowSnack(context: context,message: "category load error2").show();
+          return _buildShimmerEffect();
+        }
+        if(state is CategoryLoading){
+          Session().logSession("cat-loading", 'hopeless');
+          //ShowSnack(context: context,message: "category load error2").show();
+          return _buildShimmerEffect();
+        }
+
         return _buildShimmerEffect();
       },
     );

@@ -13,7 +13,6 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
     Session().logSession("cat-event", "happened");
     if (event is CategoryLoad) {
       yield CategoryLoading();
-
       try {
         List<Category> categories = await categoryRepository.getCategories();
         yield CategoryLoadSuccess(categories: categories);
@@ -22,9 +21,9 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
           yield CategoryUnAuthorised();
         } else {
           Session().logSession("cat-error", e.toString());
-          yield (CategoryOperationFailure());
+          yield (CategoryOperationFailure(message:"upper "+e.toString()));
         }
-        yield CategoryOperationFailure();
+        yield CategoryOperationFailure(message:'bottom');
       }
     }
   }
@@ -55,6 +54,9 @@ class CategoryLoadSuccess extends CategoryState {
   List<Object?> get props => categories;
 }
 
-class CategoryOperationFailure extends CategoryState {}
+class CategoryOperationFailure extends CategoryState {
+  final String message;
+  const CategoryOperationFailure({required this.message});
+}
 
 class CategoryUnAuthorised extends CategoryState {}

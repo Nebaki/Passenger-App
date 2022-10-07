@@ -24,8 +24,16 @@ class CategoryDataProvider {
         });
     Session().logSession("cats", response.body);
     if (response.statusCode == 200) {
-      var jsonResponse = json.decode(response.body)['items'] as List;
-      return jsonResponse.map((e) => Category.fromJson(e)).toList();
+      Session().logSession("home", response.body);
+      try{
+        Session().logSession("door", response.body);
+        var jsonResponse = jsonDecode(response.body)['items'] as List;
+        Session().logSession("inter", response.body);
+        return jsonResponse.map((e) => Category.fromJson(e)).toList();
+      }catch(e){
+        Session().logSession("hell", response.body);
+        throw e.toString();
+      }
     } else if (response.statusCode == 401) {
       final res = await AuthDataProvider(httpClient: httpClient).refreshToken();
       if (res.statusCode == 200) {
