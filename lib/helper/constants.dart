@@ -206,7 +206,7 @@ const initialPosition = LatLng(8.9806, 38.7578);
 
 PickResult? selectedPlace;
 
-const String apiKey = "AIzaSyB8z8UeyROt2-ay24jiHrrcMXaEAlPUvdQ";
+const String apiKey = "AIzaSyD-zQgILyIC2sEcHn_cNrnGfbKICSC2OH0";
 
 late String rideRequestId;
 bool willScreenPop = true;
