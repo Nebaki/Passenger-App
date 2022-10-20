@@ -58,26 +58,22 @@ class AuthDataProvider {
       Map<String, dynamic> output = jsonDecode(response.body);
 
       updateCookie(response);
-
-      await secureStorage.write(key: 'id', value: output['passenger']['id']);
-      await secureStorage.write(
-          key: 'phone_number', value: output['passenger']['phone_number']);
-      await secureStorage.write(
-          key: 'name', value: output['passenger']['name']);
-      await secureStorage.write(key: 'token', value: output['token']);
-      await secureStorage.write(
-          key: "email", value: output['passenger']['email'] ?? "");
-      await secureStorage.write(
-          key: "emergency_contact",
-          value: output['passenger']['emergency_contact'] ?? "");
-
-      await secureStorage.write(
-          key: 'profile_image',
-          value: _imageBaseUrl + output['passenger']['profile_image']);
+      _writeToLocal('id', output['passenger']['id']);
+      _writeToLocal('phone_number', output['passenger']['phone_number']);
+      _writeToLocal('token', output['token']);
+      _writeToLocal('name', output['passenger']['name'] ?? "");
+      _writeToLocal('email', output['passenger']['email'] ?? "");
+      _writeToLocal("emergency_contact", output['passenger']['emergency_contact'] ?? "");
+      _writeToLocal('profile_image', _imageBaseUrl + output['passenger']['profile_image']);
 
     } else {
       throw Exception('Failed to login.');
     }
+  }
+  _writeToLocal(String key, String value) async {
+    await secureStorage.write(
+        key: key,
+        value: value);
   }
 
   Future<Auth> getUserData() async {
@@ -86,11 +82,10 @@ class AuthDataProvider {
   }
 
   Future updateUserData(User user) async {
-    await secureStorage.write(key: 'phone_number', value: user.phoneNumber);
-    await secureStorage.write(key: 'name', value: user.name!);
-    await secureStorage.write(key: "email", value: user.email ?? "");
-    await secureStorage.write(
-        key: "emergency_contact", value: user.emergencyContact ?? "");
+    _writeToLocal('phone_number', user.phoneNumber ?? "");
+    _writeToLocal('name', user.name!);
+    _writeToLocal('email', user.email ?? "");
+    _writeToLocal('emergency_contact', user.emergencyContact ?? "");
   }
 
   Future updateProfile(String url) async {
