@@ -18,9 +18,9 @@ class DriverBloc extends Bloc<DriverEvent, DriverState> {
         if (e.toString().split(" ")[1] == "401") {
           yield DriverUnAuthorised();
         } else {
-          yield (DriverOperationFailure());
+          yield (DriverOperationFailure(error: e.toString()));
         }
-        yield DriverOperationFailure();
+        yield DriverOperationFailure(error: e.toString());
       }
     }
 
@@ -71,7 +71,12 @@ class DriverLoadSuccess extends DriverState {
   List<Object?> get props => [driver];
 }
 
-class DriverOperationFailure extends DriverState {}
+class DriverOperationFailure extends DriverState {
+  final String error;
+
+  const DriverOperationFailure({required this.error});
+
+}
 
 class DriverInitialState extends DriverState {}
 

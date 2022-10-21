@@ -43,7 +43,7 @@ class DriverModel extends Equatable {
         lastName: json["last_name"],
         gender: json["gender"],
         phoneNumber: json["phone_number"],
-        profileImage: json["profile_image"] ?? '',
+        profileImage: json["profile_image"]['path'] ?? '',
         fcmId: json['fcm_id'],
         rating: double.parse(json['avg_rate']['score'].toString()),
         vehicle: json.containsKey('vehicle')

@@ -260,6 +260,7 @@ class _ServiceState extends State<Service> {
                         );
                       }
                       if (state is DriverOperationFailure) {
+                        Session().logSession("driverError", state.error);
                         return ElevatedButton(
                           style: ButtonStyle(backgroundColor: MaterialStateProperty.all<Color>(Colors.grey)),
                           onPressed: null,
