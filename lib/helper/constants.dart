@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:google_maps_place_picker/google_maps_place_picker.dart';
+//import 'package:google_maps_place_picker/google_maps_place_picker.dart';
 import 'package:passengerapp/models/models.dart';
+
+import '../utils/place_picker/src/models/pick_result.dart';
 
 const mapStyle = '''[
   {
@@ -204,7 +206,7 @@ const initialPosition = LatLng(8.9806, 38.7578);
 
 PickResult? selectedPlace;
 
-const String apiKey = "AIzaSyB8z8UeyROt2-ay24jiHrrcMXaEAlPUvdQ";
+const String apiKey = "AIzaSyD-zQgILyIC2sEcHn_cNrnGfbKICSC2OH0";
 
 late String rideRequestId;
 bool willScreenPop = true;

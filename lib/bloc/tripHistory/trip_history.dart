@@ -2,6 +2,7 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:passengerapp/models/models.dart';
 import 'package:passengerapp/repository/repositories.dart';
+import 'package:passengerapp/utils/session.dart';
 
 class TripHistoryBloc extends Bloc<TripHistoryEvent, TripHistoryState> {
   final RideRequestRepository rideRequestRepository;
@@ -21,6 +22,7 @@ class TripHistoryBloc extends Bloc<TripHistoryEvent, TripHistoryState> {
           if (e.toString().split(" ")[1] == "401") {
           yield TripHistoryUnAuthorised();
         } else {
+            Session().logSession("error-h", e.toString());
           yield (TripHistoryOperationFailure());
         }
         yield TripHistoryOperationFailure();

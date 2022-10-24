@@ -36,6 +36,7 @@ class _ServiceState extends State<Service> {
     GeolocatorPlatform.instance.getCurrentPosition().then((value) {
       currentLatlng = LatLng(value.latitude, value.longitude);
     });
+
     super.initState();
   }
 
@@ -259,6 +260,7 @@ class _ServiceState extends State<Service> {
                         );
                       }
                       if (state is DriverOperationFailure) {
+                        Session().logSession("driverError", state.error);
                         return ElevatedButton(
                           style: ButtonStyle(backgroundColor: MaterialStateProperty.all<Color>(Colors.grey)),
                           onPressed: null,

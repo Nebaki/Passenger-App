@@ -54,7 +54,8 @@ class Category extends Equatable {
         icon: json['icon'],
         description: json['description'],
         discount: json['discount'],
-        commission: json['commission']);
+        commission: json['commission']
+    );
   }
 
   @override

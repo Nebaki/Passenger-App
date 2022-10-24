@@ -65,6 +65,7 @@ class RideRequest extends Equatable {
         driver: json.containsKey("driver")
             ? DriverModel.fromJson(json["driver"])
             : null,
+        //driver: null,
         pickupLocation:
             LatLng(json["pickup_location"][0], json["pickup_location"][1]),
         dropOffLocation:

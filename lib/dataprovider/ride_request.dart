@@ -18,7 +18,6 @@ class RideRequestDataProvider {
 
   final token =
       "AAAAKTCNpPU:APA91bHPscWDa8pPO5MGRj11FWo6NZkpK5tRPodi_2wuMdHhDNwlTO3l4jF50tFGiU55EWMyNss0St0l_kk2H1YmKH1z4yzWPVL25xGTt-GqOFWUdh7BgjJmiNo55eVzzJgHeEOBvHtH";
-
   RideRequestDataProvider({required this.httpClient});
 
   Future<RideRequest> checkStartedTrip() async {
@@ -60,9 +59,14 @@ class RideRequestDataProvider {
       Session().logSession("history", response.body);
       final data = json.decode(response.body)['items'] as List;
 
-      return data.isNotEmpty
-          ? data.map((e) => RideRequest.fromJson(e)).toList()
-          : [];
+      try{
+        return data.isNotEmpty
+            ? data.map((e) => RideRequest.fromJson(e)).toList()
+            : [];
+      }catch(e){
+        Session().logSession("error-h", e.toString());
+        rethrow;
+      }
     } else if (response.statusCode == 401) {
       final res = await AuthDataProvider(httpClient: httpClient).refreshToken();
 
@@ -101,6 +105,7 @@ class RideRequestDataProvider {
       }),
     );
 
+    Session().logSession("createRequest", response.body);
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
       rideRequestId = data["id"];
@@ -190,7 +195,7 @@ class RideRequestDataProvider {
       Uri.parse(_fcmUrl),
       headers: <String, String>{
         'Content-Type': 'application/json',
-        'Authorization': 'key=$token'
+        'Authorization': 'key=${await authDataProvider.getFCMToken()}'
       },
       body: json.encode({
         "data": {'response': 'Cancelled'},
@@ -214,11 +219,13 @@ class RideRequestDataProvider {
       RideRequest request, String requestId, bool forOther) async {
     final fcmtoken = await FirebaseMessaging.instance.getToken();
 
+    String tk = await authDataProvider.getFCMToken() ?? "null";
+    Session().logSession("token", tk);
     final response = await http.post(
       Uri.parse(_fcmUrl),
       headers: <String, String>{
         'Content-Type': 'application/json',
-        'Authorization': 'key=$token'
+        'Authorization': 'key=${await authDataProvider.getFCMToken()}'
       },
       body: json.encode({
         "data": {
@@ -246,12 +253,13 @@ class RideRequestDataProvider {
         "android": {"priority": "high"},
         "to": request.driverFcm,
         "notification": {
-          "title": "New RideRequest",
+          "title": "New Order Request",
           "body":
-              "You have new ride request open it by tapping the nottification."
+              "You have new ride request open it by tapping the notification."
         }
       }),
     );
+    Session().logSession("ntfs", response.body);
     if (response.statusCode == 200) {
 
     } else {
@@ -318,7 +326,7 @@ class RideRequestDataProvider {
       Uri.parse(_fcmUrl),
       headers: <String, String>{
         'Content-Type': 'application/json',
-        'Authorization': 'key=$token'
+        'Authorization': 'key=${await authDataProvider.getFCMToken()}'
       },
       body: json.encode({
         "data": {'response': 'Cancelled'},

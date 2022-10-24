@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:passengerapp/dataprovider/auth/auth.dart';
 import 'package:passengerapp/models/models.dart';
+import 'package:passengerapp/utils/session.dart';
 
 class DriverDataProvider {
   final _baseUrl = 'https://safeway-api.herokuapp.com/api/drivers';
@@ -17,7 +18,7 @@ class DriverDataProvider {
       'Content-Type': "application/json",
       'x-access-token': '${await authDataProvider.getToken()}',
     });
-
+    Session().logSession("getDriver", response.body);
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
       return DriverModel.fromJson(responseData);

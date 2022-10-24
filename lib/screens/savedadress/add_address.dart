@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:google_maps_place_picker/google_maps_place_picker.dart';
+//import 'package:google_maps_place_picker/google_maps_place_picker.dart';
+
 import 'package:passengerapp/cubit/favorite_location.dart';
 import 'package:passengerapp/cubit/favorite_location_state.dart';
 import 'package:passengerapp/helper/constants.dart';
@@ -8,6 +9,8 @@ import 'package:passengerapp/helper/localization.dart';
 import 'package:passengerapp/rout.dart';
 import '../../bloc/bloc.dart';
 import '../../models/models.dart';
+import '../../utils/place_picker/src/models/pick_result.dart';
+import '../../utils/place_picker/src/place_picker.dart';
 import '../../utils/waver.dart';
 
 class AddAddressScreen extends StatefulWidget {

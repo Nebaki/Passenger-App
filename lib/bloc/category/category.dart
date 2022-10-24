@@ -2,6 +2,7 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:passengerapp/models/models.dart';
 import 'package:passengerapp/repository/repositories.dart';
+import 'package:passengerapp/utils/session.dart';
 
 class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
   final CategoryRepository categoryRepository;
@@ -9,9 +10,9 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
 
   @override
   Stream<CategoryState> mapEventToState(CategoryEvent event) async* {
+    Session().logSession("cat-event", "happened");
     if (event is CategoryLoad) {
       yield CategoryLoading();
-
       try {
         List<Category> categories = await categoryRepository.getCategories();
         yield CategoryLoadSuccess(categories: categories);
@@ -19,9 +20,10 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
         if (e.toString().split(" ")[1] == "401") {
           yield CategoryUnAuthorised();
         } else {
-          yield (CategoryOperationFailure());
+          Session().logSession("cat-error", e.toString());
+          yield (CategoryOperationFailure(message:"upper "+e.toString()));
         }
-        yield CategoryOperationFailure();
+        yield CategoryOperationFailure(message:'bottom');
       }
     }
   }
@@ -52,6 +54,9 @@ class CategoryLoadSuccess extends CategoryState {
   List<Object?> get props => categories;
 }
 
-class CategoryOperationFailure extends CategoryState {}
+class CategoryOperationFailure extends CategoryState {
+  final String message;
+  const CategoryOperationFailure({required this.message});
+}
 
 class CategoryUnAuthorised extends CategoryState {}

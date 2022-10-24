@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:google_maps_place_picker/google_maps_place_picker.dart';
+//import 'package:google_maps_place_picker/google_maps_place_picker.dart';
+
 import 'package:passengerapp/bloc/bloc.dart';
 import 'package:passengerapp/helper/constants.dart';
 import 'package:passengerapp/helper/localization.dart';
 import 'package:passengerapp/rout.dart';
 import 'package:passengerapp/screens/locationchanger/setting_location_dialog.dart';
+import '../../utils/place_picker/src/place_picker.dart';
 import 'predicted_address-list.dart';
 
 class LocationChanger extends StatelessWidget {
