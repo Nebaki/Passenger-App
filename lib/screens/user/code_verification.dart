@@ -214,7 +214,7 @@ class _PhoneVerificationState extends State<PhoneVerification> {
     return Scaffold(
       appBar: SafeAppBar(
           key: _appBar, title: "Verification",
-          appBar: AppBar(), widgets: []),
+          appBar: AppBar(), widgets: const []),
       body: Stack(
         children: [
           Container(

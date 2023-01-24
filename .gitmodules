@@ -1,0 +1,3 @@
+[submodule "Passenger-App"]
+	path = Passenger-App
+	url = https://github.com/Nebaki/Passenger-App.git
